@@ -1,0 +1,42 @@
+{
+  "identifier": "mev-protection-advisor",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/mev-protection-advisor",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "MEV Protection Advisor",
+    "description": "Protect users from front-running, sandwich attacks, and MEV exploitation",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "mev",
+      "security",
+      "front-running",
+      "flashbots",
+      "protection",
+      "clawd",
+      "solana",
+      "jito",
+      "bundles"
+    ],
+    "category": "security"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "swap-execution",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

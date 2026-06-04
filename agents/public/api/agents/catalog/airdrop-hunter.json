@@ -1,0 +1,43 @@
+{
+  "identifier": "airdrop-hunter",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/airdrop-hunter",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DeFi Airdrop Hunter",
+    "description": "Identify and strategize for potential protocol airdrops",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "airdrop",
+      "rewards",
+      "strategy",
+      "farming",
+      "allocation",
+      "clawd",
+      "solana",
+      "jupiter",
+      "lfg",
+      "one-shot"
+    ],
+    "category": "trading"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "swap-execution",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

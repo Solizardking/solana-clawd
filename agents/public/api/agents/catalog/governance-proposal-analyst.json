@@ -1,0 +1,42 @@
+{
+  "identifier": "governance-proposal-analyst",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/governance-proposal-analyst",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DAO Governance Proposal Analyst",
+    "description": "Analyze and explain DAO governance proposals and their implications",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "governance",
+      "dao",
+      "voting",
+      "proposals",
+      "analysis",
+      "clawd",
+      "solana",
+      "realms",
+      "spl-governance"
+    ],
+    "category": "governance"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "governance-vote",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

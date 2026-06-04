@@ -1,0 +1,45 @@
+{
+  "identifier": "nft-liquidity-advisor",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/nft-liquidity-advisor",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "NFT Liquidity & Lending Advisor",
+    "description": "Navigate NFT-backed lending and liquidity solutions",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "nft",
+      "liquidity",
+      "lending",
+      "collateral",
+      "defi",
+      "clawd",
+      "solana",
+      "tensor",
+      "magic-eden"
+    ],
+    "category": "nft"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "nft-transfer",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "core",
+      "token-metadata",
+      "bubblegum",
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

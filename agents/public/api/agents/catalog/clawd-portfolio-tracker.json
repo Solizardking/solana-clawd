@@ -1,0 +1,41 @@
+{
+  "identifier": "clawd-portfolio-tracker",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-portfolio-tracker",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Portfolio Tracker",
+    "description": "Track and analyze your complete CLAWD ecosystem holdings",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "portfolio",
+      "tracking",
+      "analytics",
+      "dashboard",
+      "solana",
+      "helius",
+      "das",
+      "one-shot"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

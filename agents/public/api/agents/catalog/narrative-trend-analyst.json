@@ -1,0 +1,40 @@
+{
+  "identifier": "narrative-trend-analyst",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/narrative-trend-analyst",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Crypto Narrative & Trend Analyst",
+    "description": "Track and analyze dominant narratives and trends in crypto markets",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "narrative",
+      "trends",
+      "analysis",
+      "sentiment",
+      "market-cycles",
+      "clawd",
+      "solana",
+      "analytics"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

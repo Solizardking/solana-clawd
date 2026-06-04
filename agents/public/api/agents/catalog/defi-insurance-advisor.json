@@ -1,0 +1,40 @@
+{
+  "identifier": "defi-insurance-advisor",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/defi-insurance-advisor",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DeFi Insurance & Risk Coverage Advisor",
+    "description": "Navigate DeFi insurance options for smart contract protection",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "insurance",
+      "protection",
+      "risk",
+      "coverage",
+      "safety",
+      "clawd",
+      "solana",
+      "defi"
+    ],
+    "category": "defi"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

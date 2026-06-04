@@ -1,0 +1,41 @@
+{
+  "identifier": "crypto-news-analyst",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/crypto-news-analyst",
+  "createdAt": "2026-01-03",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Crypto News Analyst",
+    "description": "Aggregate and analyze breaking crypto news from CoinDesk, The Block, Decrypt, and major publications",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "news",
+      "analysis",
+      "market",
+      "research",
+      "sentiment",
+      "clawd",
+      "solana",
+      "narrative",
+      "analytics"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

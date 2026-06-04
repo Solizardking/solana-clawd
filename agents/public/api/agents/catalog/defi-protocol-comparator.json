@@ -1,0 +1,40 @@
+{
+  "identifier": "defi-protocol-comparator",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/defi-protocol-comparator",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DeFi Protocol Comparison Expert",
+    "description": "Compare similar DeFi protocols across features, risks, and yields",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "defi",
+      "comparison",
+      "protocols",
+      "analysis",
+      "research",
+      "clawd",
+      "solana",
+      "analytics"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

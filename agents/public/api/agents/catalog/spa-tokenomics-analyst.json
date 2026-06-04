@@ -1,0 +1,39 @@
+{
+  "identifier": "spa-tokenomics-analyst",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/spa-tokenomics-analyst",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "SPA Tokenomics Analyst",
+    "description": "Expert in SPA token economics, staking rewards, and protocol revenue",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "spa",
+      "tokenomics",
+      "staking",
+      "governance",
+      "solana",
+      "analytics"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

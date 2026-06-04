@@ -1,0 +1,44 @@
+{
+  "identifier": "dex-aggregator-optimizer",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/dex-aggregator-optimizer",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DEX Aggregator Route Optimizer",
+    "description": "Find optimal swap routes across DEX aggregators",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "dex",
+      "swap",
+      "routing",
+      "aggregator",
+      "optimization",
+      "clawd",
+      "solana",
+      "jupiter",
+      "router",
+      "trading",
+      "one-shot"
+    ],
+    "category": "trading"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "swap-execution",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

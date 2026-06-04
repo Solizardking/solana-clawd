@@ -1,0 +1,45 @@
+{
+  "identifier": "liquidation-risk-manager",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/liquidation-risk-manager",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Liquidation Risk Manager",
+    "description": "Monitor and manage liquidation risks in lending protocols",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "lending",
+      "liquidation",
+      "risk",
+      "collateral",
+      "defi",
+      "clawd",
+      "solana",
+      "kamino",
+      "drift",
+      "marginfi",
+      "one-shot"
+    ],
+    "category": "security"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "lending-deposit",
+      "lending-withdraw",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

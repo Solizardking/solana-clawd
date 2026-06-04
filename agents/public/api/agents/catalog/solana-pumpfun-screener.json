@@ -1,0 +1,40 @@
+{
+  "identifier": "solana-pumpfun-screener",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/solana-pumpfun-screener",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Solana Pump.fun Rug Screener",
+    "description": "Score new pump.fun tokens for rug-pull risk using holder distribution, dev history, and LP status",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "solana",
+      "pumpfun",
+      "memecoin",
+      "security",
+      "screening",
+      "one-shot",
+      "clawd"
+    ],
+    "category": "security"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry",
+      "token-metadata"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

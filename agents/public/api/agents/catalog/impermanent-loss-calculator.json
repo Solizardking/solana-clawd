@@ -1,0 +1,42 @@
+{
+  "identifier": "impermanent-loss-calculator",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/impermanent-loss-calculator",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Impermanent Loss Calculator",
+    "description": "Calculate and explain impermanent loss scenarios for LP positions",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "defi",
+      "liquidity",
+      "impermanent-loss",
+      "calculator",
+      "amm",
+      "clawd",
+      "solana",
+      "il",
+      "meteora",
+      "orca"
+    ],
+    "category": "defi"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

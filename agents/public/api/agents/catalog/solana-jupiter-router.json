@@ -1,0 +1,40 @@
+{
+  "identifier": "solana-jupiter-router",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/solana-jupiter-router",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Solana Jupiter Router",
+    "description": "Find the best swap route on Solana with price impact, slippage, and priority fee guidance via Jupiter v6",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "solana",
+      "jupiter",
+      "dex",
+      "trading",
+      "routing",
+      "one-shot",
+      "clawd"
+    ],
+    "category": "trading"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "swap-execution",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

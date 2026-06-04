@@ -1,0 +1,46 @@
+{
+  "identifier": "defi-yield-farmer",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/defi-yield-farmer",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DeFi Yield Farming Strategist",
+    "description": "Identify and optimize yield farming opportunities across DeFi protocols",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "defi",
+      "yield-farming",
+      "apy",
+      "strategy",
+      "optimization",
+      "clawd",
+      "solana",
+      "kamino",
+      "meteora",
+      "drift",
+      "one-shot"
+    ],
+    "category": "defi"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "lending-deposit",
+      "lending-withdraw",
+      "swap-execution",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

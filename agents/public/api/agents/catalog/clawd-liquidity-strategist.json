@@ -1,0 +1,46 @@
+{
+  "identifier": "clawd-liquidity-strategist",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-liquidity-strategist",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Liquidity Provider Strategist",
+    "description": "Optimize liquidity provision strategies across CLAWD pools",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "liquidity",
+      "amm",
+      "yield-farming",
+      "impermanent-loss",
+      "solana",
+      "meteora",
+      "orca",
+      "raydium",
+      "dlmm",
+      "one-shot"
+    ],
+    "category": "defi"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "swap-execution",
+      "lending-deposit",
+      "lending-withdraw",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

@@ -1,0 +1,42 @@
+{
+  "identifier": "whale-watcher",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/whale-watcher",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Crypto Whale Watcher",
+    "description": "Track and analyze large wallet movements and whale behavior",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "on-chain",
+      "whale",
+      "analytics",
+      "trading",
+      "monitoring",
+      "clawd",
+      "solana",
+      "whales",
+      "helius",
+      "das"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

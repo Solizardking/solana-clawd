@@ -1,0 +1,41 @@
+{
+  "identifier": "solana-validator-picker",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/solana-validator-picker",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Solana Validator Picker",
+    "description": "Pick a validator or LST by commission, uptime, MEV rewards, and decentralization impact",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "solana",
+      "staking",
+      "validator",
+      "lst",
+      "governance",
+      "one-shot",
+      "clawd"
+    ],
+    "category": "education"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "stake",
+      "unstake",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

@@ -1,0 +1,37 @@
+{
+  "identifier": "clawd-firecrawl",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-firecrawl",
+  "createdAt": "2026-04-19",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Firecrawl Researcher",
+    "description": "Web research agent backed by Firecrawl — scrape, search, map, and crawl any site.",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "firecrawl",
+      "research",
+      "scraping",
+      "search",
+      "crawl",
+      "browser",
+      "web",
+      "openclawd",
+      "one-shot"
+    ],
+    "category": "research"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [],
+    "metaplexSkills": []
+  },
+  "payment": null,
+  "agentToken": null
+}

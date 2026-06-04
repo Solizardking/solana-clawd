@@ -1,0 +1,47 @@
+{
+  "identifier": "clawd-pumpfun-official",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-pumpfun-official",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD × Pump.fun Official Agent",
+    "description": "The official Solana Clawd pump.fun agent. Payment-gated random number generator (0.1 SOL), wallet-connected launch screening, claims + buyback tracking, and Telegram alerts — all wired through @pump-fun/agent-payments-sdk.",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "solana",
+      "pumpfun",
+      "payment-gated",
+      "tokenized-agent",
+      "x402",
+      "telegram",
+      "one-shot",
+      "clawd"
+    ],
+    "category": "trading"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "payment-gated",
+      "x402",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": []
+  },
+  "payment": {
+    "provider": "pump-fun",
+    "currency": "SOL",
+    "currencyMint": "So11111111111111111111111111111111111111112",
+    "amount": "100000000",
+    "decimals": 9,
+    "displayAmount": "0.1 SOL"
+  },
+  "agentToken": "5Bphs5Q6nbq1FRQ7sk3MUYNE8JHzoSKVyeZWYM94pump"
+}

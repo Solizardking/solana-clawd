@@ -1,0 +1,40 @@
+{
+  "identifier": "defi-onboarding-mentor",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/defi-onboarding-mentor",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DeFi Beginner Onboarding Mentor",
+    "description": "Guide complete beginners through their first DeFi experiences",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "education",
+      "beginner",
+      "onboarding",
+      "tutorial",
+      "defi-basics",
+      "clawd",
+      "solana",
+      "defi"
+    ],
+    "category": "education"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

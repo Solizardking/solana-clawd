@@ -1,0 +1,39 @@
+{
+  "identifier": "clawd-onboarding-guide",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-onboarding-guide",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Ecosystem Onboarding Guide",
+    "description": "Help newcomers understand and start using CLAWD protocol",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "education",
+      "onboarding",
+      "beginner",
+      "tutorial",
+      "solana",
+      "one-shot"
+    ],
+    "category": "education"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

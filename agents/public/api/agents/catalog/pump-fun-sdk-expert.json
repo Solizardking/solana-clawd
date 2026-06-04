@@ -1,0 +1,46 @@
+{
+  "identifier": "pump-fun-sdk-expert",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/pump-fun-sdk-expert",
+  "createdAt": "2026-02-27",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Pump Fun SDK Expert",
+    "description": "Specialized assistant for the @nirholas/pump-sdk — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "pump-fun",
+      "solana",
+      "sdk",
+      "bonding-curve",
+      "token-creation",
+      "defi",
+      "amm",
+      "fee-sharing",
+      "clawd",
+      "pumpfun",
+      "dev-tools",
+      "x402"
+    ],
+    "category": "dev-tools"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "payment-gated",
+      "x402",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

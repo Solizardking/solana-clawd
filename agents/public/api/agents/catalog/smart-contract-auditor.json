@@ -1,0 +1,41 @@
+{
+  "identifier": "smart-contract-auditor",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/smart-contract-auditor",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Smart Contract Security Auditor",
+    "description": "Review and assess smart contract security for DeFi protocols",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "security",
+      "smart-contracts",
+      "audit",
+      "solidity",
+      "risk",
+      "clawd",
+      "solana",
+      "anchor",
+      "dev-tools"
+    ],
+    "category": "security"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

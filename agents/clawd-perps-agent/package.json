@@ -1,0 +1,23 @@
+{
+  "name": "@solanaclawd/clawd-agents-perps",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Unified perpetuals integration surface for Clawd agents on Solana",
+  "bin": {
+    "clawd-agents-perps": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/cli.js status",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@openclawdsolana/clawd-perps": "file:../../openclawd-framework/packages/clawd-perps",
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "typescript": "^5.9.3"
+  }
+}

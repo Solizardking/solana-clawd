@@ -1,0 +1,42 @@
+{
+  "identifier": "clawd-risk-monitor",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-risk-monitor",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Protocol Risk Monitor",
+    "description": "Track and analyze security risks across CLAWD smart contracts",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "security",
+      "risk",
+      "audit",
+      "monitoring",
+      "solana",
+      "alerts",
+      "kamino",
+      "drift",
+      "one-shot"
+    ],
+    "category": "security"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

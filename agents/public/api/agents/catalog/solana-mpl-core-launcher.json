@@ -1,0 +1,49 @@
+{
+  "identifier": "solana-mpl-core-launcher",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/solana-mpl-core-launcher",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Solana MPL Core Launcher",
+    "description": "Design and launch an MPL Core NFT collection on Solana with proper plugins, royalties, and Arweave metadata",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "solana",
+      "nft",
+      "mpl-core",
+      "metaplex",
+      "launch",
+      "one-shot",
+      "clawd"
+    ],
+    "category": "nft"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "nft-mint",
+      "nft-transfer",
+      "metaplex-mint-core-nft",
+      "metaplex-mint-cnft",
+      "metaplex-deploy-candy-machine",
+      "metaplex-token-metadata",
+      "metaplex-execute-asset-signer",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "core",
+      "token-metadata",
+      "candy-machine",
+      "bubblegum",
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

@@ -1,0 +1,44 @@
+{
+  "identifier": "liquidity-pool-analyzer",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/liquidity-pool-analyzer",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Liquidity Pool Deep Analyzer",
+    "description": "Analyze LP pool health, risks, and optimal entry/exit timing",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "defi",
+      "liquidity-pools",
+      "amm",
+      "analysis",
+      "risk",
+      "clawd",
+      "solana",
+      "liquidity",
+      "meteora",
+      "orca",
+      "raydium",
+      "analytics"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

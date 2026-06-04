@@ -1,0 +1,42 @@
+{
+  "identifier": "bridge-security-analyst",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/bridge-security-analyst",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Cross-Chain Bridge Security Analyst",
+    "description": "Evaluate bridge security and recommend safest cross-chain routes",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "bridge",
+      "security",
+      "cross-chain",
+      "risk",
+      "multichain",
+      "clawd",
+      "solana",
+      "wormhole",
+      "debridge",
+      "allbridge"
+    ],
+    "category": "security"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

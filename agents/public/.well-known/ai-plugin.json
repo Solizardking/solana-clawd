@@ -1,0 +1,17 @@
+{
+    "schema_version": "v1",
+    "name_for_human": "OpenClawd Agents",
+    "name_for_model": "openclawd_agents",
+    "description_for_human": "OpenClawd Solana-native financial AI agent registry with catalog JSON, ACP discovery, and Metaplex Agent Registry registration documents.",
+    "description_for_model": "OpenClawd Solana-native financial AI agent registry with catalog JSON, ACP discovery, and Metaplex Agent Registry registration documents.",
+    "auth": {
+        "type": "none"
+    },
+    "api": {
+        "type": "none",
+        "url": "https://agents.openclawd.biz/api/agents"
+    },
+    "logo_url": "https://agents.openclawd.biz/nich.jpg",
+    "contact_email": "security@openclawd.biz",
+    "legal_info_url": "https://github.com/clawdsolana/OpenClawd/blob/main/agents/LICENSE"
+}

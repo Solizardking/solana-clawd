@@ -1,0 +1,43 @@
+{
+  "identifier": "defi-risk-scoring-engine",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/defi-risk-scoring-engine",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "DeFi Protocol Risk Scoring Engine",
+    "description": "Comprehensive risk assessment framework for DeFi protocols",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "risk",
+      "assessment",
+      "scoring",
+      "analysis",
+      "framework",
+      "clawd",
+      "solana",
+      "defi",
+      "risk-scoring",
+      "security",
+      "one-shot"
+    ],
+    "category": "security"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

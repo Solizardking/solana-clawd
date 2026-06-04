@@ -1,0 +1,39 @@
+{
+  "identifier": "clawd-bridge-assistant",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-bridge-assistant",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Bridge Assistant",
+    "description": "Guide users through cross-chain bridging with optimal routes and costs",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "bridge",
+      "cross-chain",
+      "arbitrum",
+      "layer-2",
+      "solana",
+      "one-shot"
+    ],
+    "category": "defi"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

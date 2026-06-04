@@ -1,0 +1,41 @@
+{
+  "identifier": "clawd-governance-guide",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-governance-guide",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Governance Guide",
+    "description": "Navigate CLAWD DAO proposals, voting, and protocol upgrades",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "governance",
+      "dao",
+      "voting",
+      "proposals",
+      "solana",
+      "realms",
+      "one-shot"
+    ],
+    "category": "governance"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "governance-vote",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

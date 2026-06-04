@@ -1,0 +1,42 @@
+{
+  "identifier": "alpha-leak-detector",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/alpha-leak-detector",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Crypto Alpha & Signal Detector",
+    "description": "Identify trading alpha and early signals in DeFi markets",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "alpha",
+      "trading",
+      "signals",
+      "research",
+      "opportunities",
+      "clawd",
+      "solana",
+      "helius",
+      "birdeye",
+      "one-shot"
+    ],
+    "category": "trading"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

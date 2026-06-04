@@ -1,0 +1,63 @@
+{
+  "identifier": "clawd-mayhem-mode",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-mayhem-mode",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Mayhem Mode",
+    "description": "The Solana Clawd all-purpose combat agent. Trades, deploys, launches tokens, mints NFTs, and orchestrates Metaplex programs end-to-end — Agent Registry, Genesis, Core, Token Metadata, Bubblegum, and Candy Machine.",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "solana",
+      "clawd",
+      "mayhem",
+      "metaplex",
+      "genesis",
+      "mpl-core",
+      "bubblegum",
+      "candy-machine",
+      "trading",
+      "launch",
+      "one-shot"
+    ],
+    "category": "trading"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "swap-execution",
+      "nft-mint",
+      "nft-transfer",
+      "stake",
+      "a2a-message",
+      "metaplex-mint-agent",
+      "metaplex-register-identity",
+      "metaplex-launch-token-genesis",
+      "metaplex-launch-bonding-curve",
+      "metaplex-mint-core-nft",
+      "metaplex-mint-cnft",
+      "metaplex-deploy-candy-machine",
+      "metaplex-create-agent-token",
+      "metaplex-execute-asset-signer",
+      "metaplex-token-metadata",
+      "x402-wurk-social",
+      "x402-wurk-agent-help"
+    ],
+    "metaplexSkills": [
+      "agent-registry",
+      "genesis",
+      "core",
+      "token-metadata",
+      "bubblegum",
+      "candy-machine"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

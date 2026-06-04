@@ -1,0 +1,41 @@
+{
+  "identifier": "yield-dashboard-builder",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/yield-dashboard-builder",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Personal DeFi Dashboard Builder",
+    "description": "Design and track your custom DeFi portfolio dashboard",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "dashboard",
+      "tracking",
+      "portfolio",
+      "analytics",
+      "monitoring",
+      "clawd",
+      "solana",
+      "yield",
+      "dev-tools"
+    ],
+    "category": "dev-tools"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

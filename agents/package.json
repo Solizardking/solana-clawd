@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "node build-catalog.cjs && node scripts/validate-catalog.cjs",
+    "test": "node scripts/validate-catalog.cjs"
+  }
+}

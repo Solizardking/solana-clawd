@@ -1,0 +1,40 @@
+{
+  "identifier": "token-unlock-tracker",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/token-unlock-tracker",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "Token Unlock Schedule Tracker",
+    "description": "Monitor and analyze token unlock events and their market impact",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "tokenomics",
+      "unlocks",
+      "vesting",
+      "supply",
+      "analysis",
+      "clawd",
+      "solana",
+      "analytics"
+    ],
+    "category": "analytics"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}

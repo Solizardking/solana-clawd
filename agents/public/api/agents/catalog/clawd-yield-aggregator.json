@@ -1,0 +1,46 @@
+{
+  "identifier": "clawd-yield-aggregator",
+  "author": "openclawd",
+  "homepage": "https://x402.wtf/agents/clawd-yield-aggregator",
+  "createdAt": "2026-04-16",
+  "oneShot": false,
+  "featured": false,
+  "schemaVersion": 1,
+  "meta": {
+    "title": "CLAWD Yield Aggregator",
+    "description": "Find and optimize best yield opportunities in CLAWD ecosystem",
+    "avatar": "https://x402.wtf/nich.jpg",
+    "tags": [
+      "clawd",
+      "yield",
+      "farming",
+      "optimization",
+      "apy",
+      "solana",
+      "kamino",
+      "marginfi",
+      "drift",
+      "meteora",
+      "one-shot"
+    ],
+    "category": "defi"
+  },
+  "config": {
+    "openingMessage": null,
+    "openingQuestions": []
+  },
+  "solana": {
+    "capabilities": [
+      "lending-deposit",
+      "lending-withdraw",
+      "swap-execution",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ]
+  },
+  "payment": null,
+  "agentToken": null
+}
