@@ -115,7 +115,9 @@
   "scripts": {
     "build": "tsc",
     "build:all": "tsc && (cd packages/agent-registry && npm run build) && (cd packages/agent-hub && npm run build) && (cd packages/clawd && npm run build) && (cd packages/cli-standalone && npm run build)",
+    "build:web": "vite build",
     "dev": "tsx watch src/index.ts",
+    "dev:web": "vite",
     "test": "vitest run \"src/**/*.{test,spec}.ts\" --passWithNoTests",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
@@ -208,9 +210,15 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",
     "@types/node": "^20.10.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
     "@types/ws": "^8.5.12",
+    "@vitejs/plugin-react": "^4.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tsx": "^4.7.0",
     "typescript": "^5.9.3",
+    "vite": "^5.4.0",
     "vitest": "^4.1.6"
   },
   "engines": {
