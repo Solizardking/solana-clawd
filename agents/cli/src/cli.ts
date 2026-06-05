@@ -3,12 +3,14 @@ import { printBanner } from "./banner.js";
 import { runDeploy } from "./commands/deploy.js";
 import { runEval } from "./commands/eval.js";
 import { runGoalComplete, runGoalCreate, runGoalList, runGoalStatus } from "./commands/goals.js";
+import { runIdentityAttest, runIdentityBridgeGoogle, runIdentityCreate, runIdentitySpiffe, runIdentityVerify } from "./commands/identity.js";
 import { runPublish } from "./commands/publish.js";
 import { runPump } from "./commands/pump.js";
 import { runRegister } from "./commands/register.js";
 import { runRegistryConnect, runRegistryList, runRegistryRegister, runRegistryStatus } from "./commands/registry.js";
 import { runScaffoldCreate, runScaffoldEnhance, runScaffoldUpgrade } from "./commands/scaffold.js";
 import { runSetup } from "./commands/setup.js";
+import { runSign } from "./commands/sign.js";
 import { runApe, runLong, runPerps, runShort, runSpot } from "./commands/trading.js";
 
 type RawArgs = {
@@ -52,7 +54,7 @@ function strFlag(flags: Record<string, string | boolean>, key: string): string |
 
 function printHelp(): void {
   console.log(`
-clawd-agents — Solana Agents CLI
+clawd-agents — Solana Agents CLI (Google ADK-compatible)
 
 USAGE
   clawd-agents <command> [subcommand] [options]
@@ -70,6 +72,16 @@ COMMANDS
   registry connect <ep>    Show connection example for a registered endpoint
   registry status          Show Agent Registry + Reasoning Engine status
   registry register <url>  Register a new endpoint in Agent Registry
+
+IDENTITY COMMANDS (Google ADK + Solana on-chain)
+  identity create          Create on-chain agent identity (wallet + MPL Core NFT + SAS PDA)
+  identity attest          Attest existing identity via SAS (check on-chain status)
+  identity verify          Verify on-chain attestation (SAS + MPL Core NFT)
+  identity spiffe          Show Google SPIFFE principal mapping for the agent
+  identity bridge-google   Bridge identity to Google Agent Registry + ADK
+
+SIGN COMMANDS
+  sign <base64-tx>         Sign a base64 Solana transaction with Pay account + submit
 
 TOKEN COMMANDS
   pump [wallet]            Show $CLAWD tier info, ClawdRouter status, upgrade path
@@ -99,7 +111,8 @@ OPTIONS
   --telegram               Add Telegram bot surface (scaffold)
   --registry               Add Agent Registry integration (scaffold)
   --skip-build             Skip catalog rebuild (publish)
-  --name <name>            Agent display name (register)
+  --name <name>            Agent display name (register/identity)
+  --agent-id <id>          Agent identifier (identity create/bridge-google)
   --system-role <prompt>   System role / prompt (register)
   --description <text>     Short description (register)
   --tags <t1,t2>           Comma-separated tags (register)
@@ -119,8 +132,25 @@ OPTIONS
   --side <side>            Side: long|short|buy|sell (goals create)
   --priority <p>           Goal priority: high|medium|low
 
+IDENTITY OPTIONS
+  --vault                  Initialize Hermes vault for agent wallet (identity create)
+  --google-project <id>    Google Cloud project ID/number (identity create/bridge-google)
+  --google-location <loc>  Google Cloud location (default: global)
+  --organization-id <id>   Google Cloud organization ID (identity spiffe)
+  --engine-id <id>         Reasoning Engine ID (identity spiffe/bridge-google)
+
+SIGN OPTIONS
+  --network <net>          Solana network: mainnet-beta|devnet|testnet
+  --account <name>         Pay account name selector
+
 EXAMPLES
   clawd-agents setup
+  clawd-agents identity create --agent-id my-agent --google-project my-project
+  clawd-agents identity attest
+  clawd-agents identity verify
+  clawd-agents identity spiffe --organization-id 12345 --project-number 67890
+  clawd-agents identity bridge-google --project my-project --agent my-agent
+  clawd-agents sign <BASE64_TX> --network devnet
   clawd-agents long SOL --notional 100
   clawd-agents short ETH --notional 50 --leverage 2
   clawd-agents spot buy SOL --amount 200
@@ -133,17 +163,21 @@ EXAMPLES
   clawd-agents deploy --target vertex-ai
   clawd-agents registry list
   clawd-agents register --name "My DeFi Agent" --description "Handles swaps" --tags "defi,solana" --category defi
-  clawd-agents register --name "My Agent" --local --dry-run
 
 PACKAGES
-  @clawd/agent-auth-solana    Solana extension — SIWS, DAS attestation, CAAP/1.0
-  @better-auth/agent-auth     Better Auth server plugin
-  @auth/agent                 Client SDK for agent runtimes
-  @auth/agent-cli             Upstream CLI + MCP server
+  @solanaclawd/clawd-agents-cli  Solana Agents CLI — this package
+  @clawd/agent-auth-solana       Solana extension — SIWS, DAS attestation, CAAP/1.0
+  @better-auth/agent-auth        Better Auth server plugin
+  @auth/agent                    Client SDK for agent runtimes
+  @auth/agent-cli                Upstream CLI + MCP server
 
 PROTOCOL
-  CAAP/1.0 discovery: https://x402.wtf/.well-known/agent-auth.json
-  Agent Registry:     https://x402.wtf/agents/registry
+  CAAP/1.0 discovery:   https://x402.wtf/.well-known/agent-auth.json
+  Agent Registry:       https://x402.wtf/agents/registry
+  SAS Attestation:      22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG
+  MPL Core:             CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d
+  Clawd Token:          CLAWdRg8ZbE7eAhZ8PJKJqBuDnTHruxvV7r5QGSPump
+  dna-x402 Receipts:    6HSRGivdYR5D7yTDy1TFMCM8h3LzXxRtKU1RA3RnCMRN
 `);
 }
 
@@ -235,6 +269,60 @@ async function main(): Promise<void> {
         local: flag(flags, "local"),
         apiKey: strFlag(flags, "api-key"),
         dryRun: flag(flags, "dry-run"),
+      });
+      break;
+    }
+
+    // ─── Identity commands ─────────────────────────────────────────────────
+    case "identity": {
+      switch (sub) {
+        case "create":
+          await runIdentityCreate({
+            agentId: strFlag(flags, "agent-id") ?? strFlag(flags, "name"),
+            googleProject: strFlag(flags, "google-project"),
+            googleLocation: strFlag(flags, "google-location"),
+            vault: flag(flags, "vault"),
+            dryRun: flag(flags, "dry-run"),
+          });
+          break;
+        case "attest":
+          await runIdentityAttest({ dryRun: flag(flags, "dry-run") });
+          break;
+        case "verify":
+          await runIdentityVerify();
+          break;
+        case "spiffe":
+          runIdentitySpiffe({
+            organizationId: strFlag(flags, "organization-id"),
+            projectNumber: strFlag(flags, "google-project"),
+            location: strFlag(flags, "google-location"),
+            engineId: strFlag(flags, "engine-id"),
+          });
+          break;
+        case "bridge-google":
+          await runIdentityBridgeGoogle({
+            projectId: strFlag(flags, "google-project") ?? strFlag(flags, "project"),
+            location: strFlag(flags, "google-location"),
+            agentId: strFlag(flags, "agent-id") ?? strFlag(flags, "agent"),
+            dryRun: flag(flags, "dry-run"),
+          });
+          break;
+        default:
+          throw new Error(
+            `Unknown identity subcommand: ${sub}\n` +
+            "Usage: identity create|attest|verify|spiffe|bridge-google",
+          );
+      }
+      break;
+    }
+
+    // ─── Sign commands ─────────────────────────────────────────────────────
+    case "sign": {
+      if (!sub) throw new Error("Usage: clawd-agents sign <BASE64_TX>");
+      await runSign(sub, {
+        network: strFlag(flags, "network"),
+        account: strFlag(flags, "account"),
+        json: flag(flags, "json"),
       });
       break;
     }
