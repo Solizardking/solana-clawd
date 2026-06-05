@@ -1,0 +1,253 @@
+{
+  "tools": [
+    {
+      "name": "get_payment_quote",
+      "description": "Returns current price, accepted payment networks (Solana, Base, Base-Sepolia), and available rails (x402 EVM, Solana MPP) for inference and agent services.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "title": "Get Payment Quote",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "verify_payment_receipt",
+      "description": "Verify a payment receipt via Solana MPP proxy or local HMAC-SHA256. Accepts Payment-Receipt, X-Clawd-Pay-Receipt, or Authorization: Payment headers.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "receipt": {
+            "type": "string",
+            "description": "The payment receipt string to verify."
+          }
+        },
+        "required": ["receipt"]
+      },
+      "annotations": {
+        "title": "Verify Payment Receipt",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "forward_chat_completion",
+      "description": "Forward a paid chat/completions request to ClawdRouter, x402 OpenRouter, or direct OpenRouter. Requires a valid payment receipt or X-Payment header. Routes by upstream priority: ClawdRouter > x402 OpenRouter > direct OpenRouter.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "Model identifier. Use 'auto' to let ClawdRouter choose.",
+            "default": "auto"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": { "type": "string", "enum": ["system", "user", "assistant"] },
+                "content": { "type": "string" }
+              },
+              "required": ["role", "content"]
+            }
+          },
+          "payment_receipt": {
+            "type": "string",
+            "description": "Payment receipt for Solana MPP or HMAC verification."
+          },
+          "x_payment": {
+            "type": "string",
+            "description": "x402 EVM payment header value."
+          }
+        },
+        "required": ["messages"]
+      },
+      "annotations": {
+        "title": "Forward Paid Chat Completion",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_commerce_agent",
+      "description": "Returns Metaplex Agent Registry identity, executive delegation status, Genesis bonding curve token-launch hints, and payment routes for compute, inference, MCP, and agent services.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "agentAsset": {
+            "type": "string",
+            "description": "Metaplex MPL Core asset address for the agent."
+          }
+        }
+      },
+      "annotations": {
+        "title": "Get Agentic Commerce Metadata",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "execute_spot_trade",
+      "description": "Route a Solana spot trade across Jupiter, Raydium, Orca, Phoenix, or OpenBook with TWAP/VWAP execution, smart order splitting, and priority fee optimization.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "inputMint": { "type": "string", "description": "Input token mint address." },
+          "outputMint": { "type": "string", "description": "Output token mint address." },
+          "amountIn": { "type": "string", "description": "Amount in smallest units (lamports for SOL, base units for SPL)." },
+          "slippageBps": { "type": "number", "description": "Max slippage in basis points.", "default": 50 },
+          "executionMode": {
+            "type": "string",
+            "enum": ["market", "twap", "vwap", "limit"],
+            "default": "market"
+          },
+          "venue": {
+            "type": "string",
+            "enum": ["auto", "jupiter", "raydium", "orca", "phoenix", "openbook"],
+            "default": "auto"
+          }
+        },
+        "required": ["inputMint", "outputMint", "amountIn"]
+      },
+      "annotations": {
+        "title": "Execute Spot Trade",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "run_perps_preflight",
+      "description": "Run Vulcan preflight checks for Phoenix perpetuals: market snapshot, margin status, position list, lot sizing validation, and risk limit audit before any live execution.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "market": { "type": "string", "description": "Phoenix perps market address or symbol (e.g. SOL-PERP)." },
+          "side": { "type": "string", "enum": ["long", "short"] },
+          "notionalUsd": { "type": "number", "description": "Intended position size in USD." }
+        },
+        "required": ["market"]
+      },
+      "annotations": {
+        "title": "Run Perps Preflight",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "track_whale_wallets",
+      "description": "Monitor large on-chain Solana wallets for accumulation, distribution, and coordinated move patterns using Helius and Birdeye data.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "wallets": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of wallet addresses to track. Omit to use top-100 whale list."
+          },
+          "minTransferUsd": {
+            "type": "number",
+            "description": "Minimum USD value to flag a transfer.",
+            "default": 100000
+          },
+          "lookbackHours": { "type": "number", "default": 24 }
+        }
+      },
+      "annotations": {
+        "title": "Track Whale Wallets",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "analyze_tokenomics",
+      "description": "Model token supply schedules, vesting cliffs, inflation curves, and holder concentration for a Solana token. Returns a risk-scored tokenomics report.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mint": { "type": "string", "description": "Token mint address." },
+          "whitepaper_url": { "type": "string", "description": "Optional link to the project whitepaper." },
+          "include_holder_analysis": { "type": "boolean", "default": true }
+        },
+        "required": ["mint"]
+      },
+      "annotations": {
+        "title": "Analyze Tokenomics",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "spawn_agent",
+      "description": "Spawn a specialist sub-agent from the Solana Clawd fleet to handle a discrete task. Returns a task ID for polling results.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "agentId": {
+            "type": "string",
+            "description": "Library identifier of the agent to spawn (e.g. solana-whale-tracker, solana-perpetuals-trader)."
+          },
+          "task": { "type": "string", "description": "Task description or structured prompt for the agent." },
+          "context": {
+            "type": "object",
+            "description": "Optional key-value context passed to the spawned agent.",
+            "additionalProperties": true
+          }
+        },
+        "required": ["agentId", "task"]
+      },
+      "annotations": {
+        "title": "Spawn Sub-Agent",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_onchain_metrics",
+      "description": "Fetch Solana on-chain metrics: DEX volume, TVL, active wallets, protocol flows, and token-level analytics via Helius, Birdeye, and custom RPC endpoints.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": ["dex_volume", "tvl", "active_wallets", "token_holders", "protocol_flows", "all"],
+            "default": "all"
+          },
+          "protocol": {
+            "type": "string",
+            "description": "Filter by protocol name (e.g. raydium, orca, meteora). Omit for all.",
+            "default": "all"
+          },
+          "windowDays": { "type": "number", "default": 7 }
+        }
+      },
+      "annotations": {
+        "title": "Get On-Chain Metrics",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    }
+  ]
+}
