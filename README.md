@@ -1,6 +1,6 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
 <!-- ║   OpenClawd — Sovereign Agent Runtime  ·  solanaclawd.com  ·  x402.wtf  ║ -->
-<!-- ║   5 npm packages @ v2.0.0  ·  125 agents  ·  free inference  ·  CAAP/1.0 ║ -->
+<!-- ║   6 npm packages @ v2.0.0  ·  125 agents  ·  free inference  ·  CAAP/1.0 ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -20,7 +20,7 @@
 ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   \___
 |                                                                             |
 |    S O V E R E I G N   A I   ·   S O L A N A   ·   x 4 0 2   ·   W T F   |
-|    125 agents  ·  130+ skills  ·  5 npm packages  ·  CAAP/1.0 auth         |
+|    125 agents  ·  130+ skills  ·  6 npm packages  ·  CAAP/1.0 auth         |
 |_____________________________________________________________________________|
     \   🦞   /          \   🦞   /          \   🦞   /          \   🦞   /
      \_/ \_/              \_/ \_/              \_/ \_/              \_/ \_/
@@ -33,7 +33,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**125 agents · 130+ skills · 5 npm packages @ v2.0.0 · free inference · x402 payment rails · CAAP/1.0 agent auth**
+**125 agents · 130+ skills · 6 npm packages @ v2.0.0 · free inference · x402 payment rails · CAAP/1.0 agent auth**
 
 ---
 
@@ -64,13 +64,14 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║       5   P A C K A G E S   L I V E   O N   N P M   @   v 2 . 0 . 0    ║
+║       6   P A C K A G E S   L I V E   O N   N P M   @   v 2 . 0 . 0    ║
 ╠══════════╦══════════════════════════════════════════╦═══════════════════╣
 ║  clawd   ║  @openclawdsolana/clawd                  ║  🖥  TUI          ║
 ║  registry║  @openclawdsolana/agent-registry         ║  📋 on-chain      ║
 ║  hub     ║  @openclawdsolana/agent-hub              ║  🌐 dashboard     ║
 ║  sdk     ║  @openclawdsolana/solana-sdk             ║  🛠  TypeScript    ║
 ║  wallet  ║  @openclawdsolana/wallet                 ║  👛 Privy+Jupiter ║
+║  vault   ║  agentwallet-vault                       ║  🔐 keypair vault ║
 ╠══════════╩══════════════════════════════════════════╩═══════════════════╣
 ║  solanaclawd.com/agents  ·  x402.wtf/agents  ·  solanaclawd.com/skills  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
@@ -95,7 +96,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ╔══════════════════════════════════════════════════════════════════╗
 ║  install.sh --full installs all of:                              ║
 ║  clawd TUI  ·  agent-registry  ·  agent-hub                      ║
-║  leviathan runtime  ·  solana-sdk  ·  wallet                     ║
+║  leviathan runtime  ·  solana-sdk  ·  wallet  ·  agentwallet     ║
 ║  Vulcan CLI (Phoenix perps / Rise SDK)                           ║
 ║  x402.wtf CLI (gateway + terminal launcher)                      ║
 ╚══════════════════════════════════════════════════════════════════╝
@@ -107,12 +108,13 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 **Prerequisites:** Node.js v20+ · npm
 
-**Step 1 — Install the three core packages:**
+**Step 1 — Install the core packages:**
 
 ```bash
 npm install -g @openclawdsolana/clawd \
                @openclawdsolana/agent-registry \
-               @openclawdsolana/agent-hub
+               @openclawdsolana/agent-hub \
+               agentwallet-vault
 ```
 
 **Step 2 — Verify binaries are in PATH:**
@@ -121,6 +123,7 @@ npm install -g @openclawdsolana/clawd \
 clawd --version          # should print 2.0.0
 clawd-registry --version
 clawd-hub --version
+agentwallet --version
 ```
 
 If a binary is not found, add npm's global bin to your PATH:
@@ -296,13 +299,14 @@ pnpm install
 
 ```bash
 npm run build:all
-# Builds: leviathan root → agent-registry → agent-hub → clawd → cli-standalone
+# Builds: leviathan root → agentwallet → agent-registry → agent-hub → clawd → cli-standalone
 # Expected: clean output, no TypeScript errors
 ```
 
 **Step 4 — Verify each package built correctly:**
 
 ```bash
+ls packages/agentwallet/dist/      # should contain cli.js, vault.js, server.js, crypto.js
 ls packages/agent-registry/dist/   # should contain index.js, cli/, indexer/, ...
 ls packages/agent-hub/dist/        # should contain cli.js, routes/, server/, ws/
 ls packages/clawd/dist/            # should contain index.js, commands/, agent/, ...
@@ -312,6 +316,8 @@ ls dist/                           # leviathan root dist
 **Step 5 — Smoke-test the CLIs directly from dist:**
 
 ```bash
+node packages/agentwallet/dist/cli.js --help          # vault CLI help
+node packages/agentwallet/dist/cli.js wallet list     # list stored wallets
 node packages/clawd/dist/index.js --help
 node packages/clawd/dist/index.js character list      # lists 94 personas
 node packages/clawd/dist/index.js agent stats         # empty registry, OK
@@ -378,11 +384,12 @@ npm run hub:start          # hub server
 npm run registry:stats     # agent registry stats
 ```
 
-**Optional — build SDK and wallet packages:**
+**Optional — build SDK, wallet, and vault packages:**
 
 ```bash
-cd packages/clawd-sdk && npm run build   # @openclawdsolana/solana-sdk
-cd packages/clawd-wallet && npm run build # @openclawdsolana/wallet
+cd packages/clawd-sdk && npm run build      # @openclawdsolana/solana-sdk
+cd packages/clawd-wallet && npm run build   # @openclawdsolana/wallet (has pending TS fixes)
+cd packages/agentwallet && npm run build    # agentwallet-vault (builds clean)
 ```
 
 **Optional — build agent catalog (agents/ package):**
@@ -850,6 +857,13 @@ src/                         🦞 @openclawdsolana/leviathan — sovereign runti
 
 ```
 packages/                    → packages/README.md for full detail
+├── agentwallet/      ✅ npm  🔐 agentwallet-vault@0.1.0
+│   ├── src/vault.ts         AES-256-GCM encrypted keypair storage
+│   ├── src/server.ts        Express REST API (port 9099): wallets · private-key
+│   ├── src/keygen.ts        Solana (Ed25519) + EVM (secp256k1) keypair gen
+│   ├── src/cli.ts           agentwallet: serve · wallet · vault · deploy
+│   └── src/deploy/          E2B sandbox + Cloudflare Workers deployers
+│
 ├── agent-registry/   ✅ npm  📋 @openclawdsolana/agent-registry@2.0.0
 │   ├── cli/                 clawd-registry: list · search · add · mint · stats
 │   ├── registry/            Metaplex MPL Core mint + on-chain register
@@ -1101,7 +1115,7 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 ║  Zone     ║  Paths                            ║  Purpose                 ║
 ╠═══════════╬═══════════════════════════════════╬══════════════════════════╣
 ║  Runtime  ║  src/                             ║  Leviathan OODA engine   ║
-║  Packages ║  packages/ (7)                    ║  5 npm · 2 dev           ║
+║  Packages ║  packages/ (8)                    ║  6 npm · 2 dev           ║
 ║  Agents   ║  agents/ · characters/            ║  125 defs · personas     ║
 ║  AI Infra ║  mcp-server/ · x402/ · vendor/    ║  MCP · payments · x402   ║
 ║  Skills   ║  skills/ · library/ · knowledge/  ║  100+ installable skills ║
@@ -1346,6 +1360,68 @@ npm install @openclawdsolana/wallet
 
 ---
 
+<details>
+<summary><strong>🔐 agentwallet-vault — Encrypted Keypair Vault + REST API</strong></summary>
+
+AES-256-GCM encrypted wallet vault for Solana and EVM keys. Stores keypairs locally, exposes a REST API server agents can query for signing material, and deploys to E2B sandboxes or Cloudflare Workers for remote access.
+
+```
+packages/agentwallet/src/
+├── vault.ts           AES-256-GCM encrypted keypair store (wallets.enc.json)
+├── server.ts          Express REST API: GET/POST /api/wallets · /api/vault
+├── keygen.ts          Solana Ed25519 + EVM secp256k1 keypair generation
+├── crypto.ts          deriveKey · encrypt · decrypt · generateId
+├── cli.ts             agentwallet CLI: serve · wallet · vault · deploy
+└── deploy/
+    ├── e2b.ts         Deploy vault server into E2B cloud sandbox
+    └── cloudflare.ts  Deploy vault server as Cloudflare Worker
+```
+
+```bash
+npm install -g agentwallet-vault
+
+# Start the vault REST server
+agentwallet serve                             # port 9099
+agentwallet serve --port 8080 --token $TOKEN  # custom port + auth
+
+# Manage wallets
+agentwallet wallet create "trading-agent"             # new Solana keypair
+agentwallet wallet create "eth-agent" --chain evm     # new EVM keypair
+agentwallet wallet list                               # show all wallets
+agentwallet wallet show <id>
+agentwallet wallet pause <id>    # freeze operations
+agentwallet wallet unpause <id>
+
+# Vault backup / restore
+agentwallet vault export > backup.enc.json
+agentwallet vault import "$(cat backup.enc.json)"
+
+# REST API (when server is running)
+curl http://localhost:9099/api/wallets
+curl -X POST http://localhost:9099/api/wallets \
+  -H "Content-Type: application/json" \
+  -d '{"label":"agent","chainType":"solana"}'
+
+# Deploy to remote sandbox for multi-agent access
+agentwallet deploy e2b --api-key $E2B_API_KEY
+agentwallet deploy cloudflare --api-token $CF_TOKEN --account-id $CF_ACCOUNT
+```
+
+```typescript
+import { Vault, generateSolanaKeypair, startServer } from "agentwallet-vault";
+
+const vault = await Vault.create({ passphrase: process.env.VAULT_PASSPHRASE! });
+const kp    = await generateSolanaKeypair();
+const entry = await vault.addWallet(undefined, "agent", "solana", 0, kp.address, kp.privateKey);
+const pk    = vault.getPrivateKey(entry.id);   // Uint8Array — ready for @solana/web3.js
+
+await startServer(vault, { port: 9099, cors: true });
+```
+
+</details>
+
+---
+
 ## 🧪 Examples — 9 Runnable Demos
 
 ```bash
@@ -1556,12 +1632,19 @@ pnpm install                     # → "Done in ~4s"
 npm run build:all                # → 4 clean tsc outputs, no errors
 
 # 2. Dist directories present
+ls packages/agentwallet/dist/    # → cli.js  vault.js  server.js  crypto.js  keygen.js
 ls packages/agent-registry/dist/ # → cli  index.js  indexer ...
 ls packages/agent-hub/dist/      # → cli.js  routes  server  ws
 ls packages/clawd/dist/          # → index.js  commands  agent  tools ...
 ls dist/                         # → index.js  gacha  identity  state ...
 
 # 3. CLIs work from dist
+node packages/agentwallet/dist/cli.js --help
+# → "agentwallet [options] [command]"
+
+node packages/agentwallet/dist/cli.js wallet list
+# → "No wallets found." (fresh vault, OK)
+
 node packages/clawd/dist/index.js character list
 # → "94 character(s)..."
 

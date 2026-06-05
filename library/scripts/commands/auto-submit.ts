@@ -133,8 +133,8 @@ class AutoSubmit {
    */
   async gitCommit(filePath: string, agent: any, agentName: string) {
     execSync('git diff');
-    execSync('git config --global user.name "speraxos"');
-    execSync('git config --global user.email "speraxos@users.noreply.github.com"');
+    execSync('git config --global user.name "github-actions[bot]"');
+    execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
     execSync('git pull');
     execSync(`git checkout -b agent/${agentName}`);
     Logger.info('切换分支', `agent/${agentName}`);

@@ -1,4 +1,4 @@
-# Gitignore for SperaxOS
+# Gitignore for Lobster Library
 ################################################################
 
 # general
@@ -7,7 +7,6 @@
 .vscode
 .history
 .temp
-.env.local
 venv
 temp
 tmp
@@ -38,12 +37,21 @@ test-output
 # husky
 .husky/prepare-commit-msg
 
+# secrets & credentials — never commit these
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+*.pem
+*.key
+keypair.json
+wallet.json
+id.json
+
 # misc
 # add other ignore file below
 public
-.env
-# extracted archives
-sperax-ai-agents 2/
 
 # macOS
 .DS_Store
