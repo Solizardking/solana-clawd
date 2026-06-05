@@ -414,6 +414,171 @@ async fn initialize_target_wallet_token_list(config: &Config, target_addresses: 
 }
 
 
+// ─── Pump.fun Token Launch ───────────────────────────────────────────────────
+
+#[derive(Serialize, Deserialize, Debug)]
+struct IpfsMetaResponse {
+    #[serde(rename = "metadataUri")]
+    metadata_uri: String,
+}
+
+/// Upload token metadata to IPFS via pump.fun or x402.wtf/api.
+/// Returns the metadata URI to pass to the on-chain create instruction.
+async fn upload_metadata(
+    name: &str,
+    symbol: &str,
+    description: &str,
+    image_url: &str,
+    twitter: Option<&str>,
+    telegram: Option<&str>,
+    website: Option<&str>,
+) -> Result<String, String> {
+    // Optional: route through x402.wtf API (set X402_API_URL env var)
+    let api_base = std::env::var("X402_API_URL")
+        .unwrap_or_else(|_| "https://x402.wtf/api".to_string());
+    let x402_key = std::env::var("X402_PAYMENT_KEY").ok();
+
+    let client = reqwest::Client::new();
+
+    // Try x402.wtf/api/pumpfun/ipfs first if configured
+    if x402_key.is_some() {
+        let mut map = HashMap::new();
+        map.insert("name", name);
+        map.insert("symbol", symbol);
+        map.insert("description", description);
+        map.insert("imageUrl", image_url);
+        if let Some(t) = twitter { map.insert("twitter", t); }
+        if let Some(t) = telegram { map.insert("telegram", t); }
+        if let Some(w) = website { map.insert("website", w); }
+
+        let mut req = client
+            .post(format!("{}/pumpfun/ipfs", api_base.trim_end_matches('/')))
+            .header("Content-Type", "application/json");
+        if let Some(key) = &x402_key {
+            req = req.header("Authorization", format!("Bearer {}", key));
+        }
+        match req.json(&map).send().await {
+            Ok(resp) if resp.status().is_success() => {
+                match resp.json::<IpfsMetaResponse>().await {
+                    Ok(meta) => return Ok(meta.metadata_uri),
+                    Err(_) => {}
+                }
+            }
+            _ => {}
+        }
+    }
+
+    // Fallback: upload directly to pump.fun IPFS API
+    let form = reqwest::multipart::Form::new()
+        .text("name", name.to_string())
+        .text("symbol", symbol.to_string())
+        .text("description", description.to_string())
+        .text("twitter", twitter.unwrap_or("").to_string())
+        .text("telegram", telegram.unwrap_or("").to_string())
+        .text("website", website.unwrap_or("").to_string())
+        .text("showName", "true")
+        .text("imageUrl", image_url.to_string());
+
+    let resp = client
+        .post("https://pump.fun/api/ipfs")
+        .multipart(form)
+        .send()
+        .await
+        .map_err(|e| format!("Metadata upload failed: {}", e))?;
+
+    if !resp.status().is_success() {
+        let status = resp.status();
+        let body = resp.text().await.unwrap_or_default();
+        return Err(format!("pump.fun IPFS API returned {}: {}", status, body));
+    }
+
+    let meta: IpfsMetaResponse = resp
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse IPFS response: {}", e))?;
+    Ok(meta.metadata_uri)
+}
+
+/// One-shot pump.fun token launch: uploads metadata, creates the token on-chain,
+/// and optionally executes a dev buy — all in a single workflow.
+async fn launch_token(
+    config: &Config,
+    name: &str,
+    symbol: &str,
+    description: &str,
+    image_url: &str,
+    twitter: Option<&str>,
+    telegram: Option<&str>,
+    website: Option<&str>,
+    dev_buy_sol: Option<f64>,
+) -> Result<(String, String), String> {
+    let logger = solana_vntr_sniper::common::logger::Logger::new(
+        "[LAUNCH] => ".bright_magenta().bold().to_string()
+    );
+
+    // Step 1: upload metadata to IPFS
+    logger.log(format!("Uploading metadata for {} ({})", name, symbol));
+    let uri = upload_metadata(name, symbol, description, image_url, twitter, telegram, website)
+        .await?;
+    logger.log(format!("Metadata URI: {}", uri));
+
+    // Step 2: build create instruction
+    let pump = solana_vntr_sniper::dex::pump_fun::Pump::new(
+        config.app_state.rpc_nonblocking_client.clone(),
+        config.app_state.rpc_client.clone(),
+        config.app_state.wallet.clone(),
+    );
+
+    let (mint_kp, mut instructions) = pump
+        .build_create_token(name, symbol, &uri)
+        .map_err(|e| format!("Failed to build create instruction: {}", e))?;
+
+    let mint_address = mint_kp.pubkey().to_string();
+    logger.log(format!("New mint: {}", mint_address));
+
+    // Step 3: optionally append a dev buy in the same transaction
+    if let Some(buy_sol) = dev_buy_sol {
+        logger.log(format!("Appending dev buy of {} SOL", buy_sol));
+        match pump
+            .build_buy_v2_from_mint(mint_kp.pubkey(), buy_sol, config.swap_config.slippage)
+            .await
+        {
+            Ok((_, buy_ixs, price)) => {
+                logger.log(format!("Dev buy price: {:.12} SOL/token", price));
+                instructions.extend(buy_ixs);
+            }
+            Err(e) => {
+                logger.log(format!("Dev buy build failed (continuing without buy): {}", e).yellow().to_string());
+            }
+        }
+    }
+
+    // Step 4: send transaction — mint_kp must co-sign
+    let recent_blockhash = config
+        .app_state
+        .rpc_client
+        .get_latest_blockhash()
+        .map_err(|e| format!("Failed to get blockhash: {}", e))?;
+
+    use anchor_client::solana_sdk::transaction::Transaction;
+    let wallet_pubkey = config.app_state.wallet.try_pubkey()
+        .map_err(|e| format!("Failed to get wallet pubkey: {}", e))?;
+
+    let mut tx = Transaction::new_with_payer(&instructions, Some(&wallet_pubkey));
+    tx.partial_sign(&[&*config.app_state.wallet], recent_blockhash);
+    tx.partial_sign(&[&mint_kp], recent_blockhash);
+
+    let sig = config
+        .app_state
+        .rpc_client
+        .send_and_confirm_transaction(&tx)
+        .map_err(|e| format!("Transaction failed: {}", e))?;
+
+    let sig_str = sig.to_string();
+    logger.log(format!("Token launched! Mint: {} | Sig: {}", mint_address, sig_str));
+    Ok((mint_address, sig_str))
+}
+
 /// Buy a token using PumpFun protocol
 async fn buy_token(config: &Config, mint: &str, amount_sol: f64) -> Result<String, String> {
     let logger = solana_vntr_sniper::common::logger::Logger::new(format!("[BUY-TOKEN] {} => ", mint).green().to_string());
@@ -694,6 +859,40 @@ async fn main() {
             
             let summary = token_monitor.get_tracking_summary();
             println!("{}", summary);
+            return;
+        } else if args.contains(&"--launch".to_string()) {
+            // --launch <name> <symbol> <description> <image_url> [dev_buy_sol]
+            if args.len() < 6 {
+                eprintln!("Usage: --launch <name> <symbol> <description> <image_url> [dev_buy_sol]");
+                eprintln!("  Optional env: TWITTER, TELEGRAM, WEBSITE, X402_API_URL, X402_PAYMENT_KEY");
+                return;
+            }
+            let name = &args[2];
+            let symbol = &args[3];
+            let description = &args[4];
+            let image_url = &args[5];
+            let dev_buy_sol = args.get(6).and_then(|v| v.parse::<f64>().ok());
+            let twitter = std::env::var("TWITTER").ok();
+            let telegram = std::env::var("TELEGRAM").ok();
+            let website = std::env::var("WEBSITE").ok();
+
+            println!("Launching {} ({}) on pump.fun…", name, symbol);
+            match launch_token(
+                &config,
+                name, symbol, description, image_url,
+                twitter.as_deref(),
+                telegram.as_deref(),
+                website.as_deref(),
+                dev_buy_sol,
+            ).await {
+                Ok((mint, sig)) => {
+                    println!("✅ Launched!");
+                    println!("   Mint:      {}", mint);
+                    println!("   Signature: {}", sig);
+                    println!("   pump.fun:  https://pump.fun/{}", mint);
+                }
+                Err(e) => eprintln!("❌ Launch failed: {}", e),
+            }
             return;
         } else if args.contains(&"--buy".to_string()) {
             // Get token mint and amount from command line

@@ -16,13 +16,20 @@ function getPerpsAgentBin(): string | null {
   return existsSync(bin) ? bin : null;
 }
 
-function callPerpsAgent(args: string[]): void {
+function callPerpsAgent(args: string[], fallback?: () => void): void {
   const bin = getPerpsAgentBin();
   if (bin) {
-    spawnSync("node", [bin, ...args], { stdio: "inherit" });
+    const result = spawnSync("node", [bin, ...args], { stdio: "inherit" });
+    if (result.status === 0) return;
+    // Workspace dep not installed — fall through to inline preview
+  }
+  if (fallback) {
+    fallback();
   } else {
-    printWarn("clawd-perps-agent not built. Run: cd agents/clawd-perps-agent && npm run build");
-    printInfo(`Would call: node clawd-perps-agent/dist/cli.js ${args.join(" ")}`);
+    printWarn("clawd-perps-agent not available (workspace deps not installed).");
+    printInfo(`Command: clawd-perps-agent/dist/cli.js ${args.join(" ")}`);
+    printInfo("Install workspace deps or use the live API:");
+    printInfo(`  POST ${PERPS_API}/execute`);
   }
 }
 
@@ -104,7 +111,11 @@ export function runLong(symbol: string, opts: {
   }
 
   const cmd = opts.live ? "live-long" : "paper-long";
-  callPerpsAgent([cmd, sym, "--notional", notional, "--leverage", leverage]);
+  callPerpsAgent([cmd, sym, "--notional", notional, "--leverage", leverage], () => {
+    printInfo(`Order shape (${opts.live ? "LIVE" : "paper"}):`);
+    console.log(JSON.stringify({ action: "Increase", side: "Long", symbol: sym, sizeUsd: Number(notional), leverage: Number(leverage), mode: opts.live ? "live" : "paper", endpoint: PERPS_API }, null, 2));
+    if (!opts.live) printWarn("Paper preview. Set LIVE_TRADING=true + OPERATOR_CONFIRMED=true to go live.");
+  });
 }
 
 // ── /short ─────────────────────────────────────────────────────────────────
@@ -128,7 +139,11 @@ export function runShort(symbol: string, opts: {
   }
 
   const cmd = opts.live ? "live-short" : "paper-short";
-  callPerpsAgent([cmd, sym, "--notional", notional, "--leverage", leverage]);
+  callPerpsAgent([cmd, sym, "--notional", notional, "--leverage", leverage], () => {
+    printInfo(`Order shape (${opts.live ? "LIVE" : "paper"}):`);
+    console.log(JSON.stringify({ action: "Increase", side: "Short", symbol: sym, sizeUsd: Number(notional), leverage: Number(leverage), mode: opts.live ? "live" : "paper", endpoint: PERPS_API }, null, 2));
+    if (!opts.live) printWarn("Paper preview. Set LIVE_TRADING=true + OPERATOR_CONFIRMED=true to go live.");
+  });
 }
 
 // ── /spot ──────────────────────────────────────────────────────────────────

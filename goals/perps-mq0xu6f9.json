@@ -1,0 +1,13 @@
+{
+  "id": "perps-mq0xu6f9",
+  "active": true,
+  "priority": "medium",
+  "title": "SHORT ETH — $75 perps",
+  "body": "Signal: short ETH @ $75 notional, 1x leverage\nSkill: perps\nSafety: paper mode until LIVE_TRADING=true + OPERATOR_CONFIRMED=true\nEndpoint: https://x402.wtf/api/perps/v1",
+  "skill": "perps",
+  "symbol": "ETH",
+  "side": "short",
+  "notionalUsd": 75,
+  "leverage": 1,
+  "createdAt": "2026-06-05T13:06:26.181Z"
+}

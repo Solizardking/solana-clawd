@@ -334,6 +334,70 @@ impl Pump {
     }
 
     /// Calculate token amount out for buy using virtual reserves
+    /// Build the pump.fun `create` instruction for launching a new token.
+    ///
+    /// Returns (mint_keypair, instructions). The caller must include mint_keypair
+    /// as an additional signer when sending the transaction.
+    pub fn build_create_token(
+        &self,
+        name: &str,
+        symbol: &str,
+        uri: &str,
+    ) -> Result<(Keypair, Vec<Instruction>)> {
+        let pump_program = Pubkey::from_str(PUMP_FUN_PROGRAM)?;
+        let token_program = Pubkey::from_str(TOKEN_PROGRAM)?;
+        let mpl_program = Pubkey::from_str("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s")?;
+        let rent_sysvar = Pubkey::from_str(RENT_PROGRAM)?;
+        let assoc_token_program = Pubkey::from_str(ASSOCIATED_TOKEN_PROGRAM)?;
+
+        let mint_kp = Keypair::new();
+        let mint = mint_kp.pubkey();
+        let creator = self.keypair.pubkey();
+
+        let mint_authority = get_mint_authority_pda(&pump_program);
+        let bonding_curve = get_pda(&mint, &pump_program)?;
+        let associated_bonding_curve = get_associated_token_address(&bonding_curve, &mint);
+        let metadata = get_metadata_pda(&mint);
+        let event_authority = get_event_authority_pda(&pump_program);
+        let creator_vault = get_creator_vault_pda(&creator, &pump_program);
+
+        let mut data: Vec<u8> = Vec::new();
+        data.extend_from_slice(PUMP_FUN_CREATE_IX_DISCRIMINATOR);
+        // borsh-encode: 4-byte LE length + bytes
+        let encode_str = |s: &str| -> Vec<u8> {
+            let mut v = Vec::new();
+            let b = s.as_bytes();
+            v.extend_from_slice(&(b.len() as u32).to_le_bytes());
+            v.extend_from_slice(b);
+            v
+        };
+        data.extend(encode_str(name));
+        data.extend(encode_str(symbol));
+        data.extend(encode_str(uri));
+        data.extend_from_slice(creator.as_ref());
+
+        let accounts = vec![
+            AccountMeta::new(mint, true),
+            AccountMeta::new(mint_authority, false),
+            AccountMeta::new(bonding_curve, false),
+            AccountMeta::new(associated_bonding_curve, false),
+            AccountMeta::new_readonly(Pubkey::from_str(PUMP_GLOBAL)?, false),
+            AccountMeta::new_readonly(mpl_program, false),
+            AccountMeta::new(metadata, false),
+            AccountMeta::new(creator, true),
+            AccountMeta::new(creator_vault, false),
+            AccountMeta::new_readonly(system_program::id(), false),
+            AccountMeta::new_readonly(token_program, false),
+            AccountMeta::new_readonly(assoc_token_program, false),
+            AccountMeta::new_readonly(rent_sysvar, false),
+            AccountMeta::new_readonly(event_authority, false),
+            AccountMeta::new_readonly(pump_program, false),
+        ];
+
+        let instruction = Instruction { program_id: pump_program, accounts, data };
+        Ok((mint_kp, vec![instruction]))
+    }
+
     pub fn calculate_buy_token_amount(
         sol_amount_in: u64,
         virtual_sol_reserves: u64,
@@ -1030,6 +1094,19 @@ fn get_creator_vault_pda(creator: &Pubkey, program_id: &Pubkey) -> Pubkey {
 
 fn get_event_authority_pda(program_id: &Pubkey) -> Pubkey {
     Pubkey::find_program_address(&[EVENT_AUTHORITY_SEED], program_id).0
+}
+
+fn get_mint_authority_pda(program_id: &Pubkey) -> Pubkey {
+    Pubkey::find_program_address(&[b"mint-authority"], program_id).0
+}
+
+fn get_metadata_pda(mint: &Pubkey) -> Pubkey {
+    const MPL_PROGRAM: &str = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s";
+    let mpl = Pubkey::from_str(MPL_PROGRAM).unwrap();
+    Pubkey::find_program_address(
+        &[b"metadata", mpl.as_ref(), mint.as_ref()],
+        &mpl,
+    ).0
 }
 
 fn get_sharing_config_pda(mint: &Pubkey, fee_program: &Pubkey) -> Pubkey {
