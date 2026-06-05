@@ -10,8 +10,14 @@
     "typecheck": "tsc --noEmit",
     "tail": "wrangler tail"
   },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.13",
+    "@solana/web3.js": "^1.98.2",
+    "bs58": "^6.0.0"
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260317.1",
+    "@types/node": "^22.0.0",
     "typescript": "^5.7.2",
     "wrangler": "^4.0.0"
   }
