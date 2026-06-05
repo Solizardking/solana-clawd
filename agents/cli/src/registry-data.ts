@@ -71,5 +71,5 @@ export const REGISTERED_ENDPOINTS: RegisteredEndpoint[] = [
   },
 ];
 
-export const CLAWD_AUTH_BASE = "https://x402.wtf/api/auth";
-export const CLAWD_DISCOVERY_URL = "https://x402.wtf/.well-known/agent-auth.json";
+// Re-exported from auth module so consumers can import from one place
+export { CLAWD_AUTH_BASE, CLAWD_DISCOVERY_URL } from "./auth/index.js";

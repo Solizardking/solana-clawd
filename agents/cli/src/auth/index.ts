@@ -1,13 +1,13 @@
 export {
-  CLAWD_PROVIDER,
-  CAAP_VERSION,
   CAAP_PROTOCOL,
-  CLAWD_AUTH_BASE,
-  CLAWD_DISCOVERY_URL,
+  CAAP_VERSION,
   CAPABILITIES,
   CAPABILITY_LOCATIONS,
-} from "./capabilities";
-export type { ClawdCapability, CapabilityRequest } from "./capabilities";
+  CLAWD_AUTH_BASE,
+  CLAWD_DISCOVERY_URL,
+  CLAWD_PROVIDER,
+} from "./capabilities.js";
+export type { CapabilityRequest, ClawdCapability } from "./capabilities.js";
 
-export { createClawdAgentClient, AgentAuthClient } from "./client";
-export type { ClawdAgentClientOptions } from "./client";
+export { AgentAuthClient, createClawdAgentClient } from "./client.js";
+export type { ClawdAgentClientOptions } from "./client.js";

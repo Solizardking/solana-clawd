@@ -3,23 +3,31 @@
   "version": "0.1.0",
   "description": "CLI for scaffolding, deploying, and publishing Solana agents on the Clawd platform",
   "type": "module",
+  "engines": { "node": ">=20" },
   "bin": {
     "clawd-agents": "dist/cli.js"
   },
+  "exports": {
+    ".": "./dist/cli.js",
+    "./auth": "./dist/auth/index.js",
+    "./auth/capabilities": "./dist/auth/capabilities.js",
+    "./auth/client": "./dist/auth/client.js"
+  },
+  "files": ["dist", "README.md"],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "node dist/cli.js",
-    "dev": "node --loader ts-node/esm src/cli.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@auth/agent": "^0.5.1",
     "dotenv": "^17.3.1"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
     "typescript": "^5.9.3"
   },
-  "keywords": ["solana", "agents", "clawd", "defi", "cli"],
+  "keywords": ["solana", "agents", "clawd", "defi", "cli", "caap", "agent-auth"],
   "license": "MIT",
   "repository": {
     "type": "git",

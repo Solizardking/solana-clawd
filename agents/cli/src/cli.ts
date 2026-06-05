@@ -6,6 +6,8 @@ import { runDeploy } from "./commands/deploy.js";
 import { runEval } from "./commands/eval.js";
 import { runPublish } from "./commands/publish.js";
 import { runRegistryList, runRegistryConnect, runRegistryStatus, runRegistryRegister } from "./commands/registry.js";
+import { runGoalCreate, runGoalList, runGoalStatus, runGoalComplete } from "./commands/goals.js";
+import { runPerps, runLong, runShort, runSpot, runApe } from "./commands/trading.js";
 
 type RawArgs = {
   positional: string[];
@@ -66,10 +68,23 @@ COMMANDS
   registry status          Show Agent Registry + Reasoning Engine status
   registry register <url>  Register a new endpoint in Agent Registry
 
+TRADING COMMANDS
+  perps [status|scan|markets]  Phoenix perps agent status / signals / market data
+  long <symbol>            Paper long (add --live to arm)
+  short <symbol>           Paper short (add --live to arm)
+  spot <buy|sell> <symbol> Spot trade via Imperial Router (dry-run by default)
+  ape <symbol> <long|short> Max-size position within risk caps (paper by default)
+
+GOALS COMMANDS
+  goals create             Create a trading goal
+  goals list               List all goals
+  goals status <id>        Show goal details
+  goals complete <id>      Mark a goal as complete
+
 OPTIONS
   --help, -h               Show help
   --dry-run                Preview without executing
-  --json                   Output as JSON (eval command)
+  --json                   Output as JSON (eval/goals commands)
   --strict                 Strict validation (eval command)
   --prod                   Production deployment (deploy command)
   --agent <template>       Agent template: perps (default), base
@@ -79,19 +94,27 @@ OPTIONS
   --registry               Add Agent Registry integration (scaffold)
   --skip-build             Skip catalog rebuild (publish)
   --global                 Global install scope (setup)
+  --notional <usd>         Trade size in USD (long/short/spot/ape)
+  --leverage <x>           Leverage multiplier (long/short/ape)
+  --live                   Arm live execution (requires LIVE_TRADING=true + OPERATOR_CONFIRMED=true)
+  --goal                   Auto-create a goal for this trade
+  --symbol <sym>           Override symbol for goals create
+  --side <side>            Side: long|short|buy|sell (goals create)
+  --priority <p>           Goal priority: high|medium|low
 
 EXAMPLES
   clawd-agents setup
+  clawd-agents long SOL --notional 100
+  clawd-agents short ETH --notional 50 --leverage 2
+  clawd-agents spot buy SOL --amount 200
+  clawd-agents ape SOL long
+  clawd-agents perps scan --symbol SOL
+  clawd-agents goals create --symbol SOL --side long --notional 100
+  clawd-agents goals list
   clawd-agents scaffold create my-defi-agent --agent perps
-  clawd-agents scaffold enhance ./my-agent --auth --telegram
-  clawd-agents eval my-agent/clawd.json
-  clawd-agents eval my-agent/clawd.json --strict --json
-  clawd-agents publish my-agent/clawd.json
-  clawd-agents deploy --target vercel --prod
+  clawd-agents eval my-agent/clawd.json --strict
   clawd-agents deploy --target vertex-ai
   clawd-agents registry list
-  clawd-agents registry connect "Perps Trading"
-  clawd-agents registry register https://myapp.com/api/agent
 
 PACKAGES
   @clawd/agent-auth-solana    Solana extension — SIWS, DAS attestation, CAAP/1.0
@@ -201,6 +224,93 @@ async function main(): Promise<void> {
           break;
         default:
           throw new Error(`Unknown registry subcommand: ${sub}\nUsage: registry list|connect|status|register`);
+      }
+      break;
+    }
+
+    // ── Trading commands ────────────────────────────────────────────────────
+    case "perps":
+      await runPerps(sub ?? "status", {
+        symbol: strFlag(flags, "symbol") ?? positional[2],
+        notional: strFlag(flags, "notional"),
+        leverage: strFlag(flags, "leverage"),
+        size: strFlag(flags, "size"),
+        autoRoute: flag(flags, "auto-route"),
+        json: flag(flags, "json"),
+      });
+      break;
+
+    case "long": {
+      const sym = sub ?? strFlag(flags, "symbol") ?? "SOL";
+      runLong(sym, {
+        notional: strFlag(flags, "notional"),
+        leverage: strFlag(flags, "leverage"),
+        live: flag(flags, "live"),
+        goal: flag(flags, "goal"),
+      });
+      break;
+    }
+
+    case "short": {
+      const sym = sub ?? strFlag(flags, "symbol") ?? "SOL";
+      runShort(sym, {
+        notional: strFlag(flags, "notional"),
+        leverage: strFlag(flags, "leverage"),
+        live: flag(flags, "live"),
+        goal: flag(flags, "goal"),
+      });
+      break;
+    }
+
+    case "spot": {
+      const side = (sub === "sell" ? "sell" : "buy") as "buy" | "sell";
+      const sym = arg0 ?? strFlag(flags, "symbol") ?? "SOL";
+      await runSpot(side, sym, {
+        amount: strFlag(flags, "amount") ?? strFlag(flags, "notional"),
+        slippage: strFlag(flags, "slippage"),
+        goal: flag(flags, "goal"),
+        json: flag(flags, "json"),
+      });
+      break;
+    }
+
+    case "ape": {
+      const sym = sub ?? strFlag(flags, "symbol") ?? "SOL";
+      const side = (arg0 === "short" ? "short" : "long") as "long" | "short";
+      runApe(sym, side, {
+        live: flag(flags, "live"),
+        goal: flag(flags, "goal"),
+      });
+      break;
+    }
+
+    // ── Goals commands ──────────────────────────────────────────────────────
+    case "goals": {
+      switch (sub) {
+        case "create":
+          runGoalCreate({
+            category: strFlag(flags, "category"),
+            symbol: strFlag(flags, "symbol") ?? arg0,
+            side: strFlag(flags, "side"),
+            notional: strFlag(flags, "notional"),
+            leverage: strFlag(flags, "leverage"),
+            target: strFlag(flags, "target"),
+            priority: strFlag(flags, "priority"),
+          });
+          break;
+        case "list":
+          runGoalList({ active: flag(flags, "active"), json: flag(flags, "json") });
+          break;
+        case "status":
+          if (!arg0) throw new Error("Usage: clawd-agents goals status <id>");
+          runGoalStatus(arg0, { json: flag(flags, "json") });
+          break;
+        case "complete":
+          if (!arg0) throw new Error("Usage: clawd-agents goals complete <id>");
+          runGoalComplete(arg0);
+          break;
+        default:
+          runGoalList({ active: false, json: flag(flags, "json") });
       }
       break;
     }

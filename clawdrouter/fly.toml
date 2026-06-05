@@ -1,0 +1,47 @@
+app = "clawdrouter"
+primary_region = "ewr"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  CLAWDROUTER_PORT = "8402"
+  CLAWDROUTER_PROFILE = "auto"
+  CLAWDROUTER_NETWORK = "solana-mainnet"
+  CLAWDROUTER_PUBLIC_URL = "https://clawdrouter.fly.dev"
+  CLAWDROUTER_X402_API_URL = "https://x402.wtf"
+  CLAWDROUTER_VALIDATION_URL = "https://x402.wtf"
+  CLAWDROUTER_AUTH_MODE = "platform"
+  CLAWDROUTER_OPENROUTER_ENABLED = "true"
+  CLAWDROUTER_OPENROUTER_SITE_TITLE = "ClawdRouter"
+  CLAWDROUTER_OPENROUTER_SITE_URL = "https://x402.wtf/router"
+  CLAWDROUTER_OPENROUTER_CATEGORIES = "cli-agent,cloud-agent"
+  CLAWDROUTER_WALLET_PATH = "/data/wallet.json"
+  CLAWDROUTER_RELAY_NAME = "clawdrouter"
+  CLAWDROUTER_PERPS_API_URL = "https://api.imperial.space/api/v1"
+  CLAWDROUTER_RELAY_TIMEOUT_MS = "5000"
+  CLAWDROUTER_CLAWD_TOKEN_MINT = "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+
+[mounts]
+  source = "clawdrouter_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8402
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "20s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  memory = "2gb"
+  cpu_kind = "shared"
+  cpus = 2
