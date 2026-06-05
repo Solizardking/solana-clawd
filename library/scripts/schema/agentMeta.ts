@@ -53,7 +53,9 @@ const providerSchema = z.object({
   /**
    * Provider pricing mode
    */
-  pricingModel: z.enum(['free', 'fixed', 'metered', 'quote']).optional(),
+  pricingModel: z
+    .enum(['free', 'fixed', 'metered', 'quote', 'configured-api', 'local-runtime', 'configured-rpc'])
+    .optional(),
   /**
    * Typical cost in USD for one useful call
    */

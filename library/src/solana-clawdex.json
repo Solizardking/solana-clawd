@@ -12,7 +12,8 @@
   },
   "createdAt": "2026-05-14",
   "homepage": "https://github.com/x402agent/clawd-browser",
-  "identifier": "clawdex",
+  "identifier": "solana-clawdex",
+  "knowledgeCount": 0,
   "meta": {
     "avatar": "🦞",
     "tags": [
