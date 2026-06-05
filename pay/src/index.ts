@@ -22,7 +22,7 @@ const CORS_HEADERS: HeadersInit = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
   "Access-Control-Allow-Headers":
-    "Content-Type,Authorization,X-Payment,Payment-Receipt,X-OpenClawd-Receipt,X-Agent-Asset,X-Clawd-Wallet",
+    "Content-Type,Authorization,X-Payment,Payment-Receipt,X-Clawd-Pay-Receipt,X-Agent-Asset,X-Clawd-Wallet",
 };
 
 function json(data: unknown, init: ResponseInit = {}) {
@@ -52,7 +52,7 @@ function baseQuote(env: Env) {
   ]);
 
   return {
-    service: "openclawd-payments",
+    service: "solana-clawd-pay",
     version: "0.1.0",
     price: {
       usd: env.PRICE_USD ?? "0.01",
@@ -150,7 +150,7 @@ async function verifyViaMppProxy(receipt: string, env: Env) {
 function extractReceipt(request: Request) {
   return (
     request.headers.get("Payment-Receipt") ||
-    request.headers.get("X-OpenClawd-Receipt") ||
+    request.headers.get("X-Clawd-Pay-Receipt") ||
     request.headers.get("Authorization")?.replace(/^Payment\s+/i, "") ||
     request.headers.get("X-Payment") ||
     ""
@@ -181,7 +181,7 @@ async function forwardChat(request: Request, env: Env) {
       {
         error: "payment_required",
         message:
-          "Provide X-Payment, Authorization: Payment, Payment-Receipt, or X-OpenClawd-Receipt.",
+          "Provide X-Payment, Authorization: Payment, Payment-Receipt, or X-Clawd-Pay-Receipt.",
         quote: baseQuote(env),
         verification: paid,
       },
@@ -192,7 +192,7 @@ async function forwardChat(request: Request, env: Env) {
   const body = (await request.json()) as JsonRecord;
   const headers: HeadersInit = {
     "Content-Type": "application/json",
-    "X-OpenClawd-Payments": "1",
+    "X-Solana-Clawd-Pay": "1",
   };
 
   const agentAsset = request.headers.get("X-Agent-Asset");
@@ -213,7 +213,7 @@ async function forwardChat(request: Request, env: Env) {
     upstream = "https://openrouter.ai/api/v1";
     headers.Authorization = `Bearer ${env.OPENROUTER_API_KEY}`;
     headers["HTTP-Referer"] = env.OPENCLAWD_SITE_URL ?? "https://solanaclawd.com";
-    headers["X-Title"] = "OpenClawd Payments";
+    headers["X-Title"] = "Solana Clawd Pay";
   }
 
   if (!upstream) {
@@ -235,7 +235,7 @@ async function forwardChat(request: Request, env: Env) {
           ...(typeof body.metadata === "object" && body.metadata
             ? body.metadata
             : {}),
-          openclawdPayments: true,
+          solanaClawdPay: true,
           paymentVerification: paid.reason,
         },
       }),
@@ -243,8 +243,8 @@ async function forwardChat(request: Request, env: Env) {
   );
 
   const responseHeaders = new Headers(response.headers);
-  responseHeaders.set("X-OpenClawd-Payments", "1");
-  responseHeaders.set("X-OpenClawd-Upstream", upstream);
+  responseHeaders.set("X-Solana-Clawd-Pay", "1");
+  responseHeaders.set("X-Clawd-Pay-Upstream", upstream);
   for (const [key, value] of Object.entries(CORS_HEADERS)) {
     responseHeaders.set(key, value);
   }
@@ -311,7 +311,7 @@ export default {
     if (url.pathname === "/" || url.pathname === "/health") {
       return json({
         ok: true,
-        service: "openclawd-payments",
+        service: "solana-clawd-pay",
         environment: env.ENVIRONMENT ?? "development",
         quote: baseQuote(env),
       });

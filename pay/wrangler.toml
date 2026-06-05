@@ -1,4 +1,4 @@
-name = "openclawd-payments"
+name = "solana-clawd-pay"
 main = "src/index.ts"
 compatibility_date = "2026-05-01"
 compatibility_flags = ["nodejs_compat"]
@@ -20,7 +20,7 @@ SOLANA_MPP_ENABLED = "false"
 
 # Optional production route:
 # routes = [
-#   { pattern = "payments.example.com", custom_domain = true }
+#   { pattern = "pay.solanaclawd.com", custom_domain = true }
 # ]
 
 # Secrets:

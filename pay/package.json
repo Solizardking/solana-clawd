@@ -1,8 +1,8 @@
 {
-  "name": "@openclawdsolana/payments-worker",
+  "name": "@solanaclawd/pay",
   "version": "0.1.0",
   "private": true,
-  "description": "Cloudflare Worker payment gateway for OpenClawd x402, Solana MPP, ClawdRouter, and agentic commerce.",
+  "description": "Cloudflare Worker payment gateway for Solana Clawd Pay — x402, Solana MPP, ClawdRouter, and agentic commerce on Solana.",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",

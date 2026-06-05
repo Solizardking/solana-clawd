@@ -1,12 +1,12 @@
-# OpenClawd Payments Worker
+# Solana Clawd Pay
 
-Cloudflare Worker gateway for OpenClawd payments and agentic commerce.
+Cloudflare Worker payment gateway for Solana Clawd Pay — x402, Solana MPP, ClawdRouter, and agentic commerce on Solana.
 
-It sits between clients/agents and paid model or commerce services:
+It sits between clients, agents, and paid model or commerce services:
 
 ```text
 client / CLI / browser / agent
-  -> openclawd-payments Worker
+  -> solana-clawd-pay Worker
     -> Solana MPP proxy for receipt verification
     -> x402 OpenRouter backend for paid OpenRouter calls
     -> local/hosted ClawdRouter for smart routing
@@ -16,7 +16,7 @@ client / CLI / browser / agent
 
 ## Why This Exists
 
-OpenClawd has multiple payment-aware pieces:
+Solana Clawd has multiple payment-aware pieces:
 
 - `x402/x402-openrouter-main/backend` handles x402 payment-gated OpenRouter.
 - `clawdrouter` handles local/cloud model routing and Solana-aware policies.
@@ -40,12 +40,12 @@ This Worker gives those pieces one consistent HTTP contract.
 ## Setup
 
 ```bash
-cd payments/openclawd-payments
+cd pay
 npm install
 npx wrangler dev
 ```
 
-Create a Cloudflare Worker:
+Deploy to Cloudflare:
 
 ```bash
 npx wrangler deploy
@@ -68,19 +68,19 @@ For production, add a custom domain:
 
 ```toml
 routes = [
-  { pattern = "payments.example.com", custom_domain = true }
+  { pattern = "pay.solanaclawd.com", custom_domain = true }
 ]
 ```
 
 Then point app and CLI env vars at:
 
 ```bash
-OPENCLAWD_PAYMENTS_URL=https://payments.example.com
+SOLANA_CLAWD_PAY_URL=https://pay.solanaclawd.com
 ```
 
 ## x402 + MPP Flow
 
-This Worker supports both x402-style and MPP-style clients:
+Solana Clawd Pay supports both x402-style and MPP-style clients:
 
 1. Client calls `GET /v1/payments/quote`.
 2. Client receives accepted rails:
@@ -92,12 +92,12 @@ This Worker supports both x402-style and MPP-style clients:
    - `X-Payment`
    - `Authorization: Payment ...`
    - `Payment-Receipt`
-   - `X-OpenClawd-Receipt`
+   - `X-Clawd-Pay-Receipt`
 5. Worker verifies receipt or forwards to a payment-aware upstream.
 
 ## Agentic Commerce
 
-`GET /v1/commerce/agent` returns the standard OpenClawd commerce surface:
+`GET /v1/commerce/agent` returns the standard Solana Clawd commerce surface:
 
 - Metaplex Agent Registry identity
 - executive profile and delegation status hints
@@ -117,3 +117,12 @@ Genesis launch operations should happen in the Metaplex-aware CLI/app layer.
 3. direct OpenRouter if `OPENROUTER_API_KEY` is present.
 
 Set `model: "auto"` to let ClawdRouter choose the cheapest sensible route.
+
+## Response Headers
+
+Successful forwarded responses include:
+
+| Header | Value |
+| --- | --- |
+| `X-Solana-Clawd-Pay` | `1` |
+| `X-Clawd-Pay-Upstream` | URL of the upstream that handled the request |
