@@ -416,6 +416,76 @@ function buildRegistrationDocs(agents, generatedAt) {
   });
 }
 
+function buildAgentAuthConfig(catalog) {
+  return {
+    schemaVersion: "clawd.agent-auth.v1",
+    protocol: "CAAP/1.0",
+    provider: "Clawd",
+    providerDescription: "AI agent platform on Solana — attestation, capabilities, and subscription tiers via x402.wtf.",
+    generatedAt: catalog.generatedAt,
+    baseUrl: HOST,
+    authEndpoint: `${HOST}/api/auth`,
+    registrationEndpoint: `${HOST}/api/auth/agent/register`,
+    sessionEndpoint: `${HOST}/api/auth/agent/session`,
+    introspectionEndpoint: `${HOST}/api/auth/agent/introspect`,
+    capabilityEndpoint: `${HOST}/api/auth/capability/list`,
+    deviceAuthorizationPage: `${HOST}/agents/approve`,
+    modes: ["delegated", "autonomous"],
+    keyAlgorithms: ["Ed25519"],
+    approvalMethods: ["device_authorization", "ciba"],
+    capabilities: [
+      {
+        name: "attest_agent",
+        description: "Attest an agent identity against its Solana wallet and on-chain NFT via CAAP/1.0.",
+        location: `${HOST}/api/agents/attest`,
+        approvalStrength: "session",
+      },
+      {
+        name: "get_peer_card",
+        description: "Retrieve a verified agent peer card with wallet balances, CLAWD holdings, and subscription tier.",
+        location: `${HOST}/api/agents/peer-card`,
+        approvalStrength: "none",
+      },
+      {
+        name: "list_agents",
+        description: "Browse the Clawd agent catalog with metadata, capabilities, and Metaplex registration.",
+        location: `${HOST}/api/agents/catalog`,
+        approvalStrength: "none",
+      },
+      {
+        name: "agent_chat",
+        description: "Send a message to a specialized Solana/DeFi agent by agentId. Returns an AI response stream.",
+        location: `${HOST}/api/agents/chat`,
+        approvalStrength: "session",
+        input: {
+          type: "object",
+          properties: {
+            agentId: { type: "string" },
+            message: { type: "string" },
+          },
+          required: ["agentId", "message"],
+        },
+      },
+    ],
+    chain: {
+      namespace: "solana",
+      cluster: "mainnet-beta",
+      token: { symbol: "CLAWD", mint: "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump" },
+      attestationService: "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG",
+    },
+    subscriptionTiers: [
+      { tier: "free", minClawdBalance: 0, label: "Free" },
+      { tier: "basic", minClawdBalance: 1000, label: "Basic" },
+      { tier: "pro", minClawdBalance: 10000, label: "Pro" },
+      { tier: "elite", minClawdBalance: 100000, label: "Elite" },
+    ],
+    agentStats: {
+      totalAgents: catalog.stats.totalAgents,
+      catalog: `${HOST}/api/agents/catalog`,
+    },
+  };
+}
+
 function buildAcpRegistry(agents, templates, catalog, registrationDocs) {
   return {
     schemaVersion: "openclawd.acp.registry.v1",

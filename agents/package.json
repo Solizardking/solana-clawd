@@ -3,5 +3,9 @@
   "scripts": {
     "build": "node build-catalog.cjs && node scripts/validate-catalog.cjs",
     "test": "node scripts/validate-catalog.cjs"
+  },
+  "dependencies": {
+    "@auth/agent": "^0.5.1",
+    "@better-auth/agent-auth": "^0.5.1"
   }
 }
