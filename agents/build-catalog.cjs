@@ -327,9 +327,10 @@ function build() {
 
   const registrationDocs = buildRegistrationDocs(agents, catalog.generatedAt);
   const acpRegistry = buildAcpRegistry(agents, templates, catalog, registrationDocs);
+  const agentAuthConfig = buildAgentAuthConfig(catalog);
 
   writeJson(OUTPUT, catalog);
-  writeStaticApi(catalog, agents, templates, registrationDocs, acpRegistry);
+  writeStaticApi(catalog, agents, templates, registrationDocs, acpRegistry, agentAuthConfig);
   console.log(`✅ Wrote ${OUTPUT}`);
   console.log(`   ${agents.length} agents (${oneShots.length} one-shots, ${featured.length} featured)`);
   console.log(`   ${templates.length} templates`);
@@ -537,7 +538,7 @@ function buildAcpRegistry(agents, templates, catalog, registrationDocs) {
   };
 }
 
-function writeStaticApi(catalog, agents, templates, registrationDocs, acpRegistry) {
+function writeStaticApi(catalog, agents, templates, registrationDocs, acpRegistry, agentAuthConfig) {
   cleanGeneratedApiDirs();
 
   writeJson(path.join(PUBLIC_API_DIR, "index.json"), {
@@ -549,6 +550,7 @@ function writeStaticApi(catalog, agents, templates, registrationDocs, acpRegistr
       registry: "/api/agents/registry",
       acp: "/api/agents/acp",
       templates: "/api/agents/templates",
+      agentAuth: "/.well-known/agent-auth.json",
     },
   });
 
@@ -556,6 +558,7 @@ function writeStaticApi(catalog, agents, templates, registrationDocs, acpRegistr
   writeJson(path.join(PUBLIC_API_DIR, "agents-catalog.json"), catalog);
   writeJson(path.join(PUBLIC_API_DIR, "acp-registry.json"), acpRegistry);
   writeJson(path.join(WELL_KNOWN_DIR, "acp.json"), acpRegistry);
+  writeJson(path.join(WELL_KNOWN_DIR, "agent-auth.json"), agentAuthConfig);
   copyStaticMetadata();
 
   for (const agent of agents) {
