@@ -1,7 +1,7 @@
 {
   "$schema": "https://x402.wtf/schema/clawdAgentCatalog.v1.json",
   "apiVersion": "1.0",
-  "generatedAt": "2026-05-17T19:14:42.636Z",
+  "generatedAt": "2026-06-05T05:57:29.356Z",
   "hub": {
     "gallery": "https://x402.wtf/agents",
     "mint": "https://x402.wtf/agents/mint",
@@ -9,15 +9,15 @@
     "api": "https://x402.wtf/api/agents"
   },
   "stats": {
-    "totalAgents": 124,
+    "totalAgents": 125,
     "totalOneShots": 1,
-    "totalFeatured": 2,
+    "totalFeatured": 3,
     "totalTemplates": 0,
     "byCategory": {
       "defi": 60,
+      "security": 9,
       "payments": 25,
       "trading": 8,
-      "security": 8,
       "research": 1,
       "governance": 2,
       "education": 3,
@@ -26,7 +26,7 @@
       "nft": 2,
       "dev-tools": 3
     },
-    "metaplexEnabledAgents": 42,
+    "metaplexEnabledAgents": 43,
     "tradingCapableAgents": 10,
     "launchCapableAgents": 1,
     "mintCapableAgents": 2
@@ -80,9 +80,9 @@
       }
     ],
     "coverage": {
-      "agent-registry": 42,
+      "agent-registry": 43,
+      "core": 4,
       "genesis": 1,
-      "core": 3,
       "token-metadata": 4,
       "bubblegum": 3,
       "candy-machine": 2,
@@ -258,6 +258,49 @@
     }
   ],
   "featured": [
+    {
+      "identifier": "solana-clawd-auth-agent",
+      "title": "Clawd Agent Auth Specialist",
+      "description": "Expert on CAAP/1.0 agent authentication — keypair registration, JWT signing, capability grants, SIWS attestation, and subscription tiers on the Clawd platform",
+      "avatar": "🔐",
+      "tags": [
+        "agent-auth",
+        "caap",
+        "authentication",
+        "better-auth",
+        "solana",
+        "jwt",
+        "attestation",
+        "capabilities"
+      ],
+      "category": "security",
+      "author": "openclawd",
+      "createdAt": "2026-06-05",
+      "oneShot": false,
+      "featured": true,
+      "openingMessage": null,
+      "openingQuestions": [],
+      "tokenUsage": null,
+      "capabilities": [
+        "agent-registration",
+        "jwt-signing",
+        "siws-verification",
+        "capability-grants"
+      ],
+      "metaplexSkills": [
+        "agent-registry",
+        "core"
+      ],
+      "payment": null,
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/solana-clawd-auth-agent.json",
+        "chat": "/agents/chat?agent=solana-clawd-auth-agent",
+        "mint": "/agents/mint?template=solana-clawd-auth-agent",
+        "mcp": "/api/agents/catalog/solana-clawd-auth-agent.json",
+        "registration": "/api/agents/registry/solana-clawd-auth-agent.json"
+      }
+    },
     {
       "identifier": "solana-pumpfun-bot",
       "title": "Solana PumpFun/PumpSwap Copy Trading Bot",
@@ -681,6 +724,49 @@
         "mint": "/agents/mint?template=solana-chart-pattern-ai",
         "mcp": "/api/agents/catalog/solana-chart-pattern-ai.json",
         "registration": "/api/agents/registry/solana-chart-pattern-ai.json"
+      }
+    },
+    {
+      "identifier": "solana-clawd-auth-agent",
+      "title": "Clawd Agent Auth Specialist",
+      "description": "Expert on CAAP/1.0 agent authentication — keypair registration, JWT signing, capability grants, SIWS attestation, and subscription tiers on the Clawd platform",
+      "avatar": "🔐",
+      "tags": [
+        "agent-auth",
+        "caap",
+        "authentication",
+        "better-auth",
+        "solana",
+        "jwt",
+        "attestation",
+        "capabilities"
+      ],
+      "category": "security",
+      "author": "openclawd",
+      "createdAt": "2026-06-05",
+      "oneShot": false,
+      "featured": true,
+      "openingMessage": null,
+      "openingQuestions": [],
+      "tokenUsage": null,
+      "capabilities": [
+        "agent-registration",
+        "jwt-signing",
+        "siws-verification",
+        "capability-grants"
+      ],
+      "metaplexSkills": [
+        "agent-registry",
+        "core"
+      ],
+      "payment": null,
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/solana-clawd-auth-agent.json",
+        "chat": "/agents/chat?agent=solana-clawd-auth-agent",
+        "mint": "/agents/mint?template=solana-clawd-auth-agent",
+        "mcp": "/api/agents/catalog/solana-clawd-auth-agent.json",
+        "registration": "/api/agents/registry/solana-clawd-auth-agent.json"
       }
     },
     {

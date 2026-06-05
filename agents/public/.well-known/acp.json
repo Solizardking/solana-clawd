@@ -1,7 +1,7 @@
 {
   "schemaVersion": "openclawd.acp.registry.v1",
   "protocol": "Agent Commerce Protocol",
-  "generatedAt": "2026-05-17T19:14:42.636Z",
+  "generatedAt": "2026-06-05T05:57:29.356Z",
   "host": "https://x402.wtf",
   "discover": {
     "catalog": "https://x402.wtf/api/agents/catalog",
@@ -67,9 +67,9 @@
       }
     ],
     "coverage": {
-      "agent-registry": 42,
+      "agent-registry": 43,
+      "core": 4,
       "genesis": 1,
-      "core": 3,
       "token-metadata": 4,
       "bubblegum": 3,
       "candy-machine": 2,
@@ -112,15 +112,15 @@
     ]
   },
   "stats": {
-    "totalAgents": 124,
+    "totalAgents": 125,
     "totalOneShots": 1,
-    "totalFeatured": 2,
+    "totalFeatured": 3,
     "totalTemplates": 0,
     "byCategory": {
       "defi": 60,
+      "security": 9,
       "payments": 25,
       "trading": 8,
-      "security": 8,
       "research": 1,
       "governance": 2,
       "education": 3,
@@ -129,7 +129,7 @@
       "nft": 2,
       "dev-tools": 3
     },
-    "metaplexEnabledAgents": 42,
+    "metaplexEnabledAgents": 43,
     "tradingCapableAgents": 10,
     "launchCapableAgents": 1,
     "mintCapableAgents": 2
@@ -362,6 +362,37 @@
           "agentRegistry": "solana:mainnet:metaplex-agent-registry",
           "status": "pending-onchain-registration",
           "registrationUri": "https://x402.wtf/api/agents/registry/solana-chart-pattern-ai.json"
+        }
+      ]
+    },
+    {
+      "id": "solana-clawd-auth-agent",
+      "title": "Clawd Agent Auth Specialist",
+      "category": "security",
+      "capabilities": [
+        "agent-registration",
+        "jwt-signing",
+        "siws-verification",
+        "capability-grants"
+      ],
+      "metaplexSkills": [
+        "agent-registry",
+        "core"
+      ],
+      "oneShot": false,
+      "featured": true,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/solana-clawd-auth-agent.json",
+        "registration": "https://x402.wtf/api/agents/registry/solana-clawd-auth-agent.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=solana-clawd-auth-agent"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:solana-clawd-auth-agent",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/solana-clawd-auth-agent.json"
         }
       ]
     },

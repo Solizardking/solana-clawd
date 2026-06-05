@@ -1,11 +1,12 @@
 {
   "name": "OpenClawd Agents API",
   "version": "1.0",
-  "generatedAt": "2026-05-17T19:14:42.636Z",
+  "generatedAt": "2026-06-05T05:57:29.356Z",
   "endpoints": {
     "catalog": "/api/agents/catalog",
     "registry": "/api/agents/registry",
     "acp": "/api/agents/acp",
-    "templates": "/api/agents/templates"
+    "templates": "/api/agents/templates",
+    "agentAuth": "/.well-known/agent-auth.json"
   }
 }
