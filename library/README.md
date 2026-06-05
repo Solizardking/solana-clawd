@@ -137,6 +137,7 @@ This catalog is designed to work beside:
 - `openclawd-framework/`
 - `openclawd-framework/pay/`
 - `openclawd-framework/pay/skills/pay/SKILL.md`
+- `packages/agentwallet/` — encrypted keypair vault (`agentwallet-vault` on npm)
 
 The payment fleet follows the same operating model:
 
@@ -206,6 +207,8 @@ The payment fleet follows the same operating model:
 - `solana-clawd-wallet-guardian`
 - `solana-clawd-payment-debugger`
 - `solana-nanoclawd-sandbox-runner`
+
+> **Key signing layer:** `agentwallet-vault` (`npm install -g agentwallet-vault`) provides AES-256-GCM encrypted local keypair storage with a REST API at `http://localhost:9099/api`. Wallet-guardian and payment-debugger agents should point their key-fetch calls here. Deploy to E2B for remote multi-agent access: `agentwallet deploy e2b --api-key $E2B_API_KEY`.
 
 ### Budget and Treasury
 

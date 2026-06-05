@@ -17,6 +17,10 @@
 - Macro (economics, regulation, forensics)
 - Agentic (multi-agent orchestration, autonomous trading)
 
+## npm Packages
+
+- `agentwallet-vault` (`npm install -g agentwallet-vault`) — AES-256-GCM encrypted keypair vault for Solana + EVM. REST API at `http://localhost:9099/api`. One-shot: `agentwallet serve`. Wallet-guardian and payment agents fetch signing keys from this vault. Deploy remotely: `agentwallet deploy e2b` or `agentwallet deploy cloudflare`.
+
 ## API
 - Index: https://x402agent.github.io/LobsterLibrary/index.json
 - Agent: https://x402agent.github.io/LobsterLibrary/{agent-id}.json
