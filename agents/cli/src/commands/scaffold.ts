@@ -1,7 +1,7 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { appendFileSync, cpSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { printOk, printInfo, printWarn } from "../banner.js";
+import { printInfo, printOk, printWarn } from "../banner.js";
 
 const AGENT_TEMPLATES: Record<string, string> = {
   perps: "clawd-perps-agent",
@@ -25,14 +25,13 @@ export function runScaffoldCreate(
   opts: { agent?: string; prototype?: boolean; auth?: boolean; payments?: boolean },
 ): void {
   validateName(name);
-  const templateName = AGENT_TEMPLATES[opts.agent ?? "perps"] ?? AGENT_TEMPLATES["perps"];
+  const templateName = AGENT_TEMPLATES[opts.agent ?? "perps"] ?? AGENT_TEMPLATES.perps;
   const templatesDir = getTemplatesDir();
   const templatePath = join(templatesDir, templateName);
 
   if (!existsSync(templatePath)) {
     throw new Error(
-      `Template '${templateName}' not found at ${templatePath}.\n` +
-      `Available: ${Object.keys(AGENT_TEMPLATES).join(", ")}`,
+      `Template '${templateName}' not found at ${templatePath}.\nAvailable: ${Object.keys(AGENT_TEMPLATES).join(", ")}`,
     );
   }
 
@@ -52,11 +51,11 @@ export function runScaffoldCreate(
   const pkgPath = join(name, "package.json");
   if (existsSync(pkgPath)) {
     const pkg = JSON.parse(readFileSync(pkgPath, "utf-8")) as Record<string, unknown>;
-    pkg["name"] = `@solanaclawd/${name}`;
-    pkg["version"] = "0.1.0";
+    pkg.name = `@solanaclawd/${name}`;
+    pkg.version = "0.1.0";
     const binKey = basename(name);
-    pkg["bin"] = { [binKey]: "dist/cli.js" };
-    writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+    pkg.bin = { [binKey]: "dist/cli.js" };
+    writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
     printOk(`package.json → name: @solanaclawd/${name}`);
   }
 
@@ -64,20 +63,39 @@ export function runScaffoldCreate(
   const clawdPath = join(name, "clawd.json");
   if (existsSync(clawdPath)) {
     const clawd = JSON.parse(readFileSync(clawdPath, "utf-8")) as Record<string, unknown>;
-    clawd["name"] = name
+    clawd.name = name
       .split("-")
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
-    writeFileSync(clawdPath, JSON.stringify(clawd, null, 2) + "\n");
-    printOk(`clawd.json → name: ${String(clawd["name"])}`);
+    writeFileSync(clawdPath, `${JSON.stringify(clawd, null, 2)}\n`);
+    printOk(`clawd.json → name: ${String(clawd.name)}`);
   }
 
-  // Create .env from template
+  // Create .env.local and inject ClawdRouter free routing
   const envSrc = join(name, ".env");
   const envDst = join(name, ".env.local");
   if (existsSync(envSrc) && !existsSync(envDst)) {
     cpSync(envSrc, envDst);
     printOk(`.env.local created from .env template`);
+  }
+  const envTarget = existsSync(envDst) ? envDst : envSrc;
+  if (existsSync(envTarget)) {
+    // Read free key from ~/.openclawd/.env if already provisioned by `clawd-agents setup`
+    const home = process.env.HOME ?? process.env.USERPROFILE ?? "";
+    const globalEnv = join(home, ".openclawd", ".env");
+    let freeKey = "";
+    if (existsSync(globalEnv)) {
+      const keyLine = readFileSync(globalEnv, "utf-8")
+        .split("\n")
+        .find((l) => l.startsWith("OPENROUTER_API_KEY="));
+      if (keyLine) freeKey = keyLine.slice("OPENROUTER_API_KEY=".length).trim();
+    }
+    appendFileSync(
+      envTarget,
+      `\n# ClawdRouter — free LLM routing for Clawd agents\nOPENROUTER_BASE_URL=https://clawdrouter.fly.dev/v1\nOPENROUTER_API_KEY=${freeKey}\n`,
+    );
+    const keyNote = freeKey ? "(key pre-filled from ~/.openclawd/.env)" : "(run clawd-agents setup to provision a free key)";
+    printOk(`OPENROUTER_BASE_URL → clawdrouter.fly.dev/v1 ${keyNote}`);
   }
 
   if (opts.auth) {

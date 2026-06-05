@@ -114,7 +114,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "build:all": "tsc && (cd packages/agent-registry && npm run build) && (cd packages/agent-hub && npm run build) && (cd packages/clawd && npm run build) && (cd packages/cli-standalone && npm run build)",
+    "build:all": "tsc && (cd packages/agentwallet && npm run build) && (cd packages/agent-registry && npm run build) && (cd packages/agent-hub && npm run build) && (cd packages/clawd && npm run build) && (cd packages/cli-standalone && npm run build)",
     "build:web": "vite build",
     "dev": "tsx watch src/index.ts",
     "dev:web": "vite",
@@ -176,6 +176,11 @@
     "backrooms:start": "cd livekit-agent && python backrooms.py start",
 
     "sdk:build": "cd packages/clawd-sdk && npm run build",
+
+    "agentwallet:build": "cd packages/agentwallet && npm run build",
+    "agentwallet:serve": "cd packages/agentwallet && node dist/cli.js serve",
+    "agentwallet:wallet:list": "cd packages/agentwallet && node dist/cli.js wallet list",
+    "agentwallet:wallet:create": "cd packages/agentwallet && node dist/cli.js wallet create",
 
     "wallet:build": "cd packages/clawd-wallet && npm run build",
 

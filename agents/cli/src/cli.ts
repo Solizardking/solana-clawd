@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 import { printBanner } from "./banner.js";
-import { runSetup } from "./commands/setup.js";
-import { runScaffoldCreate, runScaffoldEnhance, runScaffoldUpgrade } from "./commands/scaffold.js";
 import { runDeploy } from "./commands/deploy.js";
 import { runEval } from "./commands/eval.js";
+import { runGoalComplete, runGoalCreate, runGoalList, runGoalStatus } from "./commands/goals.js";
 import { runPublish } from "./commands/publish.js";
-import { runRegistryList, runRegistryConnect, runRegistryStatus, runRegistryRegister } from "./commands/registry.js";
+import { runPump } from "./commands/pump.js";
 import { runRegister } from "./commands/register.js";
-import { runGoalCreate, runGoalList, runGoalStatus, runGoalComplete } from "./commands/goals.js";
-import { runPerps, runLong, runShort, runSpot, runApe } from "./commands/trading.js";
+import { runRegistryConnect, runRegistryList, runRegistryRegister, runRegistryStatus } from "./commands/registry.js";
+import { runScaffoldCreate, runScaffoldEnhance, runScaffoldUpgrade } from "./commands/scaffold.js";
+import { runSetup } from "./commands/setup.js";
+import { runApe, runLong, runPerps, runShort, runSpot } from "./commands/trading.js";
 
 type RawArgs = {
   positional: string[];
@@ -69,6 +70,9 @@ COMMANDS
   registry connect <ep>    Show connection example for a registered endpoint
   registry status          Show Agent Registry + Reasoning Engine status
   registry register <url>  Register a new endpoint in Agent Registry
+
+TOKEN COMMANDS
+  pump [wallet]            Show $CLAWD tier info, ClawdRouter status, upgrade path
 
 TRADING COMMANDS
   perps [status|scan|markets]  Phoenix perps agent status / signals / market data
@@ -156,7 +160,7 @@ async function main(): Promise<void> {
 
   switch (cmd) {
     case "setup":
-      runSetup({ global: flag(flags, "global") });
+      await runSetup({ global: flag(flags, "global") });
       break;
 
     case "scaffold": {
@@ -260,6 +264,11 @@ async function main(): Promise<void> {
       }
       break;
     }
+
+    // ── Token commands ──────────────────────────────────────────────────────
+    case "pump":
+      await runPump(sub, { wallet: strFlag(flags, "wallet") ?? sub, json: flag(flags, "json") });
+      break;
 
     // ── Trading commands ────────────────────────────────────────────────────
     case "perps":

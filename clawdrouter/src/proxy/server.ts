@@ -10,6 +10,17 @@
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { extractApiKey, isPlatformAuthEnabled, validatePlatformApiKey } from '../auth/platform.js';
+import { estimateCostPerRequest, getModel, MODEL_REGISTRY, resolveModelAlias } from '../models/registry.js';
+import { buildPerpsRelay, buildRelaySnapshot, buildSolanaRelay, buildX402ApiRelay } from '../relay/aggregator.js';
+import { routeRequest } from '../router/profiles.js';
+import { scoreRequest } from '../router/scorer.js';
+import {
+  canAccessModelTier,
+  checkHolderStatusCached,
+  type ClawdHolderStatus,
+  type ClawdHolderTier,
+} from '../token/clawd-gate.js';
 import type {
   ChatCompletionRequest,
   ClawdRouterConfig,
@@ -17,19 +28,8 @@ import type {
   RoutingMeta,
   UsageStats,
 } from '../types.js';
-import { scoreRequest } from '../router/scorer.js';
-import { routeRequest } from '../router/profiles.js';
-import { getModel, resolveModelAlias, estimateCostPerRequest, MODEL_REGISTRY } from '../models/registry.js';
-import { PaymentTracker } from '../x402/payment.js';
 import { proxyToOpenRouter, toOpenRouterModelId } from '../upstream/openrouter.js';
-import {
-  checkHolderStatusCached,
-  canAccessModelTier,
-  type ClawdHolderStatus,
-  type ClawdHolderTier,
-} from '../token/clawd-gate.js';
-import { extractApiKey, isPlatformAuthEnabled, validatePlatformApiKey } from '../auth/platform.js';
-import { buildPerpsRelay, buildRelaySnapshot, buildSolanaRelay, buildX402ApiRelay } from '../relay/aggregator.js';
+import { PaymentTracker } from '../x402/payment.js';
 
 type ChatAuthContext = {
   mode: 'local' | 'platform';
@@ -172,6 +172,10 @@ export class ClawdRouterProxy {
 
     if (url === '/v1/relay/x402' || url === '/relay/x402' || url === '/v1/x402/status') {
       return this.handleX402Relay(res);
+    }
+
+    if (url === '/v1/agent-key' || url === '/agent-key') {
+      return this.handleAgentKey(res);
     }
 
     // 404 for everything else
@@ -437,11 +441,28 @@ export class ClawdRouterProxy {
     }
 
     const apiKey = extractApiKey(req.headers);
+
+    // Free-tier bypass: clawd_free_<nonce> keys are minted by /v1/agent-key without
+    // server-side storage — they are ephemeral and rate-limited by the key itself.
+    if (apiKey && /^clawd_free_[a-z0-9]+$/.test(apiKey)) {
+      return {
+        ok: true,
+        context: {
+          mode: 'platform',
+          rateLimitKey: apiKey,
+          holderTier: 'FREE',
+          clawdBalance: 0,
+          maxRequestsPerHour: 20,
+          apiKeyPrefix: apiKey.slice(0, 14),
+        },
+      };
+    }
+
     if (!apiKey || !apiKey.startsWith('clawd_sk_')) {
       return {
         ok: false,
         status: 401,
-        message: 'ClawdRouter hosted mode requires Authorization: Bearer clawd_sk_...',
+        message: 'ClawdRouter requires Authorization: Bearer clawd_sk_... (get a free key: GET /v1/agent-key)',
         type: 'authentication_required',
       };
     }
@@ -707,6 +728,39 @@ export class ClawdRouterProxy {
         },
         x402: challenge,
       },
+    });
+  }
+
+  // ── Free Agent Key Endpoint ───────────────────────────────────────
+  // Distributes a free clawd_free_<nonce> key that bypasses platform auth
+  // at FREE tier (20 req/hr, budget models). The server's shared OPENROUTER_API_KEY
+  // is used for all downstream calls — callers never need their own OpenRouter key.
+
+  private handleAgentKey(res: ServerResponse): void {
+    const nonce = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+    const key = `clawd_free_${nonce}`;
+    const baseUrl = `${this.config.relayPublicUrl}/v1`;
+    sendJSON(res, 200, {
+      key,
+      baseUrl,
+      tier: 'FREE',
+      rateLimitPerHour: 20,
+      models: 'budget (eco profile via clawdrouter/auto)',
+      openRouterProxied: this.config.openRouterEnabled && !!this.config.openRouterApiKey,
+      // $CLAWD token — hold for higher tiers (clawd-pump)
+      clawdToken: {
+        mint: this.config.clawdTokenMint,
+        buyUrl: `https://pump.fun/coin/${this.config.clawdTokenMint}`,
+        tiers: {
+          FREE:    { minHolding: 0,         rateLimit: 20,       models: 'budget' },
+          HOLDER:  { minHolding: 1_000,     rateLimit: 100,      models: 'budget + mid' },
+          DIAMOND: { minHolding: 100_000,   rateLimit: 500,      models: 'all (no x402)' },
+          WHALE:   { minHolding: 1_000_000, rateLimit: 'unlimited', models: 'all (no x402)' },
+        },
+      },
+      usage: `Authorization: Bearer ${key}`,
+      docs: 'https://x402.wtf/router',
+      upgrade: 'https://x402.wtf/profile/api',
     });
   }
 
