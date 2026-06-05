@@ -380,7 +380,7 @@ Every action that moves SOL or places a trade routes through the existing `Confi
 ## Local Development
 
 ```bash
-git clone https://github.com/8bit/clawd-code-cli.git
+git clone https://github.com/x402agent/clawd-code-cli.git
 cd clawd-code-cli
 npm install
 npm run build

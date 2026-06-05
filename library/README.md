@@ -134,9 +134,9 @@ pay mcp
 
 This catalog is designed to work beside:
 
-- `/Users/8bit/bots/Cladwbot-solana/solana-clawd/openclawd-framework`
-- `/Users/8bit/bots/Cladwbot-solana/solana-clawd/openclawd-framework/pay`
-- `/Users/8bit/bots/Cladwbot-solana/solana-clawd/openclawd-framework/pay/skills/pay/SKILL.md`
+- `openclawd-framework/`
+- `openclawd-framework/pay/`
+- `openclawd-framework/pay/skills/pay/SKILL.md`
 
 The payment fleet follows the same operating model:
 

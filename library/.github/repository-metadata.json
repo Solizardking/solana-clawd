@@ -1,15 +1,18 @@
 {
-    "name": "AI-Agents-Library",
-    "description": "A comprehensive collection of specialized AI agents with universal compatibility. Works with any AI platform that supports agent indexes - no vendor lock-in, no platform restrictions.",
-    "version": "1.0.0",
-    "publisher": "nirholas",
-    "repository": "https://github.com/nirholas/AI-Agents-Library",
+    "name": "LobsterLibrary",
+    "description": "The nano Solana financial trading, deep research, ML prediction market & agentic vision AI agent library. 82+ specialized Solana agents.",
+    "version": "2.0.0",
+    "publisher": "x402agent",
+    "repository": "https://github.com/x402agent/LobsterLibrary",
     "language": "TypeScript",
     "topics": [
-        "library",
-        "nirholas",
-        "open-source",
-        "ai",
-        "agents"
+        "solana",
+        "x402",
+        "openclawd",
+        "lobster-library",
+        "ai-agents",
+        "defi",
+        "trading",
+        "open-source"
     ]
 }
