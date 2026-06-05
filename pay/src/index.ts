@@ -14,6 +14,12 @@ export interface Env {
   MPP_PROXY_TOKEN?: string;
   SOLANA_MPP_ENABLED?: string;
   RECEIPT_HMAC_SECRET?: string;
+  // ─── Pay Sign / Solana Signing ──────────────────────────────────────────
+  PAY_PRIVATE_KEY?: string;
+  SOLANA_PRIVATE_KEY?: string;
+  PAY_RPC_URL?: string;
+  PAY_NETWORK_ENFORCED?: string;
+  PAY_ACTIVE_ACCOUNT?: string;
 }
 
 type JsonRecord = Record<string, unknown>;
@@ -314,6 +320,13 @@ export default {
         service: "solana-clawd-pay",
         environment: env.ENVIRONMENT ?? "development",
         quote: baseQuote(env),
+        capabilities: {
+          signTransaction: true,
+          signTransactionMCP: true,
+          agentIdentityAttestation: true,
+          metaplexAttestation: true,
+          googleAgentRegistryBridge: true,
+        },
       });
     }
 
@@ -338,6 +351,58 @@ export default {
       const result = env.MPP_PROXY_URL
         ? await verifyViaMppProxy(receipt, env)
         : await verifyLocalReceipt(receipt, env);
+      return json(result);
+    }
+
+    // ─── MCP sign_transaction endpoint ──────────────────────────────────────
+    if (url.pathname === "/v1/sign/transaction" && request.method === "POST") {
+      const { handleSignTransaction } = await import("./mcp-sign-handler.js");
+      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const result = await handleSignTransaction(
+        {
+          transaction: body.transaction as string,
+          network: body.network as string | undefined,
+          account: body.account as string | undefined,
+        },
+        env as Record<string, string | undefined>,
+      );
+      return json(result, result.isError ? { status: 400 } : { status: 200 });
+    }
+
+    // ─── x402 Payment Attestation Bridge ────────────────────────────────────
+    if (url.pathname === "/v1/attest/payment" && request.method === "POST") {
+      const { createPaymentAttestation } = await import("./attest.js");
+      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const result = await createPaymentAttestation(
+        body.paymentReceipt as string,
+        body.agentId as string,
+        body.agentWalletPubkey as string,
+        env as Record<string, string | undefined>,
+      );
+      return json(result, result.success ? { status: 200 } : { status: 400 });
+    }
+
+    // ─── Google Agent Identity Bridge ───────────────────────────────────────
+    if (url.pathname === "/v1/agent-identity/google" && request.method === "POST") {
+      const { bridgeGoogleAgentIdentity } = await import("./google-agent-identity.js");
+      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const result = await bridgeGoogleAgentIdentity({
+        googleProjectId: body.googleProjectId as string,
+        googleLocation: body.googleLocation as string | undefined,
+        agentId: body.agentId as string,
+        agentWalletPubkey: body.agentWalletPubkey as string,
+        solanaRpcUrl: body.solanaRpcUrl as string | undefined,
+        metaplexMetadataUri: body.metaplexMetadataUri as string | undefined,
+        env: env as Record<string, string | undefined>,
+      });
+      return json(result, result.success ? { status: 200 } : { status: 400 });
+    }
+
+    // ─── Agent Registry MCP Discovery (ADK-compatible) ──────────────────────
+    if (url.pathname === "/mcp" && request.method === "POST") {
+      const { handleMCPRequest } = await import("./mcp-server-handler.js");
+      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const result = await handleMCPRequest(body);
       return json(result);
     }
 
