@@ -1,0 +1,30 @@
+name = "openclawd-payments"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
+account_id = "<your-cloudflare-account-id>"
+workers_dev = true
+
+[vars]
+ENVIRONMENT = "production"
+PRICE_USD = "0.01"
+PRICE_ATOMIC = "10000"
+PAYMENT_ASSET = "USDC"
+PAYMENT_NETWORKS = "base-sepolia,base,solana"
+CLAWDROUTER_URL = "http://127.0.0.1:8402"
+X402_OPENROUTER_URL = "http://127.0.0.1:3001"
+OPENCLAWD_SITE_URL = "https://solanaclawd.com"
+AGENT_REGISTRY_URL = "https://solanaclawd.com/api/agents"
+MPP_PROXY_URL = ""
+SOLANA_MPP_ENABLED = "false"
+
+# Optional production route:
+# routes = [
+#   { pattern = "payments.example.com", custom_domain = true }
+# ]
+
+# Secrets:
+#   wrangler secret put OPENROUTER_API_KEY       # optional direct fallback
+#   wrangler secret put CLAWDROUTER_API_KEY      # optional bearer to ClawdRouter
+#   wrangler secret put MPP_PROXY_TOKEN          # optional shared secret to MPP proxy
+#   wrangler secret put RECEIPT_HMAC_SECRET      # optional receipt signature check

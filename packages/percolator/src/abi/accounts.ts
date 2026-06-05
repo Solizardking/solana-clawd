@@ -1,0 +1,224 @@
+/**
+ * ABI Account Specifications
+ * 
+ * Account ordering and specifications for Percolator instructions.
+ * 
+ * @module abi/accounts
+ */
+
+import {
+  PublicKey,
+  AccountMeta,
+  SYSVAR_CLOCK_PUBKEY,
+  SYSVAR_RENT_PUBKEY,
+  SystemProgram,
+} from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+
+/**
+ * Account spec for building instruction account metas.
+ */
+export interface AccountSpec {
+  name: string;
+  signer: boolean;
+  writable: boolean;
+}
+
+// InitMarket: 9 accounts
+export const ACCOUNTS_INIT_MARKET: readonly AccountSpec[] = [
+  { name: "admin", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "mint", signer: false, writable: false },
+  { name: "vault", signer: false, writable: false },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "clock", signer: false, writable: false },
+  { name: "rent", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+  { name: "systemProgram", signer: false, writable: false },
+] as const;
+
+// InitUser: 6 accounts
+export const ACCOUNTS_INIT_USER: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "userAta", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "clock", signer: false, writable: false },
+] as const;
+
+// InitLP: 6 accounts
+export const ACCOUNTS_INIT_LP: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "userAta", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "clock", signer: false, writable: false },
+] as const;
+
+// DepositCollateral: 6 accounts
+export const ACCOUNTS_DEPOSIT_COLLATERAL: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "userAta", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "clock", signer: false, writable: false },
+] as const;
+
+// WithdrawCollateral: 8 accounts
+export const ACCOUNTS_WITHDRAW_COLLATERAL: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "userAta", signer: false, writable: true },
+  { name: "vaultPda", signer: false, writable: false },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracleIdx", signer: false, writable: false },
+] as const;
+
+// KeeperCrank: 4 accounts
+export const ACCOUNTS_KEEPER_CRANK: readonly AccountSpec[] = [
+  { name: "caller", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+] as const;
+
+// TradeNoCpi: 5 accounts
+export const ACCOUNTS_TRADE_NOCPI: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "lp", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+] as const;
+
+// TradeCpi: 8 accounts
+export const ACCOUNTS_TRADE_CPI: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "lpOwner", signer: false, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+  { name: "matcherProg", signer: false, writable: false },
+  { name: "matcherCtx", signer: false, writable: true },
+  { name: "lpPda", signer: false, writable: false },
+] as const;
+
+// LiquidateAtOracle: 4 accounts
+export const ACCOUNTS_LIQUIDATE_AT_ORACLE: readonly AccountSpec[] = [
+  { name: "unused", signer: false, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+] as const;
+
+// CloseAccount: 8 accounts
+export const ACCOUNTS_CLOSE_ACCOUNT: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "userAta", signer: false, writable: true },
+  { name: "vaultPda", signer: false, writable: false },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+] as const;
+
+// TopUpInsurance: 6 accounts
+export const ACCOUNTS_TOPUP_INSURANCE: readonly AccountSpec[] = [
+  { name: "user", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "userAta", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "clock", signer: false, writable: false },
+] as const;
+
+// UpdateAuthority (kind=ADMIN): 3 accounts
+export const ACCOUNTS_UPDATE_ADMIN: readonly AccountSpec[] = [
+  { name: "current_authority", signer: true, writable: false },
+  { name: "new_authority", signer: false, writable: false },
+  { name: "slab", signer: false, writable: true },
+] as const;
+
+// CloseSlab: 6 accounts
+export const ACCOUNTS_CLOSE_SLAB: readonly AccountSpec[] = [
+  { name: "dest", signer: true, writable: true },
+  { name: "slab", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "vaultAuth", signer: false, writable: false },
+  { name: "destAta", signer: false, writable: true },
+  { name: "tokenProgram", signer: false, writable: false },
+] as const;
+
+// UpdateConfig: 4 accounts
+export const ACCOUNTS_UPDATE_CONFIG: readonly AccountSpec[] = [
+  { name: "admin", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+] as const;
+
+// SetOracleAuthority: 3 accounts
+export const ACCOUNTS_SET_ORACLE_AUTHORITY: readonly AccountSpec[] = [
+  { name: "current_authority", signer: true, writable: false },
+  { name: "new_authority", signer: false, writable: false },
+  { name: "slab", signer: false, writable: true },
+] as const;
+
+// PushOraclePrice: 2 accounts
+export const ACCOUNTS_PUSH_ORACLE_PRICE: readonly AccountSpec[] = [
+  { name: "authority", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+] as const;
+
+// ResolveMarket: 4 accounts
+export const ACCOUNTS_RESOLVE_MARKET: readonly AccountSpec[] = [
+  { name: "admin", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "clock", signer: false, writable: false },
+  { name: "oracle", signer: false, writable: false },
+] as const;
+
+// WithdrawInsurance: 6 accounts
+export const ACCOUNTS_WITHDRAW_INSURANCE: readonly AccountSpec[] = [
+  { name: "admin", signer: true, writable: false },
+  { name: "slab", signer: false, writable: true },
+  { name: "adminAta", signer: false, writable: true },
+  { name: "vault", signer: false, writable: true },
+  { name: "tokenProgram", signer: false, writable: false },
+  { name: "vaultPda", signer: false, writable: false },
+] as const;
+
+/**
+ * Build AccountMeta array from spec and provided pubkeys.
+ */
+export function buildAccountMetas(
+  spec: readonly AccountSpec[],
+  keys: PublicKey[]
+): AccountMeta[] {
+  if (keys.length !== spec.length) {
+    throw new Error(
+      `Account count mismatch: expected ${spec.length}, got ${keys.length}`
+    );
+  }
+  return spec.map((s, i) => ({
+    pubkey: keys[i],
+    isSigner: s.signer,
+    isWritable: s.writable,
+  }));
+}
+
+/**
+ * Well-known program/sysvar keys
+ */
+export const WELL_KNOWN = {
+  tokenProgram: TOKEN_PROGRAM_ID,
+  clock: SYSVAR_CLOCK_PUBKEY,
+  rent: SYSVAR_RENT_PUBKEY,
+  systemProgram: SystemProgram.programId,
+} as const;

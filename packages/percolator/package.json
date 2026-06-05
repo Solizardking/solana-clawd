@@ -1,0 +1,46 @@
+{
+  "name": "@openclawd/percolator",
+  "version": "1.0.0",
+  "description": "🧪 Percolator perpetuals CLI for Solana",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "percolator": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "solana",
+    "perpetuals",
+    "trading",
+    "percolator",
+    "cli"
+  ],
+  "author": "openclawd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/x402agent/openclawd.git",
+    "directory": "packages/percolator"
+  },
+  "homepage": "https://github.com/x402agent/openclawd/tree/main/packages/percolator#readme",
+  "bugs": {
+    "url": "https://github.com/x402agent/openclawd/issues"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.98.0",
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
