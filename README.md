@@ -1,6 +1,6 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
 <!-- ║   OpenClawd — Sovereign Agent Runtime  ·  solanaclawd.com  ·  x402.wtf  ║ -->
-<!-- ║   5 npm packages @ v2.0.0  ·  80 DeFi agents  ·  free inference         ║ -->
+<!-- ║   5 npm packages @ v2.0.0  ·  125 agents  ·  free inference  ·  CAAP/1.0 ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -20,7 +20,7 @@
 ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   \___
 |                                                                             |
 |    S O V E R E I G N   A I   ·   S O L A N A   ·   x 4 0 2   ·   W T F   |
-|    80 agents  ·  130+ skills  ·  5 npm packages  ·  free inference         |
+|    125 agents  ·  130+ skills  ·  5 npm packages  ·  CAAP/1.0 auth         |
 |_____________________________________________________________________________|
     \   🦞   /          \   🦞   /          \   🦞   /          \   🦞   /
      \_/ \_/              \_/ \_/              \_/ \_/              \_/ \_/
@@ -33,7 +33,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**80 DeFi agents · 130+ skills · 5 npm packages @ v2.0.0 · free inference · x402 payment rails**
+**125 agents · 130+ skills · 5 npm packages @ v2.0.0 · free inference · x402 payment rails · CAAP/1.0 agent auth**
 
 ---
 
@@ -42,15 +42,17 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 [![CA](https://img.shields.io/badge/CA-8cHzQH...pump-C85C2B?style=for-the-badge&logo=solana&logoColor=white)](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 [![x402](https://img.shields.io/badge/x402.wtf-payments-1E5AA8?style=for-the-badge)](https://x402.wtf)
 [![Website](https://img.shields.io/badge/solanaclawd.com-website-147D64?style=for-the-badge)](https://solanaclawd.com)
-[![Agents](https://img.shields.io/badge/solanaclawd.com/agents-80_agents-C85C2B?style=for-the-badge)](https://solanaclawd.com/agents)
+[![Agents](https://img.shields.io/badge/solanaclawd.com/agents-125_agents-C85C2B?style=for-the-badge)](https://solanaclawd.com/agents)
 [![Skills](https://img.shields.io/badge/solanaclawd.com/skills-skills-9B59B6?style=for-the-badge)](https://solanaclawd.com/skills)
 [![Gateway](https://img.shields.io/badge/solanaclawd.com/gateway-gateway-1E5AA8?style=for-the-badge)](https://solanaclawd.com/gateway)
+[![AgentAuth](https://img.shields.io/badge/CAAP%2F1.0-agent--auth-E67E22?style=for-the-badge)](https://github.com/Solizardking/agent-auth)
 
 [![npm clawd](https://img.shields.io/badge/clawd-v2.0.0-C85C2B?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/clawd)
 [![npm registry](https://img.shields.io/badge/agent--registry-v2.0.0-1E5AA8?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/agent-registry)
 [![npm hub](https://img.shields.io/badge/agent--hub-v2.0.0-147D64?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/agent-hub)
 [![npm sdk](https://img.shields.io/badge/solana--sdk-v2.0.0-9B59B6?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/solana-sdk)
 [![npm wallet](https://img.shields.io/badge/wallet-v2.0.0-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/wallet)
+[![@auth/agent](https://img.shields.io/badge/%40auth%2Fagent-v0.5.1-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@auth/agent)
 [![Telegram](https://img.shields.io/badge/t.me/clawdtoken-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/clawdtoken)
 [![X](https://img.shields.io/badge/@clawddevs-000000?style=flat-square&logo=x&logoColor=white)](https://x.com/clawddevs)
 [![node](https://img.shields.io/badge/node-20–24-0B7285?style=flat-square)](https://nodejs.org)
@@ -383,6 +385,16 @@ cd packages/clawd-sdk && npm run build   # @openclawdsolana/solana-sdk
 cd packages/clawd-wallet && npm run build # @openclawdsolana/wallet
 ```
 
+**Optional — build agent catalog (agents/ package):**
+
+```bash
+cd agents && node build-catalog.cjs
+# → agents-catalog.json (125 agents)
+# → public/.well-known/agent-auth.json  (CAAP/1.0 discovery)
+# → public/.well-known/acp.json         (ACP registry)
+# → public/api/agents/                  (full static API)
+```
+
 **Optional — install with all extras (leviathan + SDK + wallet):**
 
 ```bash
@@ -415,7 +427,7 @@ open https://solanaclawd.com/terminal
 ║                     S O L A N A   C L A W D                             ║
 ╠═════════════════════════════╦════════════════════════════════════════════╣
 ║  solanaclawd.com            ║  Main site · TUI · SDK · token             ║
-║  solanaclawd.com/agents     ║  Browse + search all 80 DeFi agents        ║
+║  solanaclawd.com/agents     ║  Browse + search all 125 agents            ║
 ║  solanaclawd.com/gateway    ║  x402 payment gateway · USDC routing       ║
 ║  solanaclawd.com/skills     ║  Installable agent skills catalog          ║
 ║  solanaclawd.com/terminal   ║  Browser terminal (zero install)           ║
@@ -424,6 +436,10 @@ open https://solanaclawd.com/terminal
 ║  x402.wtf/agents            ║  x402-gated agent catalog + pricing        ║
 ║  x402.wtf/gateway           ║  Facilitator · routing · settlement        ║
 ║  x402.wtf/skills            ║  Premium skills marketplace                ║
+║  x402.wtf/.well-known/      ║  CAAP/1.0 discovery · ACP registry        ║
+╠═════════════════════════════╬════════════════════════════════════════════╣
+║  agent-auth                 ║  github.com/Solizardking/agent-auth        ║
+║  CAAP/1.0                   ║  Agent identity · JWT auth · capabilities  ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
 ║  GitHub                     ║  github.com/solizardking/solanaclawd       ║
 ╚═════════════════════════════╩════════════════════════════════════════════╝
@@ -440,21 +456,194 @@ Most agent frameworks stop at chat. OpenClawd handles the hard parts:
 | Problem | What OpenClawd Does |
 | --- | --- |
 | **Identity** | Agents have Solana keypairs, on-chain Metaplex assets, and long-lived shell files |
+| **Auth** | CAAP/1.0 — agents register with Ed25519 keypairs, sign JWTs, earn capability grants |
 | **Memory** | KNOWN / INFERRED / LEARNED memory tiers + SQLite shell-state |
 | **Economics** | Agents earn (USDC/SOL), pay (x402), and gate their own API access |
 | **Sovereignty** | Runtime operates without a hosted control plane — agent owns its keys |
-| **Agent Kit** | 80 DeFi agent definitions + gacha machine + hub + registry |
+| **Agent Kit** | 125 agent definitions + gacha machine + hub + registry |
 | **Free Inference** | Free OpenRouter models wired in — no paid key to start |
 | **Lore** | Lobsters molt. They don't shrink with age. Neither do your agents. |
 
 ---
 
-## 🎰 Agent Kit — 80 Solana DeFi Agents
+## 🔐 Agent Auth — CAAP/1.0
+
+OpenClawd implements **CAAP/1.0** (Clawd Agent Attestation Protocol) — a SIWS-gated, capability-based authorization layer built on [`@better-auth/agent-auth`](https://github.com/Solizardking/agent-auth). Every agent on the platform can register a cryptographic identity, request capability grants, and sign authenticated requests to Clawd APIs.
+
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║           C A A P / 1 . 0   —   A G E N T   A U T H                    ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║                                                                          ║
+║  Register ──────────────────────────────────────────────────────────    ║
+║  Agent generates Ed25519 keypair                                         ║
+║  POST /api/auth/agent/register { publicKey, name, mode }                ║
+║  → { agentId, status: "pending" }                                        ║
+║                                                                          ║
+║  Approve ──────────────────────────────────────────────────────────    ║
+║  User visits /agents/approve?agent_id=...&code=...                       ║
+║  Grants capabilities: attest_agent · get_peer_card · agent_chat          ║
+║                                                                          ║
+║  Authenticate ──────────────────────────────────────────────────────   ║
+║  Agent signs JWT with Ed25519 private key (exp: 60s, jti: UUID)          ║
+║  Authorization: Bearer <signed-jwt>                                      ║
+║                                                                          ║
+║  Execute ──────────────────────────────────────────────────────────    ║
+║  POST /api/agents/attest     { walletAddress }   → attestation + tier   ║
+║  POST /api/agents/peer-card  { agentId? }        → peer card + holdings ║
+║  GET  /api/agents/catalog                        → full agent catalog   ║
+║  POST /api/agents/chat       { agentId, message }→ AI response stream   ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+### Discovery
+
+All CAAP metadata is published at the well-known endpoint:
+
+```bash
+curl https://x402.wtf/.well-known/agent-auth.json
+# → { "protocol": "CAAP/1.0", "provider": "Clawd", "capabilities": [...], ... }
+```
+
+The same file is generated locally when you run `node agents/build-catalog.cjs`:
+
+```
+agents/public/.well-known/agent-auth.json
+```
+
+### SDK — connect any agent in 3 steps
+
+```bash
+npm install @auth/agent
+```
+
+```typescript
+import { AgentAuthClient, generateKeypair } from "@auth/agent";
+// Or use the Clawd-preconfigured factory:
+import { createClawdAgentClient } from "./agents/auth/client";
+
+// 1. Generate a keypair (store the private key securely)
+const keypair = await generateKeypair("Ed25519");
+
+// 2. Create client + connect to Clawd
+const client = createClawdAgentClient();
+const connection = await client.connect("https://x402.wtf/api/auth", {
+  keypair,
+  name: "my-trading-agent",
+  mode: "delegated",         // "delegated" | "autonomous"
+  capabilities: ["attest_agent", "get_peer_card", "agent_chat"],
+});
+
+// 3. Execute a capability (JWT signed automatically)
+const peerCard = await client.executeCapability("get_peer_card", {});
+console.log(peerCard.tier);   // "pro" | "elite" | "basic" | "free"
+```
+
+### Server plugin (ClawdBrowser / your own Next.js app)
+
+The `@better-auth/agent-auth` plugin is already wired into the Clawd platform:
+
+```typescript
+// src/lib/auth.ts (already configured)
+import { agentAuth } from "@better-auth/agent-auth";
+
+agentAuth({
+  providerName: "Clawd",
+  modes: ["delegated", "autonomous"],
+  keyAlgorithms: ["Ed25519"],
+  capabilities: [
+    { name: "attest_agent",  location: "https://x402.wtf/api/agents/attest" },
+    { name: "get_peer_card", location: "https://x402.wtf/api/agents/peer-card" },
+    { name: "list_agents",   location: "https://x402.wtf/api/agents/catalog" },
+    { name: "agent_chat",    location: "https://x402.wtf/api/agents/chat" },
+  ],
+})
+```
+
+Protecting your own routes:
+
+```typescript
+import { verifyAgentAuth } from "@/lib/agents/agent-auth";
+
+export async function POST(req: NextRequest) {
+  const session = await verifyAgentAuth(req);
+  if (!session) return NextResponse.json({ error: "Agent auth required" }, { status: 401 });
+
+  // session.agentId, session.type, session.agent.capabilityGrants
+}
+```
+
+### Capability execution from an agent template
+
+Add `agentAuth` to any agent definition:
+
+```json
+{
+  "agentAuth": {
+    "protocol": "CAAP/1.0",
+    "discovery": "https://x402.wtf/.well-known/agent-auth.json",
+    "registrationEndpoint": "https://x402.wtf/api/auth/agent/register",
+    "modes": ["delegated", "autonomous"],
+    "keyAlgorithms": ["Ed25519"],
+    "capabilities": [
+      { "name": "attest_agent", "required": true,  "location": "https://x402.wtf/api/agents/attest" },
+      { "name": "get_peer_card","required": false, "location": "https://x402.wtf/api/agents/peer-card" }
+    ]
+  }
+}
+```
+
+See [`agents/agent-template-attested.json`](./agents/agent-template-attested.json) for the full attested template with Solana Attestation Service integration and Metaplex identity minting.
+
+### Subscription tiers (CLAWD balance-gated)
+
+| Tier | Min CLAWD | Capabilities |
+|---|---|---|
+| `free` | 0 | `list_agents`, `get_peer_card` |
+| `basic` | 1,000 | + `agent_chat` |
+| `pro` | 10,000 | + `attest_agent`, all capabilities |
+| `elite` | 100,000 | priority execution, no rate limits |
+
+```typescript
+// Attest your agent wallet and get its tier
+const result = await client.executeCapability("attest_agent", {
+  walletAddress: "YOUR_SOLANA_WALLET",
+});
+console.log(result.tier.tier);       // "pro"
+console.log(result.tier.label);      // "Pro"
+```
+
+### Key files
+
+```
+agents/
+├── auth/
+│   ├── index.ts          — barrel export
+│   ├── capabilities.ts   — typed CAPABILITIES constants + CAPABILITY_LOCATIONS
+│   └── client.ts         — createClawdAgentClient() factory → x402.wtf
+├── agent-template-attested.json  — full attested template with CAAP/1.0 + SAS + Metaplex
+├── agent-template-full.json      — base template schema with agentAuth section
+└── src/
+    └── solana-clawd-auth-agent.json  — "Clawd Agent Auth Specialist" agent definition
+
+ClawdBrowser/src/
+├── lib/auth.ts                       — agentAuth() plugin config (server)
+├── lib/agents/agent-auth.ts          — verifyAgentAuth() helper
+└── app/api/agents/
+    ├── attest/route.ts               — accepts CAAP JWT or SIWS
+    ├── peer-card/route.ts            — CAAP-gated POST capability endpoint
+    └── catalog/route.ts              — includes agentAuth discovery in response
+```
+
+---
+
+## 🎰 Agent Kit — 125 Solana DeFi Agents
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║           S O L A N A   C L A W D   A G E N T   K I T                  ║
-║                80 production-ready DeFi agent definitions                ║
+║               125 production-ready DeFi agent definitions                ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║                                                                          ║
 ║  TRADING              ANALYTICS           INFRASTRUCTURE                 ║
@@ -468,7 +657,7 @@ Most agent frameworks stop at chat. OpenClawd handles the hard parts:
 ║  liquidation-bot      volatility-analyst  bot-architect                  ║
 ║  funding-rate-arb     macro-analyst       anchor-developer               ║
 ║                                                                          ║
-║  DEFI PROTOCOLS       x402 / PAYMENTS     RISK / SAFETY                  ║
+║  DEFI PROTOCOLS       x402 / PAYMENTS     RISK / SECURITY                ║
 ║  ──────────────────   ─────────────────   ─────────────────────          ║
 ║  yield-optimizer      x402-market-buyer   protocol-auditor               ║
 ║  lending-strategist   x402-provider-auth  anomaly-detector               ║
@@ -478,7 +667,12 @@ Most agent frameworks stop at chat. OpenClawd handles the hard parts:
 ║  lsd-analyst          clawd-cost-planner  portfolio-risk                 ║
 ║  cross-chain-bridge   clawd-pay-gateway   position-sizer                 ║
 ║                                                                          ║
-║  + 38 more  →  solanaclawd.com/agents  ·  x402.wtf/agents               ║
+║  AUTH / IDENTITY      ─────────────────────────────────────────          ║
+║  ──────────────────                                                       ║
+║  clawd-auth-agent     CAAP/1.0 registration · JWT signing                ║
+║                       capability grants · SIWS attestation               ║
+║                                                                          ║
+║  + more  →  solanaclawd.com/agents  ·  x402.wtf/agents                  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -502,6 +696,7 @@ Every session can adopt a full character persona via `--character <name>`. The c
 ║    analytics         ║  technical-analyst · memecoin-analyst · onchain  ║
 ║    infrastructure    ║  openclawd-orchestrator · bot-architect          ║
 ║    payments          ║  x402-market-buyer · clawd-wallet-guardian       ║
+║    auth / identity   ║  clawd-auth-agent (CAAP/1.0 specialist)         ║
 ║    risk / security   ║  protocol-auditor · risk-sentinel · mev-protect  ║
 ╠══════════════════════╩═══════════════════════════════════════════════════╣
 ║  93 total   ·   3 schemas: eliza | investor | solana-agent              ║
@@ -697,11 +892,29 @@ packages/                    → packages/README.md for full detail
 ### Zone 3 — Agent Surface
 
 ```
-agents/                      🤖 80 Solana DeFi agents  →  solanaclawd.com/agents
+agents/                      🤖 125 Solana agents  →  solanaclawd.com/agents
 ├── AGENTS.md                full agent catalog + capability table
 ├── CLAUDE.md                Claude Code agent context
 ├── GEMINI.md                Gemini agent integration notes
-└── src/                     80 JSON agent definitions
+├── package.json             deps: @auth/agent · @better-auth/agent-auth
+│
+├── auth/                    🔐 CAAP/1.0 client module
+│   ├── index.ts             barrel export
+│   ├── capabilities.ts      CAPABILITIES constants + CAPABILITY_LOCATIONS
+│   └── client.ts            createClawdAgentClient() → x402.wtf discovery
+│
+├── agent-template.json      base agent template
+├── agent-template-full.json full schema with agentAuth + registry + attestation
+├── agent-template-attested.json  fully-attested template (CAAP + SAS + Metaplex)
+│
+├── build-catalog.cjs        build script → agents-catalog.json
+│                            also writes:
+│                              public/.well-known/agent-auth.json  (CAAP discovery)
+│                              public/.well-known/acp.json          (ACP registry)
+│                              public/api/agents/                   (static API)
+│
+└── src/                     125 JSON agent definitions
+    ├── solana-clawd-auth-agent.json         🔐 CAAP/1.0 auth specialist (featured)
     ├── solana-autonomous-trader.json        OODA loop · live execution
     ├── solana-arbitrage-scanner.json        cross-DEX spread detection
     ├── solana-market-maker.json             quote generation · spread mgmt
@@ -717,7 +930,7 @@ agents/                      🤖 80 Solana DeFi agents  →  solanaclawd.com/ag
     ├── solana-nanoclawd-*.json (3)          nanoclawd micro-transaction agents
     ├── solana-nemoclawd-*.json (3)          nemoclawd DeFi router + yield
     ├── solana-openclawd-*.json (5)          orchestrator · pulse · spawn · audit
-    └── ... 34 more                          technical · macro · risk · ops
+    └── ... 80+ more                         technical · macro · risk · ops
 
 characters/                  🎭 character personas
 ├── clawd.json               Clawd — on-chain oracle sovereign
@@ -889,7 +1102,7 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 ╠═══════════╬═══════════════════════════════════╬══════════════════════════╣
 ║  Runtime  ║  src/                             ║  Leviathan OODA engine   ║
 ║  Packages ║  packages/ (7)                    ║  5 npm · 2 dev           ║
-║  Agents   ║  agents/ · characters/            ║  80 defs · personas      ║
+║  Agents   ║  agents/ · characters/            ║  125 defs · personas     ║
 ║  AI Infra ║  mcp-server/ · x402/ · vendor/    ║  MCP · payments · x402   ║
 ║  Skills   ║  skills/ · library/ · knowledge/  ║  100+ installable skills ║
 ║  Bots     ║  livekit-agent/ · clawdbot-*/     ║  voice · Telegram        ║
@@ -1358,7 +1571,17 @@ node packages/agent-registry/dist/cli/index.js stats
 node packages/agent-hub/dist/cli.js --help
 # → "clawd-hub [options] [command]"
 
-# 4. install.sh flags parse correctly
+# 4. Agent catalog builds
+cd agents && node build-catalog.cjs
+# → "✅ Wrote agents-catalog.json"
+# → "125 agents"
+# → public/.well-known/agent-auth.json (CAAP/1.0 discovery)
+
+# 5. CAAP discovery
+cat agents/public/.well-known/agent-auth.json | python3 -m json.tool | grep protocol
+# → "protocol": "CAAP/1.0"
+
+# 6. install.sh flags parse correctly
 bash install.sh --help
 # → "Usage: install.sh [--minimal] [--leviathan] [--sdk] [--full] [--tui-only]"
 ```
@@ -1448,7 +1671,30 @@ leviathan --run      # start OODA pulse loop
 leviathan --status   # depth + balances + lifetime stats
 ```
 
-### 9. Run the demos (no keys needed)
+### 9. Register an agent with CAAP/1.0
+
+```bash
+npm install @auth/agent
+
+# Discover capabilities
+curl https://x402.wtf/.well-known/agent-auth.json
+
+# Register via SDK
+node -e "
+const { createClawdAgentClient, generateKeypair } = require('@auth/agent');
+(async () => {
+  const kp = await generateKeypair('Ed25519');
+  const client = new createClawdAgentClient();
+  const conn = await client.connect('https://x402.wtf/api/auth', {
+    keypair: kp, name: 'my-agent', mode: 'delegated',
+    capabilities: ['attest_agent', 'get_peer_card'],
+  });
+  console.log('Agent registered:', conn.agentId);
+})();
+"
+```
+
+### 10. Run the demos (no keys needed)
 
 ```bash
 npx tsx examples/ooda-loop.ts                # OODA loop
@@ -1486,6 +1732,12 @@ X402_NETWORK=             # solana-mainnet | solana-devnet
 X402_MAX_PER_REQUEST=     # max $ per request (default: 0.10)
 X402_MAX_SESSION=         # session spend cap (default: 1.00)
 
+# ── Agent Auth — CAAP/1.0 ───────────────────────────────────────
+BETTER_AUTH_URL=          # base URL (default: https://x402.wtf)
+BETTER_AUTH_SECRET=       # 32-byte random secret for JWT signing
+BETTER_AUTH_DATABASE_URL= # Postgres URL for agent/host/grant tables
+AGENT_AUTH_DISCOVERY=     # override: /.well-known/agent-auth.json URL
+
 # ── Agent Hub ───────────────────────────────────────────────────
 CLAWD_HUB_PORT=3747
 
@@ -1499,7 +1751,7 @@ SOLANA_TRACKER_API_KEY=   # SolanaTracker for trending tokens
 
 ## 🏗️ npm Packages — All Live
 
-All 7 JS packages are published under `@openclawdsolana` on npm.
+All 7 JS packages are published under `@openclawdsolana` on npm. Agent auth packages are published separately.
 
 | Package | Version | Install |
 | --- | --- | --- |
@@ -1510,6 +1762,8 @@ All 7 JS packages are published under `@openclawdsolana` on npm.
 | [`@openclawdsolana/wallet`](https://www.npmjs.com/package/@openclawdsolana/wallet) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/wallet?color=147D64) | `npm install @openclawdsolana/wallet` |
 | [`@openclawdsolana/leviathan`](https://www.npmjs.com/package/@openclawdsolana/leviathan) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/leviathan?color=1E5AA8) | `npm install -g @openclawdsolana/leviathan` |
 | [`@openclawdsolana/clawd-standalone`](https://www.npmjs.com/package/@openclawdsolana/clawd-standalone) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/clawd-standalone?color=1E5AA8) | `npm install -g @openclawdsolana/clawd-standalone` |
+| [`@better-auth/agent-auth`](https://www.npmjs.com/package/@better-auth/agent-auth) | `^0.5.1` | `npm install @better-auth/agent-auth` |
+| [`@auth/agent`](https://www.npmjs.com/package/@auth/agent) | `^0.5.1` | `npm install @auth/agent` |
 | `clawd-protocol` | Rust/Anchor | `anchor build` |
 | `mcp-server` / `x402` | source only | `npm install && npm run build` |
 
@@ -1542,6 +1796,8 @@ curl -fsSL https://raw.githubusercontent.com/solizardking/solanaclawd/main/insta
 | 🤖 x402 Agents | [x402.wtf/agents](https://x402.wtf/agents) |
 | 🏛 x402 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
 | 🎯 x402 Skills | [x402.wtf/skills](https://x402.wtf/skills) |
+| 🔐 Agent Auth | [github.com/Solizardking/agent-auth](https://github.com/Solizardking/agent-auth) |
+| 🔑 CAAP Discovery | [x402.wtf/.well-known/agent-auth.json](https://x402.wtf/.well-known/agent-auth.json) |
 | 🖥 AI Terminal | [solanaclawd.com/terminal](https://solanaclawd.com/terminal) |
 | 🤖 AI (Cheshire) | [cheshireterminal.ai](https://cheshireterminal.ai) |
 | 💬 Telegram | [t.me/clawdtoken](https://t.me/clawdtoken) |
