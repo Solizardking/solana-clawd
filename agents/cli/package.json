@@ -1,0 +1,29 @@
+{
+  "name": "@solanaclawd/clawd-agents-cli",
+  "version": "0.1.0",
+  "description": "CLI for scaffolding, deploying, and publishing Solana agents on the Clawd platform",
+  "type": "module",
+  "bin": {
+    "clawd-agents": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/cli.js",
+    "dev": "node --loader ts-node/esm src/cli.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "typescript": "^5.9.3"
+  },
+  "keywords": ["solana", "agents", "clawd", "defi", "cli"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Solizardking/solana-clawd.git",
+    "directory": "agents/cli"
+  }
+}
