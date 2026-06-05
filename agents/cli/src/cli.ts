@@ -6,6 +6,7 @@ import { runDeploy } from "./commands/deploy.js";
 import { runEval } from "./commands/eval.js";
 import { runPublish } from "./commands/publish.js";
 import { runRegistryList, runRegistryConnect, runRegistryStatus, runRegistryRegister } from "./commands/registry.js";
+import { runRegister } from "./commands/register.js";
 import { runGoalCreate, runGoalList, runGoalStatus, runGoalComplete } from "./commands/goals.js";
 import { runPerps, runLong, runShort, runSpot, runApe } from "./commands/trading.js";
 
@@ -63,6 +64,7 @@ COMMANDS
   deploy --target <t>      Deploy to vercel | vertex-ai | fly | railway
   eval <agent.json>        Validate an agent JSON definition
   publish <agent.json>     Add agent to the Clawd catalog
+  register                 One-shot: build, publish locally, and register at x402.wtf
   registry list            List registered Google Agent Registry endpoints
   registry connect <ep>    Show connection example for a registered endpoint
   registry status          Show Agent Registry + Reasoning Engine status
@@ -93,6 +95,17 @@ OPTIONS
   --telegram               Add Telegram bot surface (scaffold)
   --registry               Add Agent Registry integration (scaffold)
   --skip-build             Skip catalog rebuild (publish)
+  --name <name>            Agent display name (register)
+  --system-role <prompt>   System role / prompt (register)
+  --description <text>     Short description (register)
+  --tags <t1,t2>           Comma-separated tags (register)
+  --avatar <emoji>         Avatar emoji or URL (register)
+  --category <cat>         Category: trading|defi|research|infrastructure|agentic (register)
+  --skills <s1,s2>         Comma-separated skill names (register)
+  --author <name>          Author name (register)
+  --homepage <url>         Homepage URL (register)
+  --api-key <key>          x402.wtf API key (or set X402_API_KEY env)
+  --local                  Skip remote registration, write locally only (register)
   --global                 Global install scope (setup)
   --notional <usd>         Trade size in USD (long/short/spot/ape)
   --leverage <x>           Leverage multiplier (long/short/ape)
@@ -115,6 +128,8 @@ EXAMPLES
   clawd-agents eval my-agent/clawd.json --strict
   clawd-agents deploy --target vertex-ai
   clawd-agents registry list
+  clawd-agents register --name "My DeFi Agent" --description "Handles swaps" --tags "defi,solana" --category defi
+  clawd-agents register --name "My Agent" --local --dry-run
 
 PACKAGES
   @clawd/agent-auth-solana    Solana extension — SIWS, DAS attestation, CAAP/1.0
@@ -198,6 +213,24 @@ async function main(): Promise<void> {
       runPublish(sub, {
         dryRun: flag(flags, "dry-run"),
         skipBuild: flag(flags, "skip-build"),
+      });
+      break;
+    }
+
+    case "register": {
+      await runRegister({
+        name: strFlag(flags, "name") ?? sub ?? "",
+        systemRole: strFlag(flags, "system-role"),
+        description: strFlag(flags, "description"),
+        tags: strFlag(flags, "tags"),
+        avatar: strFlag(flags, "avatar"),
+        category: strFlag(flags, "category"),
+        skills: strFlag(flags, "skills"),
+        author: strFlag(flags, "author"),
+        homepage: strFlag(flags, "homepage"),
+        local: flag(flags, "local"),
+        apiKey: strFlag(flags, "api-key"),
+        dryRun: flag(flags, "dry-run"),
       });
       break;
     }
