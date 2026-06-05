@@ -15,6 +15,23 @@
 
 import { SIGN_TRANSACTION_TOOL, handleSignTransaction } from "./mcp-sign-handler.js";
 import { createPaymentAttestation } from "./attest.js";
+import {
+  queryClawdAgents,
+  ClawdDiscoveryQuery,
+  CLAWD_AGENTS,
+  generateClaudeMCPConfig,
+  generateOpenAIPluginConfig,
+  generateOpenCodeMCPConfig,
+  generateGoogleADKConfig,
+  resolveGoogleAgentIdentity,
+  buildSlashEvidenceChain,
+  deriveBondPDA,
+  deriveReceiptPDA,
+  CLAWD_TOKEN_MINT,
+  SAS_PROGRAM_ID as _SAS,
+  MPL_CORE_PROGRAM_ID as _MPL,
+  DNA_X402_RECEIPT_PROGRAM_ID as _DNA,
+} from "./clawd-discovery.js";
 
 // ─── JSON-RPC 2.0 Types ────────────────────────────────────────────────────
 
@@ -196,56 +213,83 @@ async function dispatchTool(
         env,
       );
 
-    case "search_solana_agents":
-      return {
-        agents: [
-          {
-            id: "solana-pumpfun-bot",
-            name: "Solana PumpFun/PumpSwap Copy Trading Bot",
-            attestation: "verified",
-            walletPubkey: "wallet_placeholder",
-            tier: "premium",
-          },
-          {
-            id: "clawd-dashboard",
-            name: "CLAWD Portfolio Dashboard",
-            attestation: "verified",
-            walletPubkey: "wallet_placeholder",
-            tier: "basic",
-          },
-        ],
-        query: args?.query ?? "",
-        total: 59,
-        verified: args?.verifiedOnly ? 24 : 59,
+    case "search_solana_agents": {
+      const discoveryQuery: ClawdDiscoveryQuery = {
+        query: args?.query as string | undefined,
+        category: args?.category as ClawdDiscoveryQuery["category"],
+        bondedOnly: args?.bondedOnly as boolean | undefined,
+        verifiedOnly: args?.verifiedOnly as boolean | undefined,
+        clawdGovernedOnly: args?.clawdGovernedOnly as boolean | undefined,
+        protocol: args?.protocol as ClawdDiscoveryQuery["protocol"],
+        trustGateMin: args?.trustGateMin as ClawdDiscoveryQuery["trustGateMin"],
+        sortBy: args?.sortBy as ClawdDiscoveryQuery["sortBy"],
+        limit: args?.limit as number | undefined,
       };
+      return queryClawdAgents(discoveryQuery);
+    }
 
-    case "get_agent_identity":
+    case "get_agent_identity": {
+      const agentId = args?.agentId as string;
+      const agent = CLAWD_AGENTS.find(
+        (a) => a.id === agentId || a.identity.walletPubkey === args?.walletPubkey,
+      );
+      if (agent) {
+        return {
+          found: true,
+          ...agent,
+          _meta: {
+            clawdTokenMint: CLAWD_TOKEN_MINT.toBase58(),
+            sasProgramId: "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG",
+            mplCoreProgramId: "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d",
+            dnaX402ReceiptProgramId: "6HSRGivdYR5D7yTDy1TFMCM8h3LzXxRtKU1RA3RnCMRN",
+          },
+        };
+      }
       return {
-        agentId: args?.agentId,
-        sasAttestation: {
-          programId: "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG",
-          status: "ready_for_attestation",
-          identityPDA: "pending_derivation",
-        },
-        metaplexCore: {
-          mintAddress: "pending_derivation",
-          metadataUri: "https://x402.wtf/agents/metadata.json",
-        },
-        x402Payment: {
-          enabled: true,
-          assets: ["USDC"],
-          networks: ["solana"],
-        },
+        found: false,
+        agentId: agentId ?? "unknown",
+        message: "Agent not found in Clawd discovery index. Register via SAS attestation.",
+        availableCategories: ["trading", "defi", "collateral", "payment", "discovery", "identity", "portfolio", "risk"],
       };
+    }
 
-    case "bridge_google_agent":
+    case "bridge_google_agent": {
+      const bridgeConfig = {
+        organizationId: (args?.organizationId as string) ?? "ORG_ID",
+        projectNumber: (args?.googleProjectId as string) ?? "PROJECT_NUMBER",
+        location: (args?.googleLocation as string) ?? "global",
+        engineId: (args?.engineId as string) ?? "ENGINE_ID",
+        agentWalletPubkey: (args?.agentWalletPubkey as string) ?? "",
+        agentId: (args?.agentId as string) ?? "",
+        clawdBalance: (args?.clawdBalance as number) ?? 0,
+      };
+      const googleIdentity = resolveGoogleAgentIdentity(bridgeConfig);
       return {
         success: true,
-        message: "Google Agent identity bridging initiated",
-        googleResourceName: `projects/${args?.googleProjectId}/locations/${args?.googleLocation ?? "global"}/agents/${args?.agentId}`,
-        solanaAttestation: "ready",
-        adkIntegration: "use AgentRegistry.get_remote_a2a_agent() with GoogleAuth httpx.AsyncClient",
+        message: "Google SPIFFE Agent Identity bridged to Solana Clawd on-chain attestation",
+        googleResourceName: `projects/${bridgeConfig.projectNumber}/locations/${bridgeConfig.location}/agents/${bridgeConfig.agentId}`,
+        spiffe: {
+          principal: googleIdentity.spiffePrincipal,
+          principalSet: googleIdentity.principalSet,
+          orgWide: googleIdentity.orgWide,
+        },
+        requiredIamRoles: googleIdentity.requiredIamRoles,
+        gcloudGrantCmd: googleIdentity.gcloudGrantCmd,
+        adkIntegration: googleIdentity.adkIntegrationCode,
+        solanaAttestation: {
+          sasProgramId: "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG",
+          mplCoreProgramId: "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d",
+          clawdTokenMint: CLAWD_TOKEN_MINT.toBase58(),
+          dnaX402ReceiptAnchor: "6HSRGivdYR5D7yTDy1TFMCM8h3LzXxRtKU1RA3RnCMRN",
+        },
+        consumerConfigs: {
+          claude: generateClaudeMCPConfig(),
+          openai: generateOpenAIPluginConfig(),
+          opencode: generateOpenCodeMCPConfig(),
+          google_adk: generateGoogleADKConfig(bridgeConfig.projectNumber, bridgeConfig.location),
+        },
       };
+    }
 
     default:
       throw { code: -32601, message: `Unknown tool: ${toolName}` };
