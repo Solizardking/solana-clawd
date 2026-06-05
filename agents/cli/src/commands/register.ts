@@ -142,7 +142,7 @@ export async function runRegister(opts: RegisterOptions): Promise<void> {
     if (existsSync(destPath)) {
       printWarn(`${destPath} already exists — overwriting`);
     }
-    writeFileSync(destPath, JSON.stringify(agentJson, null, 2) + "\n", "utf-8");
+    writeFileSync(destPath, `${JSON.stringify(agentJson, null, 2)}\n`, "utf-8");
     printOk(`Written → ${destPath}`);
   } else {
     printWarn(`Catalog src not found at ${catalogSrc} — skipping local write`);
