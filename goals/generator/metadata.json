@@ -1,0 +1,6 @@
+{
+  "name": "Clawd /Goal Generator",
+  "description": "An interactive, multi-modal goal generator that turns prompt ideas, uploaded files, and images into high-impact, live-previewed SMART goals and actionable trackers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
