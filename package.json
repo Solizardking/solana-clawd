@@ -188,6 +188,11 @@
 
     "wallet:build": "cd packages/clawd-wallet && npm run build",
 
+    "pump:build": "cd clawd-pump && cargo build --release",
+    "pump:start": "cd clawd-pump && cargo run --release",
+    "pump:autobuy": "cd clawd-pump && cargo run --release -- --autobuy",
+    "pump:check": "cd clawd-pump && cargo check",
+
     "protocol:build": "cd packages/clawd-protocol && anchor build",
 
     "automation:build": "npm run build",
