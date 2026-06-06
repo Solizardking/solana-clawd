@@ -1,0 +1,154 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Clawd Browser Paid API",
+    "version": "v1",
+    "description": "x402.wtf paid automation routes for premium agent chat, sandbox launch flows, wallet intelligence, and catalog discovery."
+  },
+  "servers": [
+    {
+      "url": "https://www.x402.wtf"
+    }
+  ],
+  "paths": {
+    "/api/x402/catalog": {
+      "get": {
+        "operationId": "getPaidCatalog",
+        "summary": "List paid Clawd API products",
+        "description": "List the live paid Clawd routes, their pricing, CLAWD overlay pricing, and supported settlement protocols.",
+        "responses": {
+          "200": {
+            "description": "Catalog payload returned successfully."
+          }
+        }
+      }
+    },
+    "/api/automation/status": {
+      "get": {
+        "operationId": "getAutomationStatus",
+        "summary": "Read automation entrypoint status",
+        "description": "Return public automation entrypoint metadata, login state, sandbox actions, and the current pay.sh/x402 price for premium agent chat.",
+        "responses": {
+          "200": {
+            "description": "Automation status returned successfully."
+          }
+        }
+      }
+    },
+    "/api/x402/clawd": {
+      "post": {
+        "operationId": "createPrivateAgentSession",
+        "summary": "Run a private Clawd operator session",
+        "description": "Stream a premium Clawd session for research, routing, and operator-grade task execution from one paid request.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": { "type": "string" },
+                  "sessionId": { "type": "string" },
+                  "model": { "type": "string" },
+                  "maxSteps": { "type": "number" },
+                  "maxCostUsd": { "type": "number" },
+                  "enableShell": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server-sent event stream with session events.",
+            "content": {
+              "text/event-stream": {}
+            }
+          },
+          "402": {
+            "description": "x402 payment challenge for the paid session."
+          }
+        }
+      }
+    },
+    "/api/x402/agent/chat": {
+      "post": {
+        "operationId": "createPremiumAgentChat",
+        "summary": "Open a premium Clawd chat stream",
+        "description": "Stream premium agent chat events for public automation users after a $0.69420 x402/pay.sh payment or 1,000 CLAWD app-native access check.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["messages"],
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": { "type": "string" },
+                        "content": { "type": ["string", "null"] }
+                      }
+                    }
+                  },
+                  "sessionId": { "type": "string" },
+                  "userPublicKey": { "type": "string" },
+                  "canTrade": { "type": "boolean" },
+                  "thinking": { "type": "boolean" },
+                  "effort": {
+                    "type": "string",
+                    "enum": ["high", "max"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server-sent event stream with chat events.",
+            "content": {
+              "text/event-stream": {}
+            }
+          },
+          "402": {
+            "description": "x402 payment challenge for the premium chat lane."
+          }
+        }
+      }
+    },
+    "/api/store/agents/wallet-brief": {
+      "post": {
+        "operationId": "createWalletBrief",
+        "summary": "Generate a wallet intelligence brief",
+        "description": "Inspect a Solana wallet with Helius-backed balances and indexed assets, then return a concise operator brief.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["wallet"],
+                "properties": {
+                  "wallet": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wallet brief returned successfully."
+          },
+          "402": {
+            "description": "x402 payment challenge for the wallet brief."
+          }
+        }
+      }
+    }
+  }
+}

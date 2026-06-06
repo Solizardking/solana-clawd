@@ -1,0 +1,137 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Lobster Gacha API",
+    "version": "1.0.0",
+    "description": "Provably fair Solana gacha API with Phoenix perpetuals market data. Payments are USDC-denominated via x402/pay.sh on Solana."
+  },
+  "servers": [
+    { "url": "https://gacha.solanaclawd.com" }
+  ],
+  "paths": {
+    "/api/pull": {
+      "post": {
+        "operationId": "gachaPull",
+        "summary": "Execute a provably fair gacha pull",
+        "description": "Execute 1x or 10x provably fair gacha pull returning AI agent cards with rarity tiers (Common/Rare/Epic/Legendary), CLAWD token prizes, and a SHA-256(wallet:spinIndex:blockhash) commitment hash for on-chain verification. Requires x402/pay.sh payment of $0.0025 USDC per request.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["wallet"],
+                "properties": {
+                  "wallet": {
+                    "type": "string",
+                    "description": "Base58-encoded Solana wallet public key",
+                    "example": "So11111111111111111111111111111111111111112"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "enum": [1, 10],
+                    "default": 1,
+                    "description": "Number of pulls. 10x pulls guarantee ≥ Rare on the final card."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gacha result containing agent cards with rarity, prizes, and commitment hash",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cards": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "rarity": {
+                            "type": "string",
+                            "enum": ["Common", "Rare", "Epic", "Legendary"],
+                            "description": "Card rarity. Drop rates: Common 60%, Rare 25%, Epic 12%, Legendary 3%."
+                          },
+                          "name": { "type": "string", "description": "Agent card name" },
+                          "narrative": { "type": "string", "description": "AI-generated card lore (model chosen from commitment hash)" },
+                          "clawdPrize": { "type": "number", "description": "CLAWD token prize amount" },
+                          "commitmentHash": {
+                            "type": "string",
+                            "description": "SHA-256(wallet:spinIndex:blockhash) for on-chain verification"
+                          },
+                          "blockhash": { "type": "string", "description": "Solana blockhash used in commitment" },
+                          "spinIndex": { "type": "integer", "description": "Sequential pull index for this wallet" },
+                          "nftMint": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Metaplex Core NFT mint address if minting was requested"
+                          }
+                        },
+                        "required": ["rarity", "name", "clawdPrize", "commitmentHash", "blockhash"]
+                      }
+                    },
+                    "totalClawd": { "type": "number", "description": "Total CLAWD prizes won across all cards" }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required. Include an x402/pay.sh Payment header with $0.0025 USDC proof on Solana.",
+            "headers": {
+              "X-Payment-Required": {
+                "schema": { "type": "string" },
+                "description": "x402 payment challenge details"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request (missing wallet, invalid count, or malformed pubkey)"
+          }
+        }
+      }
+    },
+    "/api/perps": {
+      "get": {
+        "operationId": "perpMarketData",
+        "summary": "Live Phoenix perpetuals market data",
+        "description": "Proxy to Phoenix DEX perpetuals with technical analysis. Returns ticker, funding rates, OHLCV candles, and TA indicators (RSI, MACD, Bollinger Bands) for SOL, BTC, and ETH pairs. Requires x402/pay.sh payment of $0.001 USDC per request.",
+        "parameters": [
+          {
+            "name": "cmd",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Command path. Examples:\n- `market/ticker/SOL` — live price, 24h volume, funding rate\n- `market/candles/SOL?interval=1h` — OHLCV candles\n- `market/candles/SOL?interval=1h&with_indicators=rsi,macd` — candles + TA\n- `ta/report/SOL&timeframe=1h` — full TA report (RSI, MACD, BBands)\n\nSupported assets: SOL, BTC, ETH"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Market data or TA indicators response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "description": "Response shape varies by cmd. Ticker returns price/volume/funding; candles return OHLCV arrays; ta/report returns RSI, MACD, and Bollinger Band values."
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required. Include an x402/pay.sh Payment header with $0.001 USDC proof on Solana."
+          },
+          "400": {
+            "description": "Invalid or missing cmd parameter"
+          }
+        }
+      }
+    }
+  }
+}
