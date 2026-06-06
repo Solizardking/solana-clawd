@@ -1,7 +1,7 @@
 {
-  "name": "@mawd/solanaos-protocol-client",
+  "name": "@clawd/solana-ai-inference-client",
   "version": "0.2.0",
-  "description": "SolanaOS Protocol Client SDK - AI Inference + ORE Mining",
+  "description": "Clawd Solana AI Inference Protocol Client SDK - On-chain AI model registry, inference requests, staking, validators, and ORE mining",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

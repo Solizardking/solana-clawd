@@ -4,3 +4,4 @@ packages:
   - "x402"
   - "pay"
   - "vendor/agent-auth/packages/*"
+  - "programs/programs/client"
