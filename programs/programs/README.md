@@ -19,30 +19,42 @@
 ```
 
 ```
-╔══════════════════════════════════════════════════════════════════════════╗
-║                     S O L A N A   C L A W D                             ║
-╠═════════════════════════════╦════════════════════════════════════════════╣
-║  solanaclawd.com            ║  Main site · TUI · SDK · token             ║
-║  solanaclawd.com/agents     ║  Browse + search all 125 agents            ║
-║  solanaclawd.com/gateway    ║  x402 payment gateway · USDC routing       ║
-║  solanaclawd.com/skills     ║  Installable agent skills catalog          ║
-║  solanaclawd.com/terminal   ║  Browser terminal (zero install)           ║
-╠═════════════════════════════╬════════════════════════════════════════════╣
-║  x402.wtf                   ║  HTTP 402 payment protocol                 ║
-║  x402.wtf/agents            ║  x402-gated agent catalog + pricing        ║
-║  x402.wtf/gateway           ║  Facilitator · routing · settlement        ║
-║  x402.wtf/skills            ║  Premium skills marketplace                ║
-║  x402.wtf/.well-known/      ║  CAAP/1.0 discovery · ACP registry         ║
-╠═════════════════════════════╬════════════════════════════════════════════╣
-║  ClawdRouter (clawdrouter/) ║  Solana-native LLM router · 55+ models     ║
-║  CLAWD Gateway (gateway/)   ║  Telegram bot · Helius/Birdeye · agent API ║
-╠═════════════════════════════╬════════════════════════════════════════════╣
-║  agent-auth                 ║  github.com/Solizardking/agent-auth        ║
-║  CAAP/1.0                   ║  Agent identity · JWT auth · capabilities  ║
-╠═════════════════════════════╬════════════════════════════════════════════╣
-║  ⚓ AI Inference (here)      ║  programs/programs/ · on-chain + TS SDK    ║
-║  GitHub                     ║  github.com/Solizardking/solana-clawd      ║
-╚═════════════════════════════╩════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     S O L A N A   C L A W D   E C O S Y S T E M            ║
+╠══════════════════════════════════╦═════════════════════════════════════════╣
+║  SITES                           ║                                         ║
+║  solanaclawd.com                 ║  Main site · TUI · SDK · token          ║
+║  solanaclawd.com/agents          ║  Browse + search all 125 agents         ║
+║  solanaclawd.com/gateway         ║  x402 payment gateway · USDC routing    ║
+║  solanaclawd.com/skills          ║  Installable agent skills catalog       ║
+║  solanaclawd.com/terminal        ║  Browser terminal (zero install)        ║
+║  x402.wtf                        ║  HTTP 402 payment protocol              ║
+║  x402.wtf/agents                 ║  x402-gated agent catalog + pricing     ║
+║  x402.wtf/gateway                ║  Facilitator · routing · settlement     ║
+║  x402.wtf/skills                 ║  Premium skills marketplace             ║
+╠══════════════════════════════════╬═════════════════════════════════════════╣
+║  PACKAGES  (packages/)           ║                                         ║
+║  🖥  clawd-code-cli               ║  @openclawdsolana/clawd — TUI operator  ║
+║  📋 agent-registry               ║  Metaplex mint · SQLite index · CLI     ║
+║  🌐 agent-hub                    ║  Local discovery server · port 3747     ║
+║  🛠  clawd-sdk                    ║  Bonding curves · Token2022 · vault     ║
+║  👛 clawd-wallet                  ║  Privy · AgenticWallet · Jupiter        ║
+║  🔐 agentwallet                   ║  AES-256-GCM keypair vault · REST API   ║
+║  💸 agents-x402-solana           ║  One-line x402 monetisation for MCP     ║
+║  📦 cli-standalone               ║  Zero-compile clawd binary              ║
+║  🌀 percolator                   ║  Perpetuals CLI for Solana              ║
+║  ⚓ clawd-protocol               ║  Anchor: bonding curves · pTokens       ║
+╠══════════════════════════════════╬═════════════════════════════════════════╣
+║  ON-CHAIN PROGRAMS               ║                                         ║
+║  ⚓ AI Inference (here)           ║  programs/programs/ · on-chain + TS SDK ║
+║  ⚓ clawd-protocol               ║  packages/clawd-protocol/               ║
+╠══════════════════════════════════╬═════════════════════════════════════════╣
+║  SERVICES                        ║                                         ║
+║  ClawdRouter (clawdrouter/)      ║  Solana-native LLM router · 55+ models  ║
+║  CLAWD Gateway (gateway/)        ║  Telegram bot · Helius · agent API      ║
+║  agent-auth (vendor/)            ║  CAAP/1.0 · Ed25519 · JWT · SIWS        ║
+║  GitHub                          ║  Solizardking/solana-clawd              ║
+╚══════════════════════════════════╩═════════════════════════════════════════╝
 ```
 
 ## 🦞 What Is OpenClawd?
