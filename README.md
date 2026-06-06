@@ -1463,6 +1463,71 @@ await startServer(vault, { port: 9099, cors: true });
 
 ---
 
+<details open>
+<summary><strong>⚓ @clawd/solana-ai-inference-client — On-chain AI Inference Protocol</strong></summary>
+
+A fully deployed Anchor program + TypeScript SDK for decentralized AI model registration, inference requests, staking, and validator management on Solana.
+
+**Program ID:** `Bg96xPuC3Mt2xnEnQPQBJY8QBqD6J7hn3WgnqDK43pKT` · Devnet + Mainnet
+
+```
+programs/programs/
+├── solana-ai-inference/src/lib.rs   Anchor program — all instructions, accounts, events
+└── client/src/
+    ├── idl.ts       PDA seeds, account types, instruction param interfaces
+    ├── client.ts    SolanaAiInferenceClient — 20 instructions + 8 read methods
+    ├── ore.ts       OreMinerClient — ORE v2 mining stats, deploy/claim transactions
+    └── config.ts    Helius RPC, program IDs, API endpoint map
+```
+
+**What the on-chain program does:**
+
+| Module | What It Does |
+|--------|-------------|
+| **Model Registry** | Anyone can register an AI model on-chain with a content hash, type, API endpoint, and inference fee. Models go through a training → finalize cycle before accepting requests. |
+| **Inference Requests** | Requesters pay model fee + 2.5% protocol fee upfront into escrow. A PDA tracks status (`Pending → Completed / Failed`). On success, escrow releases to model owner + treasury; on failure, requester is refunded. |
+| **Staking** | Token holders stake with lock tiers (1 day → 1 year) for up to 6× multiplier. Unstake has a 48h cooldown after lock expires. |
+| **Validators** | Validators stake ≥ 1M tokens to earn the right to rate data submissions and submit inference results. Misbehaviour triggers a 5% slash + reputation penalty. |
+| **DNA Generation** | Records on-chain events for AI-generated DNA hashes with a utility score — used by the Clawd agent identity system. |
+| **ORE Mining** | `OreMinerClient` reads the live ORE v2 board, miner, and automation PDAs. Builds deploy / claim-SOL / claim-ORE instructions without a full Anchor IDL. |
+
+```typescript
+import { SolanaAiInferenceClient, createModelType, OreMinerClient } from '@clawd/solana-ai-inference-client';
+
+// --- inference ---
+const client = new SolanaAiInferenceClient(connection, wallet);
+await client.initializeModel(authority, 'QmCIDHash', createModelType('textGeneration'), 'https://api.example.com', BigInt(1_000_000), BigInt(0));
+await client.finalizeTraining(authority, modelPda, BigInt(9_500)); // 95% accuracy
+await client.requestInference(requester, requesterAta, escrowAta, modelPda, 'Analyse SOL sentiment', BigInt(5_000), BigInt(0));
+
+// --- staking ---
+await client.stakeTokens(user, userAta, vaultAta, BigInt(5_000_000), BigInt(31_536_000)); // 1-year lock
+
+// --- ORE mining ---
+const ore = new OreMinerClient();
+const stats = await ore.getMiningStats(walletPubkey);
+console.log(`ORE balance: ${stats.oreBalance}, pending: ${stats.pendingOreRewards}`);
+```
+
+```bash
+# Build the program
+cd programs/programs
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+anchor build --skip-lint          # → target/deploy/solana_ai_inference.so
+
+# Build the TypeScript client
+cd client && npm install && npm run build   # → dist/
+
+# Use as a workspace dep
+pnpm add @clawd/solana-ai-inference-client  # resolves to workspace:*
+```
+
+Full docs: [`programs/programs/README.md`](programs/programs/README.md)
+
+</details>
+
+---
+
 ## 🧪 Examples — 9 Runnable Demos
 
 ```bash
@@ -1889,6 +1954,7 @@ All 7 JS packages are published under `@openclawdsolana` on npm. Agent auth pack
 | [`@better-auth/agent-auth`](https://www.npmjs.com/package/@better-auth/agent-auth) | `^0.5.1` | `npm install @better-auth/agent-auth` |
 | [`@auth/agent`](https://www.npmjs.com/package/@auth/agent) | `^0.5.1` | `npm install @auth/agent` |
 | `clawd-protocol` | Rust/Anchor | `anchor build` |
+| [`@clawd/solana-ai-inference-client`](programs/programs/README.md) | workspace | `pnpm add @clawd/solana-ai-inference-client` |
 | `mcp-server` / `x402` | source only | `npm install && npm run build` |
 
 ```bash
