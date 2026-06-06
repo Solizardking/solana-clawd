@@ -1,9 +1,9 @@
-FROM node:22-slim AS deps
+FROM node:22-alpine AS deps
 WORKDIR /app
 COPY gateway/package*.json ./
 RUN npm install --omit=dev --no-audit --no-fund
 
-FROM node:22-slim AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY gateway/package*.json ./
 RUN npm install --no-audit --no-fund
@@ -12,11 +12,11 @@ COPY formal_verification ./formal_verification
 WORKDIR /app/gateway
 RUN npm run build
 
-FROM node:22-slim AS runtime
+FROM node:22-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=build /app/gateway/dist ./dist
+COPY --from=build /app/dist ./dist
 COPY gateway/package*.json ./
 EXPOSE 8080
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "dist/gateway/src/index.js"]
