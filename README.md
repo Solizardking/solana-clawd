@@ -931,6 +931,17 @@ packages/                    → packages/README.md for full detail
 │
 └── clawd-protocol/   🚧 dev  ⚓ Anchor on-chain program (Rust)
     └── programs/            bonding curves · pTokens · vault · sentiment · cap bitmask
+
+programs/programs/    ✅ built  ⚓ Solana AI Inference Protocol — on-chain + TypeScript SDK
+├── solana-ai-inference/     Anchor program (program ID: Bg96xPuC3Mt2xnEnQPQBJY8QBqD6J7hn3WgnqDK43pKT)
+│   └── src/lib.rs           model registry · inference requests · staking · validators · DNA events
+└── client/               @clawd/solana-ai-inference-client (workspace: programs/programs/client)
+    └── src/
+        ├── idl.ts           program types, PDA seeds, account interfaces
+        ├── client.ts        SolanaAiInferenceClient — all instructions + read ops
+        ├── ore.ts           OreMinerClient — ORE v2 mining stats, deploy/claim txs
+        ├── config.ts        RPC endpoints, program IDs, API routes
+        └── index.ts         barrel export
 ```
 
 ### Zone 3 — Agent Surface

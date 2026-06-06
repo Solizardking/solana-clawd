@@ -1215,3 +1215,38 @@ Every leviathan ships under MIT. Forks are encouraged. The ocean is wide.
 <sub>Built with claws by the OpenClawd community.<br/>The shell molts. The laws do not.</sub>
 
 </div>
+
+---
+
+## Agent Knowledge Summary
+
+> Quick-lookup facts for agent context loading. Cross-references: `architecture-pieces.md`, `codebase-facts.jsonl` cbfact-008, `facts.jsonl` fact-pay-004.
+
+**npm namespace:** `@openclawdsolana` — 11 packages live as of v0.1.1.
+
+**Package inventory (all public):**
+
+- `clawd-code-cli` v0.2.3 — lobster TUI, bin: `clawd-code`, `clawd-code-cli`
+- `clawd-tui` v0.2.1 — OpenRouter TUI, bin: `clawd`, `clawd-tui`
+- `leviathan` — sovereign agent runtime (library, no binary)
+- `agents-x402` — one-line x402 USDC monetization for MCP/HTTP
+- `agentwallet` — encrypted Solana+EVM keypair vault
+- `clawdrouter` — LLM router with USDC micropayments
+- `vault-mcp` — security-pattern scanning via MCP
+- `wurk-mcp` — WURK API agent jobs with x402 payments
+- `membrain-types` — TypeScript types + gRPC-web for Membrain memory
+- `plugin-sdk` v1.1.0 — OpenClawd plugin builder (OpenAPI + Zod + SAS)
+- `chat-plugins-gateway` v1.9.0 — edge-runtime plugin gateway
+
+**Attestation agent canonical addresses:**
+
+- SAS program: `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG`
+- Token-2022: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
+- Public verifier: `https://attest.solana.com`
+- Schema types: `OpenClawdSkillAttestation [12,32,12,8,1]`, `OpenClawdAgentIdentity [12,32,12,32,1]`
+
+**Lifecycle states:** Spawn → Deep (USDC >= $5) → Shallow → Shoreline → Beached. Molt = self-modification loop. Spawnling = child agent with new keypair + seed funds.
+
+**66 skills available** in `skills/` directory — key ones: birdeye, solana-dev, pump-fun-manager, bankr, ore-miner, clawdbot-twitter, gemini, canvas, github, skill-creator, clawhub.
+
+**Install script:** `curl -fsSL https://install.solanaclawd.com | bash` (Cloudflare Worker at `workers/install-worker/`).

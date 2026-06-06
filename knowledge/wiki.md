@@ -353,3 +353,54 @@ Research access is gated by $CLAWD holdings:
 ## License
 
 MIT — See [`../LICENSE.md`](../LICENSE.md)
+
+---
+
+## Agent Knowledge Summary
+
+> Quick-lookup facts for agent context loading. Cross-references: `SOVEREIGN_RESEARCH.md`, `api-behaviors.jsonl` api-006, `codebase-facts.jsonl` cbfact-002.
+
+**API base:** `http://localhost:8000/api/v1/research/` (local) or configured `RESEARCH_API_URL`.
+
+**Research endpoint map:**
+
+- `POST /research/chain` — pump.fun, graduation, token analysis, wallet research
+- `POST /research/defi` — yield scanning, pool analysis, arbitrage
+- `POST /research/market` — trends, alpha (trending ∩ new), whale moves
+- `POST /research/agent` — Karpathy self-improvement loop (learn/share/calibrate)
+- `GET /research/status` — system health and autoloop state
+- `GET /research/pricing` — SOL + $CLAWD pricing per research type
+- `GET /research/agents` — list available research agents
+
+**$CLAWD gating tiers:**
+
+- 0 tokens: Free — 5 queries/day, basic chain only
+- 1+: Bronze — 50/day + token analysis
+- 1,000+: Silver — 200/day + DeFi research
+- 10,000+: Gold — unlimited + market alpha
+- 100,000+: Diamond — unlimited + priority
+
+**Required env vars:** `DATABASE_URL` (PostgreSQL), `HELIUS_API_KEY`, `BIRDEYE_API_KEY`. Optional: `SOLANA_TRACKER_API_KEY`, `AWS_ACCESS_KEY_ID`, `S3_BUCKET`, `SENTRY_DSN`.
+
+**Quick start:**
+
+```bash
+docker-compose up -d
+curl http://localhost:8000/api/v1/research/status
+```
+
+**MCP integration for Claude Desktop:**
+
+```json
+{
+  "mcpServers": {
+    "openclawd-research": {
+      "command": "node",
+      "args": ["./mcp/index.js"],
+      "env": { "RESEARCH_API_URL": "http://localhost:8000" }
+    }
+  }
+}
+```
+
+**Stack:** FastAPI backend (`api/`) + Next.js web UI (`web/`) + MCP server (`mcp/`) + Supabase (vector + relational). 49 lobster agents backed by Honcho memory + Privy wallet + Metaplex Core.
