@@ -21,7 +21,7 @@
 ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   \___
 |                                                                             |
 |    S O V E R E I G N   A I   ·   S O L A N A   ·   x 4 0 2   ·   W T F   |
-|    125 agents  ·  130+ skills  ·  6 npm packages  ·  CAAP/1.0 auth         |
+|    125 agents  ·  130+ skills  ·  12 packages  ·  CAAP/1.0 agent auth      |
 |_____________________________________________________________________________|
     \   🦞   /          \   🦞   /          \   🦞   /          \   🦞   /
      \_/ \_/              \_/ \_/              \_/ \_/              \_/ \_/
@@ -34,7 +34,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**125 agents · 130+ skills · 6 npm packages @ v2.0.0 · free inference · x402 payment rails · CAAP/1.0 agent auth**
+**125 agents · 130+ skills · 12 packages · v2.0.0 · [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) agent auth · [pay.sh](https://pay.sh/services/auth/agent) verified**
 
 ---
 
