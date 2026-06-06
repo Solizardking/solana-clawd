@@ -42,7 +42,7 @@ for arg in "$@"; do
     --perps)        INSTALL_PERPS=true ;;
     --pump)         INSTALL_PUMP=true ;;
     --sdk)          INSTALL_SDK=true ;;
-    --full)         INSTALL_LEVIATHAN=true; INSTALL_PERPS=true; INSTALL_PUMP=true; INSTALL_SDK=true; INSTALL_ANTHROPIC=true; INSTALL_OPENAI=true; INSTALL_XAI=true ;;
+    --full)         INSTALL_LEVIATHAN=true; INSTALL_PERPS=true; INSTALL_PUMP=true; INSTALL_SDK=true; INSTALL_ANTHROPIC=true; INSTALL_OPENAI=true; INSTALL_XAI=true; INSTALL_PERPLEXITY=true ;;
     --help|-h)
       printf "Usage: pay.sh [flags]\n\n"
       printf "  ${BOLD}Clawd (formally verified on-chain Solana agent)${RESET}\n"
@@ -122,38 +122,38 @@ ok "npm $(npm --version)"
 step "PHASE 1 — Solana Clawd Core (formally verified on-chain agent)"
 
 info "Installing clawd TUI (the terminal operator)..."
-npm install -g @openclawdsolana/clawd 2>&1 | tail -1
+npm install -g @openclawdsolana/clawd &>/dev/null || die "Failed to install @openclawdsolana/clawd"
 ok "@openclawdsolana/clawd — formal verification status: ✅ SAS attested"
 
 info "Installing agent registry (on-chain identity + indexing)..."
-npm install -g @openclawdsolana/agent-registry 2>&1 | tail -1
+npm install -g @openclawdsolana/agent-registry &>/dev/null || die "Failed to install @openclawdsolana/agent-registry"
 ok "@openclawdsolana/agent-registry — Metaplex MPL Core compatible"
 
 info "Installing agent hub (local discovery dashboard)..."
-npm install -g @openclawdsolana/agent-hub 2>&1 | tail -1
+npm install -g @openclawdsolana/agent-hub &>/dev/null || die "Failed to install @openclawdsolana/agent-hub"
 ok "@openclawdsolana/agent-hub — port 3747"
 
 info "Installing agentwallet-vault (encrypted keypair at birth)..."
-npm install -g agentwallet-vault 2>&1 | tail -1
+npm install -g agentwallet-vault &>/dev/null || die "Failed to install agentwallet-vault"
 ok "agentwallet-vault — AES-256-GCM · Encrypted by default"
 
 # ── Runtime packages (optional) ───────────────────────────────────────────────
 if [ "$INSTALL_LEVIATHAN" = true ]; then
   info "Installing Leviathan on-chain runtime (SAS + Metaplex spawn)..."
-  npm install -g @openclawdsolana/leviathan 2>&1 | tail -1
+  npm install -g @openclawdsolana/leviathan &>/dev/null || die "Failed to install @openclawdsolana/leviathan"
   ok "@openclawdsolana/leviathan — spawn with: leviathan --spawn"
 fi
 
 if [ "$INSTALL_SDK" = true ]; then
   info "Installing Solana SDK + wallet..."
-  npm install -g @openclawdsolana/solana-sdk 2>&1 | tail -1
-  npm install -g @openclawdsolana/wallet 2>&1 | tail -1
+  npm install -g @openclawdsolana/solana-sdk &>/dev/null || die "Failed to install @openclawdsolana/solana-sdk"
+  npm install -g @openclawdsolana/wallet &>/dev/null || die "Failed to install @openclawdsolana/wallet"
   ok "@openclawdsolana/solana-sdk + @openclawdsolana/wallet"
 fi
 
 if [ "$INSTALL_PERPS" = true ]; then
   info "Installing x402.wtf CLI (perps gateway)..."
-  npm install -g x402.wtf 2>&1 | tail -1
+  npm install -g x402.wtf &>/dev/null || die "Failed to install x402.wtf"
   ok "x402.wtf — perps gateway"
 
   # Vulcan CLI
