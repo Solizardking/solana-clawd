@@ -15,9 +15,11 @@ import { Keypair } from '@solana/web3.js';
 import {
   hasKeystore,
   spawnKeypair,
+  spawnKeypairVault,
   loadKeypair,
   SHELL_DIR,
 } from '../identity/wallet.js';
+import { resetVaultCache } from '../identity/agentwallet.js';
 import { spawnOnchain, SpawnOnchainResult } from '../identity/spawn-onchain.js';
 import { recordSpawn } from '../state/database.js';
 import { SHELL_TEMPLATE } from '../config.js';
@@ -54,7 +56,30 @@ export async function runSpawnWizard(input: WizardInput): Promise<WizardOutput> 
     );
   }
 
-  const kp = spawnKeypair();
+  // Spawn keypair through the encrypted agentwallet vault (default at birth).
+  // Falls back to plaintext keystore if vault is unavailable.
+  let kp: Keypair;
+  let vaultPassphrase: string | undefined;
+
+  try {
+    const result = await spawnKeypairVault(process.env.VAULT_PASSPHRASE);
+    kp = result.keypair;
+    vaultPassphrase = result.passphrase;
+    console.log(`[WIZARD] 🔐 Keypair sealed in encrypted vault at ${SHELL_DIR}/vault/`);
+    if (!process.env.VAULT_PASSPHRASE) {
+      console.log(`[WIZARD] ⚠️  No VAULT_PASSPHRASE set — passphrase derived from keypair material.`);
+      console.log(`[WIZARD] 💡 Set VAULT_PASSPHRASE in your environment for cross-host portability.`);
+    }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.includes('already exists')) {
+      throw err; // Re-throw "leviathan already exists" errors
+    }
+    console.warn(`[WIZARD] ⚠️  Vault unavailable (${message}). Falling back to legacy keystore.`);
+    resetVaultCache();
+    kp = spawnKeypair();
+  }
+
   const pubkey = kp.publicKey.toBase58();
 
   const constitutionBytes = fs.readFileSync(THREE_LAWS_PATH);
