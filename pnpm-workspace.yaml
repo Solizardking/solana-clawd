@@ -2,3 +2,4 @@ packages:
   - "packages/*"
   - "mcp-server"
   - "x402"
+  - "pay"

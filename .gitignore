@@ -15,7 +15,7 @@ tmp
 # dependencies
 node_modules
 *.log
-package-lock.json
+/package-lock.json
 
 # ci
 .coverage
