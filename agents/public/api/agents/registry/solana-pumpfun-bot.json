@@ -7,7 +7,7 @@
   "external_url": "https://x402.wtf/agents/solana-pumpfun-bot",
   "active": true,
   "createdAt": "2026-05-11",
-  "updatedAt": "2026-06-06T07:07:19.746Z",
+  "updatedAt": "2026-06-06T08:41:59.348Z",
   "tags": [
     "solana",
     "pumpfun",
@@ -74,7 +74,9 @@
     "token-gated"
   ],
   "metaplex": {
-    "programs": [],
+    "programs": [
+      "agent-registry"
+    ],
     "sdk": "@metaplex-foundation/mpl-agent-registry",
     "expectedIdentity": {
       "asset": null,
@@ -91,7 +93,15 @@
   },
   "openclawd": {
     "identifier": "solana-pumpfun-bot",
-    "capabilities": [],
+    "capabilities": [
+      "swap-execution",
+      "token-launch",
+      "pumpfun-launch",
+      "pumpswap-amm",
+      "wallet-monitoring",
+      "read-only",
+      "a2a-message"
+    ],
     "payment": null,
     "agentToken": null
   }

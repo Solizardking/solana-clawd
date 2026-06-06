@@ -12,6 +12,8 @@ import { runSetup } from "./commands/setup.js";
 import { runApe, runLong, runPerps, runShort, runSpot } from "./commands/trading.js";
 
 type FlagValue = string | boolean;
+const DEPLOY_TARGETS = ["vercel", "vertex-ai", "fly", "railway"] as const;
+type DeployTarget = (typeof DEPLOY_TARGETS)[number];
 
 function parseArgs(argv: string[]): { positional: string[]; flags: Record<string, FlagValue> } {
   const positional: string[] = [];
@@ -46,6 +48,12 @@ function flag(flags: Record<string, FlagValue>, key: string): boolean {
 function strFlag(flags: Record<string, FlagValue>, key: string): string | undefined {
   const v = flags[key];
   return typeof v === "string" ? v : undefined;
+}
+
+function deployTarget(value: string | undefined): DeployTarget {
+  const target = value ?? "vercel";
+  if ((DEPLOY_TARGETS as readonly string[]).includes(target)) return target as DeployTarget;
+  throw new Error(`Unknown deployment target: ${target}\nValid targets: ${DEPLOY_TARGETS.join(", ")}`);
 }
 
 function printHelp(): void {
@@ -217,7 +225,7 @@ async function main(): Promise<void> {
       }
       break;
     case "deploy":
-      runDeploy(strFlag(flags, "target") ?? "vercel", {
+      runDeploy(deployTarget(strFlag(flags, "target")), {
         prod: flag(flags, "prod"),
         dryRun: flag(flags, "dry-run"),
       });

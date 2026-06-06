@@ -889,7 +889,7 @@ async fn main() {
                     println!("✅ Launched!");
                     println!("   Mint:      {}", mint);
                     println!("   Signature: {}", sig);
-                    println!("   pump.fun:  https://pump.fun/{}", mint);
+                    println!("   pump.fun:  https://pump.fun/coin/{}", mint);
                 }
                 Err(e) => eprintln!("❌ Launch failed: {}", e),
             }

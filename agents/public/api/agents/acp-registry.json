@@ -1,7 +1,7 @@
 {
   "schemaVersion": "openclawd.acp.registry.v1",
   "protocol": "Agent Commerce Protocol",
-  "generatedAt": "2026-06-06T07:07:19.746Z",
+  "generatedAt": "2026-06-06T08:41:59.348Z",
   "host": "https://x402.wtf",
   "discover": {
     "catalog": "https://x402.wtf/api/agents/catalog",
@@ -67,7 +67,7 @@
       }
     ],
     "coverage": {
-      "agent-registry": 43,
+      "agent-registry": 44,
       "core": 4,
       "genesis": 1,
       "token-metadata": 4,
@@ -129,8 +129,8 @@
       "nft": 2,
       "dev-tools": 3
     },
-    "metaplexEnabledAgents": 43,
-    "tradingCapableAgents": 10,
+    "metaplexEnabledAgents": 44,
+    "tradingCapableAgents": 11,
     "launchCapableAgents": 1,
     "mintCapableAgents": 2
   },
@@ -1481,8 +1481,18 @@
       "id": "solana-pumpfun-bot",
       "title": "Solana PumpFun/PumpSwap Copy Trading Bot",
       "category": "trading",
-      "capabilities": [],
-      "metaplexSkills": [],
+      "capabilities": [
+        "swap-execution",
+        "token-launch",
+        "pumpfun-launch",
+        "pumpswap-amm",
+        "wallet-monitoring",
+        "read-only",
+        "a2a-message"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
       "oneShot": true,
       "featured": true,
       "endpoints": {
