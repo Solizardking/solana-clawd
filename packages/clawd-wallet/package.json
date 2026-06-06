@@ -1,7 +1,7 @@
 {
   "name": "@openclawd/wallet",
   "version": "0.1.0",
-  "description": "Clawd Wallet — Privy-powered embedded Solana wallet for the openclawd agent ecosystem. Swap, sign, send, and agentic trading with Grok 4.20 Beta as the reasoning layer.",
+  "description": "Clawd Wallet \u2014 Privy-powered embedded Solana wallet for the openclawd agent ecosystem. Swap, sign, send, and agentic trading with Grok 4.20 Beta as the reasoning layer.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -48,8 +48,12 @@
     "react-dom": ">=18.0.0"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "react-dom": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
