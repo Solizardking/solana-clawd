@@ -227,7 +227,7 @@ function generateAgentCardUpdate(
       enabled: true,
       paymentAsset: "USDC",
       paymentNetwork: "solana",
-      attestEndpoint: "https://pay.solanaclawd.com/v1/attest/payment",
+      attestEndpoint: "https://x402.wtf/v1/attest/payment",
     },
     google: {
       agentRegistry: true,
@@ -347,7 +347,7 @@ export async function bridgeGoogleAgentIdentity(
         onChain,
       },
       x402: {
-        attestEndpoint: "https://pay.solanaclawd.com/v1/attest/payment",
+        attestEndpoint: "https://x402.wtf/v1/attest/payment",
         configured: true,
       },
       google: {

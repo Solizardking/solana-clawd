@@ -8,16 +8,13 @@ import {
   type QuoteResponse,
   type SwapResponse,
 } from "@jup-ag/api";
-import type { Connection, Transaction } from "@solana/web3.js";
 import Decimal from "decimal.js";
 import type { ClawdWallet } from "./wallet.js";
 import type {
-  SwapQuoteParams,
-  SwapQuote,
-  SwapResult,
   SolanaChain,
-  SwapError,
-  CHAIN_RPC,
+  SwapQuote,
+  SwapQuoteParams,
+  SwapResult,
 } from "./types.js";
 
 /** Jupiter API endpoints per chain */
@@ -60,8 +57,6 @@ export function getTokenDecimals(mint: string): number {
   return found?.decimals ?? 9;
 }
 
-export { resolveTokenMint, getTokenDecimals };
-
 /**
  * SwapService — fetches Jupiter quotes and executes swaps via ClawdWallet
  *
@@ -88,8 +83,8 @@ export class SwapService {
 
   constructor(config?: { chain?: SolanaChain; apiUrl?: string }) {
     this.#chain = config?.chain ?? "mainnet";
-    const baseUrl = config?.apiUrl ?? JUPITER_ENDPOINTS[this.#chain];
-    this.#jupiter = createJupiterApiClient({ baseUrl });
+    const basePath = config?.apiUrl ?? JUPITER_ENDPOINTS[this.#chain];
+    this.#jupiter = createJupiterApiClient({ basePath });
   }
 
   /**
@@ -98,7 +93,7 @@ export class SwapService {
   async quote(params: SwapQuoteParams): Promise<SwapQuote> {
     const inputMint = resolveTokenMint(params.inputToken);
     const outputMint = resolveTokenMint(params.outputToken);
-    const amount = BigInt(params.amount);
+    const amount = Number(params.amount);
     const slippageBps = params.slippageBps ?? 50;
 
     const response = await this.#jupiter.quoteGet({
@@ -115,7 +110,7 @@ export class SwapService {
       outAmount: response.outAmount,
       priceImpactPct: parseFloat(response.priceImpactPct ?? "0"),
       minimumReceivedAmount: response.otherAmountThreshold,
-      routePlan: response.routePlan,
+      routePlan: response.routePlan as unknown as import("./types.js").JupiterRoutePlan[],
       transaction: "", // filled by .execute()
     };
   }
@@ -178,12 +173,11 @@ export class SwapService {
   async getTokens(): Promise<
     Array<{ symbol: string; mint: string; decimals: number; name: string }>
   > {
-    const tokens = await this.#jupiter.tokenList();
-    return tokens.map((t) => ({
-      symbol: t.symbol ?? t.name,
-      mint: t.address,
-      decimals: t.decimals ?? 9,
-      name: t.name,
+    return Object.values(SOLANA_TOKENS).map((t) => ({
+      symbol: t.symbol,
+      mint: t.mint,
+      decimals: t.decimals,
+      name: t.symbol,
     }));
   }
 

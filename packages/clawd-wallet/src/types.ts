@@ -3,8 +3,6 @@
  * Privy-powered embedded Solana wallet for the openclawd agent ecosystem
  */
 
-import type { Connection } from "@solana/web3.js";
-
 // ─── Chain ─────────────────────────────────────────────────────────────────
 
 /** Solana network */
@@ -147,7 +145,7 @@ export interface AgentPermissions {
 /** Configuration for the agentic signing session */
 export interface AgenticWalletConfig {
   /** Privy app ID (from dashboard.privy.io) */
-  privyAppId: string;
+  privyAppId?: string;
   /** xAI / Grok API key for transaction pre-screening */
   grokApiKey?: string;
   /** Solana RPC endpoint */

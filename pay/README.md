@@ -68,14 +68,14 @@ For production, add a custom domain:
 
 ```toml
 routes = [
-  { pattern = "pay.solanaclawd.com", custom_domain = true }
+  { pattern = "x402.wtf", custom_domain = true }
 ]
 ```
 
 Then point app and CLI env vars at:
 
 ```bash
-SOLANA_CLAWD_PAY_URL=https://pay.solanaclawd.com
+SOLANA_CLAWD_PAY_URL=https://x402.wtf
 ```
 
 ## x402 + MPP Flow

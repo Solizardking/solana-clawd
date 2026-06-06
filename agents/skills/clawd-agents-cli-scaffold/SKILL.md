@@ -9,7 +9,7 @@ description: >
   deploying (use clawd-agents-cli-deploy).
   Part of the Clawd Agents CLI skills suite.
 metadata:
-  author: Clawd Labs
+  author: Clawd
   license: MIT
   version: 0.1.0
   requires:

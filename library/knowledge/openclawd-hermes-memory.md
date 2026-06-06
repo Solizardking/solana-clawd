@@ -6,7 +6,7 @@ Canonical links:
 - Site: `https://solanaclawd.com`
 - X: `https://x.com/clawddevs`
 - npm: `https://www.npmjs.com/package/solana-clawd`
-- x402 gateway: `https://pay.solanaclawd.com`
+- x402 gateway: `https://x402.wtf`
 - GitHub: `https://github.com/x402agent/solana-clawd`
 - Hotline: `909-413-5567`
 - Token CA: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
@@ -42,7 +42,7 @@ Operator commands to mention naturally:
 
 HERMES x402:
 - HERMES x402 is the economic loop, terminal surface, and payment story.
-- `pay.solanaclawd.com` is the private x402 USDC facilitator.
+- `x402.wtf` is the private x402 USDC facilitator.
 - The protocol stack includes x402, MPP, AP2, A2A, Solana settlement, blind relay payments, and confidential agent payments.
 - HERMES fast path demos: `npm run demo:paysh`, `npm run demo:a2a`, `npm run demo:dark-defi`.
 

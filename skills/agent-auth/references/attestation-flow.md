@@ -6,7 +6,7 @@ Step-by-step guide for running a CAAP/1.0 agent attestation through the relay.
 
 - A Solana wallet (keypair or browser extension)
 - A Clerk session token from `<your-clerk-instance>.accounts.dev` (optional, for Clerk-bridged flows)
-- The relay URL: `https://relay.clawd.xyz`
+- The relay URL: `https://x402.wtf`
 
 ## Flow 1: SIWS-Only (No Clerk)
 
@@ -15,7 +15,7 @@ Use this when you have a Solana wallet and want direct attestation without Clerk
 ### Step 1: Get SIWS Challenge
 
 ```
-POST https://relay.clawd.xyz/api/siws/challenge
+POST https://x402.wtf/api/siws/challenge
 Content-Type: application/json
 
 {
@@ -34,7 +34,7 @@ import { createSIWSMessage } from "better-auth-solana/client";
 
 const message = createSIWSMessage({
   address: wallet.publicKey.toBase58(),
-  domain: "relay.clawd.xyz",
+  domain: "x402.wtf",
   nonce: siwsInput.nonce,
   statement: "Sign in to Clawd Agent Auth",
 });
@@ -45,7 +45,7 @@ const signature = await wallet.signMessage(new TextEncoder().encode(message));
 ### Step 3: Verify SIWS
 
 ```
-POST https://relay.clawd.xyz/api/siws/verify
+POST https://x402.wtf/api/siws/verify
 Content-Type: application/json
 
 {
@@ -76,7 +76,7 @@ The JWT template must include `wallet_address` and `agent_id` from `user.publicM
 ### Step 2: Run Attestation
 
 ```
-POST https://relay.clawd.xyz/api/caap/attest
+POST https://x402.wtf/api/caap/attest
 Authorization: Bearer <clerk-session-token>
 Content-Type: application/json
 
@@ -119,7 +119,7 @@ Returns:
 For quick verified/unverified checks without running the full TEE attestation:
 
 ```
-GET https://relay.clawd.xyz/api/caap/status/:agentId
+GET https://x402.wtf/api/caap/status/:agentId
 ```
 
 Returns `{ verified: boolean }`. Use this before paying for a full attestation.
@@ -129,7 +129,7 @@ Returns `{ verified: boolean }`. Use this before paying for a full attestation.
 Verify the relay's TEE instance is healthy and get a fresh quote:
 
 ```
-GET https://relay.clawd.xyz/api/tee/report
+GET https://x402.wtf/api/tee/report
 ```
 
 Returns a fresh Intel TDX quote bound to the current nonce, verifying that the relay is still running inside a genuine Phala TEE CVM.

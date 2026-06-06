@@ -123,7 +123,7 @@ const claims = await verifyClerkToken(sessionToken);
 // → { sub, wallet_address, agent_id, iat, exp }
 
 // 2. Run CAAP attestation (via relay or directly)
-const response = await fetch("https://relay.clawd.xyz/api/caap/attest", {
+const response = await fetch("https://x402.wtf/api/caap/attest", {
   method: "POST",
   headers: { Authorization: `Bearer ${sessionToken}` },
   body: JSON.stringify({ walletAddress: claims.wallet_address }),
@@ -231,7 +231,7 @@ const token = await getToken({ template: "solana_wallet" });
 const claims = await verifyClerkToken(token);
 
 // 4. POST to relay — runs SIWS + DAS + Phala TDX attestation
-const res = await fetch("https://relay.clawd.xyz/api/caap/attest", {
+const res = await fetch("https://x402.wtf/api/caap/attest", {
   method: "POST",
   headers: {
     Authorization: `Bearer ${token}`,
@@ -368,7 +368,7 @@ export async function POST(request: Request) {
 
 ### "TEE evidence not available"
 
-1. The relay at `relay.clawd.xyz` may be running outside TEE (hasTeeEvidence: false)
+1. The relay at `x402.wtf` may be running outside TEE (hasTeeEvidence: false)
 2. Check `DSTACK_SIMULATOR_ENDPOINT` if running locally
 3. TEE quotes can fail if the Phala tappd service is unreachable
 4. Development/staging environments may not have TEE support

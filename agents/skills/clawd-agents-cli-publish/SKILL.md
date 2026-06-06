@@ -6,7 +6,7 @@ description: >
   "make my agent discoverable", "rebuild the catalog", or "register my agent at x402.wtf".
   Part of the Clawd Agents CLI skills suite.
 metadata:
-  author: Clawd Labs
+  author: Clawd
   license: MIT
   version: 0.1.0
   requires:

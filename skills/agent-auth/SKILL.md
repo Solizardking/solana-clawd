@@ -80,7 +80,7 @@ import { verifyClerkToken, fetchPhalaAttestation } from "@clawd/clerk-caap";
 const claims = await verifyClerkToken(sessionToken);
 
 // 2. Run CAAP attestation via relay
-const response = await fetch("https://relay.clawd.xyz/api/caap/attest", {
+const response = await fetch("https://x402.wtf/api/caap/attest", {
   method: "POST",
   headers: { Authorization: `Bearer ${sessionToken}` },
   body: JSON.stringify({ walletAddress: claims.wallet_address }),

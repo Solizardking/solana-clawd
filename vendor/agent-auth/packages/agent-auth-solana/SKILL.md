@@ -652,7 +652,7 @@ const valid = verifyCaapAttestation(hash, agentId, wallet, mint);
 | EIP-8004 schema | `https://eips.ethereum.org/EIPS/eip-8004#registration-v1` |
 | Genesis API base | `https://api.metaplex.com` |
 | TEE Verifier | `https://proof.t16z.com` |
-| Relay endpoint | `https://relay.clawd.xyz` |
+| Relay endpoint | `https://x402.wtf` |
 | Phala tappd endpoint | `http://localhost:8090` (inside TEE CVM) |
 | Tier thresholds | Free=0, Bronze=100K, Silver=500K, Gold=1M, Diamond=5M CLAWD |
 

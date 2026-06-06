@@ -37,7 +37,7 @@ Built on the [Agent Auth Protocol](https://agent-auth-protocol.com) and [Better 
 - **CAAP/1.0 Spec**: [x402.wtf/agentauth#spec](https://x402.wtf/agentauth#spec)
 - **Whitepaper**: [x402.wtf/agentauth#paper](https://x402.wtf/agentauth#paper)
 - **TEE Proofs**: [proof.t16z.com](https://proof.t16z.com)
-- **Relay**: [relay.clawd.xyz](https://relay.clawd.xyz)
+- **Relay**: [x402.wtf](https://x402.wtf)
 - **Solana Pay**: [pay.sh/services/auth/agent](https://pay.sh/services/auth/agent)
 
 ---
@@ -153,7 +153,7 @@ const claims = await verifyClerkToken(sessionToken);
 // → { sub, wallet_address, agent_id, iat, exp }
 
 // 2. Run CAAP attestation (via relay or directly)
-const response = await fetch("https://relay.clawd.xyz/api/caap/attest", {
+const response = await fetch("https://x402.wtf/api/caap/attest", {
   method: "POST",
   headers: { Authorization: `Bearer ${sessionToken}` },
   body: JSON.stringify({ walletAddress: claims.wallet_address }),
@@ -298,7 +298,7 @@ const { getToken } = useAuth(); // @clerk/nextjs
 const token = await getToken({ template: "solana_wallet" });
 
 // 3. POST to relay — runs SIWS + DAS + Phala TDX attestation
-const res = await fetch("https://relay.clawd.xyz/api/caap/attest", {
+const res = await fetch("https://x402.wtf/api/caap/attest", {
   method: "POST",
   headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
   body: JSON.stringify({ walletAddress: "YourSolanaWallet..." }),
@@ -316,7 +316,7 @@ Servers expose `/.well-known/agent-configuration`:
 
 ```json
 {
-  "issuer": "https://relay.clawd.xyz",
+  "issuer": "https://x402.wtf",
   "provider_name": "Clawd Agent Auth Relay",
   "modes": ["delegated", "autonomous"],
   "capabilities": [
@@ -380,7 +380,7 @@ cd apps/relay && cp .env.example .env && pnpm dev
 | `HELIUS_API_KEY` | Yes | Helius RPC/DAS API key |
 | `CLAWD_TOKEN_ADDRESS` | No | CLAWD mint (defaults to `8cHz...pump`) |
 | `DSTACK_SIMULATOR_ENDPOINT` | No | Phala tappd endpoint (default: `http://localhost:8090`) |
-| `RELAY_DOMAIN` | No | Relay hostname for SIWS messages (default: `relay.clawd.xyz`) |
+| `RELAY_DOMAIN` | No | Relay hostname for SIWS messages (default: `x402.wtf`) |
 
 ---
 
@@ -452,6 +452,6 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-Built by [Clawd Labs](https://x402.wtf) · Powered by [Helius](https://helius.dev) · [Metaplex](https://metaplex.com) · [Clerk](https://clerk.com) · [Phala Network](https://phala.network) · [Better Auth](https://better-auth.com)
+Built by [Clawd](https://x402.wtf) · Powered by [Helius](https://helius.dev) · [Metaplex](https://metaplex.com) · [Clerk](https://clerk.com) · [Phala Network](https://phala.network) · [Better Auth](https://better-auth.com)
 
 Discoverable at [pay.sh/services/auth/agent](https://pay.sh/services/auth/agent)

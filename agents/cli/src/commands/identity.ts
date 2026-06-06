@@ -28,7 +28,7 @@ const MPL_CORE_PROGRAM_ID = "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d";
 const CLAWD_TOKEN_MINT = "CLAWdRg8ZbE7eAhZ8PJKJqBuDnTHruxvV7r5QGSPump";
 const DNA_X402_RECEIPT = "6HSRGivdYR5D7yTDy1TFMCM8h3LzXxRtKU1RA3RnCMRN";
 
-const PAY_BASE_URL = process.env.PAY_BASE_URL ?? "https://pay.solanaclawd.com";
+const PAY_BASE_URL = process.env.PAY_BASE_URL ?? "https://x402.wtf";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

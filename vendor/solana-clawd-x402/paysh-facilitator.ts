@@ -40,10 +40,10 @@ import {
 } from './p-token.js';
 import bs58 from 'bs58';
 
-// Primary relay: pay.solanaclawd.com (OpenClawd hosted facilitator)
+// Primary relay: x402.wtf (OpenClawd hosted facilitator)
 // Fallback: pay.sh public relay
-const PAYSH_RELAY = process.env['PAYSH_RELAY_URL'] ?? 'https://pay.solanaclawd.com/relay/v1';
-const PAYSH_DEVNET_RELAY = process.env['PAYSH_DEVNET_RELAY_URL'] ?? 'https://pay.solanaclawd.com/devnet/relay/v1';
+const PAYSH_RELAY = process.env['PAYSH_RELAY_URL'] ?? 'https://x402.wtf/relay/v1';
+const PAYSH_DEVNET_RELAY = process.env['PAYSH_DEVNET_RELAY_URL'] ?? 'https://x402.wtf/devnet/relay/v1';
 
 export interface PayshConfig {
   /** pay.sh relay URL override */

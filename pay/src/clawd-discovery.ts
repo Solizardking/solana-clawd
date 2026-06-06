@@ -436,7 +436,7 @@ export function generateClaudeMCPConfig(): Record<string, unknown> {
     mcpServers: {
       "solana-clawd": {
         type: "url",
-        url: "https://pay.solanaclawd.com/mcp",
+        url: "https://x402.wtf/mcp",
         description: "Solana Clawd — on-chain agent discovery, attestation, x402 payments, and ARS collateral",
         tools: [
           "sign_transaction",
@@ -466,7 +466,7 @@ export function generateOpenAIPluginConfig(): Record<string, unknown> {
         "MPL Core NFT identities, x402 payments, and ARS/Telaro collateral bonds.",
       version: "1.0.0",
     },
-    servers: [{ url: "https://pay.solanaclawd.com" }],
+    servers: [{ url: "https://x402.wtf" }],
     paths: {
       "/mcp": {
         post: {
@@ -504,7 +504,7 @@ export function generateOpenCodeMCPConfig(): Record<string, unknown> {
     mcpServers: {
       "solana-clawd": {
         transport: "streamable-http",
-        url: "https://pay.solanaclawd.com/mcp",
+        url: "https://x402.wtf/mcp",
         capabilities: {
           tools: true,
           resources: true,
@@ -577,7 +577,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "50000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "0", slashEvidenceAnchors: [] },
     payments: { receiptCount: 5200, totalVolumeUSD: "124500.00", receiptAnchors: [] },
     trust: { reputationScore: 98, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["a2a", "mcp", "x402", "caap", "claude-mcp", "openai-plugin"], endpoints: { mcp: "https://pay.solanaclawd.com/mcp" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["a2a", "mcp", "x402", "caap", "claude-mcp", "openai-plugin"], endpoints: { mcp: "https://x402.wtf/mcp" }, lastHeartbeat: new Date().toISOString() },
   },
   // ── Trading Agents ──────────────────────────────────────────────────
   {
@@ -592,7 +592,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "5000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "0", slashEvidenceAnchors: [] },
     payments: { receiptCount: 1247, totalVolumeUSD: "28450.00", receiptAnchors: [] },
     trust: { reputationScore: 92, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["a2a", "mcp", "x402", "caap"], endpoints: { a2a: "https://clawd.solanaclawd.com/a2a", x402: "https://pay.solanaclawd.com/v1/chat/completions" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["a2a", "mcp", "x402", "caap"], endpoints: { a2a: "https://clawd.solanaclawd.com/a2a", x402: "https://x402.wtf/v1/chat/completions" }, lastHeartbeat: new Date().toISOString() },
   },
   {
     id: "clawd-spot-trader",
@@ -642,7 +642,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "100000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "0", slashEvidenceAnchors: [] },
     payments: { receiptCount: 8900, totalVolumeUSD: "452300.00", receiptAnchors: ["6HSRGivdYR5D7yTDy1TFMCM8h3LzXxRtKU1RA3RnCMRN:clawd_gateway_1"] },
     trust: { reputationScore: 97, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["x402", "mcp", "caap"], endpoints: { x402: "https://pay.solanaclawd.com/v1/chat/completions" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["x402", "mcp", "caap"], endpoints: { x402: "https://x402.wtf/v1/chat/completions" }, lastHeartbeat: new Date().toISOString() },
   },
   {
     id: "clawd-google-identity-bridge",
@@ -660,7 +660,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "75000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "0", slashEvidenceAnchors: [] },
     payments: { receiptCount: 150, totalVolumeUSD: "3400.00", receiptAnchors: [] },
     trust: { reputationScore: 96, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["a2a", "mcp", "caap", "claude-mcp"], endpoints: { mcp: "https://pay.solanaclawd.com/mcp", a2a: "https://clawd.solanaclawd.com/google-bridge/a2a" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["a2a", "mcp", "caap", "claude-mcp"], endpoints: { mcp: "https://x402.wtf/mcp", a2a: "https://clawd.solanaclawd.com/google-bridge/a2a" }, lastHeartbeat: new Date().toISOString() },
   },
 ];
 

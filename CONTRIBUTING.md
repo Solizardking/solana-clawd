@@ -88,7 +88,7 @@ solana-clawd/
 | SAS Attestation | `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG` |
 | MPL Core NFTs | `CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d` |
 | dna-x402 Receipts | `6HSRGivdYR5D7yTDy1TFMCM8h3LzXxRtKU1RA3RnCMRN` |
-| Pay MCP Server | `https://pay.solanaclawd.com/mcp` |
+| Pay MCP Server | `https://x402.wtf/mcp` |
 
 ## Pull Request Process
 

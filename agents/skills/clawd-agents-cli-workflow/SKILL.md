@@ -8,7 +8,7 @@ description: >
   mandatory Phase 0 requirements clarification and safety rules.
   Part of the Clawd Agents CLI skills suite.
 metadata:
-  author: Clawd Labs
+  author: Clawd
   license: MIT
   version: 0.1.0
   requires:

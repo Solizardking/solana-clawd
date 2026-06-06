@@ -12,7 +12,7 @@
 
 import { printSection, printOk, printInfo, printWarn, printDone } from "../banner.js";
 
-const PAY_BASE_URL = process.env.PAY_BASE_URL ?? "https://pay.solanaclawd.com";
+const PAY_BASE_URL = process.env.PAY_BASE_URL ?? "https://x402.wtf";
 
 interface SignResult {
   success: boolean;

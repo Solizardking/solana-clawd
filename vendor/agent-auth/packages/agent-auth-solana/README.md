@@ -719,7 +719,7 @@ const params = buildSetAgentTokenParams({
 
 ## TEE Attestation (Phala TDX)
 
-When you call `/api/caap/attest` through the relay (`https://relay.clawd.xyz`), the attestation verifier runs inside a **Phala TDX (Trust Domain Extensions)** confidential virtual machine. This means the code that verifies your wallet, checks your tokens, and computes your tier is executing in a hardware-encrypted environment — the relay operator cannot tamper with or observe the verification.
+When you call `/api/caap/attest` through the relay (`https://x402.wtf`), the attestation verifier runs inside a **Phala TDX (Trust Domain Extensions)** confidential virtual machine. This means the code that verifies your wallet, checks your tokens, and computes your tier is executing in a hardware-encrypted environment — the relay operator cannot tamper with or observe the verification.
 
 ### What Gets Measured
 
@@ -787,7 +787,7 @@ const claims = await verifyClerkToken(sessionToken);
 // → { sub, wallet_address, agent_id, iat, exp }
 
 // 2. Run full CAAP attestation using the wallet address from Clerk metadata
-const res = await fetch("https://relay.clawd.xyz/api/caap/attest", {
+const res = await fetch("https://x402.wtf/api/caap/attest", {
   method: "POST",
   headers: { Authorization: `Bearer ${sessionToken}` },
   body: JSON.stringify({ walletAddress: claims.wallet_address }),
@@ -1023,7 +1023,7 @@ import {
 | **EIP-8004 Schema** | `https://eips.ethereum.org/EIPS/eip-8004#registration-v1` |
 | **Genesis API** | `https://api.metaplex.com` |
 | **TEE Verifier** | `https://proof.t16z.com` |
-| **Relay** | `https://relay.clawd.xyz` |
+| **Relay** | `https://x402.wtf` |
 | **Phala tappd endpoint** | `http://localhost:8090` (inside TEE CVM) |
 
 ---
@@ -1166,7 +1166,7 @@ No. `setAgentTokenV1` is **irreversible**. This is a security feature — it pre
 - **Live Demo**: [x402.wtf/agentauth](https://x402.wtf/agentauth)
 - **Whitepaper**: [x402.wtf/agentauth#paper](https://x402.wtf/agentauth#paper)
 - **CAAP/1.0 Spec**: [x402.wtf/agentauth#spec](https://x402.wtf/agentauth#spec)
-- **Relay**: [relay.clawd.xyz](https://relay.clawd.xyz)
+- **Relay**: [x402.wtf](https://x402.wtf)
 - **TEE Proofs**: [proof.t16z.com](https://proof.t16z.com)
 - **GitHub**: [github.com/Solizardking/agent-auth](https://github.com/Solizardking/agent-auth)
 - **NPM**: [@clawd/agent-auth-solana](https://npmjs.com/package/@clawd/agent-auth-solana)
@@ -1176,4 +1176,4 @@ No. `setAgentTokenV1` is **irreversible**. This is a security feature — it pre
 
 ## License
 
-MIT — Clawd Labs, 2026
+MIT — Clawd, 2026

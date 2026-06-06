@@ -6,7 +6,7 @@ description: >
   "run the eval", "test my agent definition", or "make sure CAAP is wired correctly".
   Part of the Clawd Agents CLI skills suite.
 metadata:
-  author: Clawd Labs
+  author: Clawd
   license: MIT
   version: 0.1.0
   requires:

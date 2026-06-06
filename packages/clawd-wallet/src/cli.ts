@@ -4,7 +4,9 @@
  */
 
 import { Command } from "commander";
-import { ClawdWallet, SwapService, SOLANA_TOKENS } from "./index.js";
+import Decimal from "decimal.js";
+import { SOLANA_TOKENS, SwapService } from "./swap.js";
+import { ClawdWallet } from "./wallet.js";
 
 const program = new Command();
 
@@ -76,7 +78,6 @@ swapCmd.action(async (input, output, amount, opts) => {
 
   const outputToken = SOLANA_TOKENS[output.toUpperCase()];
   const outputDecimals = outputToken?.decimals ?? 9;
-  const { Decimal } = await import("decimal.js");
   const outputFormatted = new Decimal(quote.outAmount)
     .div(new Decimal(10).pow(outputDecimals))
     .toFixed(6);
@@ -118,8 +119,7 @@ program
     });
 
     const outputToken = SOLANA_TOKENS[output.toUpperCase()] ?? { decimals: 9 };
-    const { Decimal } = await import("decimal.js");
-    const outFormatted = new Decimal(quote.outAmount)
+      const outFormatted = new Decimal(quote.outAmount)
       .div(new Decimal(10).pow(outputToken.decimals))
       .toFixed(6);
 
