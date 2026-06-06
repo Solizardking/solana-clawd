@@ -266,11 +266,66 @@ OPENROUTER_MODEL3=openrouter/optimus-alpha:free
 # ── x402 micropayments ────────────────────────────────────────────────────────
 # X402_SVM_PRIVATE_KEY=
 # X402_NETWORK=solana-mainnet
+
+# ── ClawdBrowser / x402.wtf — live API endpoints ─────────────────────────────
+# All 493 routes live at https://x402.wtf — no extra setup needed.
+X402_BASE_URL=https://x402.wtf
+CLAWD_LLM_ENDPOINT=https://x402.wtf/api/tide/v1/chat/completions
+CLAWD_AGENT_CATALOG=https://x402.wtf/api/agents/catalog
+CLAWD_AGENT_CHAT=https://x402.wtf/api/agents/chat
+CLAWD_SKILLS_CATALOG=https://x402.wtf/api/skills
+CAAP_DISCOVERY_URL=https://x402.wtf/.well-known/agent-auth.json
+CLAWD_GATEWAY_URL=https://x402.wtf/gateway
 ENV
   ok "Created ${ENV_FILE}"
 else
   info "~/.clawd/.env already exists — preserving existing configuration"
 fi
+
+# ── Ensure x402.wtf endpoints are in .env (backfill for existing configs) ────
+_env_add() {
+  grep -q "^${1}=" "${ENV_FILE}" 2>/dev/null || printf '\n%s=%s\n' "${1}" "${2}" >> "${ENV_FILE}"
+}
+_env_add "X402_BASE_URL"          "https://x402.wtf"
+_env_add "CLAWD_LLM_ENDPOINT"     "https://x402.wtf/api/tide/v1/chat/completions"
+_env_add "CLAWD_AGENT_CATALOG"    "https://x402.wtf/api/agents/catalog"
+_env_add "CLAWD_AGENT_CHAT"       "https://x402.wtf/api/agents/chat"
+_env_add "CLAWD_SKILLS_CATALOG"   "https://x402.wtf/api/skills"
+_env_add "CAAP_DISCOVERY_URL"     "https://x402.wtf/.well-known/agent-auth.json"
+_env_add "CLAWD_GATEWAY_URL"      "https://x402.wtf/gateway"
+ok "x402.wtf endpoints written to ${ENV_FILE}"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PHASE 4 — Gateway Registration (tracks install in Convex, fire-and-forget)
+# ══════════════════════════════════════════════════════════════════════════════
+
+step "PHASE 4 — Registering with x402.wtf gateway"
+
+INSTALL_ID="$(node -e 'process.stdout.write(Date.now().toString(36)+Math.random().toString(36).slice(2,8))' 2>/dev/null || echo "unknown")"
+_PLATFORM="$(uname -srm 2>/dev/null || echo "unknown")"
+
+if curl -fsSL -X POST "https://x402.wtf/api/gateway/install" \
+     -H "Content-Type: application/json" \
+     -d "{\"installId\":\"${INSTALL_ID}\",\"platform\":\"${_PLATFORM}\",\"node\":\"$(node --version 2>/dev/null)\",\"packages\":[\"clawd\",\"agent-registry\",\"agent-hub\",\"agentwallet-vault\"],\"flags\":{\"leviathan\":${INSTALL_LEVIATHAN},\"sdk\":${INSTALL_SDK},\"perps\":${INSTALL_PERPS},\"pump\":${INSTALL_PUMP},\"anthropic\":${INSTALL_ANTHROPIC},\"openai\":${INSTALL_OPENAI},\"xai\":${INSTALL_XAI},\"perplexity\":${INSTALL_PERPLEXITY}}}" \
+     --max-time 5 --silent --output /dev/null 2>/dev/null; then
+  ok "Registered install ${INSTALL_ID} → x402.wtf/api/gateway/install"
+else
+  warn "Gateway registration skipped (offline or unreachable)"
+fi
+
+# ── Open gateway, agents, skills in browser (macOS / Linux) ──────────────────
+_open_url() {
+  if command -v open &>/dev/null; then
+    open "$1" 2>/dev/null &
+  elif command -v xdg-open &>/dev/null; then
+    xdg-open "$1" 2>/dev/null &
+  fi
+}
+
+info "Opening x402.wtf gateway, agents, and skills..."
+_open_url "https://x402.wtf/gateway"
+_open_url "https://x402.wtf/agents"
+_open_url "https://x402.wtf/skills"
 
 # ── Verify binaries ───────────────────────────────────────────────────────────
 step "Verifying installation"
@@ -330,6 +385,14 @@ printf "  ${DIM}Set VAULT_PASSPHRASE to encrypt your leviathan keypair at spawn.
 printf "  ${DIM}Free inference: set OPENROUTER_API_KEY in ~/.clawd/.env (no card needed)${RESET}\n"
 printf "\n"
 
+printf '  %sx402.wtf API (493 routes — live now):%s\n' "${BOLD}" "${RESET}"
+printf '  %shttps://x402.wtf/gateway%s                        — agent gateway + installer\n' "${CYAN}" "${RESET}"
+printf '  %shttps://x402.wtf/agents%s                         — 125 live agents\n' "${CYAN}" "${RESET}"
+printf '  %shttps://x402.wtf/skills%s                         — 130+ skills catalog\n' "${CYAN}" "${RESET}"
+printf '  %shttps://x402.wtf/api/tide/v1/chat/completions%s   — OpenAI-compat LLM proxy\n' "${CYAN}" "${RESET}"
+printf '  %shttps://x402.wtf/api/agents/catalog%s             — agent catalog JSON\n' "${CYAN}" "${RESET}"
+printf '  %shttps://x402.wtf/.well-known/agent-auth.json%s    — CAAP/1.0 discovery\n' "${CYAN}" "${RESET}"
+printf "\n"
 printf "  ${BOLD}Links:${RESET}\n"
 printf "  Website:      ${CYAN}https://solanaclawd.com${RESET}\n"
 printf "  Agents:       ${CYAN}https://solanaclawd.com/agents${RESET}\n"
