@@ -97,7 +97,7 @@
 bash packages/test-all.sh
 ```
 
-**Expected output (10/10):**
+### Expected output (10/10)
 
 ```
 ✓ clawd-sdk          (@openclawdsolana/solana-sdk)
