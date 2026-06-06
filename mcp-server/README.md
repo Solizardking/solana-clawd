@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd MCP Server  ·  x402.wtf  ·  x402.wtf               ║ -->
+<!-- ║   OpenClawd MCP Server  ·  x402.wtf               ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -10,7 +10,7 @@
   ║   55 tools · token launch · trading · wallet · analytics        ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  Works with: Claude Desktop · Cursor · VS Code · ClawdOS        ║
-  ║  x402.wtf  ·  x402.wtf  ·  @pump-fun/mcp-server          ║
+  ║  x402.wtf  ·  @pump-fun/mcp-server          ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 

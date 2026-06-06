@@ -10,7 +10,7 @@
   ║   Rust · real-time tx monitoring · PumpFun + PumpSwap            ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  Detect trades · filter · copy · execute in milliseconds         ║
-  ║  x402.wtf  ·  x402.wtf  ·  $CLAWD                        ║
+  ║  x402.wtf  ·  $CLAWD                        ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
