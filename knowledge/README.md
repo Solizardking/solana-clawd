@@ -32,16 +32,24 @@ This directory contains curated learnings from the agent swarm. Knowledge is ext
 
 ```text
 knowledge/
-  README.md                    # This file
-  codebase-facts.jsonl        # Facts about how the code works
-  api-behaviors.jsonl         # External API quirks and behaviors
-  patterns.jsonl              # Reusable patterns and best practices
-  anti-patterns.jsonl         # Things to avoid
-  gotchas.jsonl               # Common pitfalls and surprises
-  decisions.jsonl             # Architectural decisions with context
-  provenance/                 # Raw inputs for audit trail
-    coderabbit/               # Raw CodeRabbit comments
-    reviews/                  # Raw human review comments
+  README.md                    # This file (index + agent query guide)
+  facts.jsonl                  # 13 entries — General domain facts (CLI, auth, registry, tokenomics)
+  codebase-facts.jsonl        # 11 entries — How the code works under the hood
+  api-behaviors.jsonl         # 11 entries — External API quirks, rate limits, concurrency
+  patterns.jsonl              # 11 entries — Reusable patterns and best practices
+  anti-patterns.jsonl         # 11 entries — Things to avoid (installer, bash, npm, security)
+  gotchas.jsonl               # 10 entries — Common pitfalls and surprises
+  decisions.jsonl             # 9 entries — Architectural decisions with context
+  ── Markdown reference docs ──
+  architecture-pieces.md      # How the 4 core framework pieces fit together
+  clawd-character.md          # Clawd personality + lore + observable facts
+  clawd-code-cli.md           # @openclawdsolana/clawd-code-cli v0.2.3 reference
+  clawd-tui.md                # @openclawdsolana/clawd-tui v0.2.1 reference
+  clawdrouter.md              # ClawdRouter LLM proxy architecture
+  openclawd-hermes-memory.md  # Hermes memory model (OODA + tiers)
+  openclawd.md                # Full OpenClawd v0.3.1 release notes
+  SOVEREIGN_RESEARCH.md       # Sovereign research methodology
+  wiki.md                     # AutoResearch Wiki architecture + agent queries
 ```
 
 ## Knowledge Fact Format
