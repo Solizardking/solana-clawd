@@ -181,7 +181,7 @@ import { clawdFetch } from "@solanaclawd/x402-client";
 const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=...");
 const signer = Keypair.fromSecretKey(secret);
 
-const res = await clawdFetch("https://solanaclawd.com/x402/agents/<agent-id>/run", {
+const res = await clawdFetch("https://x402.wtf/agents/<agent-id>/run", {
   method: "POST",
   body: JSON.stringify({ prompt: "ship the thing" }),
   signer,

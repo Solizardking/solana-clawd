@@ -51,7 +51,7 @@ app.use("*", cors({ origin: "*", allowHeaders: ["*"], exposeHeaders: ["*"] }));
 app.use("*", securityHeaders);
 
 app.get("/health", (c) =>
-  c.json({ ok: true, network: c.env.NETWORK, gateway: "solanaclawd.com/x402" }),
+  c.json({ ok: true, network: c.env.NETWORK, gateway: "x402.wtf" }),
 );
 
 app.route("/facilitator", facilitator);

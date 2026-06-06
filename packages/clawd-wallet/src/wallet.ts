@@ -3,17 +3,13 @@
  * Wraps a Privy ConnectedStandardSolanaWallet with Solana Kit utilities
  */
 
-import {
-  address,
-  createSolanaRpc,
-  createSolanaRpcSubscriptions,
-} from "@solana/kit";
-import bs58 from "bs58";
 import type {
   ClawdWallet as IClawdWallet,
   ClawdWalletInfo,
   SolanaChain,
 } from "./types.js";
+import { address, createSolanaRpc } from "@solana/kit";
+import bs58 from "bs58";
 
 const CHAIN_RPC: Record<SolanaChain, string> = {
   mainnet: "https://api.mainnet-beta.solana.com",
@@ -161,27 +157,20 @@ export class ClawdWallet implements IClawdWallet {
     options?: { commitment?: "processed" | "confirmed" | "finalized" }
   ): Promise<"confirmed" | "failed"> {
     const commitment = options?.commitment ?? "confirmed";
-    const sub = this.rpcSubscriptions.signatureNotifications(signature, {
-      commitment,
-    });
-
-    return new Promise((resolve) => {
-      const unsubscribe = sub.subscribe({
-        onData: (notif: { value: { err: unknown } }) => {
-          if (notif.value.err) {
-            unsubscribe();
-            resolve("failed");
-          } else {
-            unsubscribe();
-            resolve("confirmed");
-          }
-        },
-        onError: () => {
-          unsubscribe();
-          resolve("failed");
-        },
-      });
-    });
+    const sig = signature as Parameters<typeof this.rpc.getSignatureStatuses>[0][0];
+    for (let i = 0; i < 60; i++) {
+      const { value } = await this.rpc
+        .getSignatureStatuses([sig], { searchTransactionHistory: true })
+        .send();
+      const status = value[0];
+      if (status) {
+        if (status.err) return "failed";
+        const conf = status.confirmationStatus;
+        if (conf === commitment || conf === "finalized") return "confirmed";
+      }
+      await new Promise<void>((r) => setTimeout(r, 2000));
+    }
+    return "failed";
   }
 
   /**

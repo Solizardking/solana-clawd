@@ -12,15 +12,15 @@
  */
 
 import Decimal from "decimal.js";
-import { SwapService, SOLANA_TOKENS } from "./swap.js";
+import { SOLANA_TOKENS, SwapService } from "./swap.js";
 import type {
   AgentPermissions,
   AgenticTransaction,
   AgenticWalletConfig,
-  ClawdWallet,
   PendingTransaction,
   SwapQuoteParams,
 } from "./types.js";
+import type { ClawdWallet } from "./wallet.js";
 
 const DEFAULT_PERMISSIONS: AgentPermissions = {
   maxSwapUsd: 50,

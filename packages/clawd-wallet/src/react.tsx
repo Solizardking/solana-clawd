@@ -3,11 +3,9 @@
  * Privy-powered embedded Solana wallet for the openclawd agent ecosystem
  */
 
-import React, { createContext, useContext, useMemo, type ReactNode } from "react";
-// Privy v1.99.x static imports — hooks must be called at top level
 import { usePrivy } from "@privy-io/react-auth";
-// @ts-expect-error – hook name varies across minor Privy versions; cast at call site
 import { useSolanaWallets } from "@privy-io/react-auth/solana";
+import React, { createContext, type ReactNode, useContext, useMemo } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 

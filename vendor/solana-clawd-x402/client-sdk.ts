@@ -12,7 +12,7 @@
  *   const signer = Keypair.fromSecretKey(secret);
  *   const conn = new Connection("https://mainnet.helius-rpc.com/?api-key=...");
  *
- *   const res = await clawdFetch("https://solanaclawd.com/x402/agents/<id>/summarize", {
+ *   const res = await clawdFetch("https://x402.wtf/agents/<id>/summarize", {
  *     method: "POST",
  *     body: JSON.stringify({ url: "..." }),
  *     signer, connection: conn,
