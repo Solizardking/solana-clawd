@@ -1,8 +1,8 @@
-# Clawd Labs
+# @openclawd/sovereign-research
 
 > Sovereign research · knowledge-aware LLM routing · Solana agent intelligence
 
-Clawd Labs is the research brain of the OpenClawd stack. It combines:
+The autonomous research brain of the OpenClawd stack at [x402.wtf](https://x402.wtf). It combines:
 
 - **Knowledge base** — 76+ curated facts from `knowledge/*.jsonl` injected as LLM context
 - **ClawdRouter** — wallet-signed LLM inference with 55+ models and USDC x402 micropayments
@@ -16,23 +16,23 @@ Clawd Labs is the research brain of the OpenClawd stack. It combines:
 pnpm install
 
 # Or standalone
-npm install -g @clawd/labs
+npm install -g @openclawd/sovereign-research
 ```
 
 ## Usage
 
 ```bash
 # Start the interactive TUI (default)
-clawd-labs
+sovereign
 
 # One-shot research query
-clawd-labs research "trending Solana meme tokens"
+sovereign research "trending Solana meme tokens"
 
 # Search the knowledge base
-clawd-labs knowledge "mpp unbuilt"
+sovereign knowledge "mpp unbuilt"
 
 # With custom router and Birdeye key
-CLAWDROUTER_URL=http://localhost:8402 BIRDEYE_API_KEY=your_key clawd-labs
+CLAWDROUTER_URL=http://localhost:8402 BIRDEYE_API_KEY=your_key sovereign
 ```
 
 ## Environment Variables
@@ -66,7 +66,7 @@ Start ClawdRouter first for local LLM routing:
 cd ../../clawdrouter && npm run dev
 ```
 
-ClawdRouter runs on `localhost:8402` with an OpenAI-compatible API. Clawd Labs auto-detects it on startup and falls back to the remote router if not available.
+ClawdRouter runs on `localhost:8402` with an OpenAI-compatible API. The TUI auto-detects it on startup and falls back to the remote router if not available.
 
 ## Knowledge Base
 

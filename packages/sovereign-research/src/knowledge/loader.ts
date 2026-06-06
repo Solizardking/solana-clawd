@@ -97,6 +97,6 @@ export class KnowledgeBase {
     const block = high
       .map((e) => `[${e.id}][${e.type}] ${e.fact} → ${e.recommendation}`)
       .join("\n");
-    return `\n\n## Clawd Labs Knowledge Base (${high.length} high-confidence facts)\n${block}`;
+    return `\n\n## OpenClawd Knowledge Base (${high.length} high-confidence facts)\n${block}`;
   }
 }

@@ -1,12 +1,12 @@
 {
-  "name": "@clawd/labs",
+  "name": "@openclawd/sovereign-research",
   "version": "0.1.0",
-  "description": "Clawd Labs — sovereign research, knowledge-aware LLM routing, and Solana agent intelligence",
+  "description": "OpenClawd sovereign research — knowledge-aware LLM routing and Solana agent intelligence",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "clawd-labs": "./dist/index.js"
+    "sovereign": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -30,7 +30,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/x402agent/solana-clawd.git",
-    "directory": "packages/clawd-labs"
+    "directory": "packages/sovereign-research"
   },
   "dependencies": {
     "commander": "^11.1.0"

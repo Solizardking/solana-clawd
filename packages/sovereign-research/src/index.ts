@@ -13,13 +13,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const program = new Command();
 
 program
-  .name("clawd-labs")
-  .description("Clawd Labs — sovereign research, knowledge-aware LLM routing, Solana agent intelligence")
+  .name("sovereign")
+  .description("OpenClawd sovereign research — knowledge-aware LLM routing, Solana agent intelligence")
   .version("0.1.0");
 
 program
   .command("start", { isDefault: true })
-  .description("Start the Clawd Labs TUI")
+  .description("Start the sovereign research TUI")
   .option(
     "-k, --knowledge <path>",
     "Path to knowledge directory",

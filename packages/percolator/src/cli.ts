@@ -6,11 +6,12 @@
  * @module cli
  */
 
+import { type Commitment } from "@solana/web3.js";
 import { Command } from "commander";
 
 export interface GlobalFlags {
   cluster: string;
-  commitment: string;
+  commitment: Commitment;
   simulate: boolean;
   json: boolean;
   keypair: string;

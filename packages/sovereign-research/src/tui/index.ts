@@ -5,8 +5,8 @@ import type { ResearchOrchestrator } from "../research/orchestrator.js";
 
 const BANNER = `
   ╔══════════════════════════════════════════════════════════╗
-  ║   🦞  C L A W D   L A B S                               ║
-  ║   sovereign research · knowledge routing · Solana intel  ║
+  ║   🦞  S O V E R E I G N   R E S E A R C H               ║
+  ║   knowledge routing · Karpathy loop · Solana intel       ║
   ║   x402.wtf · clawdrouter.fly.dev                        ║
   ╚══════════════════════════════════════════════════════════╝
 `;
@@ -21,7 +21,7 @@ Commands:
   /kb stats               Knowledge base statistics
   /model <id>             Switch ClawdRouter model (e.g. claude-3-5-sonnet)
   /help                   Show this help
-  exit / quit             Exit Clawd Labs
+  exit / quit             Exit
 `;
 
 export async function startTUI(
@@ -190,7 +190,7 @@ export async function startTUI(
     // Default: chat with ClawdRouter + knowledge context
     history.push({ role: "user", content: input });
     const systemCtx = kb.buildSystemContext(15);
-    const sysMsg = `You are Clawd Labs, a sovereign Solana research agent.\nYou route through ClawdRouter for intelligence. Be terse and precise.${systemCtx}`;
+    const sysMsg = `You are a sovereign Solana research agent powered by OpenClawd.\nYou route through ClawdRouter for intelligence. Be terse and precise.${systemCtx}`;
 
     process.stdout.write("\n  🦞 ");
     try {

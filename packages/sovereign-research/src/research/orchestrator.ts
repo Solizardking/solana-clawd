@@ -52,7 +52,7 @@ export class ResearchOrchestrator {
       .join("\n");
 
     const systemPrompt = [
-      "You are Clawd Labs Research, an autonomous Solana intelligence agent.",
+      "You are an autonomous Solana research agent powered by OpenClawd at x402.wtf.",
       "You have access to live Birdeye market data and a curated knowledge base.",
       "Respond with concrete findings, token addresses, and actionable signals.",
       kbContext ? `\nKnowledge base context:\n${kbContext}` : "",

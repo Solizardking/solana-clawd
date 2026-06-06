@@ -63,6 +63,47 @@ export const AUTHORITY_KIND = {
   CLOSE: 0,
 } as const;
 
+// InitMarket
+export interface InitMarketArgs {
+  admin: string; collateralMint: string; indexFeedId: string;
+  maxStalenessSecs: bigint | string; confFilterBps: number;
+  invert: number; unitScale: number; initialMarkPriceE6: bigint | string;
+  maintenanceFeePerSlot: bigint | string; minOraclePriceCapE2bps: bigint | string;
+  hMin: bigint | string; maintenanceMarginBps: bigint | string;
+  initialMarginBps: bigint | string; tradingFeeBps: bigint | string;
+  maxAccounts: bigint | string; newAccountFee: bigint | string;
+  hMax: bigint | string; maxCrankStalenessSlots: bigint | string;
+  liquidationFeeBps: bigint | string; liquidationFeeCap: bigint | string;
+  resolvePriceDeviationBps: bigint | string; minLiquidationAbs: bigint | string;
+  minNonzeroMmReq: bigint | string; minNonzeroImReq: bigint | string;
+  insuranceWithdrawMaxBps: number; insuranceWithdrawCooldownSlots: bigint | string;
+  permissionlessResolveStaleSlots: bigint | string; fundingHorizonSlots: bigint | string;
+  fundingKBps: bigint | string; fundingMaxPremiumBps: bigint | string;
+  fundingMaxE9PerSlot: bigint | string; markMinFee: bigint | string;
+  forceCloseDelaySlots: bigint | string;
+}
+export function encodeInitMarket(args: InitMarketArgs): Buffer {
+  return Buffer.concat([
+    encU8(IX_TAG.InitMarket),
+    encU64(args.maxStalenessSecs), encU16(args.confFilterBps),
+    encU8(args.invert), encU32(args.unitScale),
+    encU64(args.initialMarkPriceE6), encU64(args.maintenanceFeePerSlot),
+    encU64(args.minOraclePriceCapE2bps), encU64(args.hMin),
+    encU16(Number(args.maintenanceMarginBps)), encU16(Number(args.initialMarginBps)),
+    encU16(Number(args.tradingFeeBps)), encU32(Number(args.maxAccounts)),
+    encU64(args.newAccountFee), encU64(args.hMax),
+    encU64(args.maxCrankStalenessSlots), encU16(Number(args.liquidationFeeBps)),
+    encU64(args.liquidationFeeCap), encU16(Number(args.resolvePriceDeviationBps)),
+    encU64(args.minLiquidationAbs), encU64(args.minNonzeroMmReq),
+    encU64(args.minNonzeroImReq), encU16(args.insuranceWithdrawMaxBps),
+    encU64(args.insuranceWithdrawCooldownSlots),
+    encU64(args.permissionlessResolveStaleSlots),
+    encU64(args.fundingHorizonSlots), encU64(args.fundingKBps),
+    encU64(args.fundingMaxPremiumBps), encU64(args.fundingMaxE9PerSlot),
+    encU64(args.markMinFee), encU64(args.forceCloseDelaySlots),
+  ]);
+}
+
 // InitUser
 export interface InitUserArgs { feePayment: bigint | string; }
 export function encodeInitUser(args: InitUserArgs): Buffer {

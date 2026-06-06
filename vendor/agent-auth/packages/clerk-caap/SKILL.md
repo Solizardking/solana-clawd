@@ -8,7 +8,7 @@ description: >
   TEE attestation to Clerk-protected routes.
 license: MIT
 metadata:
-  author: clawd-labs
+  author: openclawd
   version: "0.1.0"
   homepage: https://pay.sh/services/auth/agent
   repo: https://github.com/Solizardking/agent-auth
