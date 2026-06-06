@@ -3,7 +3,7 @@ name: lobster-gacha
 title: "Lobster Gacha — Provably Fair Onchain AI Agent Gacha (Official Clawd, Solana)"
 description: "Official Clawd provably fair Solana gacha API returning AI agent cards (rarity: common→legendary) with SHA-256+blockhash commitments, CLAWD token prizes, and Metaplex NFT minting. Phoenix perpetuals data proxy included."
 use_case: "Use when an agent needs to execute a provably fair gacha pull on Solana, win CLAWD tokens or Metaplex NFTs, query live Phoenix perpetuals market data, or verify randomness via blockhash commitment. For the full Clawd AI API platform including operator sessions and DeFi agents, see clawd/data."
-service_url: "https://gacha.solanaclawd.com"
+service_url: "https://gacha.x402.wtf"
 category: other
 version: v1
 openapi:

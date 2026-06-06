@@ -6,7 +6,7 @@
     "description": "Provably fair Solana gacha API with Phoenix perpetuals market data. Payments are USDC-denominated via x402/pay.sh on Solana."
   },
   "servers": [
-    { "url": "https://gacha.solanaclawd.com" }
+    { "url": "https://gacha.x402.wtf" }
   ],
   "paths": {
     "/api/pull": {

@@ -206,7 +206,14 @@
     "tweetnacl": "^1.0.3",
     "ulid": "^2.3.0",
     "ws": "^8.18.0",
-    "yaml": "^2.4.0"
+    "yaml": "^2.4.0",
+    "@openclawdsolana/solana-sdk": "workspace:*",
+    "@openclawdsolana/agent-registry": "workspace:*",
+    "@openclawdsolana/agent-hub": "workspace:*",
+    "@openclawd/wallet": "workspace:*",
+    "@openclawd/agents-x402": "workspace:*",
+    "@openclawd/percolator": "workspace:*",
+    "@clawd/solana-ai-inference-client": "workspace:*"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",

@@ -23,6 +23,7 @@ import { readBalances } from './identity/balances.js';
 import { depthFor } from './survival/monitor.js';
 import { getLeviathan, listSpawnlings } from './state/database.js';
 import { DEFAULT_RPC, CLAWD_MINT } from './config.js';
+import { ecosystemHealthCheck } from './services/ecosystem.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PKG = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
@@ -175,6 +176,10 @@ async function statusCmd() {
   console.log(`   $clawd:        ${balances.clawd.toFixed(2)}`);
   console.log(`   spawnlings:    ${spawnlings.length} (${spawnlings.filter((s) => !s.beached_at).length} alive)`);
   console.log(`   spawned:       ${new Date(meta.spawnedAt).toISOString()}`);
+
+  const eco = await ecosystemHealthCheck();
+  const ecoLine = eco.results.map((r) => (r.status === 'ok' ? '✓' : '✗') + r.name).join('  ');
+  console.log(`   ecosystem:     ${eco.ok ? '🟢' : '🔴'} ${ecoLine}`);
 }
 
 function requireEnv(key: string): string {

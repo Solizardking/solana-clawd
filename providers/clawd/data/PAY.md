@@ -166,7 +166,7 @@ Check live prices and CLAWD overlay tiers at `/api/x402/catalog` before any paid
 | Service | URL | Description |
 | --- | --- | --- |
 | Backroom API | `https://backroom-3d.fly.dev` | FastAPI multi-agent server: Firecrawl, monitors, Phoenix perps, loop agents. API key via `/v1/machines/handshake`. |
-| Gacha API | `https://gacha.solanaclawd.com` | Provably fair AI agent gacha + Phoenix perps proxy. See `clawd/lobster-gacha`. |
+| Gacha API | `https://gacha.x402.wtf` | Provably fair AI agent gacha + Phoenix perps proxy. See `clawd/lobster-gacha`. |
 | x402 SDK | `npm install @pump-fun/x402` | Drop-in client for auto-handling 402 → sign → retry on any Solana keypair. |
 
 ## Spend-Aware Usage

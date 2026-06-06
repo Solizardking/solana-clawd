@@ -4,7 +4,7 @@ title: "Lobster Gacha — Provably Fair AI Agent Gacha on Solana"
 description: "Provably fair Solana gacha API returning AI agent cards with SHA-256+blockhash commitments, CLAWD token prizes, and Phoenix perpetuals market data."
 use_case: "Use when an agent needs to execute a provably fair Solana gacha pull, win CLAWD tokens or Metaplex NFTs on-chain, or fetch live Phoenix perpetuals ticker, candles, and TA indicators."
 category: other
-service_url: https://gacha.solanaclawd.com
+service_url: https://gacha.x402.wtf
 version: "v1"
 endpoints:
   - path: /api/pull
