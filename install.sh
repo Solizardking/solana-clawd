@@ -26,6 +26,7 @@ INSTALL_SDK=false
 INSTALL_PERPS=false
 INSTALL_X402=false
 INSTALL_PUMP=false
+INSTALL_GATEWAY=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -35,7 +36,8 @@ for arg in "$@"; do
     --perps)      INSTALL_PERPS=true ;;
     --x402)       INSTALL_X402=true ;;
     --pump)       INSTALL_PUMP=true ;;
-    --full)       INSTALL_LEVIATHAN=true; INSTALL_SDK=true; INSTALL_PERPS=true; INSTALL_X402=true; INSTALL_PUMP=true ;;
+    --gateway)    INSTALL_GATEWAY=true ;;
+    --full)       INSTALL_LEVIATHAN=true; INSTALL_SDK=true; INSTALL_PERPS=true; INSTALL_X402=true; INSTALL_PUMP=true; INSTALL_GATEWAY=true ;;
     --tui-only)   INSTALL_REGISTRY=false; INSTALL_HUB=false ;;
     --help|-h)
       printf "Usage: install.sh [flags]\n\n"
@@ -44,6 +46,7 @@ for arg in "$@"; do
       printf "  ${BOLD}--x402${RESET}       x402.wtf CLI (gateway + terminal launcher)\n"
       printf "  ${BOLD}--sdk${RESET}        @openclawdsolana/solana-sdk + @openclawdsolana/wallet\n"
       printf "  ${BOLD}--pump${RESET}       Rust copy-trading bot (clawd-pump) — requires Rust toolchain\n"
+      printf "  ${BOLD}--gateway${RESET}    CLAWD Gateway — Telegram bot + HTTP API (Helius/Birdeye)\n"
       printf "  ${BOLD}--leviathan${RESET}  @openclawdsolana/leviathan on-chain runtime\n"
       printf "  ${BOLD}--minimal${RESET}    TUI only (no registry or hub)\n"
       printf "  ${BOLD}--tui-only${RESET}   clawd TUI only\n"
@@ -415,6 +418,24 @@ if [ "$INSTALL_X402" = false ]; then
 fi
 if [ "$INSTALL_PUMP" = false ]; then
   printf "  ${DIM}Rust pump bot:     bash install.sh --pump${RESET}\n"
+fi
+if [ "$INSTALL_GATEWAY" = false ]; then
+  printf "  ${DIM}CLAWD Gateway:     bash install.sh --gateway${RESET}\n"
+fi
+
+# ── CLAWD Gateway (Telegram bot + HTTP API) ──────────────────────────────────
+if [ "$INSTALL_GATEWAY" = true ]; then
+  step "Building CLAWD Gateway"
+  if [ -d "gateway" ]; then
+    cd gateway && npm install --no-audit --no-fund 2>&1 | tail -3 && npm run build 2>&1 | tail -3 && cd ..
+    ok "CLAWD Gateway built → dist/gateway/src/index.js"
+    info "Start with: cd gateway && npm start"
+    info "Or deploy to Fly.io: cd gateway && fly deploy"
+  else
+    warn "gateway/ directory not found — clone the repo first"
+    warn "  git clone https://github.com/solizardking/solanaclawd"
+    warn "  cd solanaclawd && bash install.sh --gateway"
+  fi
 fi
 
 printf "\n  ${BOLD}Links:${RESET}\n"

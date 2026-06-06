@@ -65,14 +65,15 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║       6   P A C K A G E S   L I V E   O N   N P M   @   v 2 . 0 . 0    ║
-╠══════════╦══════════════════════════════════════════╦═══════════════════╣
+║       7   P A C K A G E S   L I V E   O N   N P M   @   v 2 . 0 . 0    ║
+╠══════════╦══════════════════════════════════════╦═══════════════════╣
 ║  clawd   ║  @openclawdsolana/clawd                  ║  🖥  TUI          ║
 ║  registry║  @openclawdsolana/agent-registry         ║  📋 on-chain      ║
 ║  hub     ║  @openclawdsolana/agent-hub              ║  🌐 dashboard     ║
 ║  sdk     ║  @openclawdsolana/solana-sdk             ║  🛠  TypeScript    ║
 ║  wallet  ║  @openclawdsolana/wallet                 ║  👛 Privy+Jupiter ║
 ║  vault   ║  agentwallet-vault                       ║  🔐 keypair vault ║
+║  gateway ║  @solana-clawd/gateway                   ║  🤖 Telegram+HTTP ║
 ╠══════════╩══════════════════════════════════════════╩═══════════════════╣
 ║  solanaclawd.com/agents  ·  x402.wtf/agents  ·  solanaclawd.com/skills  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
@@ -445,6 +446,9 @@ open https://solanaclawd.com/terminal
 ║  x402.wtf/gateway           ║  Facilitator · routing · settlement        ║
 ║  x402.wtf/skills            ║  Premium skills marketplace                ║
 ║  x402.wtf/.well-known/      ║  CAAP/1.0 discovery · ACP registry        ║
+╠═════════════════════════════╬════════════════════════════════════════════╣
+║  ClawdRouter (clawdrouter/) ║  Solana-native LLM router · 55+ models     ║
+║  CLAWD Gateway (gateway/)   ║  Telegram bot · Helius/Birdeye · agent API ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
 ║  agent-auth                 ║  github.com/Solizardking/agent-auth        ║
 ║  CAAP/1.0                   ║  Agent identity · JWT auth · capabilities  ║
