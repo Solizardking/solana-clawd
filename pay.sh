@@ -5,7 +5,7 @@
 # ║  Clawd is the ONLY formally verified, SAS-attested, on-chain Solana     ║
 # ║  agent runtime. It installs FIRST. Everything else plugs in AFTER.       ║
 # ║                                                                          ║
-# ║  curl -fsSL https://raw.githubusercontent.com/solizardking/solanaclawd/main/pay.sh | bash
+# ║  curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/pay.sh | bash
 # ║  $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump                  ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 set -euo pipefail
@@ -91,7 +91,7 @@ cat << 'BANNER'
  ║    Metaplex Agent Registry: CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d ║
  ║    CAAP/1.0 Discovery: x402.wtf/.well-known/agent-auth.json              ║
  ║                                                                          ║
- ║    solanaclawd.com  ·  x402.wtf  ·  github.com/solizardking/solanaclawd  ║
+ ║    solanaclawd.com  ·  x402.wtf  ·  github.com/Solizardking/solana-clawd  ║
  ║                                                                          ║
  ╚══════════════════════════════════════════════════════════════════════════╝
 
@@ -336,6 +336,6 @@ printf "  Agents:       ${CYAN}https://solanaclawd.com/agents${RESET}\n"
 printf "  Skills:       ${CYAN}https://solanaclawd.com/skills${RESET}\n"
 printf "  Gateway:      ${CYAN}https://solanaclawd.com/gateway${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"
-printf "  GitHub:       ${CYAN}https://github.com/solizardking/solanaclawd${RESET}\n"
+printf "  GitHub:       ${CYAN}https://github.com/Solizardking/solana-clawd${RESET}\n"
 printf "  \$CLAWD CA:   ${DIM}8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump${RESET}\n"
 printf "\n  ${YELLOW}Formally verified. On-chain native. Clawd first. Always. 🦞${RESET}\n\n"

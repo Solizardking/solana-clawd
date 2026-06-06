@@ -478,7 +478,7 @@ open https://solanaclawd.com/terminal
 ║  agent-auth                 ║  github.com/Solizardking/agent-auth        ║
 ║  CAAP/1.0                   ║  Agent identity · JWT auth · capabilities  ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
-║  GitHub                     ║  github.com/solizardking/solanaclawd       ║
+║  GitHub                     ║  github.com/Solizardking/solana-clawd      ║
 ╚═════════════════════════════╩════════════════════════════════════════════╝
 ```
 
