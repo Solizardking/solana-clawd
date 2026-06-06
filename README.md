@@ -38,14 +38,19 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 ---
 
-### 🔥 WHAT'S NEW — June 2025
+### 🔥 WHAT'S NEW — June 2026
 
 | 🆕 Update | Description |
 |---|---|
+| 🍌 **Nano Banana 2 Image Gen** | Gemini 3.1 Flash Image — text-to-image, editing, search grounding, 4K, 14 reference images |
+| 🎬 **Veo 3.1 Video Gen** | Cinematic 8s videos with native audio — portrait/landscape, extension, frame interpolation |
+| 🔬 **Deep Research Agent** | Autonomous multi-step web research with citations, visualizations, collaborative planning |
+| 🐚 **Antigravity Managed Agents** | Isolated Linux sandbox — code execution, Git/GCS sources, network rules, credential injection |
+| 🖥️ **Computer Use** | Browser automation — screenshot-based control with human-in-the-loop safety confirmation |
+| 🧠 **Gemini 3.5 Flash Provider** | Full `@google/genai` SDK integration — InferProvider adapter, search grounding, code execution |
 | 🤖 **CLAWD Gateway** | Telegram bot + HTTP API with Helius/Birdeye/Solana integration — `npm run gateway:start` |
 | 🔀 **ClawdRouter** | Solana-native LLM router — 15-dimension scoring, 55+ models, wallet-signed auth, USDC x402 |
 | 🔐 **CAAP/1.0 Agent Auth** | Vendored 5-package auth stack — 116 TS files, SIWS, DAS, TEE attestation, Clerk bridge |
-| 📋 **pay.sh Verified** | [solana-foundation/pay#376](https://github.com/solana-foundation/pay/pull/376) — agent-auth skill submitted & reviewed |
 | 🛡️ **Formal Verification** | Kani Rust Verifier + STRIDE scoring for skill registry |
 | 🎨 **Skill Hub** | Formally verified skill registry with Ed25519 signature-gated registration |
 
