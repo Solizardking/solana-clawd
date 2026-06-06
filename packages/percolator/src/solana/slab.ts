@@ -143,7 +143,8 @@ export function parseConfig(data: Buffer): MarketConfig {
   const insuranceWithdrawCooldownSlots = data.readBigUInt64LE(off);           off += 8;
   off += 16;
   const lastHyperpIndexSlot = data.readBigUInt64LE(off);                    off += 8;
-  off += 16;
+  const lastMarkPushSlot = data.readBigUInt64LE(off);                       off += 8;
+  off += 8;
   const lastInsuranceWithdrawSlot = data.readBigUInt64LE(off);               off += 8;
   off += 8;
   const markEwmaE6 = data.readBigUInt64LE(off);                              off += 8;

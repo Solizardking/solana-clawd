@@ -7,7 +7,7 @@
 
 import { createProgram } from "./cli.js";
 import { registerInitUser } from "./commands/init-user.js";
-import { registerInitLP } from "./commands/init-lp.js";
+import { registerInitLp } from "./commands/init-lp.js";
 import { registerDeposit } from "./commands/deposit.js";
 import { registerWithdraw } from "./commands/withdraw.js";
 import { registerTradeCpi } from "./commands/trade-cpi.js";
@@ -41,7 +41,7 @@ async function main() {
   
   // Register all commands
   registerInitUser(program);
-  registerInitLP(program);
+  registerInitLp(program);
   registerDeposit(program);
   registerWithdraw(program);
   registerTradeCpi(program);
