@@ -90,6 +90,72 @@
 
 ---
 
+## One-Shot Test (all 10 packages)
+
+```bash
+# Run from repo root — tests every package in order
+bash packages/test-all.sh
+```
+
+**Expected output (10/10):**
+
+```
+✓ clawd-sdk          (@openclawdsolana/solana-sdk)
+✓ agent-registry     (@openclawdsolana/agent-registry)
+✓ agentwallet        (agentwallet-vault)
+✓ agent-hub          (@openclawdsolana/agent-hub)
+✓ clawd-wallet       (@openclawd/wallet)
+✓ agents-x402-solana (@openclawd/agents-x402, source-only)
+✓ percolator         (@openclawd/percolator)
+✓ cli-standalone     (@openclawdsolana/clawd-standalone)
+✓ AI Inference client (@clawd/solana-ai-inference-client)
+✓ Anchor .so         (solana_ai_inference.so)
+
+──────────────────────────────────────────
+  10 passed  |  0 failed
+──────────────────────────────────────────
+  ALL SYSTEMS GO 🦞
+```
+
+**Live curl tests against running services:**
+
+```bash
+# 1. Start agent-hub (port 3747)
+clawd-hub start &
+sleep 2
+
+# 2. Health check
+curl -s http://localhost:3747/api/v1/hub/status | jq .
+
+# 3. Search on-chain agents
+curl -s "http://localhost:3747/api/v1/agents?q=arbitrage" | jq '.agents[].name'
+
+# 4. Jupiter swap quote (clawd-wallet SwapService under the hood)
+curl -s "https://api.jup.ag/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=100000000&slippageBps=50" | jq '{outAmount,priceImpactPct}'
+
+# 5. Solana RPC — verify AI Inference program is deployed
+curl -s https://api.mainnet-beta.solana.com \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"getAccountInfo","params":["Bg96xPuC3Mt2xnEnQPQBJY8QBqD6J7hn3WgnqDK43pKT",{"encoding":"base64"}]}' \
+  | jq '.result.value.executable'   # → true
+
+# 6. x402 gateway health
+curl -s https://x402.wtf/health | jq .
+
+# 7. CAAP well-known discovery
+curl -s https://solanaclawd.com/.well-known/agent-auth | jq '.caapVersion'
+```
+
+**One-liner: install + smoke-test clawd-wallet CLI**
+
+```bash
+npm i -g @openclawdsolana/clawd && \
+clawd-registry list | head -5 && \
+node -e "const {CLAWD_MINT_MAINNET}=require('@openclawdsolana/solana-sdk'); console.log('$CLAWD mint:', CLAWD_MINT_MAINNET)"
+```
+
+---
+
 ## Quick Install
 
 ```bash
