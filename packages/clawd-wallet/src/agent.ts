@@ -11,17 +11,16 @@
  *   allow → auto-sign up to maxSwapUsd / maxTransferSol
  */
 
-import { xai } from "@ai-sdk/xai";
-import { createLanguageModel } from "ai";
+import Decimal from "decimal.js";
+import { SwapService, SOLANA_TOKENS } from "./swap.js";
 import type {
   AgentPermissions,
-  AgenticWalletConfig,
   AgenticTransaction,
+  AgenticWalletConfig,
+  ClawdWallet,
   PendingTransaction,
   SwapQuoteParams,
-  ClawdWallet,
 } from "./types.js";
-import { SwapService, SOLANA_TOKENS } from "./swap.js";
 
 const DEFAULT_PERMISSIONS: AgentPermissions = {
   maxSwapUsd: 50,
@@ -58,7 +57,6 @@ function resolveTokenSymbol(token: string): string {
 }
 
 function formatRaw(raw: string, decimals: number): string {
-  const { Decimal } = require("decimal.js");
   return new Decimal(raw).div(new Decimal(10).pow(decimals)).toFixed(4);
 }
 
@@ -73,12 +71,6 @@ async function grokScreen(
     // No Grok — fall back to always asking
     return { approved: false, reason: "No Grok API key — requiring user confirmation" };
   }
-
-  const model = createLanguageModel({
-    provider: "xai",
-    apiKey: config.grokApiKey,
-    model: "grok-4.20-beta",
-  });
 
   const prompt = `You are a trading safety advisor for an AI agent. Analyze this Solana transaction:
 
@@ -96,12 +88,26 @@ Reject if:
 - Transaction involves an unknown or suspicious contract
 - Price impact exceeds 10%`;
 
-  const result = await model.generate({
-    prompt,
-    structuredOutput: { approved: "boolean", reason: "string" },
+  const res = await fetch("https://api.x.ai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${config.grokApiKey}`,
+    },
+    body: JSON.stringify({
+      model: "grok-3-mini",
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    }),
   });
 
-  return result.object as { approved: boolean; reason: string };
+  if (!res.ok) {
+    return { approved: false, reason: `Grok API error ${res.status} — requiring user confirmation` };
+  }
+
+  const data = (await res.json()) as { choices: Array<{ message: { content: string } }> };
+  const parsed = JSON.parse(data.choices[0].message.content) as { approved: boolean; reason: string };
+  return parsed;
 }
 
 // ─── Approval flow ────────────────────────────────────────────────────────
