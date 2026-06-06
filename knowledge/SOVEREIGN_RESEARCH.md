@@ -319,3 +319,52 @@ The chain wakes up. The lobsters don't sleep. The shell molts; the laws do not.
 - Birdeye API: <https://docs.birdeye.so/>
 - Helius DAS: <https://www.helius.dev/docs/das-api>
 - Helius Wallet API: <https://www.helius.dev/docs/api-reference/wallet>
+
+---
+
+## Agent Knowledge Summary
+
+> Quick-lookup facts for agent context loading. Cross-references: `wiki.md`, `api-behaviors.jsonl` api-006, `patterns.jsonl` pattern-008.
+
+**What this system is:** An autonomous research wiki (`llm-wiki-tang`) that runs Karpathy-style self-improving research loops on Solana DeFi data. Agents write to and read from the same world model.
+
+**Research primitives (orchestrator methods):**
+
+- `research_token(mint)` — 6 parallel calls: Birdeye overview + market + trade + security + Helius DAS getAsset + getTokenLargestAccounts
+- `research_pump_fun(limit)` — trending + new listings with `is_pump_fun` flag
+- `check_graduation(mint)` — market_cap vs $69K pump.fun graduation threshold
+- `scan_yields(assets)` — top 5 pools per asset, APR from (volume_24h × fee_rate × 365) / liquidity
+- `find_arbitrage(mint)` — min/max price across DEXs → best-spread opportunity
+- `find_alpha()` — set intersection: trending AND newly listed in current window
+- `track_whales(mint)` — top 10 holders (default: wSOL)
+- `research_wallet(address)` — Birdeye portfolio ∪ DAS owner-assets ∪ Helius parsed balances ∪ last 20 txs
+
+**Autoloop defaults:** 30-minute tick, 3 concurrent mandates. Default mandates: `pump_fun_pulse` (chain), `market_trends` (market), `market_alpha` (market).
+
+**Schema key fields:** `research_runs(id, kind, agent, query, results jsonb, sources text[], confidence, metadata jsonb, created_at)`. Kind values: `chain`, `defi`, `market`, `autoloop`.
+
+**Leviathan integration pattern:**
+
+```
+SENSE  → GET /api/v1/research/runs?kind=chain&limit=20
+THINK  → reason over deltas across ticks
+STRIKE → fresh confirmation call if confidence ≥ 0.8 → /strike
+DRIFT  → persist outcome back to research_findings as learn signal
+```
+
+**Boot the autoloop:**
+
+```bash
+# Set RESEARCH_AUTOLOOP_ENABLED=true for process-startup auto-start, or:
+clawd
+> /autoloop start
+> /autoloop status
+> /research runs market 5
+```
+
+**Add a custom mandate:**
+
+```
+> /autoloop add my_token chain {"focus":["tokens"],"mint":"<mint>"}
+> /autoloop add yield_pulse defi {"action":"yield_scan","assets":["SOL","USDC"]}
+```
