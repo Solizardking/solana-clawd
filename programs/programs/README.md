@@ -1,5 +1,102 @@
 # Solana AI Inference Protocol
 
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  ⚓  S O L A N A   A I   I N F E R E N C E   P R O T O C O L              ║
+║  On-chain model registry · decentralized inference · staking · validators   ║
+║  Program: Bg96xPuC3Mt2xnEnQPQBJY8QBqD6J7hn3WgnqDK43pKT  ·  Mainnet        ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║   REGISTER MODEL ──▶ FINALIZE TRAINING ──▶ REQUEST INFERENCE ──▶ SETTLE    ║
+║        │                    │                      │                │        ║
+║   model_hash             accuracy_bps         escrow locked    fee released  ║
+║   api_endpoint           training_complete    confidence_bps   + refund path ║
+║   inference_fee          validator rating     quality_score    treasury 2.5% ║
+║                                                                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  ⚓ Anchor 0.32.1  ·  🌐 Solana 1.18.20  ·  📦 @clawd/solana-ai-inference  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║                     S O L A N A   C L A W D                             ║
+╠═════════════════════════════╦════════════════════════════════════════════╣
+║  solanaclawd.com            ║  Main site · TUI · SDK · token             ║
+║  solanaclawd.com/agents     ║  Browse + search all 125 agents            ║
+║  solanaclawd.com/gateway    ║  x402 payment gateway · USDC routing       ║
+║  solanaclawd.com/skills     ║  Installable agent skills catalog          ║
+║  solanaclawd.com/terminal   ║  Browser terminal (zero install)           ║
+╠═════════════════════════════╬════════════════════════════════════════════╣
+║  x402.wtf                   ║  HTTP 402 payment protocol                 ║
+║  x402.wtf/agents            ║  x402-gated agent catalog + pricing        ║
+║  x402.wtf/gateway           ║  Facilitator · routing · settlement        ║
+║  x402.wtf/skills            ║  Premium skills marketplace                ║
+║  x402.wtf/.well-known/      ║  CAAP/1.0 discovery · ACP registry         ║
+╠═════════════════════════════╬════════════════════════════════════════════╣
+║  ClawdRouter (clawdrouter/) ║  Solana-native LLM router · 55+ models     ║
+║  CLAWD Gateway (gateway/)   ║  Telegram bot · Helius/Birdeye · agent API ║
+╠═════════════════════════════╬════════════════════════════════════════════╣
+║  agent-auth                 ║  github.com/Solizardking/agent-auth        ║
+║  CAAP/1.0                   ║  Agent identity · JWT auth · capabilities  ║
+╠═════════════════════════════╬════════════════════════════════════════════╣
+║  ⚓ AI Inference (here)      ║  programs/programs/ · on-chain + TS SDK    ║
+║  GitHub                     ║  github.com/Solizardking/solana-clawd      ║
+╚═════════════════════════════╩════════════════════════════════════════════╝
+```
+
+## 🦞 What Is OpenClawd?
+
+OpenClawd is the full lobster stack — a sovereign AI agent runtime on Solana where agents have **wallets**, **memory**, **three immutable laws**, and can **earn, pay, and spawn children**.
+
+| Problem | What OpenClawd Does |
+|---------|---------------------|
+| **Identity** | Agents have Solana keypairs, on-chain Metaplex assets, and long-lived shell files |
+| **Auth** | CAAP/1.0 — agents register with Ed25519 keypairs, sign JWTs, earn capability grants |
+| **Memory** | KNOWN / INFERRED / LEARNED memory tiers + SQLite shell-state |
+| **Economics** | Agents earn (USDC/SOL), pay (x402), and gate their own API access |
+| **Sovereignty** | Runtime operates without a hosted control plane — agent owns its keys |
+| **AI on-chain** | This protocol — decentralized model registry, inference escrow, staking |
+| **Free Inference** | Free OpenRouter models wired in — no paid key to start |
+| **Lore** | Lobsters molt. They don't shrink with age. Neither do your agents. |
+
+## 🔐 Agent Auth — CAAP/1.0
+
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║           C A A P / 1 . 0   —   A G E N T   A U T H                    ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║                                                                          ║
+║  Register ──────────────────────────────────────────────────────────    ║
+║  Agent generates Ed25519 keypair                                         ║
+║  POST /api/auth/agent/register { publicKey, name, mode }                ║
+║  → { agentId, status: "pending" }                                        ║
+║                                                                          ║
+║  Approve ───────────────────────────────────────────────────────────    ║
+║  User visits /agents/approve?agent_id=...&code=...                       ║
+║  Grants capabilities: attest_agent · get_peer_card · agent_chat          ║
+║                                                                          ║
+║  Authenticate ──────────────────────────────────────────────────────    ║
+║  Agent signs JWT with Ed25519 private key (exp: 60s, jti: UUID)          ║
+║  Authorization: Bearer <signed-jwt>                                      ║
+║                                                                          ║
+║  Execute ───────────────────────────────────────────────────────────    ║
+║  POST /api/agents/attest     { walletAddress }   → attestation + tier   ║
+║  POST /api/agents/peer-card  { agentId? }        → peer card + holdings ║
+║  GET  /api/agents/catalog                        → full agent catalog   ║
+║  POST /api/agents/chat       { agentId, message }→ AI response stream   ║
+║                                                                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+```bash
+# Discover CAAP capabilities
+curl https://x402.wtf/.well-known/agent-auth.json
+# → { "protocol": "CAAP/1.0", "provider": "Clawd", "capabilities": [...] }
+```
+
+---
+
 > **Agent Knowledge Summary** — machine-queryable facts. Main knowledge base: [`knowledge/`](../../knowledge/README.md)
 
 | Field | Value |
