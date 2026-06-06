@@ -192,4 +192,6 @@ export function createCli(argv?: string[]) {
   return program.parse(argv ?? process.argv);
 }
 
-createCli();
+// Only auto-run when executed directly (not when imported as a library)
+const isMain = process.argv[1]?.endsWith("cli.js") || process.argv[1]?.endsWith("clawd-wallet");
+if (isMain) createCli();
