@@ -49,8 +49,6 @@ export class ClawdWallet implements IClawdWallet {
   /** Solana Kit RPC client */
   readonly rpc: ReturnType<typeof createSolanaRpc>;
 
-  /** Solana Kit subscription client */
-  readonly rpcSubscriptions: ReturnType<typeof createSolanaRpcSubscriptions>;
 
   get address(): string {
     return this.#wallet.address;
@@ -83,7 +81,6 @@ export class ClawdWallet implements IClawdWallet {
     this.#rpcUrl = config?.rpcUrl ?? CHAIN_RPC[this.#chain];
 
     this.rpc = createSolanaRpc(this.#rpcUrl);
-    this.rpcSubscriptions = createSolanaRpcSubscriptions(this.#rpcUrl);
   }
 
   /**
@@ -114,7 +111,8 @@ export class ClawdWallet implements IClawdWallet {
     transaction: Uint8Array,
     chain?: SolanaChain
   ): Promise<string> {
-    if (!this.canSign()) {
+    const sign = this.#wallet.signAndSendTransaction;
+    if (!sign) {
       throw Object.assign(new Error(`Wallet ${this.address} is not ready to sign`), {
         name: "WalletNotReadyError",
         code: "WALLET_NOT_READY",
@@ -122,7 +120,7 @@ export class ClawdWallet implements IClawdWallet {
     }
 
     const chainType = chain ?? this.#chain;
-    const result = await this.#wallet.signAndSendTransaction!(
+    const result = await sign(
       {
         transaction,
         chain: `solana:${chainType}`,

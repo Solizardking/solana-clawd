@@ -1,0 +1,46 @@
+{
+  "name": "@clawd/labs",
+  "version": "0.1.0",
+  "description": "Clawd Labs — sovereign research, knowledge-aware LLM routing, and Solana agent intelligence",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "clawd-labs": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "solana",
+    "ai",
+    "agents",
+    "llm",
+    "research",
+    "x402",
+    "clawdrouter",
+    "knowledge"
+  ],
+  "author": "x402.wtf",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/x402agent/solana-clawd.git",
+    "directory": "packages/clawd-labs"
+  },
+  "dependencies": {
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
