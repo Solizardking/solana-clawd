@@ -1,0 +1,9 @@
+/Users/8bit/SolanaOSTerminal/SolanaOS/programs/target/debug/deps/spl_transfer_hook_interface-a83ab2d3979ad27a.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/error.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/instruction.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/offchain.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/onchain.rs
+
+/Users/8bit/SolanaOSTerminal/SolanaOS/programs/target/debug/deps/libspl_transfer_hook_interface-a83ab2d3979ad27a.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/error.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/instruction.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/offchain.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/onchain.rs
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/error.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/instruction.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/offchain.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-transfer-hook-interface-0.6.5/src/onchain.rs:
