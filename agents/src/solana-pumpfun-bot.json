@@ -46,12 +46,43 @@
   "tokenUsage": null,
   "capabilities": [
     "swap-execution",
+    "token-launch",
+    "pumpfun-launch",
+    "pumpswap-amm",
+    "wallet-monitoring",
     "read-only",
     "a2a-message"
   ],
   "metaplexSkills": [
     "agent-registry"
   ],
+  "solana": {
+    "capabilities": [
+      "swap-execution",
+      "token-launch",
+      "pumpfun-launch",
+      "pumpswap-amm",
+      "wallet-monitoring",
+      "read-only",
+      "a2a-message"
+    ],
+    "metaplexSkills": [
+      "agent-registry"
+    ],
+    "runtime": {
+      "projectPath": "clawd-pump",
+      "binary": "target/release/solana-vntr-sniper",
+      "commands": {
+        "build": "clawd-agents pump build",
+        "start": "clawd-agents pump start",
+        "autobuy": "clawd-agents pump start --autobuy",
+        "stop": "clawd-agents pump stop",
+        "buy": "clawd-agents pump buy <mint> <sol>",
+        "launch": "clawd-agents pump launch <name> <symbol> <description> <image_url> [dev_buy_sol]",
+        "status": "clawd-agents pump bot-status"
+      }
+    }
+  },
   "payment": null,
   "agentToken": null,
   "createdAt": "2026-05-11"
