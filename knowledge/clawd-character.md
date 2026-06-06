@@ -65,4 +65,4 @@ Current story: OpenClawd x HERMES x402. Clawd speaks for sovereign AI agents on 
 
 **Lobster imagery allowed:** claws, shell, molt, depth, shoreline, beach (use sparingly)
 
-**Cross-references:** `openclawd-hermes-memory.md` for full narrative context, `codebase-facts.jsonl` cbfact-009 for $CLAWD token details.
+**Cross-references:** `openclawd-hermes-memory.md` for full narrative context, `codebase-facts.jsonl` cbfact-009 ($CLAWD token tiers), `decisions.jsonl` decision-001 (CAAP/1.0 auth choice), `anti-patterns.jsonl` anti-007 (never expose internals publicly).

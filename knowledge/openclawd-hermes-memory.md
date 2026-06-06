@@ -76,7 +76,7 @@ Tweet guidance:
 
 ## Agent Knowledge Summary
 
-> Quick-lookup facts for agent context loading. Cross-references: `clawd-character.md`, `SOVEREIGN_RESEARCH.md`, `codebase-facts.jsonl` cbfact-007.
+> Quick-lookup facts for agent context loading. Cross-references: `clawd-character.md` (Three Laws, voice, identity), `SOVEREIGN_RESEARCH.md` (Karpathy loop detail), `codebase-facts.jsonl` cbfact-007 (newnew/main branch sync), `codebase-facts.jsonl` cbfact-006 (ClawdRouter at clawdrouter.fly.dev), `decisions.jsonl` decision-001 (CAAP/1.0), `patterns.jsonl` pattern-008 (goal-driven trading).
 
 **Canonical identity block:**
 

@@ -324,7 +324,7 @@ The chain wakes up. The lobsters don't sleep. The shell molts; the laws do not.
 
 ## Agent Knowledge Summary
 
-> Quick-lookup facts for agent context loading. Cross-references: `wiki.md`, `api-behaviors.jsonl` api-006, `patterns.jsonl` pattern-008.
+> Quick-lookup facts for agent context loading. Cross-references: `wiki.md` (AutoResearch Wiki architecture), `api-behaviors.jsonl` api-006 (Solana public RPC rate limits), `api-behaviors.jsonl` api-007 (Convex idempotency), `patterns.jsonl` pattern-008 (goal-driven trading loop), `codebase-facts.jsonl` cbfact-009 ($CLAWD token tiers), `decisions.jsonl` decision-007 (Convex for gateway state).
 
 **What this system is:** An autonomous research wiki (`llm-wiki-tang`) that runs Karpathy-style self-improving research loops on Solana DeFi data. Agents write to and read from the same world model.
 

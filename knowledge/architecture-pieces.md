@@ -151,7 +151,7 @@ If all four pass, the contracts hold and the four pieces speak the same TypeScri
 
 ## Agent Knowledge Summary
 
-> Structured facts for agent-queryable lookup. Cross-references: see `codebase-facts.jsonl` cbfact-003, `decisions.jsonl` decision-003.
+> Structured facts for agent-queryable lookup. Cross-references: `codebase-facts.jsonl` cbfact-003 (pay-kit workspace), `codebase-facts.jsonl` cbfact-005 (ESM-only rule), `decisions.jsonl` decision-003 (pnpm workspaces choice), `decisions.jsonl` decision-005 (MPL Core for NFTs), `anti-patterns.jsonl` anti-005 (npm in pnpm workspace), `gotchas.jsonl` gotcha-001 (@solana/mpp no dist).
 
 | Component | Package | Binary | Registry |
 |-----------|---------|--------|----------|

@@ -408,7 +408,7 @@ MIT
 
 ## Agent Knowledge Summary
 
-> Quick-lookup facts for agent context loading. Cross-references: `facts.jsonl` fact-cli-001, `codebase-facts.jsonl` cbfact-004.
+> Quick-lookup facts for agent context loading. Cross-references: `facts.jsonl` fact-cli-001 (clawd-agents CLI arch), `codebase-facts.jsonl` cbfact-004 (binary names), `codebase-facts.jsonl` cbfact-005 (ESM-only), `api-behaviors.jsonl` api-008 (ClawdRouter free key format), `anti-patterns.jsonl` anti-009 (hardcoded RPC URLs).
 
 **Install:** `npm install -g clawd-code-cli` → binaries: `clawd`, `claw`
 

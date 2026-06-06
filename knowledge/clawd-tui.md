@@ -146,7 +146,7 @@ MIT — © OpenClawd contributors
 
 ## Agent Knowledge Summary
 
-> Quick-lookup facts for agent context loading. Cross-references: `codebase-facts.jsonl` cbfact-001, `facts.jsonl` fact-cli-001.
+> Quick-lookup facts for agent context loading. Cross-references: `codebase-facts.jsonl` cbfact-006 (ClawdRouter vs x402.wtf distinction), `api-behaviors.jsonl` api-006 (Solana RPC rate limits), `anti-patterns.jsonl` anti-009 (hardcoded RPC URLs).
 
 **Package:** `@openclawdsolana/clawd-tui` — npm v0.2.1. Binaries: `clawd`, `clawd-tui`.
 

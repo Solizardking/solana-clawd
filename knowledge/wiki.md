@@ -358,7 +358,7 @@ MIT — See [`../LICENSE.md`](../LICENSE.md)
 
 ## Agent Knowledge Summary
 
-> Quick-lookup facts for agent context loading. Cross-references: `SOVEREIGN_RESEARCH.md`, `api-behaviors.jsonl` api-006, `codebase-facts.jsonl` cbfact-002.
+> Quick-lookup facts for agent context loading. Cross-references: `SOVEREIGN_RESEARCH.md` (orchestrator internals, Karpathy loop detail), `api-behaviors.jsonl` api-006 (Solana RPC rate limits), `api-behaviors.jsonl` api-009 (CAAP discovery endpoint), `codebase-facts.jsonl` cbfact-002 (ClawdBrowser 493 routes), `codebase-facts.jsonl` cbfact-009 ($CLAWD tiers), `decisions.jsonl` decision-007 (Convex for gateway state).
 
 **API base:** `http://localhost:8000/api/v1/research/` (local) or configured `RESEARCH_API_URL`.
 
