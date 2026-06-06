@@ -181,6 +181,10 @@
 
     "sdk:build": "cd packages/clawd-sdk && npm run build",
 
+    "gemini:check": "node -e \"const g = require('./dist/services/gemini/index.js'); console.log('Gemini provider loaded. Models:', Object.keys(g.GEMINI_MODELS).length);\"",
+    "gemini:image": "npx tsx -e \"import { generateImage } from './src/services/gemini/index.js'; const r = await generateImage(process.argv[2] || 'A Solana lobster mascot in cyberpunk style', './output/test-gemini.png', { resolution: '1K' }); console.log('Generated:', r.filePath, 'Tokens:', r.totalTokens);\"",
+    "gemini:research": "npx tsx -e \"import { deepResearch } from './src/services/gemini/index.js'; const r = await deepResearch(process.argv[2] || 'What is Solana?'); console.log(r.outputText.substring(0, 500));\"",
+
     "agentwallet:build": "cd packages/agentwallet && npm run build",
     "agentwallet:serve": "cd packages/agentwallet && node dist/cli.js serve",
     "agentwallet:wallet:list": "cd packages/agentwallet && node dist/cli.js wallet list",
@@ -208,6 +212,7 @@
     "@metaplex-foundation/mpl-core": "^1.8.0",
     "@metaplex-foundation/umi": "^1.5.1",
     "@metaplex-foundation/umi-bundle-defaults": "^1.5.1",
+    "@google/genai": "^1.0.0",
     "@solana/web3.js": "^1.98.4",
     "agentwallet-vault": "workspace:*",
     "better-sqlite3": "^11.0.0",
