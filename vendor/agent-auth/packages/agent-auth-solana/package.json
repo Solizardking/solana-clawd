@@ -1,0 +1,26 @@
+{
+  "name": "@clawd/agent-auth-solana",
+  "version": "0.1.0",
+  "description": "Solana agent auth — SIWS, DAS attestation, and subscription tiers for Clawd agents",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./verify": "./src/verify.ts"
+  },
+  "keywords": ["solana", "agent-auth", "siws", "better-auth", "clawd"],
+  "license": "MIT",
+  "peerDependencies": {
+    "better-auth": ">=1.5.0",
+    "better-auth-solana": ">=1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "bs58": "^5.0.0",
+    "tweetnacl": "^1.0.3"
+  }
+}

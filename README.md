@@ -65,7 +65,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║       7   P A C K A G E S   L I V E   O N   N P M   @   v 2 . 0 . 0    ║
+║    7   N P M   +   5   A G E N T   A U T H   P A C K A G E S           ║
 ╠══════════╦══════════════════════════════════════╦═══════════════════╣
 ║  clawd   ║  @openclawdsolana/clawd                  ║  🖥  TUI          ║
 ║  registry║  @openclawdsolana/agent-registry         ║  📋 on-chain      ║
@@ -74,6 +74,9 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ║  wallet  ║  @openclawdsolana/wallet                 ║  👛 Privy+Jupiter ║
 ║  vault   ║  agentwallet-vault                       ║  🔐 keypair vault ║
 ║  gateway ║  @solana-clawd/gateway                   ║  🤖 Telegram+HTTP ║
+╠══════════╬══════════════════════════════════════╬═══════════════════╣
+║  🔐 auth ║  vendor/agent-auth (5 pkgs)             ║  CAAP/1.0 · SIWS ║
+║          ║  agent-auth · sdk · cli · solana · clerk ║  capabilities    ║
 ╠══════════╩══════════════════════════════════════════╩═══════════════════╣
 ║  solanaclawd.com/agents  ·  x402.wtf/agents  ·  solanaclawd.com/skills  ║
 ╚══════════════════════════════════════════════════════════════════════════╝

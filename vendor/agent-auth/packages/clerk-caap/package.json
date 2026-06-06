@@ -1,0 +1,29 @@
+{
+  "name": "@clawd/clerk-caap",
+  "version": "0.1.0",
+  "description": "Clerk + CAAP/SIWS bridge — verifies Clerk JWTs and attaches Solana onchain attestation with Phala TEE proof",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./middleware": "./src/middleware.ts",
+    "./tee": "./src/tee-attest.ts",
+    "./verify": "./src/verify-clerk.ts"
+  },
+  "keywords": ["solana", "clerk", "caap", "siws", "tee", "phala", "clawd"],
+  "license": "MIT",
+  "peerDependencies": {
+    "@clerk/nextjs": ">=6.0.0",
+    "@clerk/backend": ">=1.0.0",
+    "next": ">=15.0.0"
+  },
+  "dependencies": {
+    "@clawd/agent-auth-solana": "workspace:*",
+    "jose": "^6.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^25.0.0"
+  }
+}

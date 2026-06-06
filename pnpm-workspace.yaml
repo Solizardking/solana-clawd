@@ -3,3 +3,4 @@ packages:
   - "mcp-server"
   - "x402"
   - "pay"
+  - "vendor/agent-auth/packages/*"
