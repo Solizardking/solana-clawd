@@ -23,7 +23,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/nano-banana-pro
-  - https://solanaclawd.com/skills/nano-banana-pro
+  - https://x402.wtf/skills/nano-banana-pro
 ---
 
 # Nano Banana Pro (Gemini 3 Pro Image)

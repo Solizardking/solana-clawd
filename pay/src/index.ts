@@ -218,7 +218,7 @@ async function forwardChat(request: Request, env: Env) {
   if (!upstream && env.OPENROUTER_API_KEY) {
     upstream = "https://openrouter.ai/api/v1";
     headers.Authorization = `Bearer ${env.OPENROUTER_API_KEY}`;
-    headers["HTTP-Referer"] = env.OPENCLAWD_SITE_URL ?? "https://solanaclawd.com";
+    headers["HTTP-Referer"] = env.OPENCLAWD_SITE_URL ?? "https://x402.wtf";
     headers["X-Title"] = "Solana Clawd Pay";
   }
 

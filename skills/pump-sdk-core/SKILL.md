@@ -15,8 +15,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-sdk-core
-  - https://solanaclawd.com/skills/pump-sdk-core
-homepage: https://solanaclawd.com/skills/pump-sdk-core
+  - https://x402.wtf/skills/pump-sdk-core
+homepage: https://x402.wtf/skills/pump-sdk-core
 ---
 
 # Pump SDK Core — Instruction Building & On-Chain Interaction

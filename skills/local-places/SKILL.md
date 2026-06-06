@@ -17,7 +17,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/local-places
-  - https://solanaclawd.com/skills/local-places
+  - https://x402.wtf/skills/local-places
 ---
 
 # 📍 Local Places

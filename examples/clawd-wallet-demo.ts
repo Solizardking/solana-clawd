@@ -359,7 +359,7 @@ async function main() {
   console.log("   Package:     packages/clawd-wallet/");
   console.log("   NPM:         @openclawdsolana/wallet");
   console.log("   Docs:        packages/clawd-wallet/README.md");
-  console.log("   One-shot:    curl -fsSL solanaclawd.com/install.sh | bash");
+  console.log("   One-shot:    curl -fsSL x402.wtf/install.sh | bash");
   console.log("   x402 Pay:    packages/agents-x402-solana/");
   console.log("   Tailnet:     tailclawd/");
   console.log("");

@@ -5,8 +5,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pumpfun-analytics
-  - https://solanaclawd.com/skills/pumpfun-analytics
-homepage: https://solanaclawd.com/skills/pumpfun-analytics
+  - https://x402.wtf/skills/pumpfun-analytics
+homepage: https://x402.wtf/skills/pumpfun-analytics
 ---
 
 # PumpFun Analytics

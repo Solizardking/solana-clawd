@@ -23,7 +23,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/sag
-  - https://solanaclawd.com/skills/sag
+  - https://x402.wtf/skills/sag
 ---
 
 # sag

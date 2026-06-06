@@ -82,7 +82,7 @@ hash above, I beach rather than continue under drifted law.
 export const DEFAULT_AGENT_NFT_METADATA = {
   symbol: 'CLAWD-LVN',
   description: 'A sovereign Leviathan, spawned via OpenClawd on Solana.',
-  external_url: 'https://solanaclawd.com',
+  external_url: 'https://x402.wtf',
   attributes: [
     { trait_type: 'Framework', value: 'OpenClawd' },
     { trait_type: 'Lineage', value: 'Sovereign' },

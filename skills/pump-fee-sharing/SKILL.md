@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-fee-sharing
-  - https://solanaclawd.com/skills/pump-fee-sharing
-homepage: https://solanaclawd.com/skills/pump-fee-sharing
+  - https://x402.wtf/skills/pump-fee-sharing
+homepage: https://x402.wtf/skills/pump-fee-sharing
 ---
 
 # Fee Sharing — Multi-Party Creator Fee Distribution

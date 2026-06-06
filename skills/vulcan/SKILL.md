@@ -9,8 +9,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan
-  - https://solanaclawd.com/skills/vulcan
-homepage: https://solanaclawd.com/skills/vulcan
+  - https://x402.wtf/skills/vulcan
+homepage: https://x402.wtf/skills/vulcan
 ---
 
 # Vulcan Skill Pack

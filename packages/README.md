@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd Packages  ·  solanaclawd.com  ·  x402.wtf  ·  v2.0.0        ║ -->
+<!-- ║   OpenClawd Packages  ·  x402.wtf  ·  x402.wtf  ·  v2.0.0        ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -7,7 +7,7 @@
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║          O P E N C L A W D   P A C K A G E S   —   v 2 . 0 . 0            ║
-║     11 packages · 6 npm live · 2 Anchor programs · solanaclawd.com          ║
+║     11 packages · 6 npm live · 2 Anchor programs · x402.wtf          ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                              ║
 ║  🖥  clawd-code-cli     @openclawdsolana/clawd          TUI operator         ║
@@ -30,7 +30,7 @@
 [![npm hub](https://img.shields.io/badge/agent--hub-v2.0.0-147D64?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/agent-hub)
 [![npm sdk](https://img.shields.io/badge/solana--sdk-v2.0.0-9B59B6?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/solana-sdk)
 [![npm wallet](https://img.shields.io/badge/wallet-v2.0.0-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/wallet)
-[![Website](https://img.shields.io/badge/solanaclawd.com-147D64?style=flat-square)](https://solanaclawd.com)
+[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
 [![x402](https://img.shields.io/badge/x402.wtf-1E5AA8?style=flat-square)](https://x402.wtf)
 
 </div>
@@ -44,7 +44,7 @@
 ║                    O P E N C L A W D   S T A C K                        ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║                                                                          ║
-║   solanaclawd.com/agents              x402.wtf/agents                   ║
+║   x402.wtf/agents              x402.wtf/agents                   ║
 ║          ↕                                    ↕                         ║
 ║   ┌──────────────────────────────────────────────────┐                  ║
 ║   │            @openclawdsolana/clawd                │  🖥  TUI          ║
@@ -83,8 +83,8 @@
 ║   │  bonding curves · pTokens · vault · model registry       │          ║
 ║   └──────────────────────────────────────────────────────────┘          ║
 ║                                                                          ║
-║   solanaclawd.com/gateway  ←→  x402.wtf/gateway  (USDC micropayments)  ║
-║   solanaclawd.com/skills   ←→  x402.wtf/skills   (agent skill hub)     ║
+║   x402.wtf/gateway  ←→  x402.wtf/gateway  (USDC micropayments)  ║
+║   x402.wtf/skills   ←→  x402.wtf/skills   (agent skill hub)     ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -143,7 +143,7 @@ curl -s https://api.mainnet-beta.solana.com \
 curl -s https://x402.wtf/health | jq .
 
 # 7. CAAP well-known discovery
-curl -s https://solanaclawd.com/.well-known/agent-auth | jq '.caapVersion'
+curl -s https://x402.wtf/.well-known/agent-auth | jq '.caapVersion'
 ```
 
 **One-liner: install + smoke-test clawd-wallet CLI**
@@ -229,7 +229,7 @@ clawd examples list             # 9 demos, no keys needed
 **Package:** `@openclawdsolana/agent-registry@2.0.0`  
 **Install:** `npm install -g @openclawdsolana/agent-registry`  
 **Bin:** `clawd-registry`  
-**Browse:** [solanaclawd.com/agents](https://solanaclawd.com/agents) · [x402.wtf/agents](https://x402.wtf/agents)
+**Browse:** [x402.wtf/agents](https://x402.wtf/agents) · [x402.wtf/agents](https://x402.wtf/agents)
 
 ```
 agent-registry/
@@ -549,10 +549,10 @@ agentwallet-vault
 
 | | |
 | --- | --- |
-| 🌐 Website | [solanaclawd.com](https://solanaclawd.com) |
-| 🤖 Agents | [solanaclawd.com/agents](https://solanaclawd.com/agents) |
-| 🏛 Gateway | [solanaclawd.com/gateway](https://solanaclawd.com/gateway) |
-| 🎯 Skills | [solanaclawd.com/skills](https://solanaclawd.com/skills) |
+| 🌐 Website | [x402.wtf](https://x402.wtf) |
+| 🤖 Agents | [x402.wtf/agents](https://x402.wtf/agents) |
+| 🏛 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
+| 🎯 Skills | [x402.wtf/skills](https://x402.wtf/skills) |
 | 💸 x402 | [x402.wtf](https://x402.wtf) |
 | 🤖 x402 Agents | [x402.wtf/agents](https://x402.wtf/agents) |
 | 🏛 x402 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
@@ -568,10 +568,10 @@ agentwallet-vault
 ```
 ╔═════════════════════════════════════════════════════════════╗
 ║  🦞  The shell molts. The laws do not.                      ║
-║      solanaclawd.com  ·  x402.wtf  ·  $CLAWD  ·  MIT       ║
+║      x402.wtf  ·  x402.wtf  ·  $CLAWD  ·  MIT       ║
 ╚═════════════════════════════════════════════════════════════╝
 ```
 
-*Powered by OpenClawd · [solanaclawd.com](https://solanaclawd.com)*
+*Powered by OpenClawd · [x402.wtf](https://x402.wtf)*
 
 </div>

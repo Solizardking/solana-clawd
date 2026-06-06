@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-ta-strategy
-  - https://solanaclawd.com/skills/vulcan-ta-strategy
-homepage: https://solanaclawd.com/skills/vulcan-ta-strategy
+  - https://x402.wtf/skills/vulcan-ta-strategy
+homepage: https://x402.wtf/skills/vulcan-ta-strategy
 ---
 
 # Vulcan TA Strategy

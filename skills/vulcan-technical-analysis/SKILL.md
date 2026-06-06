@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-technical-analysis
-  - https://solanaclawd.com/skills/vulcan-technical-analysis
-homepage: https://solanaclawd.com/skills/vulcan-technical-analysis
+  - https://x402.wtf/skills/vulcan-technical-analysis
+homepage: https://x402.wtf/skills/vulcan-technical-analysis
 ---
 
 # Vulcan Technical Analysis

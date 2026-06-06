@@ -5,8 +5,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/gateway-node-ops
-  - https://solanaclawd.com/skills/gateway-node-ops
-homepage: https://solanaclawd.com/skills/gateway-node-ops
+  - https://x402.wtf/skills/gateway-node-ops
+homepage: https://x402.wtf/skills/gateway-node-ops
 ---
 
 # SolanaOS Gateway + Node Workflow

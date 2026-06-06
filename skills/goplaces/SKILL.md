@@ -25,7 +25,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/goplaces
-  - https://solanaclawd.com/skills/goplaces
+  - https://x402.wtf/skills/goplaces
 ---
 
 # goplaces

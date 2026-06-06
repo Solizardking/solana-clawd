@@ -17,8 +17,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/phantom-wallet-mcp
-  - https://solanaclawd.com/skills/phantom-wallet-mcp
-homepage: https://solanaclawd.com/skills/phantom-wallet-mcp
+  - https://x402.wtf/skills/phantom-wallet-mcp
+homepage: https://x402.wtf/skills/phantom-wallet-mcp
 ---
 
 # Phantom Wallet MCP

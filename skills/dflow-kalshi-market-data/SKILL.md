@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-kalshi-market-data
-  - https://solanaclawd.com/skills/dflow-kalshi-market-data
-homepage: https://solanaclawd.com/skills/dflow-kalshi-market-data
+  - https://x402.wtf/skills/dflow-kalshi-market-data
+homepage: https://x402.wtf/skills/dflow-kalshi-market-data
 ---
 
 # DFlow Kalshi Market Data

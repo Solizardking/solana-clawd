@@ -20,7 +20,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/obsidian
-  - https://solanaclawd.com/skills/obsidian
+  - https://x402.wtf/skills/obsidian
 ---
 
 # Obsidian

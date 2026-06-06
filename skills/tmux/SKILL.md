@@ -16,8 +16,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/tmux
-  - https://solanaclawd.com/skills/tmux
-homepage: https://solanaclawd.com/skills/tmux
+  - https://x402.wtf/skills/tmux
+homepage: https://x402.wtf/skills/tmux
 ---
 
 # tmux Skill (Clawdbot)

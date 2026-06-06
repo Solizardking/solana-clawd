@@ -21,8 +21,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/clawdhub
-  - https://solanaclawd.com/skills/clawdhub
-homepage: https://solanaclawd.com/skills/clawdhub
+  - https://x402.wtf/skills/clawdhub
+homepage: https://x402.wtf/skills/clawdhub
 ---
 
 # ClawdHub CLI

@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/imperial-execution-modes
-  - https://solanaclawd.com/skills/imperial-execution-modes
-homepage: https://solanaclawd.com/skills/imperial-execution-modes
+  - https://x402.wtf/skills/imperial-execution-modes
+homepage: https://x402.wtf/skills/imperial-execution-modes
 ---
 
 # Imperial Execution Modes

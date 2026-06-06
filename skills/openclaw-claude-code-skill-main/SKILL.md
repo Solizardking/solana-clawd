@@ -21,7 +21,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/openclaw-claude-code-skill-main
-  - https://solanaclawd.com/skills/openclaw-claude-code-skill-main
+  - https://x402.wtf/skills/openclaw-claude-code-skill-main
 ---
 
 # Claude Code Skill

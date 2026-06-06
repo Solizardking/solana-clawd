@@ -20,14 +20,14 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/solana-clawd
-  - https://solanaclawd.com/skills/solana-clawd
-homepage: https://solanaclawd.com/skills/solana-clawd
+  - https://x402.wtf/skills/solana-clawd
+homepage: https://x402.wtf/skills/solana-clawd
 ---
 
 # solana-clawd — The Agentic Engine Solana Deserves
 
 **Repo**: [github.com/x402agent/solana-clawd](https://github.com/x402agent/solana-clawd)
-**Live**: [solanaclawd.com](https://solanaclawd.com)
+**Live**: [x402.wtf](https://x402.wtf)
 **npm**: `solana-clawd` (v1.6.0)
 **Token**: `$CLAWD` — `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
 
@@ -184,7 +184,7 @@ npx tsx src/telegram/index.ts
 
 ## Voice Mode
 
-The web app at `solanaclawd.com/voice` supports two providers:
+The web app at `x402.wtf/voice` supports two providers:
 
 | | ElevenLabs | Grok (xAI) |
 |---|---|---|
@@ -281,7 +281,7 @@ docker compose up --build   # start 4 workers (TS + Rust + Python)
 ```
 MCP/               31 MCP tools, STDIO + HTTP + SSE transport
 src/               58 subsystems, 400+ files (engine, agents, telegram, buddy, pump, voice...)
-web/               Next.js frontend (chat, buddies, voice) — solanaclawd.com
+web/               Next.js frontend (chat, buddies, voice) — x402.wtf
 gateway/           Express API + Telegram bot + Birdeye WebSocket
 packages/          agentwallet (encrypted Solana+EVM vault SDK)
 beepboop/          macOS menu bar companion (SwiftUI, Claude vision, voice)

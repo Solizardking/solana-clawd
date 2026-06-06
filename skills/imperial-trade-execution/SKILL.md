@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/imperial-trade-execution
-  - https://solanaclawd.com/skills/imperial-trade-execution
-homepage: https://solanaclawd.com/skills/imperial-trade-execution
+  - https://x402.wtf/skills/imperial-trade-execution
+homepage: https://x402.wtf/skills/imperial-trade-execution
 ---
 
 # Imperial Trade Execution

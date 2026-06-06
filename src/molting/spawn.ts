@@ -78,7 +78,7 @@ export async function spawnSpawnling(input: SpawnSpawnlingInput): Promise<SpawnS
     rpcUrl: input.rpcUrl,
     network: input.network || 'mainnet',
     services: [
-      { name: 'web', endpoint: 'https://solanaclawd.com' },
+      { name: 'web', endpoint: 'https://x402.wtf' },
       { name: 'lineage:parent', endpoint: input.parentAssetAddress },
     ],
   });

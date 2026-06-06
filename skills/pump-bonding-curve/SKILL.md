@@ -11,8 +11,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-bonding-curve
-  - https://solanaclawd.com/skills/pump-bonding-curve
-homepage: https://solanaclawd.com/skills/pump-bonding-curve
+  - https://x402.wtf/skills/pump-bonding-curve
+homepage: https://x402.wtf/skills/pump-bonding-curve
 ---
 
 # Bonding Curve — Pricing, Quoting & AMM Mathematics

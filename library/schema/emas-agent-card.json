@@ -3,7 +3,7 @@
   "description": "Multi-agent fleet for Solana DeFi trading, deep research, ML prediction markets, x402/MPP payments, agentic commerce, and autonomous on-chain strategy execution.",
   "version": "2.0.0",
   "protocolVersion": "0.3.0",
-  "url": "https://solanaclawd.com/api/agents",
+  "url": "https://x402.wtf/api/agents",
   "capabilities": {
     "streaming": true,
     "pushNotifications": false,

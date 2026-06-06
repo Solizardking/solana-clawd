@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/session-logs
-  - https://solanaclawd.com/skills/session-logs
-homepage: https://solanaclawd.com/skills/session-logs
+  - https://x402.wtf/skills/session-logs
+homepage: https://x402.wtf/skills/session-logs
 ---
 
 # session-logs

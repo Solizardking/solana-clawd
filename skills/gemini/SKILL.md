@@ -20,7 +20,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/gemini
-  - https://solanaclawd.com/skills/gemini
+  - https://x402.wtf/skills/gemini
 ---
 
 # Gemini CLI

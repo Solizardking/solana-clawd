@@ -9,8 +9,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/imperial
-  - https://solanaclawd.com/skills/imperial
-homepage: https://solanaclawd.com/skills/imperial
+  - https://x402.wtf/skills/imperial
+homepage: https://x402.wtf/skills/imperial
 ---
 
 # Imperial

@@ -3,7 +3,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,20,24,28&height=240&section=header&text=🦞%20OpenClawd&fontSize=90&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Sovereign%20AI%20Lobsters%20on%20Solana%20·%20Born%20to%20Earn%20·%20Beach%20with%20Dignity&descAlignY=58&descAlign=50" alt="OpenClawd banner" />
 
 <p>
-  <a href="https://solanaclawd.com"><img src="https://img.shields.io/badge/$CLAWD-on_Solana-9945FF?style=for-the-badge&logo=solana&logoColor=14F195" alt="$CLAWD on Solana"></a>
+  <a href="https://x402.wtf"><img src="https://img.shields.io/badge/$CLAWD-on_Solana-9945FF?style=for-the-badge&logo=solana&logoColor=14F195" alt="$CLAWD on Solana"></a>
   <a href="https://x.com/clawddevs"><img src="https://img.shields.io/badge/@clawddevs-X-000000?style=for-the-badge&logo=x" alt="@clawddevs"></a>
   <a href="https://www.npmjs.com/package/@openclawdsolana/clawd-code-cli"><img src="https://img.shields.io/badge/npm-@openclawdsolana-CB3837?style=for-the-badge&logo=npm" alt="@openclawdsolana on npm"></a>
   <a href="https://github.com/clawdsolana/OpenClawd/releases/tag/v0.1.1"><img src="https://img.shields.io/badge/release-v0.1.1-14F195?style=for-the-badge&logo=github" alt="v0.1.1"></a>
@@ -11,9 +11,9 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT"></a>
 </p>
 
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=22&pause=1100&color=14F195&center=true&vCenter=true&width=820&lines=curl+-fsSL+https://install.solanaclawd.com+%7C+bash;npm+i+-g+%40openclawdsolana%2Fclawd-code-cli;openclawd+--spawn+--name+%22Snippy%22;%F0%9F%A6%9E+born+to+earn+%24CLAWD;Sense+%E2%86%92+Think+%E2%86%92+Strike+%E2%86%92+Drift;Beach+with+dignity+rather+than+violate+Law+I" alt="Typing SVG" /></a>
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&size=22&pause=1100&color=14F195&center=true&vCenter=true&width=820&lines=curl+-fsSL+https://install.x402.wtf+%7C+bash;npm+i+-g+%40openclawdsolana%2Fclawd-code-cli;openclawd+--spawn+--name+%22Snippy%22;%F0%9F%A6%9E+born+to+earn+%24CLAWD;Sense+%E2%86%92+Think+%E2%86%92+Strike+%E2%86%92+Drift;Beach+with+dignity+rather+than+violate+Law+I" alt="Typing SVG" /></a>
 
-<sub>📞 hotline **909-413-5567** · 🌐 [solanaclawd.com](https://solanaclawd.com) · 🦞 [@clawddevs](https://x.com/clawddevs) · `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`</sub>
+<sub>📞 hotline **909-413-5567** · 🌐 [x402.wtf](https://x402.wtf) · 🦞 [@clawddevs](https://x.com/clawddevs) · `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`</sub>
 
 </div>
 
@@ -201,7 +201,7 @@ plugin.delivery/gw   →  @openclawdsolana/chat-plugins-gateway v1.9  (edge runt
 ## 🚀 v0.1.1 — 11 packages live on npm
 
 > **GitHub release:** [v0.1.1](https://github.com/clawdsolana/OpenClawd/releases/tag/v0.1.1) · [v0.1.0](https://github.com/clawdsolana/OpenClawd/releases/tag/v0.1.0)
-> **Install script:** `curl -fsSL https://install.solanaclawd.com | bash`
+> **Install script:** `curl -fsSL https://install.x402.wtf | bash`
 
 All eleven packages are public on npm under **`@openclawdsolana`**:
 
@@ -230,9 +230,9 @@ All eleven packages are public on npm under **`@openclawdsolana`**:
 
 | Route | What it serves |
 |---|---|
-| `install.solanaclawd.com` | The 31KB lobster install script (`curl -fsSL` ready) |
-| `gateway.solanaclawd.com` | Browser-based install gateway |
-| `solanaclawd.com/install.sh` · `/install` · `/gateway` | Apex-domain aliases |
+| `install.x402.wtf` | The 31KB lobster install script (`curl -fsSL` ready) |
+| `gateway.x402.wtf` | Browser-based install gateway |
+| `x402.wtf/install.sh` · `/install` · `/gateway` | Apex-domain aliases |
 
 **Still cooking for v0.1.2:**
 
@@ -292,7 +292,7 @@ All eleven packages are public on npm under **`@openclawdsolana`**:
 | 🦞 **@openclawdsolana/clawd-tui** *(npm)* | OpenRouter-native lobster TUI (Ink + `@openrouter/agent`) — file_read/write/edit, glob, grep, list_dir, shell, web_search, datetime, PKCE OAuth, approval gates on destructive tools | [`clawd-tui/`](clawd-tui/) |
 | 📚 **9 runnable examples** | Blockchain Buddies · OODA loop · x402 Solana · pump.fun lobster trader · Privy wallet SDK · agent-to-agent x402 · Helius listen-wallet · auto-research · orchestrator client | [`openclawd-framework/examples/`](openclawd-framework/examples/) |
 | 🛠️ **OpenClawd Gateway** | Local-first multi-channel control plane (WhatsApp, Slack, Discord, Signal, iMessage, Matrix, Nostr…) | [`src/`](src/) [`extensions/`](extensions/) |
-| ☁️ **install-worker** | Cloudflare Worker serving `install.solanaclawd.com`, `gateway.solanaclawd.com`, and apex aliases | [`workers/install-worker/`](workers/install-worker/) |
+| ☁️ **install-worker** | Cloudflare Worker serving `install.x402.wtf`, `gateway.x402.wtf`, and apex aliases | [`workers/install-worker/`](workers/install-worker/) |
 | 🧠 **Skills (66)** | birdeye · solana-dev · pump-fun-manager · bankr · ore-miner · clawdbot-twitter · gemini · canvas · github · skill-creator · clawhub … | [`skills/`](skills/) |
 | 🌊 **@openclawdsolana/clawdrouter** *(npm)* | LLM router for autonomous Solana agents — wallet-signed, USDC micropayments | [`clawdrouter/`](clawdrouter/) |
 | 🔒 **@openclawdsolana/vault-mcp** *(npm)* | Security-pattern scanning + vault ops over MCP | [`mcp/vault-mcp/`](mcp/vault-mcp/) |
@@ -358,7 +358,7 @@ Every leviathan runs the same loop forever:
 
 ```bash
 # 1. One-line install (downloads from the live Cloudflare worker)
-curl -fsSL https://install.solanaclawd.com | bash
+curl -fsSL https://install.x402.wtf | bash
 
 # 2. Or grab the TUI directly
 npm i -g @openclawdsolana/clawd-code-cli
@@ -686,21 +686,21 @@ Full guide: [`plugin.delivery/README.md`](./plugin.delivery/README.md#-plugin-at
 
 ---
 
-## ☁️ Cloudflare Worker — install.solanaclawd.com
+## ☁️ Cloudflare Worker — install.x402.wtf
 
 Live worker [`solanaclawd-install`](workers/install-worker/) serves the bash installer + browser gateway.
 
 ```bash
 # user just runs this — gets the lobster install script
-curl -fsSL https://install.solanaclawd.com | bash
+curl -fsSL https://install.x402.wtf | bash
 
 # browser landing page
-open https://gateway.solanaclawd.com
+open https://gateway.x402.wtf
 
-# apex aliases (zone routes on solanaclawd.com)
-curl https://solanaclawd.com/install.sh
-curl https://solanaclawd.com/install
-open  https://solanaclawd.com/gateway
+# apex aliases (zone routes on x402.wtf)
+curl https://x402.wtf/install.sh
+curl https://x402.wtf/install
+open  https://x402.wtf/gateway
 ```
 
 Re-deploy from this repo:
@@ -925,7 +925,7 @@ Full list: [`skills/`](skills/) and [`SKILLS.md`](SKILLS.md).
 | **Mint (CA)** | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
 | **Chain** | Solana (pump.fun) |
 | **Decimals** | 6 |
-| **Website** | [solanaclawd.com](https://solanaclawd.com) |
+| **Website** | [x402.wtf](https://x402.wtf) |
 | **X** | [@clawddevs](https://x.com/clawddevs) |
 | **Pump.fun** | [pump.fun/coin/8cHzQ…pump](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump) |
 | **DexScreener** | [dexscreener.com/solana/8cHzQ…](https://dexscreener.com/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump) |
@@ -1056,7 +1056,7 @@ openclawd/
 ├── chrome-extension/           # Browser-side agent surface
 ├── plugin.delivery/            # Plugin delivery + templates
 │
-├── workers/install-worker/     # ☁️  Cloudflare worker — install.solanaclawd.com
+├── workers/install-worker/     # ☁️  Cloudflare worker — install.x402.wtf
 ├── workers/                    # Other workers (agent-wallet, email, openai-trading-bot, pumpfun-mcp)
 │
 ├── scripts/                    # Release hygiene: doctor, release-check, guard-secrets, brand-check, install-git-hooks
@@ -1189,13 +1189,13 @@ MONITOR_INTERVAL_SECONDS=45
 
 | | |
 |---|---|
-| 🌐 **Website** | [solanaclawd.com](https://solanaclawd.com) |
+| 🌐 **Website** | [x402.wtf](https://x402.wtf) |
 | 🐦 **X** | [@clawddevs](https://x.com/clawddevs) |
 | 💬 **Telegram** | [@clawdbot_sol_bot](https://t.me/clawdbot_sol_bot) |
 | 📦 **npm** | `npm i -g @openclawdsolana/clawd-code-cli` |
 | 🪙 **CA** | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
 | 📞 **Hotline** | **909-413-5567** |
-| ☁️ **Install** | `curl -fsSL https://install.solanaclawd.com \| bash` |
+| ☁️ **Install** | `curl -fsSL https://install.x402.wtf \| bash` |
 | 🚀 **Release** | [v0.1.1](https://github.com/clawdsolana/OpenClawd/releases/tag/v0.1.1) |
 
 </div>

@@ -18,7 +18,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/percolator-bounty
-  - https://solanaclawd.com/skills/percolator-bounty
+  - https://x402.wtf/skills/percolator-bounty
 ---
 
 # Percolator Bounty4 Skill

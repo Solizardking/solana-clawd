@@ -13,8 +13,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/voice-call
-  - https://solanaclawd.com/skills/voice-call
-homepage: https://solanaclawd.com/skills/voice-call
+  - https://x402.wtf/skills/voice-call
+homepage: https://x402.wtf/skills/voice-call
 ---
 
 # Voice Call

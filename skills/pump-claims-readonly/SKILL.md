@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-claims-readonly
-  - https://solanaclawd.com/skills/pump-claims-readonly
-homepage: https://solanaclawd.com/skills/pump-claims-readonly
+  - https://x402.wtf/skills/pump-claims-readonly
+homepage: https://x402.wtf/skills/pump-claims-readonly
 ---
 
 # PumpFun Claims — Read-Only Queries

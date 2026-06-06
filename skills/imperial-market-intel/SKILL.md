@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/imperial-market-intel
-  - https://solanaclawd.com/skills/imperial-market-intel
-homepage: https://solanaclawd.com/skills/imperial-market-intel
+  - https://x402.wtf/skills/imperial-market-intel
+homepage: https://x402.wtf/skills/imperial-market-intel
 ---
 
 # Imperial Market Intel

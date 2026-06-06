@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-rust-vanity
-  - https://solanaclawd.com/skills/pump-rust-vanity
-homepage: https://solanaclawd.com/skills/pump-rust-vanity
+  - https://x402.wtf/skills/pump-rust-vanity
+homepage: https://x402.wtf/skills/pump-rust-vanity
 ---
 
 # Rust Vanity Generator — High-Performance Solana Address Mining

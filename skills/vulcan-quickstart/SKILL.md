@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-quickstart
-  - https://solanaclawd.com/skills/vulcan-quickstart
-homepage: https://solanaclawd.com/skills/vulcan-quickstart
+  - https://x402.wtf/skills/vulcan-quickstart
+homepage: https://x402.wtf/skills/vulcan-quickstart
 ---
 
 # Vulcan Quickstart

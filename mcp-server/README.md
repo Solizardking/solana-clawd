@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd MCP Server  ·  solanaclawd.com  ·  x402.wtf               ║ -->
+<!-- ║   OpenClawd MCP Server  ·  x402.wtf  ·  x402.wtf               ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -10,12 +10,12 @@
   ║   55 tools · token launch · trading · wallet · analytics        ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  Works with: Claude Desktop · Cursor · VS Code · ClawdOS        ║
-  ║  solanaclawd.com  ·  x402.wtf  ·  @pump-fun/mcp-server          ║
+  ║  x402.wtf  ·  x402.wtf  ·  @pump-fun/mcp-server          ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
-[![MCP](https://img.shields.io/badge/MCP-55_tools-1E5AA8?style=flat-square)](https://solanaclawd.com)
-[![Website](https://img.shields.io/badge/solanaclawd.com-147D64?style=flat-square)](https://solanaclawd.com)
+[![MCP](https://img.shields.io/badge/MCP-55_tools-1E5AA8?style=flat-square)](https://x402.wtf)
+[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
 [![x402](https://img.shields.io/badge/x402.wtf-1E5AA8?style=flat-square)](https://x402.wtf)
 
 </div>

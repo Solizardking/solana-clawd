@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   Clawd PumpFun Bot  ·  solanaclawd.com  ·  Rust copy-trading          ║ -->
+<!-- ║   Clawd PumpFun Bot  ·  x402.wtf  ·  Rust copy-trading          ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -10,11 +10,11 @@
   ║   Rust · real-time tx monitoring · PumpFun + PumpSwap            ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  Detect trades · filter · copy · execute in milliseconds         ║
-  ║  solanaclawd.com  ·  x402.wtf  ·  $CLAWD                        ║
+  ║  x402.wtf  ·  x402.wtf  ·  $CLAWD                        ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
-[![Website](https://img.shields.io/badge/solanaclawd.com-147D64?style=flat-square)](https://solanaclawd.com)
+[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
 [![Rust](https://img.shields.io/badge/Rust-high_perf-CE422B?style=flat-square&logo=rust&logoColor=white)](https://rust-lang.org)
 [![Solana](https://img.shields.io/badge/Solana-mainnet-9945FF?style=flat-square&logo=solana&logoColor=white)](https://solana.com)
 

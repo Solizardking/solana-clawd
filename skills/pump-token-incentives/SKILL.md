@@ -13,8 +13,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-token-incentives
-  - https://solanaclawd.com/skills/pump-token-incentives
-homepage: https://solanaclawd.com/skills/pump-token-incentives
+  - https://x402.wtf/skills/pump-token-incentives
+homepage: https://x402.wtf/skills/pump-token-incentives
 ---
 
 # Token Incentives — Volume-Based PUMP Token Rewards

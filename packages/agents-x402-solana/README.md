@@ -38,7 +38,7 @@ import { z } from "zod";
 
 const server = withClawdX402(
   new McpServer({ name: "PaidMCP", version: "1.0.0" }),
-  { slug: "alpha-feed" }, // apiBase defaults to https://solanaclawd.com
+  { slug: "alpha-feed" }, // apiBase defaults to https://x402.wtf
 );
 
 // Paid tool — $0.01 per call (facilitator enforces the registered floor)
@@ -135,7 +135,7 @@ without settling, or to cache slug lookups yourself):
 ```ts
 import { createClawdX402Client } from "@openclawd/agents-x402";
 
-const client = createClawdX402Client({ apiBase: "https://solanaclawd.com" });
+const client = createClawdX402Client({ apiBase: "https://x402.wtf" });
 
 const cfg = await client.resolveSlug("alpha-feed");
 console.log(cfg.pricePerCallUsd, cfg.recipientWallet);
@@ -151,7 +151,7 @@ if (settle.success) console.log("signature:", settle.transaction);
 
 | Option | Default | Purpose |
 | --- | --- | --- |
-| `apiBase` | `https://solanaclawd.com` | Clawd API base |
+| `apiBase` | `https://x402.wtf` | Clawd API base |
 | `slug` | — (required) | Registered slug from `/x402 → Monetize` |
 | `price.amountAtomicOverride` | `undefined` | Bump price above the slug floor |
 | `slugCacheMs` | `30000` | In-process slug-lookup cache |

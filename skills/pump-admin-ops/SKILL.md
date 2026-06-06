@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-admin-ops
-  - https://solanaclawd.com/skills/pump-admin-ops
-homepage: https://solanaclawd.com/skills/pump-admin-ops
+  - https://x402.wtf/skills/pump-admin-ops
+homepage: https://x402.wtf/skills/pump-admin-ops
 ---
 
 # Admin Operations — Authority Management & Protocol Administration

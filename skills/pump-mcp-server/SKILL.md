@@ -11,8 +11,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-mcp-server
-  - https://solanaclawd.com/skills/pump-mcp-server
-homepage: https://solanaclawd.com/skills/pump-mcp-server
+  - https://x402.wtf/skills/pump-mcp-server
+homepage: https://x402.wtf/skills/pump-mcp-server
 ---
 
 # MCP Server — Model Context Protocol for Solana Wallet Operations

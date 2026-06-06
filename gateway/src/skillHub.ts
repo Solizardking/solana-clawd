@@ -151,8 +151,8 @@ router.get('/api/skills/slug/:slug/metadata.json', cacheHeaders(300), metadataRo
   res.json({
     name: entry.name,
     description: description || entry.slug,
-    image: `https://solanaclawd.com/api/skills/slug/${entry.slug}/card.svg`,
-    external_url: `https://solanaclawd.com/skills/${entry.slug}`,
+    image: `https://x402.wtf/api/skills/slug/${entry.slug}/card.svg`,
+    external_url: `https://x402.wtf/skills/${entry.slug}`,
     attributes: [
       { trait_type: 'Kind', value: entry.kind },
       { trait_type: 'STRIDE Score', value: entry.stride_score },

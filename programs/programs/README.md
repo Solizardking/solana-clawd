@@ -23,11 +23,11 @@
 ║                     S O L A N A   C L A W D   E C O S Y S T E M            ║
 ╠══════════════════════════════════╦═════════════════════════════════════════╣
 ║  SITES                           ║                                         ║
-║  solanaclawd.com                 ║  Main site · TUI · SDK · token          ║
-║  solanaclawd.com/agents          ║  Browse + search all 125 agents         ║
-║  solanaclawd.com/gateway         ║  x402 payment gateway · USDC routing    ║
-║  solanaclawd.com/skills          ║  Installable agent skills catalog       ║
-║  solanaclawd.com/terminal        ║  Browser terminal (zero install)        ║
+║  x402.wtf                 ║  Main site · TUI · SDK · token          ║
+║  x402.wtf/agents          ║  Browse + search all 125 agents         ║
+║  x402.wtf/gateway         ║  x402 payment gateway · USDC routing    ║
+║  x402.wtf/skills          ║  Installable agent skills catalog       ║
+║  x402.wtf/terminal        ║  Browser terminal (zero install)        ║
 ║  x402.wtf                        ║  HTTP 402 payment protocol              ║
 ║  x402.wtf/agents                 ║  x402-gated agent catalog + pricing     ║
 ║  x402.wtf/gateway                ║  Facilitator · routing · settlement     ║

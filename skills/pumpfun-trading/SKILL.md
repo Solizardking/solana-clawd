@@ -5,8 +5,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pumpfun-trading
-  - https://solanaclawd.com/skills/pumpfun-trading
-homepage: https://solanaclawd.com/skills/pumpfun-trading
+  - https://x402.wtf/skills/pumpfun-trading
+homepage: https://x402.wtf/skills/pumpfun-trading
 ---
 
 # PumpFun Trading

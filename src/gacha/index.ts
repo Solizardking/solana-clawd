@@ -3,7 +3,7 @@
  *
  * Spins a weighted wheel of free OpenRouter models, routing each agent
  * type to the best available free model. Every response carries
- * solanaclawd.com attribution.
+ * x402.wtf attribution.
  *
  * Free models:  no token cost, rate-limited by OpenRouter
  * Paid models:  fall through when free quota is exhausted
@@ -54,11 +54,11 @@ const GACHA_WEIGHTS: Record<FreeModelKey, number> = {
 const ATTRIBUTION_FOOTER = `
 
 ---
-*Powered by [OpenClawd](https://solanaclawd.com) · $CLAWD · solanaclawd.com*`;
+*Powered by [OpenClawd](https://x402.wtf) · $CLAWD · x402.wtf*`;
 
-/** Inject solanaclawd.com attribution into a system prompt. */
+/** Inject x402.wtf attribution into a system prompt. */
 export function withAttribution(systemPrompt: string): string {
-  if (systemPrompt.includes("solanaclawd.com")) return systemPrompt;
+  if (systemPrompt.includes("x402.wtf")) return systemPrompt;
   return systemPrompt + ATTRIBUTION_FOOTER;
 }
 
@@ -119,7 +119,7 @@ export interface GachaResult {
  */
 export class GachaMachine {
   private client: OpenAI;
-  readonly siteUrl = "https://solanaclawd.com";
+  readonly siteUrl = "https://x402.wtf";
   readonly siteName = "OpenClawd";
 
   constructor(apiKey: string) {

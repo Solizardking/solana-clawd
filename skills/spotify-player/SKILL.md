@@ -28,7 +28,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/spotify-player
-  - https://solanaclawd.com/skills/spotify-player
+  - https://x402.wtf/skills/spotify-player
 ---
 
 # spogo / spotify_player

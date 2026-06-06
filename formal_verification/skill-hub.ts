@@ -258,7 +258,7 @@ export async function registerSkill(opts: RegisterSkillOptions): Promise<Registe
 
   const specHash = computeSpecHash(opts.slug);
   const skillId = deriveSkillId(opts.slug, opts.kind, specHash);
-  const metadataUri = opts.metadata_uri ?? `https://solanaclawd.com/skills/${opts.slug}/metadata.json`;
+  const metadataUri = opts.metadata_uri ?? `https://x402.wtf/skills/${opts.slug}/metadata.json`;
 
   const entry: SkillHubEntry = {
     skill_id: skillId,
@@ -337,7 +337,7 @@ export async function bulkImportCatalog(opts: BulkImportOptions): Promise<BulkIm
         kani_verified: false,
         spec_hash: specHash,
         authority: opts.authority,
-        metadata_uri: `https://solanaclawd.com/skills/${entry.slug}/metadata.json`,
+        metadata_uri: `https://x402.wtf/skills/${entry.slug}/metadata.json`,
         registered_at: new Date().toISOString(),
         active: true,
         on_chain: false,
@@ -652,7 +652,7 @@ export async function submitSkill(manifest: SkillManifest): Promise<SubmissionRe
   const specHash = crypto.createHash('sha256').update(specContent).digest('hex');
   const skillId = deriveSkillId(manifest.slug, manifest.kind, specHash);
 
-  const metadataUri = manifest.metadata_uri ?? `https://solanaclawd.com/api/skills/slug/${manifest.slug}/metadata.json`;
+  const metadataUri = manifest.metadata_uri ?? `https://x402.wtf/api/skills/slug/${manifest.slug}/metadata.json`;
 
   const entry: SkillHubEntry = {
     skill_id: skillId,
@@ -702,7 +702,7 @@ export async function submitSkill(manifest: SkillManifest): Promise<SubmissionRe
     sas_attestation: sas,
     on_chain: sas.on_chain,
     metadata_uri: metadataUri,
-    hub_url: `https://solanaclawd.com/skills/${manifest.slug}`,
+    hub_url: `https://x402.wtf/skills/${manifest.slug}`,
     entry,
   };
 }

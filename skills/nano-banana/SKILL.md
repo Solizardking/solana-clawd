@@ -14,7 +14,7 @@ attestation:
   verified_at: '2026-06-06'
   registries:
   - https://x402.wtf/skills/nano-banana
-  - https://solanaclawd.com/skills/nano-banana
+  - https://x402.wtf/skills/nano-banana
 ---
 
 # Nano Banana 2 (Gemini 3.1 Flash Image)

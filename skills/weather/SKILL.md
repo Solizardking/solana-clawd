@@ -13,7 +13,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/weather
-  - https://solanaclawd.com/skills/weather
+  - https://x402.wtf/skills/weather
 ---
 
 # Weather

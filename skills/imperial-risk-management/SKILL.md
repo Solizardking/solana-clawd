@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/imperial-risk-management
-  - https://solanaclawd.com/skills/imperial-risk-management
-homepage: https://solanaclawd.com/skills/imperial-risk-management
+  - https://x402.wtf/skills/imperial-risk-management
+homepage: https://x402.wtf/skills/imperial-risk-management
 ---
 
 # Imperial Risk Management

@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/slack
-  - https://solanaclawd.com/skills/slack
-homepage: https://solanaclawd.com/skills/slack
+  - https://x402.wtf/skills/slack
+homepage: https://x402.wtf/skills/slack
 ---
 
 # Slack Actions

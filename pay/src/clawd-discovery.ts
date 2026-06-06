@@ -592,7 +592,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "5000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "0", slashEvidenceAnchors: [] },
     payments: { receiptCount: 1247, totalVolumeUSD: "28450.00", receiptAnchors: [] },
     trust: { reputationScore: 92, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["a2a", "mcp", "x402", "caap"], endpoints: { a2a: "https://clawd.solanaclawd.com/a2a", x402: "https://x402.wtf/v1/chat/completions" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["a2a", "mcp", "x402", "caap"], endpoints: { a2a: "https://x402.wtf/a2a", x402: "https://x402.wtf/v1/chat/completions" }, lastHeartbeat: new Date().toISOString() },
   },
   {
     id: "clawd-spot-trader",
@@ -606,7 +606,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "3000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "12000", slashEvidenceAnchors: [] },
     payments: { receiptCount: 892, totalVolumeUSD: "42100.00", receiptAnchors: [] },
     trust: { reputationScore: 88, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["a2a", "mcp", "x402"], endpoints: { rest: "https://clawd.solanaclawd.com/spot" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["a2a", "mcp", "x402"], endpoints: { rest: "https://x402.wtf/spot" }, lastHeartbeat: new Date().toISOString() },
   },
   // ── Risk/Collateral Agents ──────────────────────────────────────────
   {
@@ -624,7 +624,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "100000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "0", slashEvidenceAnchors: [] },
     payments: { receiptCount: 340, totalVolumeUSD: "8750.00", receiptAnchors: [] },
     trust: { reputationScore: 95, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["a2a", "mcp", "x402"], endpoints: { mcp: "https://clawd.solanaclawd.com/bond/mcp" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["a2a", "mcp", "x402"], endpoints: { mcp: "https://x402.wtf/bond/mcp" }, lastHeartbeat: new Date().toISOString() },
   },
   // ── Payment/Identity Agents ─────────────────────────────────────────
   {
@@ -660,7 +660,7 @@ const CLAWD_AGENTS: ClawdAgent[] = [
     collateral: { bonded: true, bondAmount: "75000000000", bondPDA: "derived", slashingEnabled: true, totalSlashed: "0", slashEvidenceAnchors: [] },
     payments: { receiptCount: 150, totalVolumeUSD: "3400.00", receiptAnchors: [] },
     trust: { reputationScore: 96, validationStatus: "verified", insurancePoolEnabled: true, trustGateLevel: "bonded" },
-    discovery: { protocols: ["a2a", "mcp", "caap", "claude-mcp"], endpoints: { mcp: "https://x402.wtf/mcp", a2a: "https://clawd.solanaclawd.com/google-bridge/a2a" }, lastHeartbeat: new Date().toISOString() },
+    discovery: { protocols: ["a2a", "mcp", "caap", "claude-mcp"], endpoints: { mcp: "https://x402.wtf/mcp", a2a: "https://x402.wtf/google-bridge/a2a" }, lastHeartbeat: new Date().toISOString() },
   },
 ];
 

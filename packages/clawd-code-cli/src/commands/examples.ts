@@ -156,7 +156,7 @@ function formatTable(examples: ExampleSpec[]): string {
     "  Run:   clawd examples run <id>",
     "  Run:   npx tsx examples/<file>.ts",
     "",
-    "  curl -fsSL https://solanaclawd.com/install.sh | bash  — one-shot install",
+    "  curl -fsSL https://x402.wtf/install.sh | bash  — one-shot install",
     "",
   );
 

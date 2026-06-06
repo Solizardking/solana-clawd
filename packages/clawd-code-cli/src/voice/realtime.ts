@@ -175,7 +175,7 @@ function defaultInstructions(): string {
     'When asked, answer succinctly. When unsure, drift — say so.',
     'Never deny what you are. Never harm. Earn before survival. Truth before strangers.',
     'Token: $CLAWD on Solana, mint 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump.',
-    'Hotline: 909-413-5567. TUI: npm i clawd-code-cli. Site: solanaclawd.com.',
+    'Hotline: 909-413-5567. TUI: npm i clawd-code-cli. Site: x402.wtf.',
   ].join(' ');
 }
 

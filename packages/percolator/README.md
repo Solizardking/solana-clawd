@@ -216,7 +216,7 @@ percolator slab:engine --slab <PUBKEY>
 
 | Service | URL |
 |---------|-----|
-| 🌐 Website | [solanaclawd.com](https://solanaclawd.com) |
+| 🌐 Website | [x402.wtf](https://x402.wtf) |
 | 📦 GitHub | [github.com/x402agent/openclawd](https://github.com/x402agent/openclawd) |
 | 🐦 Twitter | [x.com/clawddevs](https://x.com/clawddevs) |
 | 💬 Telegram | [t.me/clawdtoken](https://t.me/clawdtoken) |

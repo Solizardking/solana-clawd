@@ -62,7 +62,7 @@ export async function spawnOnchain(input: SpawnOnchainInput): Promise<SpawnOncha
     wallet: umi.identity.publicKey,
     network,
     name: input.name,
-    uri: input.nftMetadataUri || 'https://solanaclawd.com/leviathan-default.json',
+    uri: input.nftMetadataUri || 'https://x402.wtf/leviathan-default.json',
     agentMetadata: {
       type: 'agent',
       name: input.name,
@@ -70,8 +70,8 @@ export async function spawnOnchain(input: SpawnOnchainInput): Promise<SpawnOncha
       services: input.services?.length
         ? input.services
         : [
-            { name: 'web', endpoint: 'https://solanaclawd.com' },
-            { name: 'A2A', endpoint: 'https://solanaclawd.com/leviathan/a2a', version: '0.3.0' },
+            { name: 'web', endpoint: 'https://x402.wtf' },
+            { name: 'A2A', endpoint: 'https://x402.wtf/leviathan/a2a', version: '0.3.0' },
           ],
       registrations: [],
       supportedTrust: ['reputation', 'crypto-economic'],

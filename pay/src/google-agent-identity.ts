@@ -203,7 +203,7 @@ function generateAgentCardUpdate(
     description: "Google ADK agent with Solana on-chain attested identity",
     provider: {
       organization: "OpenClawd",
-      url: "https://solanaclawd.com",
+      url: "https://x402.wtf",
     },
     capabilities: {
       streaming: true,

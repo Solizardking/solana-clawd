@@ -13,8 +13,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-kalshi-market-scanner
-  - https://solanaclawd.com/skills/dflow-kalshi-market-scanner
-homepage: https://solanaclawd.com/skills/dflow-kalshi-market-scanner
+  - https://x402.wtf/skills/dflow-kalshi-market-scanner
+homepage: https://x402.wtf/skills/dflow-kalshi-market-scanner
 ---
 
 # DFlow Kalshi Market Scanner

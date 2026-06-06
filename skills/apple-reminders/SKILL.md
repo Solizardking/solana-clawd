@@ -23,7 +23,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/apple-reminders
-  - https://solanaclawd.com/skills/apple-reminders
+  - https://x402.wtf/skills/apple-reminders
 ---
 
 # Apple Reminders CLI (remindctl)

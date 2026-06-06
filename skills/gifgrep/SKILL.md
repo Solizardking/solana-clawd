@@ -26,7 +26,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/gifgrep
-  - https://solanaclawd.com/skills/gifgrep
+  - https://x402.wtf/skills/gifgrep
 ---
 
 # gifgrep

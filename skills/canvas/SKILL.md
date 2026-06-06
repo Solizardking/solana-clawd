@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/canvas
-  - https://solanaclawd.com/skills/canvas
-homepage: https://solanaclawd.com/skills/canvas
+  - https://x402.wtf/skills/canvas
+homepage: https://x402.wtf/skills/canvas
 ---
 # Canvas Skill
 

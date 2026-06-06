@@ -338,9 +338,9 @@ Research access is gated by $CLAWD holdings:
 
 | Service | URL |
 |---------|-----|
-| 🌐 Website | [solanaclawd.com](https://solanaclawd.com) |
-| 🤖 Agent Hub | [hub.solanaclawd.com](https://hub.solanaclawd.com) |
-| 📖 Docs | [docs.solanaclawd.com](https://docs.solanaclawd.com) |
+| 🌐 Website | [x402.wtf](https://x402.wtf) |
+| 🤖 Agent Hub | [hub.x402.wtf](https://hub.x402.wtf) |
+| 📖 Docs | [docs.x402.wtf](https://docs.x402.wtf) |
 | 🐦 Twitter | [x.com/clawddevs](https://x.com/clawddevs) |
 | 💬 Telegram | [t.me/clawdtoken](https://t.me/clawdtoken) |
 | 📦 GitHub | [github.com/clawdsolana/OpenClawd](https://github.com/clawdsolana/OpenClawd) |

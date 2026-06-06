@@ -64,7 +64,7 @@
   "bugs": {
     "url": "https://github.com/solizardking/solanaclawd/issues"
   },
-  "homepage": "https://solanaclawd.com",
+  "homepage": "https://x402.wtf",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
     "@noble/hashes": "~1.8.0",

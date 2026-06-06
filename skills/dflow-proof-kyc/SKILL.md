@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-proof-kyc
-  - https://solanaclawd.com/skills/dflow-proof-kyc
-homepage: https://solanaclawd.com/skills/dflow-proof-kyc
+  - https://x402.wtf/skills/dflow-proof-kyc
+homepage: https://x402.wtf/skills/dflow-proof-kyc
 ---
 
 # DFlow Proof

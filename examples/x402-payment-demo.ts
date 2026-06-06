@@ -321,7 +321,7 @@ async function main() {
   console.log("   NPM:         @openclawd/agents-x402");
   console.log("   Wallet:      packages/clawd-wallet/");
   console.log("   Facilitator: clawdrouter/");
-  console.log("   Install:     curl -fsSL solanaclawd.com/install.sh | bash");
+  console.log("   Install:     curl -fsSL x402.wtf/install.sh | bash");
   console.log("");
 }
 

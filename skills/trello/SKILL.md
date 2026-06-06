@@ -16,7 +16,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/trello
-  - https://solanaclawd.com/skills/trello
+  - https://x402.wtf/skills/trello
 ---
 
 # Trello Skill

@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/food-order
-  - https://solanaclawd.com/skills/food-order
-homepage: https://solanaclawd.com/skills/food-order
+  - https://x402.wtf/skills/food-order
+homepage: https://x402.wtf/skills/food-order
 ---
 
 # Food order (Foodora via ordercli)

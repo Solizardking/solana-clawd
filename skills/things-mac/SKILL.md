@@ -25,7 +25,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/things-mac
-  - https://solanaclawd.com/skills/things-mac
+  - https://x402.wtf/skills/things-mac
 ---
 
 # Things 3 CLI

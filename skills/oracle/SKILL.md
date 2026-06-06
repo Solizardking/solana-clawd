@@ -21,7 +21,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/oracle
-  - https://solanaclawd.com/skills/oracle
+  - https://x402.wtf/skills/oracle
 ---
 
 # oracle — best use

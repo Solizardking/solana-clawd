@@ -24,8 +24,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/model-usage
-  - https://solanaclawd.com/skills/model-usage
-homepage: https://solanaclawd.com/skills/model-usage
+  - https://x402.wtf/skills/model-usage
+homepage: https://x402.wtf/skills/model-usage
 ---
 
 # Model usage

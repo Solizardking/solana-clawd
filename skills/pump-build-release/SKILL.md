@@ -11,8 +11,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-build-release
-  - https://solanaclawd.com/skills/pump-build-release
-homepage: https://solanaclawd.com/skills/pump-build-release
+  - https://x402.wtf/skills/pump-build-release
+homepage: https://x402.wtf/skills/pump-build-release
 ---
 
 # Build & Release — SDK Build Pipeline & Publishing

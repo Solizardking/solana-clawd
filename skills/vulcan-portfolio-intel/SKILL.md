@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-portfolio-intel
-  - https://solanaclawd.com/skills/vulcan-portfolio-intel
-homepage: https://solanaclawd.com/skills/vulcan-portfolio-intel
+  - https://x402.wtf/skills/vulcan-portfolio-intel
+homepage: https://x402.wtf/skills/vulcan-portfolio-intel
 ---
 
 # Vulcan Portfolio Intel

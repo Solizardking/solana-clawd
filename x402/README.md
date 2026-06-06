@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   x402 — HTTP 402 Payment Protocol  ·  x402.wtf  ·  solanaclawd.com   ║ -->
+<!-- ║   x402 — HTTP 402 Payment Protocol  ·  x402.wtf  ·  x402.wtf   ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -10,13 +10,13 @@
   ║   USDC micropayments · agent-native · Solana mainnet             ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  Agent ──fetch()──▶ 402 ──sign USDC──▶ retry ──▶ 200 ✅         ║
-  ║  x402.wtf  ·  x402.wtf/gateway  ·  solanaclawd.com/gateway      ║
+  ║  x402.wtf  ·  x402.wtf/gateway  ·  x402.wtf/gateway      ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
 [![x402](https://img.shields.io/badge/x402.wtf-protocol-1E5AA8?style=flat-square)](https://x402.wtf)
 [![Gateway](https://img.shields.io/badge/x402.wtf/gateway-routing-C85C2B?style=flat-square)](https://x402.wtf/gateway)
-[![Website](https://img.shields.io/badge/solanaclawd.com/gateway-147D64?style=flat-square)](https://solanaclawd.com/gateway)
+[![Website](https://img.shields.io/badge/x402.wtf/gateway-147D64?style=flat-square)](https://x402.wtf/gateway)
 
 </div>
 

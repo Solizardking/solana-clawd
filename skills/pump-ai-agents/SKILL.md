@@ -11,8 +11,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-ai-agents
-  - https://solanaclawd.com/skills/pump-ai-agents
-homepage: https://solanaclawd.com/skills/pump-ai-agents
+  - https://x402.wtf/skills/pump-ai-agents
+homepage: https://x402.wtf/skills/pump-ai-agents
 ---
 
 # AI Agent Integration — Agent Scaffolding & Discovery

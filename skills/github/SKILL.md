@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/github
-  - https://solanaclawd.com/skills/github
-homepage: https://solanaclawd.com/skills/github
+  - https://x402.wtf/skills/github
+homepage: https://x402.wtf/skills/github
 ---
 
 # GitHub Skill

@@ -24,11 +24,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://solanaclawd.com",
+    "url": "https://x402.wtf",
     "directory": "openclawd-framework/packages/cli-standalone"
   },
-  "homepage": "https://solanaclawd.com",
+  "homepage": "https://x402.wtf",
   "bugs": {
-    "url": "https://solanaclawd.com"
+    "url": "https://x402.wtf"
   }
 }

@@ -12,8 +12,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/solana-formal-verification
-  - https://solanaclawd.com/skills/solana-formal-verification
-homepage: https://solanaclawd.com/skills/solana-formal-verification
+  - https://x402.wtf/skills/solana-formal-verification
+homepage: https://x402.wtf/skills/solana-formal-verification
 ---
 
 # QEDGen — Agent-Driven Formal Verification

@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-trade-execution
-  - https://solanaclawd.com/skills/vulcan-trade-execution
-homepage: https://solanaclawd.com/skills/vulcan-trade-execution
+  - https://x402.wtf/skills/vulcan-trade-execution
+homepage: https://x402.wtf/skills/vulcan-trade-execution
 ---
 
 # Vulcan Trade Execution

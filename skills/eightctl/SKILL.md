@@ -20,7 +20,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/eightctl
-  - https://solanaclawd.com/skills/eightctl
+  - https://x402.wtf/skills/eightctl
 ---
 
 # eightctl

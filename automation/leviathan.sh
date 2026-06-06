@@ -34,7 +34,7 @@ cat << 'BANNER'
 
   🦞  Leviathan Runtime Bootstrap — OpenClawd Framework
   ⚠  $CLAWD CA: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump
-  🌐  solanaclawd.com  |  @clawddevs
+  🌐  x402.wtf  |  @clawddevs
 
 BANNER
 printf "${RESET}"

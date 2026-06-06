@@ -63,9 +63,9 @@ export const ECOSYSTEM_REGISTRY = {
     clawdProtocol: "CLAWDprotoco1111111111111111111111111111111",
   },
   sites: {
-    main:    "https://solanaclawd.com",
-    agents:  "https://solanaclawd.com/agents",
-    gateway: "https://solanaclawd.com/gateway",
+    main:    "https://x402.wtf",
+    agents:  "https://x402.wtf/agents",
+    gateway: "https://x402.wtf/gateway",
     x402:    "https://x402.wtf",
     hub:     "http://localhost:3747",
   },

@@ -16,8 +16,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/coding-agent
-  - https://solanaclawd.com/skills/coding-agent
-homepage: https://solanaclawd.com/skills/coding-agent
+  - https://x402.wtf/skills/coding-agent
+homepage: https://x402.wtf/skills/coding-agent
 ---
 
 # Coding Agent (bash-first)

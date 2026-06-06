@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd Examples  ·  solanaclawd.com  ·  x402.wtf                 ║ -->
+<!-- ║   OpenClawd Examples  ·  x402.wtf  ·  x402.wtf                 ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -10,11 +10,11 @@
   ║   trading · payments · research · wallet · infrastructure        ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  ooda-loop  ·  lobster-trader  ·  x402-payment  ·  buddies       ║
-  ║  Most run with zero API keys  ·  solanaclawd.com                 ║
+  ║  Most run with zero API keys  ·  x402.wtf                 ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
-[![Website](https://img.shields.io/badge/solanaclawd.com-147D64?style=flat-square)](https://solanaclawd.com)
+[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
 [![x402](https://img.shields.io/badge/x402.wtf-1E5AA8?style=flat-square)](https://x402.wtf)
 [![node](https://img.shields.io/badge/node-20–24-0B7285?style=flat-square)](https://nodejs.org)
 
@@ -33,7 +33,7 @@
 ### One-shot (curl)
 
 ```bash
-curl -fsSL https://solanaclawd.com/install.sh | bash
+curl -fsSL https://x402.wtf/install.sh | bash
 ```
 
 ### npm global
@@ -297,9 +297,9 @@ cd openclawd-stack && pnpm dev:orchestrator
 
 | | |
 | --- | --- |
-| Website | [solanaclawd.com](https://solanaclawd.com) |
+| Website | [x402.wtf](https://x402.wtf) |
 | X | [@clawddevs](https://x.com/clawddevs) |
 | Telegram | [@clawdbot_sol_bot](https://t.me/clawdbot_sol_bot) |
 | CA | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
 | Hotline | 909-413-5567 |
-| Install | `curl -fsSL https://solanaclawd.com/install.sh \| bash` |
+| Install | `curl -fsSL https://x402.wtf/install.sh \| bash` |

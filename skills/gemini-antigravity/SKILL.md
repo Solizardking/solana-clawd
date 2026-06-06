@@ -14,7 +14,7 @@ attestation:
   verified_at: '2026-06-06'
   registries:
   - https://x402.wtf/skills/gemini-antigravity
-  - https://solanaclawd.com/skills/gemini-antigravity
+  - https://x402.wtf/skills/gemini-antigravity
 ---
 
 # Antigravity Managed Agent

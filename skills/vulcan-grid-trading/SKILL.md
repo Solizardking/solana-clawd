@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-grid-trading
-  - https://solanaclawd.com/skills/vulcan-grid-trading
-homepage: https://solanaclawd.com/skills/vulcan-grid-trading
+  - https://x402.wtf/skills/vulcan-grid-trading
+homepage: https://x402.wtf/skills/vulcan-grid-trading
 ---
 
 # Vulcan Grid Trading

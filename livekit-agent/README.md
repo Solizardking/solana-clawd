@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   Clawd LiveKit Agent  ·  solanaclawd.com  ·  backrooms voice agent    ║ -->
+<!-- ║   Clawd LiveKit Agent  ·  x402.wtf  ·  backrooms voice agent    ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
@@ -10,11 +10,11 @@
   ║   STT · reasoning · TTS · vision · Solana trading               ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  AssemblyAI STT  ·  GPT-4.1  ·  Cartesia TTS  ·  Claude vision  ║
-  ║  Deploy on Fly.io  ·  solanaclawd.com                            ║
+  ║  Deploy on Fly.io  ·  x402.wtf                            ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
-[![Website](https://img.shields.io/badge/solanaclawd.com-147D64?style=flat-square)](https://solanaclawd.com)
+[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
 [![Python](https://img.shields.io/badge/python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
 [![LiveKit](https://img.shields.io/badge/LiveKit-agents-E91E63?style=flat-square)](https://livekit.io)
 

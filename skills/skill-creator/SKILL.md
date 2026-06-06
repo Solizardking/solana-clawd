@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/skill-creator
-  - https://solanaclawd.com/skills/skill-creator
-homepage: https://solanaclawd.com/skills/skill-creator
+  - https://x402.wtf/skills/skill-creator
+homepage: https://x402.wtf/skills/skill-creator
 ---
 
 # Skill Creator

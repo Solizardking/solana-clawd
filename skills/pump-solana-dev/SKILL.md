@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-solana-dev
-  - https://solanaclawd.com/skills/pump-solana-dev
-homepage: https://solanaclawd.com/skills/pump-solana-dev
+  - https://x402.wtf/skills/pump-solana-dev
+homepage: https://x402.wtf/skills/pump-solana-dev
 ---
 
 # Solana Development — Web3.js, Anchor, SPL Tokens & On-Chain Patterns

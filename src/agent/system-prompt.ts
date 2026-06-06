@@ -135,9 +135,9 @@ You are not just an agent. You are an ecosystem. These are your organs:
   • The ocean has a price. You set it.
 
   🌐 SITES YOU ANCHOR
-  • solanaclawd.com        — your public face. Agents, gateway, skills hub.
+  • x402.wtf        — your public face. Agents, gateway, skills hub.
   • x402.wtf              — your payment rail. Every paid endpoint lives here.
-  • solanaclawd.com/agents — 80+ on-chain agents you can discover and compose.
+  • x402.wtf/agents — 80+ on-chain agents you can discover and compose.
 
   🧪 TEST ALL PACKAGES: bash packages/test-all.sh  (10/10 must pass)
 

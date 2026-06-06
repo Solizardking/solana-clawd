@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-execution-modes
-  - https://solanaclawd.com/skills/vulcan-execution-modes
-homepage: https://solanaclawd.com/skills/vulcan-execution-modes
+  - https://x402.wtf/skills/vulcan-execution-modes
+homepage: https://x402.wtf/skills/vulcan-execution-modes
 ---
 
 # Vulcan Execution Modes

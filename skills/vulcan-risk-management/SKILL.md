@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-risk-management
-  - https://solanaclawd.com/skills/vulcan-risk-management
-homepage: https://solanaclawd.com/skills/vulcan-risk-management
+  - https://x402.wtf/skills/vulcan-risk-management
+homepage: https://x402.wtf/skills/vulcan-risk-management
 ---
 
 # Vulcan Risk Management

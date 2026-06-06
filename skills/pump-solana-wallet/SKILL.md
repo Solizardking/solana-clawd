@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-solana-wallet
-  - https://solanaclawd.com/skills/pump-solana-wallet
-homepage: https://solanaclawd.com/skills/pump-solana-wallet
+  - https://x402.wtf/skills/pump-solana-wallet
+homepage: https://x402.wtf/skills/pump-solana-wallet
 ---
 
 # Solana Wallet — Key Generation & Security

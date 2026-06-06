@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/solana-clawd-agentic-commerce
-  - https://solanaclawd.com/skills/solana-clawd-agentic-commerce
-homepage: https://solanaclawd.com/skills/solana-clawd-agentic-commerce
+  - https://x402.wtf/skills/solana-clawd-agentic-commerce
+homepage: https://x402.wtf/skills/solana-clawd-agentic-commerce
 ---
 
 # Solana CLAWD Agentic Commerce

@@ -55,8 +55,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/sherpa-onnx-tts
-  - https://solanaclawd.com/skills/sherpa-onnx-tts
-homepage: https://solanaclawd.com/skills/sherpa-onnx-tts
+  - https://x402.wtf/skills/sherpa-onnx-tts
+homepage: https://x402.wtf/skills/sherpa-onnx-tts
 ---
 
 # sherpa-onnx-tts

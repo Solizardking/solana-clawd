@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-twap-execution
-  - https://solanaclawd.com/skills/vulcan-twap-execution
-homepage: https://solanaclawd.com/skills/vulcan-twap-execution
+  - https://x402.wtf/skills/vulcan-twap-execution
+homepage: https://x402.wtf/skills/vulcan-twap-execution
 ---
 
 # Vulcan TWAP Execution

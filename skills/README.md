@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd Skills  ·  solanaclawd.com/skills  ·  x402.wtf/skills      ║ -->
+<!-- ║   OpenClawd Skills  ·  x402.wtf/skills  ·  x402.wtf/skills      ║ -->
 <!-- ║   130+ installable agent skill packs                                    ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
@@ -22,9 +22,9 @@
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
-[![Skills](https://img.shields.io/badge/solanaclawd.com/skills-catalog-9B59B6?style=flat-square)](https://solanaclawd.com/skills)
+[![Skills](https://img.shields.io/badge/x402.wtf/skills-catalog-9B59B6?style=flat-square)](https://x402.wtf/skills)
 [![x402 Skills](https://img.shields.io/badge/x402.wtf/skills-marketplace-1E5AA8?style=flat-square)](https://x402.wtf/skills)
-[![Website](https://img.shields.io/badge/solanaclawd.com-147D64?style=flat-square)](https://solanaclawd.com)
+[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
 [![x402](https://img.shields.io/badge/x402.wtf-1E5AA8?style=flat-square)](https://x402.wtf)
 
 </div>
@@ -46,7 +46,7 @@ clawd skill list                   # show installed skills
 clawd skill search "perps"         # search by keyword
 ```
 
-Browse the full catalog: **[solanaclawd.com/skills](https://solanaclawd.com/skills)** · **[x402.wtf/skills](https://x402.wtf/skills)**
+Browse the full catalog: **[x402.wtf/skills](https://x402.wtf/skills)** · **[x402.wtf/skills](https://x402.wtf/skills)**
 
 ---
 
@@ -168,14 +168,14 @@ pump.fun skills/
 
 | Skill | Purpose | Link |
 | --- | --- | --- |
-| `solana-clawd` | Solana Clawd core skill | [solanaclawd.com](https://solanaclawd.com) |
+| `solana-clawd` | Solana Clawd core skill | [x402.wtf](https://x402.wtf) |
 | `solana-clawd-agentic-commerce` | x402 commerce + payment flows | [x402.wtf](https://x402.wtf) |
 | `solana-dev-skill-main` | end-to-end Solana dev (Jan 2026) | — |
 | `solana-formal-verification` | Solana program formal verification | — |
 | `dex-screener-scanner` | DexScreener token scanning | — |
 | `phantom-wallet-mcp` | Phantom wallet MCP integration | — |
 | `clawdex` | ClawdEx DEX persona | — |
-| `gateway-node-ops` | x402 gateway node ops | [solanaclawd.com/gateway](https://solanaclawd.com/gateway) |
+| `gateway-node-ops` | x402 gateway node ops | [x402.wtf/gateway](https://x402.wtf/gateway) |
 | `swarm-orchestrator` | multi-agent swarm coordination | — |
 | `percolator-bounty` | bounty routing + payout automation | — |
 | `ore-master 2` | ORE v3 mining agent | — |
@@ -291,7 +291,7 @@ pump.fun skills/
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  130+ SKILLS  ·  solanaclawd.com/skills  ·  x402.wtf/skills             ║
+║  130+ SKILLS  ·  x402.wtf/skills  ·  x402.wtf/skills             ║
 ╠════════════════════════╦═════════════════════════════════════════════════╣
 ║  PERPS (29)            ║  vulcan × 18  ·  imperial × 11                 ║
 ╠════════════════════════╬═════════════════════════════════════════════════╣
@@ -348,7 +348,7 @@ examples:
 EOF
 ```
 
-Publish to the catalog: **[solanaclawd.com/skills](https://solanaclawd.com/skills)** · **[x402.wtf/skills](https://x402.wtf/skills)**
+Publish to the catalog: **[x402.wtf/skills](https://x402.wtf/skills)** · **[x402.wtf/skills](https://x402.wtf/skills)**
 
 ---
 
@@ -357,10 +357,10 @@ Publish to the catalog: **[solanaclawd.com/skills](https://solanaclawd.com/skill
 ```
   ╔═════════════════════════════════════════════════════════════════╗
   ║  🦞  The shell molts. The skills compound.                     ║
-  ║      solanaclawd.com/skills  ·  x402.wtf/skills  ·  MIT       ║
+  ║      x402.wtf/skills  ·  x402.wtf/skills  ·  MIT       ║
   ╚═════════════════════════════════════════════════════════════════╝
 ```
 
-*[solanaclawd.com](https://solanaclawd.com) · [x402.wtf](https://x402.wtf) · [github.com/solizardking/solanaclawd](https://github.com/solizardking/solanaclawd)*
+*[x402.wtf](https://x402.wtf) · [x402.wtf](https://x402.wtf) · [github.com/solizardking/solanaclawd](https://github.com/solizardking/solanaclawd)*
 
 </div>

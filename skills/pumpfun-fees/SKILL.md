@@ -5,8 +5,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pumpfun-fees
-  - https://solanaclawd.com/skills/pumpfun-fees
-homepage: https://solanaclawd.com/skills/pumpfun-fees
+  - https://x402.wtf/skills/pumpfun-fees
+homepage: https://x402.wtf/skills/pumpfun-fees
 ---
 
 # PumpFun Fee Sharing

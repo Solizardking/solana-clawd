@@ -21,7 +21,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/songsee
-  - https://solanaclawd.com/skills/songsee
+  - https://x402.wtf/skills/songsee
 ---
 
 # songsee

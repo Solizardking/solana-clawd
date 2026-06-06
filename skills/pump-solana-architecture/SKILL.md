@@ -11,8 +11,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-solana-architecture
-  - https://solanaclawd.com/skills/pump-solana-architecture
-homepage: https://solanaclawd.com/skills/pump-solana-architecture
+  - https://x402.wtf/skills/pump-solana-architecture
+homepage: https://x402.wtf/skills/pump-solana-architecture
 ---
 
 # Solana Program Architecture — PDAs, Accounts & Multi-Program Coordination

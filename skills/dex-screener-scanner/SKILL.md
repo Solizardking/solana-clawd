@@ -10,8 +10,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dex-screener-scanner
-  - https://solanaclawd.com/skills/dex-screener-scanner
-homepage: https://solanaclawd.com/skills/dex-screener-scanner
+  - https://x402.wtf/skills/dex-screener-scanner
+homepage: https://x402.wtf/skills/dex-screener-scanner
 ---
 
 # DexScreener Solana Scanner

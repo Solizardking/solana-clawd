@@ -18,8 +18,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/clawdex
-  - https://solanaclawd.com/skills/clawdex
-homepage: https://solanaclawd.com/skills/clawdex
+  - https://x402.wtf/skills/clawdex
+homepage: https://x402.wtf/skills/clawdex
 ---
 
 # Clawdex

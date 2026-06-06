@@ -14,7 +14,7 @@ attestation:
   verified_at: '2026-06-06'
   registries:
   - https://x402.wtf/skills/gemini-deep-research
-  - https://solanaclawd.com/skills/gemini-deep-research
+  - https://x402.wtf/skills/gemini-deep-research
 ---
 
 # Gemini Deep Research Agent

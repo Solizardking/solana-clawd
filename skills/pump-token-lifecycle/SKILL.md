@@ -14,8 +14,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-token-lifecycle
-  - https://solanaclawd.com/skills/pump-token-lifecycle
-homepage: https://solanaclawd.com/skills/pump-token-lifecycle
+  - https://x402.wtf/skills/pump-token-lifecycle
+homepage: https://x402.wtf/skills/pump-token-lifecycle
 ---
 
 # Token Lifecycle — Create, Trade, Graduate, Migrate & Collect

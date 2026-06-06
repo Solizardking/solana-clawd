@@ -16,8 +16,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-shell-scripts
-  - https://solanaclawd.com/skills/pump-shell-scripts
-homepage: https://solanaclawd.com/skills/pump-shell-scripts
+  - https://x402.wtf/skills/pump-shell-scripts
+homepage: https://x402.wtf/skills/pump-shell-scripts
 ---
 
 # Shell Scripting & CLI Tools — Production Bash Scripts

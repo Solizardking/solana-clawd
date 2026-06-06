@@ -1,5 +1,5 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd Agents  ·  solanaclawd.com/agents  ·  x402.wtf/agents      ║ -->
+<!-- ║   OpenClawd Agents  ·  x402.wtf/agents  ·  x402.wtf/agents      ║ -->
 <!-- ║   80 production-ready Solana DeFi agent definitions                     ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
@@ -20,10 +20,10 @@
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 
-[![Agents](https://img.shields.io/badge/solanaclawd.com/agents-80_agents-C85C2B?style=flat-square)](https://solanaclawd.com/agents)
+[![Agents](https://img.shields.io/badge/x402.wtf/agents-80_agents-C85C2B?style=flat-square)](https://x402.wtf/agents)
 [![x402 Agents](https://img.shields.io/badge/x402.wtf/agents-hub-1E5AA8?style=flat-square)](https://x402.wtf/agents)
 [![npm registry](https://img.shields.io/badge/agent--registry-v2.0.0-147D64?style=flat-square&logo=npm)](https://www.npmjs.com/package/@openclawdsolana/agent-registry)
-[![Website](https://img.shields.io/badge/solanaclawd.com-147D64?style=flat-square)](https://solanaclawd.com)
+[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
 
 </div>
 
@@ -33,7 +33,7 @@
 
 > **80 production-ready AI agents for the Solana ecosystem — trading, DeFi, analytics, security, launches, governance, dev-tools, research, payments, and x402 flows. One-shot deploy, Metaplex on-chain minting, CLAWD Router integration, MCP install, and a RESTful JSON API.**
 
-A discoverable, self-hosting hub for Solana-native AI agents. Every agent in the [`src/`](./src/) directory is automatically indexed into a catalog ([`agents-catalog.json`](./agents-catalog.json)), served via REST and MCP, and surfaced at [solanaclawd.com/agents](https://solanaclawd.com/agents) and [x402.wtf/agents](https://x402.wtf/agents) with install / chat / mint buttons. Works with any MCP-compatible client — Clawd Desktop, Cursor, ClawdOS, Windsurf.
+A discoverable, self-hosting hub for Solana-native AI agents. Every agent in the [`src/`](./src/) directory is automatically indexed into a catalog ([`agents-catalog.json`](./agents-catalog.json)), served via REST and MCP, and surfaced at [x402.wtf/agents](https://x402.wtf/agents) and [x402.wtf/agents](https://x402.wtf/agents) with install / chat / mint buttons. Works with any MCP-compatible client — Clawd Desktop, Cursor, ClawdOS, Windsurf.
 
 ## 🔗 openclawd Ecosystem
 

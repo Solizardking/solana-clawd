@@ -10,7 +10,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/notion
-  - https://solanaclawd.com/skills/notion
+  - https://x402.wtf/skills/notion
 ---
 
 # notion

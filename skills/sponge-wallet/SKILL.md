@@ -17,7 +17,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/sponge-wallet
-  - https://solanaclawd.com/skills/sponge-wallet
+  - https://x402.wtf/skills/sponge-wallet
 ---
 
 # Sponge Wallet API — Agent Skills Guide (OpenClawd Edition)

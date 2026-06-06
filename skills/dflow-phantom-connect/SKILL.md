@@ -25,8 +25,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-phantom-connect
-  - https://solanaclawd.com/skills/dflow-phantom-connect
-homepage: https://solanaclawd.com/skills/dflow-phantom-connect
+  - https://x402.wtf/skills/dflow-phantom-connect
+homepage: https://x402.wtf/skills/dflow-phantom-connect
 ---
 
 # Phantom Connect + DFlow Skill

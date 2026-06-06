@@ -27,7 +27,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/ordercli
-  - https://solanaclawd.com/skills/ordercli
+  - https://x402.wtf/skills/ordercli
 ---
 
 # ordercli

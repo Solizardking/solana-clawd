@@ -10,7 +10,7 @@
   ║   anti-patterns · decisions · facts · gotchas · patterns         ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║  Curated learnings extracted from the agent swarm                ║
-  ║  solanaclawd.com  ·  internal use  ·  not for deployment         ║
+  ║  x402.wtf  ·  internal use  ·  not for deployment         ║
   ╚═══════════════════════════════════════════════════════════════════╝
 ```
 

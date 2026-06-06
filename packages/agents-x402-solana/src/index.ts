@@ -85,7 +85,7 @@ export type FacilitatorVerifyResult =
     };
 
 export type ClawdX402ClientOptions = {
-  /** e.g. `https://solanaclawd.com`. */
+  /** e.g. `https://x402.wtf`. */
   apiBase?: string;
   /** Override the global `fetch` (Node <18, testing, etc.). */
   fetch?: typeof fetch;
@@ -104,7 +104,7 @@ export type PaidCallOptions = {
   amountUsdOverride?: string;
 };
 
-const DEFAULT_API_BASE = "https://solanaclawd.com";
+const DEFAULT_API_BASE = "https://x402.wtf";
 
 function normBase(apiBase?: string): string {
   return (apiBase ?? DEFAULT_API_BASE).replace(/\/+$/, "");

@@ -4,8 +4,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/discord
-  - https://solanaclawd.com/skills/discord
-homepage: https://solanaclawd.com/skills/discord
+  - https://x402.wtf/skills/discord
+homepage: https://x402.wtf/skills/discord
 ---
 
 # Discord Actions

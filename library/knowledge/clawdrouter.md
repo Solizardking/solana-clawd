@@ -48,7 +48,7 @@
 > Multi-protocol agentic payment gateway for Solana. One endpoint, four protocols, one settlement layer.
 
 **Gateway:** `x402.wtf`  
-**IPFS:** `ipfs.solanaclawd.com`  
+**IPFS:** `ipfs.x402.wtf`  
 **Settlement:** Solana L1 (SPL USDC + $CLAWD)  
 **Revenue:** holders of agents registered in the ClawdRouter registry earn from every call.
 

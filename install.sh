@@ -439,8 +439,8 @@ if [ "$INSTALL_GATEWAY" = true ]; then
 fi
 
 printf "\n  ${BOLD}Links:${RESET}\n"
-printf "  Website:      ${CYAN}https://solanaclawd.com${RESET}\n"
-printf "  Skills:       ${CYAN}https://solanaclawd.com/skills${RESET}\n"
+printf "  Website:      ${CYAN}https://x402.wtf${RESET}\n"
+printf "  Skills:       ${CYAN}https://x402.wtf/skills${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"
 printf "  Phoenix docs: ${CYAN}https://docs.phoenix.trade${RESET}\n"
 printf "  Vulcan repo:  ${CYAN}https://github.com/Ellipsis-Labs/vulcan-cli${RESET}\n"

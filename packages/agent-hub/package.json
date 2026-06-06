@@ -33,7 +33,7 @@
     "url": "https://github.com/solizardking/solanaclawd.git",
     "directory": "packages/agent-hub"
   },
-  "homepage": "https://solanaclawd.com",
+  "homepage": "https://x402.wtf",
   "files": ["dist", "public"],
   "dependencies": {
     "@openclawdsolana/agent-registry": "^2.0.0",

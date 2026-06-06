@@ -22,7 +22,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/peekaboo
-  - https://solanaclawd.com/skills/peekaboo
+  - https://x402.wtf/skills/peekaboo
 ---
 
 # Peekaboo

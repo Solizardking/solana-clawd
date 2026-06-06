@@ -11,8 +11,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-testing
-  - https://solanaclawd.com/skills/pump-testing
-homepage: https://solanaclawd.com/skills/pump-testing
+  - https://x402.wtf/skills/pump-testing
+homepage: https://x402.wtf/skills/pump-testing
 ---
 
 # Testing & Quality — Multi-Language Test Infrastructure

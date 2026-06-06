@@ -12,8 +12,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-kalshi-portfolio
-  - https://solanaclawd.com/skills/dflow-kalshi-portfolio
-homepage: https://solanaclawd.com/skills/dflow-kalshi-portfolio
+  - https://x402.wtf/skills/dflow-kalshi-portfolio
+homepage: https://x402.wtf/skills/dflow-kalshi-portfolio
 ---
 
 # DFlow Kalshi Portfolio

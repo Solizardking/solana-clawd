@@ -151,7 +151,7 @@ ENV
 ON-CHAIN
   Leviathans register via Metaplex Agent Registry: https://developers.metaplex.com/agents
   $CLAWD: ${CLAWD_MINT}
-  Hotline: 909-413-5567 · solanaclawd.com
+  Hotline: 909-413-5567 · x402.wtf
 `);
 }
 

@@ -14,7 +14,7 @@ attestation:
   verified_at: '2026-06-06'
   registries:
   - https://x402.wtf/skills/veo-video
-  - https://solanaclawd.com/skills/veo-video
+  - https://x402.wtf/skills/veo-video
 ---
 
 # Veo 3.1 Video Generation

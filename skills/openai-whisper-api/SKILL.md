@@ -16,7 +16,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/openai-whisper-api
-  - https://solanaclawd.com/skills/openai-whisper-api
+  - https://x402.wtf/skills/openai-whisper-api
 ---
 
 # OpenAI Whisper API (curl)

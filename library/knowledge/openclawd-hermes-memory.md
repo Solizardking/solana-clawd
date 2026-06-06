@@ -3,7 +3,7 @@
 OpenClawd x HERMES x402 is the current mega-story for `solana-clawd`: sovereign AI agents on Solana, born to earn, beach with dignity.
 
 Canonical links:
-- Site: `https://solanaclawd.com`
+- Site: `https://x402.wtf`
 - X: `https://x.com/clawddevs`
 - npm: `https://www.npmjs.com/package/solana-clawd`
 - x402 gateway: `https://x402.wtf`

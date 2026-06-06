@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/imperial-tpsl-management
-  - https://solanaclawd.com/skills/imperial-tpsl-management
-homepage: https://solanaclawd.com/skills/imperial-tpsl-management
+  - https://x402.wtf/skills/imperial-tpsl-management
+homepage: https://x402.wtf/skills/imperial-tpsl-management
 ---
 
 # Imperial TP/SL Management

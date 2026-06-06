@@ -13,8 +13,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-platform-fees
-  - https://solanaclawd.com/skills/dflow-platform-fees
-homepage: https://solanaclawd.com/skills/dflow-platform-fees
+  - https://x402.wtf/skills/dflow-platform-fees
+homepage: https://x402.wtf/skills/dflow-platform-fees
 ---
 
 # DFlow Platform Fees

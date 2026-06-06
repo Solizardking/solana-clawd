@@ -22,7 +22,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/himalaya
-  - https://solanaclawd.com/skills/himalaya
+  - https://x402.wtf/skills/himalaya
 ---
 
 # Himalaya Email CLI

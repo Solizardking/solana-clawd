@@ -20,7 +20,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/video-frames
-  - https://solanaclawd.com/skills/video-frames
+  - https://x402.wtf/skills/video-frames
 ---
 
 # Video Frames (ffmpeg)

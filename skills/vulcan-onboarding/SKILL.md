@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-onboarding
-  - https://solanaclawd.com/skills/vulcan-onboarding
-homepage: https://solanaclawd.com/skills/vulcan-onboarding
+  - https://x402.wtf/skills/vulcan-onboarding
+homepage: https://x402.wtf/skills/vulcan-onboarding
 ---
 
 # Vulcan Onboarding

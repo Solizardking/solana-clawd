@@ -6,8 +6,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/swarm-orchestrator
-  - https://solanaclawd.com/skills/swarm-orchestrator
-homepage: https://solanaclawd.com/skills/swarm-orchestrator
+  - https://x402.wtf/skills/swarm-orchestrator
+homepage: https://x402.wtf/skills/swarm-orchestrator
 ---
 
 # Swarm Orchestrator

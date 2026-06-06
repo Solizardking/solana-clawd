@@ -12,8 +12,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-docs
-  - https://solanaclawd.com/skills/dflow-docs
-homepage: https://solanaclawd.com/skills/dflow-docs
+  - https://x402.wtf/skills/dflow-docs
+homepage: https://x402.wtf/skills/dflow-docs
 ---
 
 # DFlow Docs

@@ -24,7 +24,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/apple-notes
-  - https://solanaclawd.com/skills/apple-notes
+  - https://x402.wtf/skills/apple-notes
 ---
 
 # Apple Notes CLI

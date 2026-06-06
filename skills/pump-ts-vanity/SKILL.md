@@ -11,8 +11,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/pump-ts-vanity
-  - https://solanaclawd.com/skills/pump-ts-vanity
-homepage: https://solanaclawd.com/skills/pump-ts-vanity
+  - https://x402.wtf/skills/pump-ts-vanity
+homepage: https://x402.wtf/skills/pump-ts-vanity
 ---
 
 # TypeScript Vanity Generator — Educational Reference Implementation

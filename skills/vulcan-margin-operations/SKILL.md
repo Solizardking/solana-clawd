@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-margin-operations
-  - https://solanaclawd.com/skills/vulcan-margin-operations
-homepage: https://solanaclawd.com/skills/vulcan-margin-operations
+  - https://x402.wtf/skills/vulcan-margin-operations
+homepage: https://x402.wtf/skills/vulcan-margin-operations
 ---
 
 # Vulcan Margin Operations

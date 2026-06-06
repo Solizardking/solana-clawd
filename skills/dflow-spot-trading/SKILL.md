@@ -10,8 +10,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/dflow-spot-trading
-  - https://solanaclawd.com/skills/dflow-spot-trading
-homepage: https://solanaclawd.com/skills/dflow-spot-trading
+  - https://x402.wtf/skills/dflow-spot-trading
+homepage: https://x402.wtf/skills/dflow-spot-trading
 ---
 
 # DFlow Spot Trading

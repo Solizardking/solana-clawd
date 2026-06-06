@@ -8,8 +8,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-error-recovery
-  - https://solanaclawd.com/skills/vulcan-error-recovery
-homepage: https://solanaclawd.com/skills/vulcan-error-recovery
+  - https://x402.wtf/skills/vulcan-error-recovery
+homepage: https://x402.wtf/skills/vulcan-error-recovery
 ---
 
 # Vulcan Error Recovery

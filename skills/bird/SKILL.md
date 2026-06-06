@@ -26,7 +26,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/bird
-  - https://solanaclawd.com/skills/bird
+  - https://x402.wtf/skills/bird
 ---
 
 # bird 🐦

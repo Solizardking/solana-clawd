@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-skills-index
-  - https://solanaclawd.com/skills/vulcan-skills-index
-homepage: https://solanaclawd.com/skills/vulcan-skills-index
+  - https://x402.wtf/skills/vulcan-skills-index
+homepage: https://x402.wtf/skills/vulcan-skills-index
 ---
 
 # Vulcan Skills Index

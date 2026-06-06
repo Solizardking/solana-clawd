@@ -59,7 +59,7 @@
     "url": "https://github.com/solizardking/solanaclawd.git",
     "directory": "packages/clawd-sdk"
   },
-  "homepage": "https://solanaclawd.com",
+  "homepage": "https://x402.wtf",
   "files": ["dist", "src"],
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.0",

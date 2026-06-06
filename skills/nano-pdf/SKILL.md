@@ -20,7 +20,7 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/nano-pdf
-  - https://solanaclawd.com/skills/nano-pdf
+  - https://x402.wtf/skills/nano-pdf
 ---
 
 # nano-pdf

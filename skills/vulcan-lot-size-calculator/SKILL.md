@@ -7,8 +7,8 @@ attestation:
   verified_at: '2026-06-04'
   registries:
   - https://x402.wtf/skills/vulcan-lot-size-calculator
-  - https://solanaclawd.com/skills/vulcan-lot-size-calculator
-homepage: https://solanaclawd.com/skills/vulcan-lot-size-calculator
+  - https://x402.wtf/skills/vulcan-lot-size-calculator
+homepage: https://x402.wtf/skills/vulcan-lot-size-calculator
 ---
 
 # Vulcan Lot Size Calculator
