@@ -87,7 +87,7 @@
     "type": "git",
     "url": "https://github.com/solizardking/solanaclawd.git"
   },
-  "homepage": "https://solanaclawd.com",
+  "homepage": "https://x402.wtf",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"

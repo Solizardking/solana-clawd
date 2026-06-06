@@ -17,12 +17,11 @@ export async function getAgentIndex() {
   return new AgentIndex();
 }
 
-export async function getSolanaAiInferenceClient(
-  walletOrKeypair: Parameters<(typeof import("@clawd/solana-ai-inference-client"))["SolanaAiInferenceClient"]>[1]
-) {
+export async function getSolanaAiInferenceClient(walletOrKeypair: unknown) {
   const { SolanaAiInferenceClient } = await import("@clawd/solana-ai-inference-client");
   const connection = new Connection(DEFAULT_RPC, "confirmed");
-  return new SolanaAiInferenceClient(connection, walletOrKeypair);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new SolanaAiInferenceClient(connection, walletOrKeypair as any);
 }
 
 export async function getOreMinerClient() {

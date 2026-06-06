@@ -91,7 +91,7 @@ cat << 'BANNER'
  ║    Metaplex Agent Registry: CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d ║
  ║    CAAP/1.0 Discovery: x402.wtf/.well-known/agent-auth.json              ║
  ║                                                                          ║
- ║    solanaclawd.com  ·  x402.wtf  ·  github.com/Solizardking/solana-clawd  ║
+ ║    x402.wtf  ·  github.com/Solizardking/solana-clawd  ║
  ║                                                                          ║
  ╚══════════════════════════════════════════════════════════════════════════╝
 
@@ -394,10 +394,10 @@ printf '  %shttps://x402.wtf/api/agents/catalog%s             — agent catalog 
 printf '  %shttps://x402.wtf/.well-known/agent-auth.json%s    — CAAP/1.0 discovery\n' "${CYAN}" "${RESET}"
 printf "\n"
 printf "  ${BOLD}Links:${RESET}\n"
-printf "  Website:      ${CYAN}https://solanaclawd.com${RESET}\n"
-printf "  Agents:       ${CYAN}https://solanaclawd.com/agents${RESET}\n"
-printf "  Skills:       ${CYAN}https://solanaclawd.com/skills${RESET}\n"
-printf "  Gateway:      ${CYAN}https://solanaclawd.com/gateway${RESET}\n"
+printf "  Website:      ${CYAN}https://x402.wtf${RESET}\n"
+printf "  Agents:       ${CYAN}https://x402.wtf/agents${RESET}\n"
+printf "  Skills:       ${CYAN}https://x402.wtf/skills${RESET}\n"
+printf "  Gateway:      ${CYAN}https://x402.wtf/gateway${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"
 printf "  GitHub:       ${CYAN}https://github.com/Solizardking/solana-clawd${RESET}\n"
 printf "  \$CLAWD CA:   ${DIM}8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump${RESET}\n"

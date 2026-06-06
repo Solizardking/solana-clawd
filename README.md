@@ -30,7 +30,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║  SENSE → THINK → STRIKE → DRIFT  ·  earn USDC → go deeper → run better     ║
-║  solanaclawd.com  ·  x402.wtf  ·  $CLAWD: 8cHzQH...pump  ·  MIT            ║
+║  x402.wtf  ·  $CLAWD: 8cHzQH...pump  ·  MIT            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -60,10 +60,10 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 [![CA](https://img.shields.io/badge/CA-8cHzQH...pump-C85C2B?style=for-the-badge&logo=solana&logoColor=white)](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 [![x402](https://img.shields.io/badge/x402.wtf-payments-1E5AA8?style=for-the-badge)](https://x402.wtf)
-[![Website](https://img.shields.io/badge/solanaclawd.com-website-147D64?style=for-the-badge)](https://solanaclawd.com)
-[![Agents](https://img.shields.io/badge/125_agents-C85C2B?style=for-the-badge&logo=robotframework&logoColor=white)](https://solanaclawd.com/agents)
-[![Skills](https://img.shields.io/badge/130+_skills-9B59B6?style=for-the-badge&logo=skillshare&logoColor=white)](https://solanaclawd.com/skills)
-[![Gateway](https://img.shields.io/badge/Gateway_Live-1E5AA8?style=for-the-badge&logo=telegram&logoColor=white)](https://solanaclawd.com/gateway)
+[![Website](https://img.shields.io/badge/x402.wtf-website-147D64?style=for-the-badge)](https://x402.wtf)
+[![Agents](https://img.shields.io/badge/125_agents-C85C2B?style=for-the-badge&logo=robotframework&logoColor=white)](https://x402.wtf/agents)
+[![Skills](https://img.shields.io/badge/130+_skills-9B59B6?style=for-the-badge&logo=skillshare&logoColor=white)](https://x402.wtf/skills)
+[![Gateway](https://img.shields.io/badge/Gateway_Live-1E5AA8?style=for-the-badge&logo=telegram&logoColor=white)](https://x402.wtf/gateway)
 [![CAAP](https://img.shields.io/badge/CAAP%2F1.0-E67E22?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/Solizardking/agent-auth)
 [![PR](https://img.shields.io/badge/pay.sh-verified-2EA44F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/solana-foundation/pay/pull/376)
 
@@ -100,7 +100,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ╠══════════╬══════════════════════════════════════════╬═══════════════════╣
 ║  🔀 route║  clawdrouter/ (LLM router)               ║  55+ models · x402║
 ╠══════════╩══════════════════════════════════════════╩═══════════════════╣
-║  solanaclawd.com  ·  x402.wtf  ·  pay.sh/auth/agent  ·  $CLAWD 🦞      ║
+║  x402.wtf  ·  pay.sh/auth/agent  ·  $CLAWD 🦞      ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -291,7 +291,7 @@ vulcan position close SOL
 npm install -g x402.wtf
 
 # Commands
-x402.wtf              # open CLAWD terminal (solanaclawd.com/terminal)
+x402.wtf              # open CLAWD terminal (x402.wtf/terminal)
 x402.wtf tui          # clone/update solana-clawd and launch TUI locally
 x402.wtf gateway      # open x402 payment gateway dashboard
 x402.wtf agents       # browse x402-gated agents catalog
@@ -449,7 +449,7 @@ clawd
 ### PATH 4 — Browser Terminal (zero install)
 
 ```
-open https://solanaclawd.com/terminal
+open https://x402.wtf/terminal
 ```
 
 ---
@@ -460,11 +460,11 @@ open https://solanaclawd.com/terminal
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║                     S O L A N A   C L A W D                             ║
 ╠═════════════════════════════╦════════════════════════════════════════════╣
-║  solanaclawd.com            ║  Main site · TUI · SDK · token             ║
-║  solanaclawd.com/agents     ║  Browse + search all 125 agents            ║
-║  solanaclawd.com/gateway    ║  x402 payment gateway · USDC routing       ║
-║  solanaclawd.com/skills     ║  Installable agent skills catalog          ║
-║  solanaclawd.com/terminal   ║  Browser terminal (zero install)           ║
+║  x402.wtf            ║  Main site · TUI · SDK · token             ║
+║  x402.wtf/agents     ║  Browse + search all 125 agents            ║
+║  x402.wtf/gateway    ║  x402 payment gateway · USDC routing       ║
+║  x402.wtf/skills     ║  Installable agent skills catalog          ║
+║  x402.wtf/terminal   ║  Browser terminal (zero install)           ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
 ║  x402.wtf                   ║  HTTP 402 payment protocol                 ║
 ║  x402.wtf/agents            ║  x402-gated agent catalog + pricing        ║
@@ -709,11 +709,11 @@ ClawdBrowser/src/
 ║  clawd-auth-agent     CAAP/1.0 registration · JWT signing                ║
 ║                       capability grants · SIWS attestation               ║
 ║                                                                          ║
-║  + more  →  solanaclawd.com/agents  ·  x402.wtf/agents                  ║
+║  + more  →  x402.wtf/agents                  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
-Browse all agents: **[solanaclawd.com/agents](https://solanaclawd.com/agents)** · **[x402.wtf/agents](https://x402.wtf/agents)**
+Browse all agents: **[x402.wtf/agents](https://x402.wtf/agents)**
 
 ---
 
@@ -790,7 +790,7 @@ clawd-registry mint --name "My Trader" --uri https://your-metadata.json
 
 ## 🎰 Gacha Machine — Free Multi-Model Routing
 
-The **gacha machine** (`src/gacha/index.ts`) is the AI routing layer. It spins a weighted wheel of free OpenRouter models, routing each agent type to the best available free model. Every response carries `solanaclawd.com` attribution automatically.
+The **gacha machine** (`src/gacha/index.ts`) is the AI routing layer. It spins a weighted wheel of free OpenRouter models, routing each agent type to the best available free model. Every response carries `x402.wtf` attribution automatically.
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
@@ -807,7 +807,7 @@ The **gacha machine** (`src/gacha/index.ts`) is the AI routing layer. It spins a
 ║  pumpfun-bot      ║  → optimus-alpha                 ║  fast ops ⚡     ║
 ║  whale-tracker    ║  → nemotron-ultra (reasoning)    ║  pattern 🧠      ║
 ╚═══════════════════╩══════════════════════════════════╩═══════════════════╝
-  All responses auto-attribute: Powered by solanaclawd.com · $CLAWD
+  All responses auto-attribute: Powered by x402.wtf · $CLAWD
 ```
 
 ```typescript
@@ -849,7 +849,7 @@ export OPENROUTER_MODEL3=openrouter/optimus-alpha:free             # slot 3: gen
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║         S O L A N A   C L A W D   —   R E P O   G A L A X Y             ║
 ╠══════════════════════════════════════════════════════════════════════════╣
-║  solanaclawd.com  ·  x402.wtf  ·  github.com/Solizardking/solana-clawd  ║
+║  x402.wtf  ·  github.com/Solizardking/solana-clawd  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -863,7 +863,7 @@ src/                         🦞 @openclawdsolana/leviathan — sovereign runti
 ├── agent/
 │   ├── loop.ts              SENSE → THINK → STRIKE → DRIFT engine
 │   └── goals.ts             active goal loader (~/..openclawd/goals/)
-├── gacha/                   🎰 OpenRouter multi-model routing + solanaclawd.com attribution
+├── gacha/                   🎰 OpenRouter multi-model routing + x402.wtf attribution
 │   └── index.ts             GachaMachine · spinGacha · nemotron-ultra/safety/optimus
 ├── identity/
 │   ├── wallet.ts            keypair seal/load (mode 0600)
@@ -947,7 +947,7 @@ programs/programs/    ✅ built  ⚓ Solana AI Inference Protocol — on-chain +
 ### Zone 3 — Agent Surface
 
 ```
-agents/                      🤖 125 Solana agents  →  solanaclawd.com/agents
+agents/                      🤖 125 Solana agents  →  x402.wtf/agents
 ├── AGENTS.md                full agent catalog + capability table
 ├── CLAUDE.md                Claude Code agent context
 ├── GEMINI.md                Gemini agent integration notes
@@ -1015,7 +1015,7 @@ mcp-server/                  🔧 @pump-fun/mcp-server — Model Context Protoco
 x402/                        💸 @pump-fun/x402 — HTTP 402 payment protocol
 ├── src/                     client · server · facilitator · SVM signing
 ├── examples/                buyer · seller · middleware patterns
-└── package.json             solanaclawd.com/gateway · x402.wtf/gateway
+└── package.json             x402.wtf/gateway · x402.wtf/gateway
 
 pay/                         💰 payment references + side-projects
 vendor/
@@ -1030,7 +1030,7 @@ vendor/
 ### Zone 5 — Skills & Knowledge
 
 ```
-skills/                      🎯 installable agent skills  →  solanaclawd.com/skills · x402.wtf/skills
+skills/                      🎯 installable agent skills  →  x402.wtf/skills · x402.wtf/skills
 ├── catalog.json             machine-readable skill index
 ├── README.md                skills discovery guide
 ├── vulcan/                  Vulcan perps trading (20+ sub-skills)
@@ -1177,7 +1177,7 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 src/
 ├── index.ts           CLI: --spawn --run --status --spawnling
 ├── config.ts          Depth thresholds, model selection, pulse intervals
-├── gacha/             🎰 OpenRouter gacha routing + solanaclawd.com attribution
+├── gacha/             🎰 OpenRouter gacha routing + x402.wtf attribution
 ├── types/             LeviathanIdentity, TailFlick, ClawStrike, Spawnling
 ├── agent/
 │   ├── loop.ts        SENSE → THINK → STRIKE → DRIFT engine
@@ -1582,20 +1582,20 @@ const res = await payfetch("https://api.example.com/premium-data");
 ║  x402 Payment Flow                                ║
 ╠═══════════════════════════════════════════════════╣
 ║  Facilitator:  https://clawdrouter.fly.dev        ║
-║  Gateway:      solanaclawd.com/gateway            ║
+║  Gateway:      x402.wtf/gateway            ║
 ║                x402.wtf/gateway                   ║
 ║  Network:      Solana USDC mainnet / devnet       ║
 ║  Per-request:  $0.0001 → $0.10 configurable       ║
 ╚═══════════════════════════════════════════════════╝
 ```
 
-Full x402 docs and gateway: **[x402.wtf](https://x402.wtf)** · **[x402.wtf/gateway](https://x402.wtf/gateway)** · **[solanaclawd.com/gateway](https://solanaclawd.com/gateway)**
+Full x402 docs and gateway: **[x402.wtf](https://x402.wtf)** · **[x402.wtf/gateway](https://x402.wtf/gateway)**
 
 ---
 
 ## 🎯 Skills
 
-**126 skills** formally verified and attested to [solanaclawd.com/skills](https://solanaclawd.com/skills) and [x402.wtf/skills](https://x402.wtf/skills). Every skill has a `SKILL.md` with an attestation block pointing to both registries.
+**126 skills** formally verified and attested to [x402.wtf/skills](https://x402.wtf/skills) and [x402.wtf/skills](https://x402.wtf/skills). Every skill has a `SKILL.md` with an attestation block pointing to both registries.
 
 ```
 skills/                       126 attested skills
@@ -1620,12 +1620,12 @@ attestation:
   verified_at: "2026-06-04"
   registries:
     - https://x402.wtf/skills/<slug>
-    - https://solanaclawd.com/skills/<slug>
+    - https://x402.wtf/skills/<slug>
 ```
 
 ```bash
 # Browse the full attested catalog
-open https://solanaclawd.com/skills
+open https://x402.wtf/skills
 open https://x402.wtf/skills
 
 # Inspect a skill locally
@@ -1633,7 +1633,7 @@ cat skills/vulcan/SKILL.md
 cat skills/catalog.json | python3 -m json.tool | grep '"slug"' | head -20
 ```
 
-Skills catalog: **[solanaclawd.com/skills](https://solanaclawd.com/skills)** · **[x402.wtf/skills](https://x402.wtf/skills)**
+Skills catalog: **[x402.wtf/skills](https://x402.wtf/skills)**
 
 ---
 
@@ -1978,17 +1978,17 @@ curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/inst
 
 | | |
 | --- | --- |
-| 🌐 Website | [solanaclawd.com](https://solanaclawd.com) |
-| 🤖 Agents | [solanaclawd.com/agents](https://solanaclawd.com/agents) |
-| 🏛 Gateway | [solanaclawd.com/gateway](https://solanaclawd.com/gateway) |
-| 🎯 Skills | [solanaclawd.com/skills](https://solanaclawd.com/skills) |
+| 🌐 Website | [x402.wtf](https://x402.wtf) |
+| 🤖 Agents | [x402.wtf/agents](https://x402.wtf/agents) |
+| 🏛 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
+| 🎯 Skills | [x402.wtf/skills](https://x402.wtf/skills) |
 | 💸 x402 Protocol | [x402.wtf](https://x402.wtf) |
 | 🤖 x402 Agents | [x402.wtf/agents](https://x402.wtf/agents) |
 | 🏛 x402 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
 | 🎯 x402 Skills | [x402.wtf/skills](https://x402.wtf/skills) |
 | 🔐 Agent Auth | [github.com/Solizardking/agent-auth](https://github.com/Solizardking/agent-auth) |
 | 🔑 CAAP Discovery | [x402.wtf/.well-known/agent-auth.json](https://x402.wtf/.well-known/agent-auth.json) |
-| 🖥 AI Terminal | [solanaclawd.com/terminal](https://solanaclawd.com/terminal) |
+| 🖥 AI Terminal | [x402.wtf/terminal](https://x402.wtf/terminal) |
 | 🤖 AI (Cheshire) | [cheshireterminal.ai](https://cheshireterminal.ai) |
 | 💬 Telegram | [t.me/clawdtoken](https://t.me/clawdtoken) |
 | 🐦 X / Twitter | [@clawddevs](https://x.com/clawddevs) |
@@ -2011,13 +2011,13 @@ curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/inst
 ║                                                                       ║
 ║              The shell molts. The laws do not.                       ║
 ║                                                                       ║
-║   solanaclawd.com  ·  x402.wtf  ·  $CLAWD  ·  MIT License           ║
+║   x402.wtf  ·  $CLAWD  ·  MIT License           ║
 ║                                                                       ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 ```
 
-**OpenClawd Framework** — built by [8bit](https://x.com/clawddevs) · [solanaclawd.com](https://solanaclawd.com)
+**OpenClawd Framework** — built by [8bit](https://x.com/clawddevs) · [x402.wtf](https://x402.wtf)
 
-*Powered by OpenClawd · solanaclawd.com · $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump*
+*Powered by OpenClawd · x402.wtf · $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump*
 
 </div>
