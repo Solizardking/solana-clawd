@@ -26,8 +26,10 @@ const PUBLIC_KEY = process.env.SOLANA_PUBLIC_KEY ?? '';
 // ---------------------------------------------------------------------------
 // Connection — prefer Gatekeeper (beta), fallback to standard Helius
 // ---------------------------------------------------------------------------
-const rpcUrl = GATEKEEPER_RPC || HELIUS_RPC;
-if (!rpcUrl) throw new Error('No Solana RPC URL configured (HELIUS_RPC_URL or GATEKEEPER_RPC_URL)');
+const rpcUrl = GATEKEEPER_RPC || HELIUS_RPC || 'https://api.mainnet-beta.solana.com';
+if (!GATEKEEPER_RPC && !HELIUS_RPC) {
+  console.warn('[gateway/solana] No RPC configured — falling back to public endpoint (rate-limited). Set HELIUS_RPC_URL for production.');
+}
 
 export const connection = new Connection(rpcUrl, {
   commitment: 'confirmed',
