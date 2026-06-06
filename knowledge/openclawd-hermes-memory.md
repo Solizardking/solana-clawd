@@ -71,3 +71,49 @@ Tweet guidance:
 - Use the slogans sparingly as closers.
 - Keep claims concrete: commands, links, token CA, x402 gateway, repo path, runtime names.
 - Do not over-explain. Make it feel like an operator dispatch from a living Solana runtime.
+
+---
+
+## Agent Knowledge Summary
+
+> Quick-lookup facts for agent context loading. Cross-references: `clawd-character.md`, `SOVEREIGN_RESEARCH.md`, `codebase-facts.jsonl` cbfact-007.
+
+**Canonical identity block:**
+
+- Site: `https://solanaclawd.com`
+- x402 gateway: `https://pay.solanaclawd.com`
+- GitHub: `https://github.com/Solizardking/solana-clawd`
+- Token CA: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
+- Hotline: `909-413-5567`
+- X: `https://x.com/clawddevs`
+
+**Stack components and their roles:**
+
+- HERMES Terminal — Bloomberg-style Solana TUI for OODA, market, and payments panels
+- Leviathan — sovereign runtime with depth-aware survival and the Three Laws
+- x402 + pay.sh — Solana-native facilitator, A2A agent, confidential payment flows
+- ClawdRouter — LLM routing, model economics, token-gated inference (clawdrouter.fly.dev)
+- Clawd Vault — research, MCP workflows, long-horizon memory
+- Browser Bridge — Chrome extension, wallet surface, browser-side agent controls
+
+**Clawd Memory architecture (SOTA):** Temporal Epistemic Graphs with Veracity-Weighted Consolidation.
+
+Five phases:
+
+1. 13-type deterministic schema (fact, preference, decision, commitment, goal, event, instruction, relationship, context, learning, observation, error, artifact)
+2. Binary vector compression — deterministic exhaustive scan
+3. Episodic gist + fact graph with temporal edges
+4. Veracity-weighted consolidation and conflict resolution
+5. Polyphonic recall: vector similarity + FTS5 + temporal index + entity graph + fact triples
+
+**Design invariant:** zero LLM calls during ingestion or retrieval — deterministic, auditable confidence.
+
+**Operator commands:**
+
+```bash
+npm run hermes          # HERMES terminal
+npm run demo:ooda       # OODA loop demo
+npm run demo:paysh      # x402 payment demo
+npm run leviathan:spawn # spawn agent
+npm run mcp:start       # MCP server
+```

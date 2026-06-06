@@ -403,3 +403,34 @@ clawd
 ## License
 
 MIT
+
+---
+
+## Agent Knowledge Summary
+
+> Quick-lookup facts for agent context loading. Cross-references: `facts.jsonl` fact-cli-001, `codebase-facts.jsonl` cbfact-004.
+
+**Install:** `npm install -g clawd-code-cli` → binaries: `clawd`, `claw`
+
+**Config:** `~/.clawd/user-settings.json` — persists API keys and model preferences across sessions.
+
+**Provider priority:** Grok/xAI (default) → OpenRouter → Ollama → OpenAI. Switch at runtime with `/models`.
+
+**Required env vars:**
+
+- `XAI_API_KEY` — Grok default provider, voice TTS/STT, web search
+- `OPENROUTER_API_KEY` — Claude, Gemini, Llama, DeepSeek routing
+- `HELIUS_API_KEY` — Solana DAS asset/NFT lookups
+- `BIRDEYE_API_KEY` — token prices, portfolios, trending
+- `SOLANA_PRIVATE_KEY` — local signing wallet (base58 or JSON array)
+- `DFLOW_API_KEY` — swap aggregation + Kalshi-on-Solana prediction markets
+
+**Birdeye tools wired:** token_overview, metadata (single/multi), market_data (single/multi), trade_data (single/multi), search_token, token_list, trending, ohlcv, wallet_portfolio.
+
+**DFlow swap flow:** `dflow_swap_quote` → `dflow_build_swap` → `wallet_sign_and_send` (confirmation-gated).
+
+**Voice stack:** TTS via xAI `/v1/tts` (voices: eve/ara/rex/sal/leo), STT via xAI `/v1/stt` + ffmpeg. Playback: `afplay` macOS, `ffplay`/`mpg123`/`aplay` Linux.
+
+**Safety invariant:** every SOL-moving or trade action routes through `ConfirmationTool` — no silent execution.
+
+**$CLAWD token:** `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` on Solana.

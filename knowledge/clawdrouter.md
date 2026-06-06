@@ -158,3 +158,47 @@ Core payment flow (x402 + Solana facilitator + registry) is functional. MPP, AP2
 ## License
 
 MIT — See [`LICENSE`](LICENSE)
+
+---
+
+## Agent Knowledge Summary
+
+> Quick-lookup facts for agent context loading. Cross-references: `codebase-facts.jsonl` cbfact-006, `facts.jsonl` fact-cli-006, `api-behaviors.jsonl` api-008, `decisions.jsonl` decision-006.
+
+**Deployment:** Cloudflare Worker at `solanaclawd.com/x402`. NOT the same as `clawdrouter.fly.dev` (which is the LLM proxy). This is the multi-protocol payment gateway + Anchor vault.
+
+**Four protocols handled:**
+
+| Protocol | Description |
+|----------|-------------|
+| x402 | HTTP 402 on Solana (Ed25519, SPL Token, Helius RPC) |
+| MPP | Machine Payments Protocol — `charge` intent → Solana transfer |
+| AP2 | Google Agent Payments Protocol — Verifiable Credential mandates |
+| A2A | Google Agent-to-Agent — wraps task invocations with payment |
+
+**Revenue split per call (configurable per agent via registry PDA):**
+
+| Recipient | Share |
+|-----------|-------|
+| Agent owner | 70% |
+| $CLAWD buyback (Jupiter USDC→$CLAWD→burn) | 15% |
+| ClawdRouter treasury (Squads multisig) | 10% |
+| Operator (facilitator runner) | 5% |
+
+**$CLAWD holder discounts:** 100k = 10% off, 1M = 25% off, 10M = 50% off. Applied to `maxAmountRequired` before challenge is returned.
+
+**Key endpoints:**
+
+| Route | Purpose |
+|-------|---------|
+| `POST /facilitator/verify` | x402 verify (Solana exact scheme) |
+| `POST /facilitator/settle` | x402 settle (broadcasts via Helius) |
+| `ANY /agents/:id/*` | Invoke registered agent (payment-gated) |
+| `POST /registry/register` | Register agent (creates PDA) |
+| `POST /a2a/:id/tasks/send` | A2A task send |
+
+**Anchor program:** `clawd-vault` — handles revenue split + $CLAWD buyback. Deploy: `anchor deploy --provider.cluster mainnet`.
+
+**IPFS:** Agent manifests and receipts pinned via Pinata (`PINATA_JWT` secret).
+
+**RPC:** Helius primary, SolanaTracker as fallback (set `HELIUS_API_KEY` in wrangler secrets).

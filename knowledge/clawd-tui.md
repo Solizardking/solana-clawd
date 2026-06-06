@@ -141,3 +141,39 @@ npm start
 ## License
 
 MIT — © OpenClawd contributors
+
+---
+
+## Agent Knowledge Summary
+
+> Quick-lookup facts for agent context loading. Cross-references: `codebase-facts.jsonl` cbfact-001, `facts.jsonl` fact-cli-001.
+
+**Package:** `@openclawdsolana/clawd-tui` — npm v0.2.1. Binaries: `clawd`, `clawd-tui`.
+
+**Auth:** OpenRouter OAuth (PKCE) on first run — caches key at `~/.config/openclawd/openrouter-key` (mode 0600). Pre-set with `OPENROUTER_API_KEY` env var to skip browser flow.
+
+**Tools available to agent:**
+
+- Client-side: `file_read`, `file_write`, `file_edit`, `glob`, `grep`, `list_dir`, `shell`
+- Server-side (OpenRouter built-in): `web_search`, `datetime`
+- Destructive tools require approval before each call
+
+**Solana on-paste behavior:** Paste any base58 address → Birdeye + Helius fan out in parallel before agent runs. Helius result shown only when it adds beyond Birdeye (NFTs, compressed assets, unindexed tokens).
+
+**Config precedence:** `agent.config.json` (working dir) → env vars → defaults.
+
+**Key slash commands:**
+
+| Command | What it does |
+|---------|--------------|
+| `/model <id>` | Switch active OpenRouter model |
+| `/trending [n]` | Top n Solana trending tokens (Birdeye) |
+| `/asset <id>` | DAS getAsset for a mint/NFT |
+| `/assets <addr>` | getAssetsByOwner — fungible + NFTs |
+| `/wallet <addr>` | Top USD holdings |
+| `/balance <addr>` | Native SOL balance |
+| `/session` | Token usage for current session |
+
+**Rate limit / cost:** controlled by `maxSteps` and `maxCost` config fields. Default maxSteps = 20, maxCost = $1.00 USD.
+
+**Develop:** `git clone https://github.com/clawdsolana/OpenClawd.git && cd clawd-tui && npm install && npm start`

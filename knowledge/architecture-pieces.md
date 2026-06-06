@@ -146,3 +146,33 @@ npm --prefix openclawd-framework run build
 ```
 
 If all four pass, the contracts hold and the four pieces speak the same TypeScript dialect.
+
+---
+
+## Agent Knowledge Summary
+
+> Structured facts for agent-queryable lookup. Cross-references: see `codebase-facts.jsonl` cbfact-003, `decisions.jsonl` decision-003.
+
+| Component | Package | Binary | Registry |
+|-----------|---------|--------|----------|
+| Leviathan runtime | `@openclawdsolana/leviathan` | none (library) | private |
+| Standalone CLI | `@openclawdsolana/clawd-standalone` | `clawd-standalone` | private |
+| Telegram gateway | `@openclawdsolana/gateway` | none (service) | private |
+| Plugin SDK | `@openclawdsolana/plugin-sdk` | none (library) | npm v1.1.0 |
+| Chat gateway | `@openclawdsolana/chat-plugins-gateway` | none (edge) | npm v1.9.0 |
+| TUI | `@openclawdsolana/clawd-tui` | `clawd`, `clawd-tui` | npm v0.2.1 |
+| Code CLI | `@openclawdsolana/clawd-code-cli` | `clawd-code`, `clawd-code-cli` | npm v0.2.3 |
+
+**Key facts:**
+- Root uses npm workspaces; `plugin.delivery/` is a separate pnpm sub-monorepo
+- The two workspace systems cannot cross-link packages — deliberate isolation
+- Bootstrap order: `install:framework` → `install:gateway` → `install:plugin-delivery` → then builds
+- Name collision resolved: root `plugin-sdk` renamed to `plugin-sdk-internal`; public name is unambiguous
+- Telegram gateway spawns leviathan instances via `openclawd-framework` exports (child process)
+- `clawd-tui` and `clawd-code-cli` are standalone — they do NOT depend on leviathan or the gateway
+
+**Port assignments:**
+- `clawd-tui` dev: default OpenRouter/model port
+- `gateway/` Telegram service: port defined in `.env` (check `gateway/package.json` for dev script)
+- `plugin.delivery/packages/gateway`: Cloudflare Workers edge — no fixed port
+- `openclawd-framework` tests: no server (pure library)
