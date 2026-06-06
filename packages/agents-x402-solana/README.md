@@ -25,7 +25,7 @@ pnpm add @modelcontextprotocol/sdk
 
 ## Register your slug first
 
-1. Go to https://solanaclawd.com/x402 → **Monetize**.
+1. Go to https://x402.wtf → **Monetize**.
 2. Register a slug (e.g. `alpha-feed`), set your recipient wallet and
    price. Copy the slug.
 

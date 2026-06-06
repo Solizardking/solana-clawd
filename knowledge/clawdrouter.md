@@ -47,7 +47,7 @@
 
 > Multi-protocol agentic payment gateway for Solana. One endpoint, four protocols, one settlement layer.
 
-**Gateway:** `solanaclawd.com/x402`  
+**Gateway:** `x402.wtf`  
 **IPFS:** `ipfs.solanaclawd.com`  
 **Settlement:** Solana L1 (SPL USDC + $CLAWD)  
 **Revenue:** holders of agents registered in the ClawdRouter registry earn from every call.
@@ -165,7 +165,7 @@ MIT — See [`LICENSE`](LICENSE)
 
 > Quick-lookup facts for agent context loading. Cross-references: `codebase-facts.jsonl` cbfact-006 (ClawdRouter vs x402.wtf distinct services), `facts.jsonl` fact-cli-006 (free-key provisioning flow), `api-behaviors.jsonl` api-008 (clawd_free_* key format), `decisions.jsonl` decision-006 (why Fly.io over Vercel/Railway), `anti-patterns.jsonl` anti-009 (hardcoded RPC URLs).
 
-**Deployment:** Cloudflare Worker at `solanaclawd.com/x402`. NOT the same as `clawdrouter.fly.dev` (which is the LLM proxy). This is the multi-protocol payment gateway + Anchor vault.
+**Deployment:** Cloudflare Worker at `x402.wtf`. NOT the same as `clawdrouter.fly.dev` (which is the LLM proxy). This is the multi-protocol payment gateway + Anchor vault.
 
 **Four protocols handled:**
 
