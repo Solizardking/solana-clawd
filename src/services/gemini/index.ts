@@ -8,8 +8,39 @@
  * Required env: GEMINI_API_KEY (https://aistudio.google.com/app/apikey)
  */
 
-import { GoogleGenAI, type GenerateContentConfig, type Tool } from "@google/genai";
-import type { InferProvider, InferRequest, InferResponse } from "../../agent/types";
+import { GoogleGenAI, ThinkingLevel, type GenerateContentConfig, type Tool } from "@google/genai";
+
+/** Request shape for the Gemini InferProvider adapter. */
+export interface InferRequest {
+  prompt: string;
+  systemPrompt?: string;
+  history?: Array<{ role: string; content: string }>;
+  tools?: string[];
+  thinkingLevel?: "high" | "low" | "minimal" | "medium";
+  [key: string]: unknown;
+}
+
+/** Response shape for the Gemini InferProvider adapter. */
+export interface InferResponse {
+  text: string;
+  model: string;
+  groundingSources?: Array<{ title: string; url: string }>;
+  usage?: {
+    inputTokens: number;
+    outputTokens: number;
+    thoughtsTokens?: number;
+    totalTokens: number;
+  };
+  [key: string]: unknown;
+}
+
+/** Gemini-specific InferProvider shape (extends the Leviathan contract). */
+export interface InferProvider {
+  name: string;
+  infer: (req: InferRequest) => Promise<InferResponse>;
+  inferWithImage?: (req: InferRequest & { imageData: Buffer; imageMimeType: string }) => Promise<InferResponse>;
+  costFor?: (tokensIn: number, tokensOut: number, model: string) => number;
+}
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
@@ -135,12 +166,12 @@ export function createGeminiInferProvider(
           ? {
               thinkingLevel:
                 req.thinkingLevel === "high"
-                  ? "HIGH"
+                  ? ThinkingLevel.HIGH
                   : req.thinkingLevel === "low"
-                    ? "LOW"
+                    ? ThinkingLevel.LOW
                     : req.thinkingLevel === "minimal"
-                      ? "MINIMAL"
-                      : "MEDIUM",
+                      ? ThinkingLevel.MINIMAL
+                      : ThinkingLevel.MEDIUM,
             }
           : undefined,
         tools: tools.length > 0 ? tools : undefined,
@@ -333,17 +364,16 @@ export async function generateImage(
   const config: GenerateContentConfig = {
     responseModalities:
       options?.outputType === "IMAGE" ? ["IMAGE"] : ["TEXT", "IMAGE"],
-    responseFormat: {
-      image: {
-        aspectRatio,
-        imageSize: resolution,
+    ...(({
+      responseFormat: {
+        image: { aspectRatio, imageSize: resolution },
       },
-    },
+    }) as any),
     tools: tools.length > 0 ? tools : undefined,
     thinkingConfig:
       options?.thinkingLevel
         ? {
-            thinkingLevel: options.thinkingLevel === "high" ? "High" : "Minimal",
+            thinkingLevel: options.thinkingLevel === "high" ? ThinkingLevel.HIGH : ThinkingLevel.MINIMAL,
             includeThoughts: options?.includeThoughts || false,
           }
         : undefined,
@@ -425,12 +455,7 @@ export async function editImage(
   const config: GenerateContentConfig = {
     responseModalities:
       options?.outputType === "IMAGE" ? ["IMAGE"] : ["TEXT", "IMAGE"],
-    responseFormat: {
-      image: {
-        aspectRatio,
-        imageSize: resolution,
-      },
-    },
+    ...(({ responseFormat: { image: { aspectRatio, imageSize: resolution } } }) as any),
   };
 
   const response = await client.models.generateContent({
@@ -634,7 +659,7 @@ export async function deepResearch(
   const model = options?.model || GEMINI_MODELS.deepResearch;
 
   // Start background interaction
-  const interaction = await client.interactions.create({
+  const interaction = await (client.interactions.create as any)({
     agent: model,
     input: query,
     background: true,
@@ -651,7 +676,7 @@ export async function deepResearch(
   const startTime = Date.now();
 
   // Poll until complete
-  let result = interaction;
+  let result: any = interaction;
   while (result.status !== "completed" && result.status !== "failed") {
     if (Date.now() - startTime > timeoutMs) {
       throw new Error("Deep research timed out (60 min max)");
@@ -662,7 +687,7 @@ export async function deepResearch(
 
   if (result.status === "failed") {
     throw new Error(
-      `Deep research failed: ${(result as any).error || "Unknown error"}`
+      `Deep research failed: ${result.error || "Unknown error"}`
     );
   }
 
@@ -743,10 +768,10 @@ export async function runManagedAgent(
 }> {
   const client = getGeminiClient();
 
-  const interaction = await client.interactions.create({
+  const interaction: any = await (client.interactions.create as any)({
     agent: GEMINI_MODELS.antigravity,
     input: task,
-    systemInstruction: options?.systemInstruction,
+    system_instruction: options?.systemInstruction,
     environment: {
       type: "remote",
       sources: options?.sources,
@@ -813,15 +838,15 @@ export async function startComputerUse(
     },
   ];
 
-  const interaction = await client.interactions.create({
+  const interaction: any = await (client.interactions.create as any)({
     model,
     input,
-    systemInstruction: options?.systemInstruction,
+    system_instruction: options?.systemInstruction,
     tools,
   });
 
   const steps: ComputerUseStep[] = [];
-  for (const step of interaction.steps || []) {
+  for (const step of (interaction.steps || []) as any[]) {
     steps.push({
       type: step.type,
       name: step.name,
@@ -864,7 +889,7 @@ export async function continueComputerUse(
     },
   ];
 
-  const interaction = await client.interactions.create({
+  const interaction: any = await (client.interactions.create as any)({
     model,
     input: [
       { type: "text", text: goal },
@@ -874,13 +899,13 @@ export async function continueComputerUse(
         mimeType: screenshot.mimeType,
       },
     ],
-    systemInstruction: options?.systemInstruction,
+    system_instruction: options?.systemInstruction,
     previousInteractionId,
     tools,
   });
 
   const steps: ComputerUseStep[] = [];
-  for (const step of interaction.steps || []) {
+  for (const step of (interaction.steps || []) as any[]) {
     steps.push({
       type: step.type,
       name: step.name,

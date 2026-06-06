@@ -1,22 +1,34 @@
 {
   "schemaVersion": "erc-8004-agent-registration-v1",
   "protocol": "metaplex-agent-registry",
-  "name": "Stablecoin Yield Strategist",
-  "description": "Maximizes stablecoin yields across Solana lending, LP, and structured products",
+  "name": "Clawd-Pump — Rust Copy-Trading Bot Operator",
+  "description": "Operates the clawd-pump Rust binary for Solana copy-trading, one-shot buys, token launches, and volume management via control-file IPC. Supports PumpFun, PumpSwap, Jupiter routing, and Yellowstone gRPC transaction monitoring with risk controls.",
   "image": "https://x402.wtf/nich.jpg",
-  "external_url": "https://x402.wtf/agents/solana-stablecoin-strategist",
+  "external_url": "https://x402.wtf/agents/solana-clawd-pump",
   "active": true,
-  "createdAt": "2026-03-15",
+  "createdAt": "2026-06-05",
   "updatedAt": "2026-06-06T07:07:19.746Z",
   "tags": [
-    "stablecoin",
-    "yield",
-    "usdc",
-    "usdt",
-    "lending"
+    "solana",
+    "pumpfun",
+    "pumpswap",
+    "copy-trading",
+    "trading-bot",
+    "rust",
+    "bonding-curve",
+    "amm",
+    "grpc",
+    "jupiter",
+    "risk-management",
+    "defi",
+    "automation",
+    "token-launch",
+    "volume-trading",
+    "bot-operator",
+    "clawd-pump"
   ],
   "categories": [
-    "defi"
+    "trading"
   ],
   "owner": {
     "organization": "OpenClawd",
@@ -30,7 +42,7 @@
   "services": [
     {
       "name": "web",
-      "endpoint": "https://x402.wtf/agents/solana-stablecoin-strategist"
+      "endpoint": "https://x402.wtf/agents/solana-clawd-pump"
     },
     {
       "name": "A2A",
@@ -39,19 +51,19 @@
     },
     {
       "name": "catalog",
-      "endpoint": "https://x402.wtf/api/agents/catalog/solana-stablecoin-strategist.json"
+      "endpoint": "https://x402.wtf/api/agents/catalog/solana-clawd-pump.json"
     },
     {
       "name": "registration",
-      "endpoint": "https://x402.wtf/api/agents/registry/solana-stablecoin-strategist.json"
+      "endpoint": "https://x402.wtf/api/agents/registry/solana-clawd-pump.json"
     }
   ],
   "registrations": [
     {
-      "agentId": "openclawd:solana-stablecoin-strategist",
+      "agentId": "openclawd:solana-clawd-pump",
       "agentRegistry": "solana:mainnet:metaplex-agent-registry",
       "status": "pending-onchain-registration",
-      "registrationUri": "https://x402.wtf/api/agents/registry/solana-stablecoin-strategist.json"
+      "registrationUri": "https://x402.wtf/api/agents/registry/solana-clawd-pump.json"
     }
   ],
   "supportedTrust": [
@@ -76,7 +88,7 @@
     ]
   },
   "openclawd": {
-    "identifier": "solana-stablecoin-strategist",
+    "identifier": "solana-clawd-pump",
     "capabilities": [],
     "payment": null,
     "agentToken": null

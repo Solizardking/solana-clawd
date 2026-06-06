@@ -3,7 +3,7 @@
   "protocol": "CAAP/1.0",
   "provider": "Clawd",
   "providerDescription": "AI agent platform on Solana — attestation, capabilities, and subscription tiers via x402.wtf.",
-  "generatedAt": "2026-06-05T05:57:29.356Z",
+  "generatedAt": "2026-06-06T07:07:19.746Z",
   "baseUrl": "https://x402.wtf",
   "authEndpoint": "https://x402.wtf/api/auth",
   "registrationEndpoint": "https://x402.wtf/api/auth/agent/register",
@@ -95,7 +95,7 @@
     }
   ],
   "agentStats": {
-    "totalAgents": 125,
+    "totalAgents": 126,
     "catalog": "https://x402.wtf/api/agents/catalog"
   }
 }

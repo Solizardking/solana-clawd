@@ -1,9 +1,9 @@
 {
   "schemaVersion": "openclawd.metaplex.registry.index.v1",
-  "generatedAt": "2026-06-05T05:57:29.356Z",
+  "generatedAt": "2026-06-06T07:07:19.746Z",
   "registry": "metaplex-agent-registry",
   "host": "https://x402.wtf",
-  "count": 125,
+  "count": 126,
   "agents": [
     {
       "id": "clawdex",
@@ -114,6 +114,13 @@
       "id": "solana-clawd-provider-scorer",
       "name": "Clawd Provider Scorer",
       "registrationUri": "https://x402.wtf/api/agents/registry/solana-clawd-provider-scorer.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
+    {
+      "id": "solana-clawd-pump",
+      "name": "Clawd-Pump — Rust Copy-Trading Bot Operator",
+      "registrationUri": "https://x402.wtf/api/agents/registry/solana-clawd-pump.json",
       "agentRegistry": "solana:mainnet:metaplex-agent-registry",
       "status": "pending-onchain-registration"
     },
