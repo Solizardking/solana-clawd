@@ -25,6 +25,7 @@ INSTALL_LEVIATHAN=false
 INSTALL_SDK=false
 INSTALL_PERPS=false
 INSTALL_X402=false
+INSTALL_PUMP=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -33,19 +34,22 @@ for arg in "$@"; do
     --sdk)        INSTALL_SDK=true ;;
     --perps)      INSTALL_PERPS=true ;;
     --x402)       INSTALL_X402=true ;;
-    --full)       INSTALL_LEVIATHAN=true; INSTALL_SDK=true; INSTALL_PERPS=true; INSTALL_X402=true ;;
+    --pump)       INSTALL_PUMP=true ;;
+    --full)       INSTALL_LEVIATHAN=true; INSTALL_SDK=true; INSTALL_PERPS=true; INSTALL_X402=true; INSTALL_PUMP=true ;;
     --tui-only)   INSTALL_REGISTRY=false; INSTALL_HUB=false ;;
     --help|-h)
       printf "Usage: install.sh [flags]\n\n"
-      printf "  ${BOLD}--full${RESET}       Everything (TUI + registry + hub + leviathan + SDK + perps + x402)\n"
+      printf "  ${BOLD}--full${RESET}       Everything (TUI + registry + hub + leviathan + SDK + perps + x402 + pump)\n"
       printf "  ${BOLD}--perps${RESET}      Solana perps via Phoenix/Vulcan CLI (Rise SDK)\n"
       printf "  ${BOLD}--x402${RESET}       x402.wtf CLI (gateway + terminal launcher)\n"
       printf "  ${BOLD}--sdk${RESET}        @openclawdsolana/solana-sdk + @openclawdsolana/wallet\n"
+      printf "  ${BOLD}--pump${RESET}       Rust copy-trading bot (clawd-pump) — requires Rust toolchain\n"
       printf "  ${BOLD}--leviathan${RESET}  @openclawdsolana/leviathan on-chain runtime\n"
       printf "  ${BOLD}--minimal${RESET}    TUI only (no registry or hub)\n"
       printf "  ${BOLD}--tui-only${RESET}   clawd TUI only\n"
       printf "\n"
       printf "  ${DIM}Set SOLANA_RPC_URL in env to skip the RPC prompt during --perps.${RESET}\n"
+      printf "  ${DIM}Set VAULT_PASSPHRASE to encrypt the leviathan keypair at spawn.${RESET}\n"
       exit 0 ;;
   esac
 done
@@ -103,6 +107,10 @@ if [ "$INSTALL_LEVIATHAN" = true ]; then
   info "Installing Leviathan on-chain runtime..."
   npm install -g @openclawdsolana/leviathan 2>&1 | tail -1
   ok "@openclawdsolana/leviathan"
+
+  info "Installing agentwallet-vault (encrypted keypair at birth)..."
+  npm install -g agentwallet-vault 2>&1 | tail -1
+  ok "agentwallet-vault"
 fi
 
 if [ "$INSTALL_SDK" = true ]; then
@@ -169,12 +177,10 @@ if [ "$INSTALL_PERPS" = true ]; then
   VULCAN_CFG="${HOME}/.vulcan/config.toml"
 
   if [ -z "${RPC_URL}" ]; then
-    # Try existing vulcan config first
     if [ -f "${VULCAN_CFG}" ] && grep -q "rpc_url" "${VULCAN_CFG}" 2>/dev/null; then
       RPC_URL=$(grep "rpc_url" "${VULCAN_CFG}" | head -1 | sed 's/.*= *//' | tr -d '"')
       info "Using existing Vulcan RPC URL: ${RPC_URL}"
     elif [ -t 0 ]; then
-      # Interactive prompt
       printf "\n  ${BOLD}Solana RPC URL${RESET}\n"
       printf "  ${DIM}Paste your Helius, Triton, or QuickNode URL. Leave blank for public mainnet.${RESET}\n"
       printf "  ${DIM}e.g. https://mainnet.helius-rpc.com/?api-key=YOUR_KEY${RESET}\n"
@@ -188,7 +194,6 @@ if [ "$INSTALL_PERPS" = true ]; then
   fi
   ok "RPC URL: ${RPC_URL}"
 
-  # 4. Write ~/.vulcan/config.toml
   mkdir -p "${HOME}/.vulcan"
   if [ ! -f "${VULCAN_CFG}" ]; then
     cat > "${VULCAN_CFG}" << TOML
@@ -205,16 +210,13 @@ confirm_trades = true
 TOML
     ok "Created ~/.vulcan/config.toml"
   else
-    # Update rpc_url only — preserve wallet/trading config
     if command -v sed &>/dev/null; then
-      # macOS sed needs '' for -i, GNU sed doesn't — handle both
       sed -i'' "s|^rpc_url = .*|rpc_url = \"${RPC_URL}\"|" "${VULCAN_CFG}" 2>/dev/null || \
         sed -i   "s|^rpc_url = .*|rpc_url = \"${RPC_URL}\"|" "${VULCAN_CFG}" 2>/dev/null || true
     fi
     ok "Updated rpc_url in ~/.vulcan/config.toml"
   fi
 
-  # 5. Install Vulcan agent skills
   VULCAN_BIN="${LOCAL_BIN}/vulcan"
   command -v vulcan &>/dev/null && VULCAN_BIN="vulcan"
 
@@ -223,12 +225,10 @@ TOML
     "${VULCAN_BIN}" agent install --target agentskills 2>/dev/null && \
       ok "Vulcan agent skills installed" || \
       warn "Run manually after reload:  vulcan agent install --target agentskills"
-
     info "Wiring Vulcan MCP server into Claude config..."
     "${VULCAN_BIN}" agent mcp install --target claude --scope user 2>/dev/null && \
       ok "Vulcan MCP → Claude" || \
       warn "Run manually after reload:  vulcan agent mcp install --target claude --scope user"
-
     info "Running vulcan status..."
     "${VULCAN_BIN}" status -o json 2>/dev/null | grep -q '"ok"' && \
       ok "vulcan status OK (wallet setup pending: run vulcan setup)" || \
@@ -240,7 +240,6 @@ TOML
     warn "  vulcan setup"
   fi
 
-  # 6. Persist RPC_URL into ~/.clawd/.env
   CLAWD_ENV="${HOME}/.clawd/.env"
   if [ -f "${CLAWD_ENV}" ]; then
     if grep -q "SOLANA_RPC_URL" "${CLAWD_ENV}"; then
@@ -252,6 +251,26 @@ TOML
       printf "\nSOLANA_RPC_URL=%s\n" "${RPC_URL}" >> "${CLAWD_ENV}"
     fi
     ok "SOLANA_RPC_URL → ~/.clawd/.env"
+  fi
+fi
+
+# ── clawd-pump Rust Bot ───────────────────────────────────────────────────────
+if [ "$INSTALL_PUMP" = true ]; then
+  step "Building clawd-pump Rust copy-trading bot"
+  info "Requires Rust toolchain — install via: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+
+  if ! command -v cargo &>/dev/null; then
+    warn "cargo not found — install Rust: https://rustup.rs"
+    warn "Then run: cd clawd-pump && cargo build --release"
+  elif [ -d "clawd-pump" ]; then
+    info "Building clawd-pump (release, target-cpu=native)..."
+    (cd clawd-pump && cargo build --release 2>&1 | tail -3) && \
+      ok "clawd-pump built → clawd-pump/target/release/solana-vntr-sniper" || \
+      warn "Build failed — check Rust toolchain and retry: npm run pump:build"
+  else
+    warn "clawd-pump/ directory not found — clone the repo first"
+    warn "  git clone https://github.com/solizardking/solanaclawd"
+    warn "  cd solanaclawd && bash install.sh --pump"
   fi
 fi
 
@@ -275,6 +294,12 @@ fi
 if [ "$INSTALL_PERPS" = true ]; then
   (command -v vulcan &>/dev/null || [ -x "${HOME}/.local/bin/vulcan" ]) && \
     ok "vulcan" || warn "vulcan not in PATH yet — reload shell: source ~/.zshrc"
+fi
+
+if [ "$INSTALL_PUMP" = true ]; then
+  [ -x "clawd-pump/target/release/solana-vntr-sniper" ] && \
+    ok "clawd-pump binary" || \
+    info "clawd-pump: build manually (npm run pump:build)"
 fi
 
 # ── ~/.clawd config directory ─────────────────────────────────────────────────
@@ -304,6 +329,11 @@ OPENROUTER_MODEL3=openrouter/optimus-alpha:free
 # SOLANA_PRIVATE_KEY=     # base58 keypair (on-chain ops only)
 # SOLANA_RPC_URL=         # Helius/Triton/QuickNode URL — set by --perps installer
 # HELIUS_API_KEY=         # free at helius.dev
+
+# ── Agentwallet Vault (encrypted keypair at spawn) ────────────────────────────
+# Set a strong passphrase to encrypt the leviathan keypair at spawn time.
+# If left empty, a passphrase is auto-derived from the keypair material.
+# VAULT_PASSPHRASE=
 
 # ── Phoenix Perps (Vulcan CLI / Rise SDK) ─────────────────────────────────────
 # Config lives in ~/.vulcan/config.toml — run: vulcan setup
@@ -357,6 +387,17 @@ if [ "$INSTALL_PERPS" = true ]; then
   printf "\n"
 fi
 
+if [ "$INSTALL_PUMP" = true ]; then
+  printf "  ${BOLD}clawd-pump Rust Bot:${RESET}\n"
+  printf "  ${CYAN}npm run pump:start${RESET}           — start copy-trading bot\n"
+  printf "  ${CYAN}npm run pump:autobuy${RESET}         — start in auto-buy mode\n"
+  printf "  ${CYAN}npm run pump:build${RESET}           — build from source\n"
+  printf "  ${CYAN}clawd-agents pump start${RESET}      — start via CLI\n"
+  printf "  ${CYAN}clawd-agents pump stop${RESET}       — pause via control file\n"
+  printf "  ${DIM}Source: clawd-pump/${RESET}\n"
+  printf "\n"
+fi
+
 printf "  ${BOLD}Agent workflow:${RESET}\n"
 printf "  ${CYAN}clawd-registry list${RESET}                  list indexed agents\n"
 printf "  ${CYAN}clawd-registry add <address>${RESET}         index an on-chain agent\n"
@@ -371,6 +412,9 @@ if [ "$INSTALL_PERPS" = false ]; then
 fi
 if [ "$INSTALL_X402" = false ]; then
   printf "  ${DIM}x402 gateway CLI:  bash install.sh --x402${RESET}\n"
+fi
+if [ "$INSTALL_PUMP" = false ]; then
+  printf "  ${DIM}Rust pump bot:     bash install.sh --pump${RESET}\n"
 fi
 
 printf "\n  ${BOLD}Links:${RESET}\n"

@@ -1,6 +1,6 @@
 # Gitignore for ClawdOS
 ################################################################
-
+agent-wallet.json
 # general
 .DS_Store
 .idea
