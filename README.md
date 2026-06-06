@@ -1,6 +1,7 @@
 <!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd — Sovereign Agent Runtime  ·  solanaclawd.com  ·  x402.wtf  ║ -->
-<!-- ║   6 npm packages @ v2.0.0  ·  125 agents  ·  free inference  ·  CAAP/1.0 ║ -->
+<!-- ║   OpenClawd — Formally Verified On-Chain Solana Agent Runtime             ║ -->
+<!-- ║   SAS Attested · Metaplex MPL Core · CAAP/1.0 · AES-256-GCM at Birth     ║ -->
+<!-- ║   pay.sh: Installs Clawd FIRST. Providers plug in AFTER.                  ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 <div align="center">
