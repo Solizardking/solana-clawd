@@ -1,5 +1,46 @@
 # Solana AI Inference Protocol
 
+> **Agent Knowledge Summary** — machine-queryable facts. Main knowledge base: [`knowledge/`](../../knowledge/README.md)
+
+| Field | Value |
+| ----- | ----- |
+| **Program ID** | `Bg96xPuC3Mt2xnEnQPQBJY8QBqD6J7hn3WgnqDK43pKT` |
+| **Network** | Devnet / Mainnet |
+| **Anchor** | `0.32.1` |
+| **Solana CLI** | `1.18.20` |
+| **TS client package** | `@clawd/solana-ai-inference-client` |
+| **ORE program** | `ore2LrFdxHRrcqwR1KVW5jLEqfAXEJMxRNSGzwj73yz` |
+| **ORE mint** | `oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp` (11 decimals) |
+| **USDC mint** | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` (6 decimals) |
+| **SAS program** | `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG` |
+| **$CLAWD token** | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
+
+**Key protocol constants:** `MIN_VALIDATOR_STAKE` = 1,000,000 · `PROTOCOL_FEE_BPS` = 250 (2.5%) · `SLASH_RATE_BPS` = 500 (5%) · `UNSTAKE_COOLDOWN` = 172,800s (48h) · `MAX_REPUTATION` = 10,000
+
+**Instructions by module:** Admin (initialize_protocol, set_paused, propose_admin, accept_admin, update_protocol_fee) · Model Registry (initialize_model, update_model, finalize_training) · Data (submit_data, rate_data) · Inference (request_inference, submit_inference_result, fail_inference) · Staking (stake_tokens, request_unstake, execute_unstake) · Validators (register_validator, slash_validator) · DNA (record_dna_generation)
+
+**PDA quick-ref:** config=`["config"]` · model=`["model",authority,nonce]` · validator=`["validator",validator]` · inference=`["inference",requester,nonce]` · stake=`["stake",staker]` · escrow=`["escrow",model_id]` · vault=`["vault",config_pda]`
+
+**Lock tiers:** 1d=1.00× · 1w=1.50× · 1m=2.00× · 3m=3.00× · 6m=4.00× · 1yr=6.00×
+
+**Build:** `anchor build --skip-lint` → `target/deploy/solana_ai_inference.so`
+
+**RPC env vars:** `HELIUS_RPC_URL` / `HELIUS_WSS_URL` (falls back to public mainnet — see [`knowledge/anti-patterns.jsonl`](../../knowledge/anti-patterns.jsonl) anti-009)
+
+**Knowledge cross-refs:**
+
+| Entry | Topic |
+| ----- | ----- |
+| `codebase-facts.jsonl` cbfact-008 | SAS attestation addresses + schema types |
+| `facts.jsonl` fact-pay-004 | USDC mint + Token-2022 + SAS program constants |
+| `decisions.jsonl` decision-005 | Why MPL Core over Token Metadata v3 for agent NFTs |
+| `decisions.jsonl` decision-001 | CAAP/1.0 auth — Ed25519 + JWT + SIWS |
+| `anti-patterns.jsonl` anti-009 | Never hardcode RPC URLs — always use env vars |
+| `gotchas.jsonl` gotcha-005 | FEE_PAYER_KEY must be full 64-byte base58 keypair |
+| `patterns.jsonl` pattern-007 | CAAP client init pattern for new agents |
+
+---
+
 On-chain Anchor program + TypeScript client for decentralized AI model registration, inference requests, staking, and validator management on Solana.
 
 **Program ID:** `Bg96xPuC3Mt2xnEnQPQBJY8QBqD6J7hn3WgnqDK43pKT`  
