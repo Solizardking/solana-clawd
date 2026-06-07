@@ -8,12 +8,21 @@ interface Session {
   tier: string;
 }
 
+<<<<<<< Updated upstream
 const CAPS = [
   { name: "pump.quote", req: "free", desc: "Bonding-curve quote" },
   { name: "pump.buy", req: "bronze", desc: "Buy token" },
   { name: "pump.sell", req: "bronze", desc: "Sell token" },
   { name: "pump.launch", req: "gold", desc: "Launch new token" },
 ];
+=======
+const TIER_REQUIRED: Record<string, string> = {
+  "pump.quote": "free",
+  "pump.buy": "bronze",
+  "pump.sell": "bronze",
+  "pump.launch": "gold",
+};
+>>>>>>> Stashed changes
 
 export default function HomePage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -30,8 +39,13 @@ export default function HomePage() {
   async function handleSignIn() {
     setStatus("Requesting SIWS challenge…");
     const challenge = await getSiwsChallenge();
+<<<<<<< Updated upstream
     setStatus("Connect your Solana wallet and call window.solana.signIn(challenge)");
     console.info("SIWS:", challenge);
+=======
+    setStatus("Connect your Solana wallet → call window.solana.signIn(challenge)");
+    console.info("SIWS challenge:", challenge);
+>>>>>>> Stashed changes
   }
 
   async function handleSignOut() {
@@ -51,7 +65,11 @@ export default function HomePage() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
       <div className="flex flex-col items-center gap-1">
         <span className="text-4xl font-bold tracking-tight">CLAWD Pump</span>
+<<<<<<< Updated upstream
         <span className="text-sm text-zinc-400">pump.fun agent · CAAP/1.0 · SIWS</span>
+=======
+        <span className="text-sm text-zinc-400">pump.fun agent — CAAP/1.0 · SIWS</span>
+>>>>>>> Stashed changes
       </div>
 
       {session ? (
@@ -62,6 +80,7 @@ export default function HomePage() {
             </span>
             <TierBadge tier={session.tier} />
           </div>
+<<<<<<< Updated upstream
 
           <div className="grid grid-cols-2 gap-2">
             {CAPS.map(({ name, req, desc }) => (
@@ -73,6 +92,16 @@ export default function HomePage() {
             ))}
           </div>
 
+=======
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(TIER_REQUIRED).map(([cap, req]) => (
+              <div key={cap} className="rounded-lg border border-zinc-800 bg-zinc-950 p-3">
+                <code className="text-xs text-green-400">{cap}</code>
+                <p className="mt-1 text-xs text-zinc-500">Requires {req}</p>
+              </div>
+            ))}
+          </div>
+>>>>>>> Stashed changes
           <button
             type="button"
             onClick={handleSignOut}
@@ -83,7 +112,13 @@ export default function HomePage() {
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900 p-8">
+<<<<<<< Updated upstream
           <p className="text-sm text-zinc-400">Sign in with Solana to access pump.fun capabilities.</p>
+=======
+          <p className="text-sm text-zinc-400">
+            Sign in with Solana to access pump.fun agent capabilities.
+          </p>
+>>>>>>> Stashed changes
           <button
             type="button"
             onClick={handleSignIn}
@@ -95,7 +130,13 @@ export default function HomePage() {
         </div>
       )}
 
+<<<<<<< Updated upstream
       <p className="text-xs text-zinc-600">CAAP/1.0 · SIWS · $CLAWD tiers · No email · No MPP</p>
+=======
+      <p className="text-xs text-zinc-600">
+        Auth: CAAP/1.0 · SIWS · $CLAWD tiers · No email · No OAuth
+      </p>
+>>>>>>> Stashed changes
     </main>
   );
 }
