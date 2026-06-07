@@ -97,6 +97,43 @@ Result (April 2026 snapshot — regenerate any time with `node build-catalog.cjs
 
 ---
 
+## 🤖 CLAWD Gateway — Telegram Bot + HTTP API + Agent Registry
+
+The gateway ships with every Solana Clawd install and provides:
+
+- **Telegram bot** — `/menu`, `/wallet`, `/trade`, `/alerts`, `/price`, `/search`
+- **x402 tier gating** — $CLAWD holder tiers unlock features
+- **Full 124+ agent catalog** served over HTTP (no auth required)
+- **Birdeye real-time** price + whale trade alerts
+- **Claude-powered** natural-language trading ("buy 0.05 SOL of ...")
+- **Helius DAS** asset discovery
+
+```bash
+# Quick Start
+bash install.sh --gateway
+cd gateway && npm start
+```
+
+**Catalog API (free, no auth):**
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/agents/catalog` | 124+ agents |
+| `GET /api/agents/catalog/:id` | Individual agent |
+| `GET /api/agents/registry` | Registry index |
+| `GET /api/agents/templates` | Agent scaffolds |
+| `GET /.well-known/ai-plugin.json` | ACP discovery |
+| `GET /health` | Wallet, Birdeye, uptime |
+
+**Deploy anywhere:**
+- **Fly.io:** `cd gateway && fly deploy`
+- **Vercel:** `vercel --cwd gateway`
+- **Railway:** connect repo, set build dir = `gateway`
+
+> Full integration document: [`agents/gateway.txt`](./gateway.txt)
+
+---
+
 ## ✨ Key Features
 
 - ✅ **124 Production-Ready Agents** — 1 one-shot plus the broader catalog across DeFi, payments, trading, NFTs, security, education, governance, analytics, dev-tools, research, and infrastructure
