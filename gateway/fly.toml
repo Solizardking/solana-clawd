@@ -3,6 +3,8 @@ primary_region = "iad"
 
 [build]
   dockerfile = "Dockerfile"
+  # Deploy from the repo root: cd /Users/8bit/Downloads/solana-clawd && fly deploy --app clawd-gateway
+  # The Dockerfile uses COPY paths relative to repo root (gateway/, formal_verification/)
   context = ".."
 
 [env]
