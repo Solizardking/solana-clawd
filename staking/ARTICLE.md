@@ -1,5 +1,9 @@
 # The First Agent Staking Platform on Solana
 
+*Powered by [x402.wtf](https://x402.wtf) · $CLAWD: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`*
+
+---
+
 Most NFT staking contracts were built for static collectibles. OpenClawd Agent
 Staking is built for something different: onchain agents that can own identity,
 tools, services, reputation, payment rails, and eventually cash flow.
@@ -16,7 +20,7 @@ That is the primitive: an agent can be locked without custody.
 Solana agents are becoming more than chatbots with wallets. In the OpenClawd
 stack, an agent can be represented as a Metaplex Core asset, registered in the
 Metaplex Agent Registry, connected to services, gated by wallet ownership, and
-called through x402 or other payment flows.
+called through [x402](https://x402.wtf) or other payment flows.
 
 Once the agent itself is an asset, staking becomes a coordination layer.
 
@@ -77,7 +81,7 @@ agent.
 The OpenClawd frontend exposes the staking workflow at:
 
 ```text
-/agents/stake
+/staking
 ```
 
 The page builds wallet-signed Solana transactions directly from the browser for
@@ -116,7 +120,7 @@ For OpenClawd, this means staking can compose with:
 - Core asset minting
 - Agent Registry identity
 - wallet-gated agent actions
-- x402 paid API calls
+- [x402](https://x402.wtf) paid API calls
 - service manifests
 - future reward indexers
 - reputation and policy systems
@@ -144,3 +148,8 @@ generic NFTs pretending to be agents.
 
 That is the point. Agent ownership, agent identity, and agent commitment now fit
 inside the same onchain object.
+
+---
+
+*Powered by [x402.wtf](https://x402.wtf) · $CLAWD: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`*
+*GitHub: [Solizardking/solana-clawd](https://github.com/Solizardking/solana-clawd)*

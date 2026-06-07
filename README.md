@@ -54,6 +54,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 | 🛡️ **Formal Verification** | Kani Rust Verifier + STRIDE scoring for skill registry |
 | 🎨 **Skill Hub** | Formally verified skill registry with Ed25519 signature-gated registration |
 | 🐹 **clawd-go — Solana Go SDK** | Full solana-go v1.16.0 wrapper — zero-config RPC + free AI via x402.wtf, no keys needed |
+| 🦞 **Agent Staking Protocol** | Metaplex Core lock/unlock primitive — no escrow, no custody transfer, live on devnet |
 
 ---
 
@@ -1955,6 +1956,7 @@ All 7 JS packages are published under `@openclawdsolana` on npm. Agent auth pack
 | [`@better-auth/agent-auth`](https://www.npmjs.com/package/@better-auth/agent-auth) | `^0.5.1` | `npm install @better-auth/agent-auth` |
 | [`@auth/agent`](https://www.npmjs.com/package/@auth/agent) | `^0.5.1` | `npm install @auth/agent` |
 | `clawd-protocol` | Rust/Anchor | `anchor build` |
+| [`@openclawdsolana/agent-staking`](staking/README.md) | v0.2.0 (devnet live) | `cd staking && npm install && npm run build` |
 | [`@clawd/solana-ai-inference-client`](programs/programs/README.md) | workspace | `pnpm add @clawd/solana-ai-inference-client` |
 | `mcp-server` / `x402` | source only | `npm install && npm run build` |
 
