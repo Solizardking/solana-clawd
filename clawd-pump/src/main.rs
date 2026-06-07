@@ -55,6 +55,8 @@
  * 
  */
 
+mod http_server;
+
 use anchor_client::solana_sdk::signature::Signer;
 use solana_vntr_sniper::{
     common::{config::Config, constants::RUN_MSG, cache::WALLET_TOKEN_ACCOUNTS},
@@ -951,6 +953,20 @@ async fn main() {
                     return;
                 }
             }
+        } else if args.contains(&"--serve".to_string()) {
+            // Start HTTP control server (default port 8765, or PUMP_HTTP_PORT)
+            let binary = std::env::current_exe()
+                .ok()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|| "cargo run --".to_string());
+            let cwd = std::env::current_dir()
+                .ok()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|| ".".to_string());
+            if let Err(e) = http_server::serve(binary, cwd).await {
+                eprintln!("HTTP server error: {}", e);
+            }
+            return;
         } else if args.contains(&"--risk-check".to_string()) {
             println!("Running manual risk management check...");
             

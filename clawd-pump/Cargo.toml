@@ -49,3 +49,6 @@ teloxide = { version = "0.12", features = ["macros"] }
 dashmap = "5.5.3"
 lru = "0.10.0"
 once_cell = "1.21.3"
+axum = { version = "0.7", features = ["json"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors"] }

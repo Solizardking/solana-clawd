@@ -29,6 +29,7 @@ import { supabase } from './supabase.js';
 import agentRegistryRouter from './agentRegistry.js';
 import gaslessMintRouter from './gaslessMint.js';
 import skillHubRouter from './skillHub.js';
+import { handleNLMessage } from './nlTrading.js';
 
 // ---------------------------------------------------------------------------
 // HTTP Gateway (Express)
@@ -140,6 +141,22 @@ app.get('/api/search', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// NL Trading endpoint — POST /api/trade { userId, message }
+// ---------------------------------------------------------------------------
+app.post('/api/trade', async (req, res) => {
+  const { userId, message } = req.body as { userId?: string; message?: string };
+  if (!userId || !message) {
+    return res.status(400).json({ error: 'Required: { userId, message }' });
+  }
+  try {
+    const result = await handleNLMessage(userId, message);
+    res.json(result);
+  } catch (e: unknown) {
+    res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Birdeye WebSocket — shared instance
 // ---------------------------------------------------------------------------
 const birdeye = new BirdeyeWS();
@@ -196,11 +213,18 @@ const bot = new TelegramBot();
 
 bot.command('start', async (msg) => {
   await sendMessage(msg.chat.id, [
-    '🐾 *CLAWD Gateway Bot*',
+    '🦞 *CLAWD Gateway Bot*',
     '',
-    'Solana agent with Helius + Birdeye integration.',
+    'Sovereign AI on Solana — just type naturally to trade.',
     '',
-    '*Commands:*',
+    '*Natural Language Trading (just type it):*',
+    '"buy 0.05 SOL of <mint>"',
+    '"check my balance"',
+    '"wrap 0.1 SOL"',
+    '"run a risk check"',
+    '"what tokens am I tracking?"',
+    '',
+    '*Slash Commands:*',
     '/wallet — Show wallet balance & tokens',
     '/balance [address] — SOL balance',
     '/tokens [address] — Token holdings',
@@ -211,12 +235,11 @@ bot.command('start', async (msg) => {
     '/assets [address] — Helius DAS assets',
     '',
     '*Birdeye Alerts:*',
-    '/alerts on — Enable real-time alerts here',
-    '/alerts off — Disable alerts',
+    '/alerts on|off — Toggle real-time alerts',
     '/watch <mint> — Watch token price',
     '/whales <min_usd> — Watch large trades',
-    '/newpairs — Watch new pair listings',
-    '/newlistings — Watch new token listings',
+    '/newpairs — New pair listings',
+    '/newlistings — New token listings',
     '',
     '/status — Gateway status',
   ].join('\n'));
@@ -405,9 +428,16 @@ bot.command('status', async (msg) => {
   ].join('\n'));
 });
 
-// Default handler — echo back for now
+// Default handler — natural-language trading via Claude + Honcho memory
 bot.onMessage(async (msg, text) => {
-  await sendMessage(msg.chat.id, `I received: "${text}"\n\nUse /start to see available commands.`);
+  if (!text?.trim()) return;
+  const userId = String(msg.from.id);
+  try {
+    const { reply } = await handleNLMessage(userId, text);
+    await sendMessage(msg.chat.id, reply);
+  } catch (e: unknown) {
+    await sendMessage(msg.chat.id, `❌ ${(e as Error).message}`);
+  }
 });
 
 // ---------------------------------------------------------------------------
