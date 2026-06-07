@@ -4,13 +4,9 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
-const EXPECTED_TOTAL = 126;
+const EXPECTED_TOTAL = 124;
 const EXPECTED_ONE_SHOTS = ["solana-pumpfun-bot"];
-const EXPECTED_FEATURED = [
-  "solana-clawd-auth-agent",
-  "solana-pumpfun-bot",
-  "solana-vulcan-clawd-autonomous-perps",
-];
+const EXPECTED_FEATURED = ["solana-pumpfun-bot", "solana-vulcan-clawd-autonomous-perps"];
 const CANONICAL_API = "https://x402.wtf/api/agents";
 const FORBIDDEN_PATTERNS = [/www\.x402\.wtf/, /clawd\.click/];
 

@@ -1,39 +1,8 @@
-<!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd Agents  ·  x402.wtf/agents  ·  x402.wtf/agents      ║ -->
-<!-- ║   80 production-ready Solana DeFi agent definitions                     ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
-
-<div align="center">
-
-```
-  ╔═══════════════════════════════════════════════════════════════════╗
-  ║   S O L A N A   C L A W D   A G E N T S                         ║
-  ║   80 production-ready DeFi agent definitions                     ║
-  ╠═══════════════════════════════════════════════════════════════════╣
-  ║                                                                   ║
-  ║  🤖 Trading        autonomous-trader · arbitrage · market-maker  ║
-  ║  📊 Analytics      whale-tracker · sentiment · memecoin          ║
-  ║  💸 Payments       x402 agents (7) · clawd-wallet · gateway      ║
-  ║  🔧 Dev/Ops        orchestrator · pulse-monitor · anchor-dev     ║
-  ║  🎭 Personas       clawd · alice · cheshire · investor panel     ║
-  ║                                                                   ║
-  ╚═══════════════════════════════════════════════════════════════════╝
-```
-
-[![Agents](https://img.shields.io/badge/x402.wtf/agents-80_agents-C85C2B?style=flat-square)](https://x402.wtf/agents)
-[![x402 Agents](https://img.shields.io/badge/x402.wtf/agents-hub-1E5AA8?style=flat-square)](https://x402.wtf/agents)
-[![npm registry](https://img.shields.io/badge/agent--registry-v2.0.0-147D64?style=flat-square&logo=npm)](https://www.npmjs.com/package/@openclawdsolana/agent-registry)
-[![Website](https://img.shields.io/badge/x402.wtf-147D64?style=flat-square)](https://x402.wtf)
-
-</div>
-
----
-
 # 🤖 Solana Clawd Agents — Hub, Catalog, and Deploy API
 
-> **80 production-ready AI agents for the Solana ecosystem — trading, DeFi, analytics, security, launches, governance, dev-tools, research, payments, and x402 flows. One-shot deploy, Metaplex on-chain minting, CLAWD Router integration, MCP install, and a RESTful JSON API.**
+> **124 production-ready AI agents for the Solana ecosystem — trading, DeFi, NFTs, security, launches, governance, dev-tools, education, research, infrastructure, payments, and x402 flows. 1 one-shot deploy, 2 featured agents on the hub, end-to-end CLAWD Router integration, MCP install, on-chain Metaplex minting, and an 18-language RESTful JSON API.**
 
-A discoverable, self-hosting hub for Solana-native AI agents. Every agent in the [`src/`](./src/) directory is automatically indexed into a catalog ([`agents-catalog.json`](./agents-catalog.json)), served via REST and MCP, and surfaced at [x402.wtf/agents](https://x402.wtf/agents) and [x402.wtf/agents](https://x402.wtf/agents) with install / chat / mint buttons. Works with any MCP-compatible client — Clawd Desktop, Cursor, ClawdOS, Windsurf.
+A discoverable, self-hosting hub for Solana-native AI agents. Every agent in the [`src/`](./src/) directory is automatically indexed into a catalog ([`agents-catalog.json`](./agents-catalog.json)), served via REST and MCP, and surfaced at [x402.wtf/agents](https://x402.wtf/agents) with install / chat / mint buttons. Works with any MCP-compatible client — Clawd Desktop, Cursor, ClawdOS, Windsurf.
 
 ## 🔗 openclawd Ecosystem
 

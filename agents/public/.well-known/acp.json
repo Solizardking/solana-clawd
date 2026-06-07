@@ -1,7 +1,7 @@
 {
   "schemaVersion": "openclawd.acp.registry.v1",
   "protocol": "Agent Commerce Protocol",
-  "generatedAt": "2026-06-06T08:41:59.348Z",
+  "generatedAt": "2026-05-17T19:14:42.636Z",
   "host": "https://x402.wtf",
   "discover": {
     "catalog": "https://x402.wtf/api/agents/catalog",
@@ -67,9 +67,9 @@
       }
     ],
     "coverage": {
-      "agent-registry": 44,
-      "core": 4,
+      "agent-registry": 42,
       "genesis": 1,
+      "core": 3,
       "token-metadata": 4,
       "bubblegum": 3,
       "candy-machine": 2,
@@ -112,15 +112,15 @@
     ]
   },
   "stats": {
-    "totalAgents": 126,
+    "totalAgents": 124,
     "totalOneShots": 1,
-    "totalFeatured": 3,
+    "totalFeatured": 2,
     "totalTemplates": 0,
     "byCategory": {
       "defi": 60,
-      "security": 9,
       "payments": 25,
-      "trading": 9,
+      "trading": 8,
+      "security": 8,
       "research": 1,
       "governance": 2,
       "education": 3,
@@ -129,8 +129,8 @@
       "nft": 2,
       "dev-tools": 3
     },
-    "metaplexEnabledAgents": 44,
-    "tradingCapableAgents": 11,
+    "metaplexEnabledAgents": 42,
+    "tradingCapableAgents": 10,
     "launchCapableAgents": 1,
     "mintCapableAgents": 2
   },
@@ -366,37 +366,6 @@
       ]
     },
     {
-      "id": "solana-clawd-auth-agent",
-      "title": "Clawd Agent Auth Specialist",
-      "category": "security",
-      "capabilities": [
-        "agent-registration",
-        "jwt-signing",
-        "siws-verification",
-        "capability-grants"
-      ],
-      "metaplexSkills": [
-        "agent-registry",
-        "core"
-      ],
-      "oneShot": false,
-      "featured": true,
-      "endpoints": {
-        "catalog": "https://x402.wtf/api/agents/catalog/solana-clawd-auth-agent.json",
-        "registration": "https://x402.wtf/api/agents/registry/solana-clawd-auth-agent.json",
-        "a2a": "https://x402.wtf/api/agents/a2a",
-        "mint": "https://x402.wtf/agents/mint?template=solana-clawd-auth-agent"
-      },
-      "registrations": [
-        {
-          "agentId": "openclawd:solana-clawd-auth-agent",
-          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
-          "status": "pending-onchain-registration",
-          "registrationUri": "https://x402.wtf/api/agents/registry/solana-clawd-auth-agent.json"
-        }
-      ]
-    },
-    {
       "id": "solana-clawd-cost-planner",
       "title": "Clawd Cost Planner",
       "category": "payments",
@@ -508,29 +477,6 @@
           "agentRegistry": "solana:mainnet:metaplex-agent-registry",
           "status": "pending-onchain-registration",
           "registrationUri": "https://x402.wtf/api/agents/registry/solana-clawd-provider-scorer.json"
-        }
-      ]
-    },
-    {
-      "id": "solana-clawd-pump",
-      "title": "Clawd-Pump — Rust Copy-Trading Bot Operator",
-      "category": "trading",
-      "capabilities": [],
-      "metaplexSkills": [],
-      "oneShot": false,
-      "featured": false,
-      "endpoints": {
-        "catalog": "https://x402.wtf/api/agents/catalog/solana-clawd-pump.json",
-        "registration": "https://x402.wtf/api/agents/registry/solana-clawd-pump.json",
-        "a2a": "https://x402.wtf/api/agents/a2a",
-        "mint": "https://x402.wtf/agents/mint?template=solana-clawd-pump"
-      },
-      "registrations": [
-        {
-          "agentId": "openclawd:solana-clawd-pump",
-          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
-          "status": "pending-onchain-registration",
-          "registrationUri": "https://x402.wtf/api/agents/registry/solana-clawd-pump.json"
         }
       ]
     },
@@ -1481,18 +1427,8 @@
       "id": "solana-pumpfun-bot",
       "title": "Solana PumpFun/PumpSwap Copy Trading Bot",
       "category": "trading",
-      "capabilities": [
-        "swap-execution",
-        "token-launch",
-        "pumpfun-launch",
-        "pumpswap-amm",
-        "wallet-monitoring",
-        "read-only",
-        "a2a-message"
-      ],
-      "metaplexSkills": [
-        "agent-registry"
-      ],
+      "capabilities": [],
+      "metaplexSkills": [],
       "oneShot": true,
       "featured": true,
       "endpoints": {

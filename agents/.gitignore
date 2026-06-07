@@ -47,6 +47,10 @@ clawd-ai-agents 2/
 .DS_Store
 __MACOSX
 
+# cloudflare
+.wrangler/
 
+# rust
+**/target/
 
 .vercel

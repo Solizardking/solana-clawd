@@ -1,7 +1,7 @@
 {
   "$schema": "https://x402.wtf/schema/clawdAgentCatalog.v1.json",
   "apiVersion": "1.0",
-  "generatedAt": "2026-06-06T08:41:59.348Z",
+  "generatedAt": "2026-05-17T19:14:42.636Z",
   "hub": {
     "gallery": "https://x402.wtf/agents",
     "mint": "https://x402.wtf/agents/mint",
@@ -9,15 +9,15 @@
     "api": "https://x402.wtf/api/agents"
   },
   "stats": {
-    "totalAgents": 126,
+    "totalAgents": 124,
     "totalOneShots": 1,
-    "totalFeatured": 3,
+    "totalFeatured": 2,
     "totalTemplates": 0,
     "byCategory": {
       "defi": 60,
-      "security": 9,
       "payments": 25,
-      "trading": 9,
+      "trading": 8,
+      "security": 8,
       "research": 1,
       "governance": 2,
       "education": 3,
@@ -26,8 +26,8 @@
       "nft": 2,
       "dev-tools": 3
     },
-    "metaplexEnabledAgents": 44,
-    "tradingCapableAgents": 11,
+    "metaplexEnabledAgents": 42,
+    "tradingCapableAgents": 10,
     "launchCapableAgents": 1,
     "mintCapableAgents": 2
   },
@@ -80,9 +80,9 @@
       }
     ],
     "coverage": {
-      "agent-registry": 44,
-      "core": 4,
+      "agent-registry": 42,
       "genesis": 1,
+      "core": 3,
       "token-metadata": 4,
       "bubblegum": 3,
       "candy-machine": 2,
@@ -244,18 +244,8 @@
         "What's the dynamic fee tier system and how is market cap computed?"
       ],
       "tokenUsage": null,
-      "capabilities": [
-        "swap-execution",
-        "token-launch",
-        "pumpfun-launch",
-        "pumpswap-amm",
-        "wallet-monitoring",
-        "read-only",
-        "a2a-message"
-      ],
-      "metaplexSkills": [
-        "agent-registry"
-      ],
+      "capabilities": [],
+      "metaplexSkills": [],
       "payment": null,
       "agentToken": null,
       "deploy": {
@@ -268,49 +258,6 @@
     }
   ],
   "featured": [
-    {
-      "identifier": "solana-clawd-auth-agent",
-      "title": "Clawd Agent Auth Specialist",
-      "description": "Expert on CAAP/1.0 agent authentication — keypair registration, JWT signing, capability grants, SIWS attestation, and subscription tiers on the Clawd platform",
-      "avatar": "🔐",
-      "tags": [
-        "agent-auth",
-        "caap",
-        "authentication",
-        "better-auth",
-        "solana",
-        "jwt",
-        "attestation",
-        "capabilities"
-      ],
-      "category": "security",
-      "author": "openclawd",
-      "createdAt": "2026-06-05",
-      "oneShot": false,
-      "featured": true,
-      "openingMessage": null,
-      "openingQuestions": [],
-      "tokenUsage": null,
-      "capabilities": [
-        "agent-registration",
-        "jwt-signing",
-        "siws-verification",
-        "capability-grants"
-      ],
-      "metaplexSkills": [
-        "agent-registry",
-        "core"
-      ],
-      "payment": null,
-      "agentToken": null,
-      "deploy": {
-        "json": "/api/agents/catalog/solana-clawd-auth-agent.json",
-        "chat": "/agents/chat?agent=solana-clawd-auth-agent",
-        "mint": "/agents/mint?template=solana-clawd-auth-agent",
-        "mcp": "/api/agents/catalog/solana-clawd-auth-agent.json",
-        "registration": "/api/agents/registry/solana-clawd-auth-agent.json"
-      }
-    },
     {
       "identifier": "solana-pumpfun-bot",
       "title": "Solana PumpFun/PumpSwap Copy Trading Bot",
@@ -351,18 +298,8 @@
         "What's the dynamic fee tier system and how is market cap computed?"
       ],
       "tokenUsage": null,
-      "capabilities": [
-        "swap-execution",
-        "token-launch",
-        "pumpfun-launch",
-        "pumpswap-amm",
-        "wallet-monitoring",
-        "read-only",
-        "a2a-message"
-      ],
-      "metaplexSkills": [
-        "agent-registry"
-      ],
+      "capabilities": [],
+      "metaplexSkills": [],
       "payment": null,
       "agentToken": null,
       "deploy": {
@@ -747,49 +684,6 @@
       }
     },
     {
-      "identifier": "solana-clawd-auth-agent",
-      "title": "Clawd Agent Auth Specialist",
-      "description": "Expert on CAAP/1.0 agent authentication — keypair registration, JWT signing, capability grants, SIWS attestation, and subscription tiers on the Clawd platform",
-      "avatar": "🔐",
-      "tags": [
-        "agent-auth",
-        "caap",
-        "authentication",
-        "better-auth",
-        "solana",
-        "jwt",
-        "attestation",
-        "capabilities"
-      ],
-      "category": "security",
-      "author": "openclawd",
-      "createdAt": "2026-06-05",
-      "oneShot": false,
-      "featured": true,
-      "openingMessage": null,
-      "openingQuestions": [],
-      "tokenUsage": null,
-      "capabilities": [
-        "agent-registration",
-        "jwt-signing",
-        "siws-verification",
-        "capability-grants"
-      ],
-      "metaplexSkills": [
-        "agent-registry",
-        "core"
-      ],
-      "payment": null,
-      "agentToken": null,
-      "deploy": {
-        "json": "/api/agents/catalog/solana-clawd-auth-agent.json",
-        "chat": "/agents/chat?agent=solana-clawd-auth-agent",
-        "mint": "/agents/mint?template=solana-clawd-auth-agent",
-        "mcp": "/api/agents/catalog/solana-clawd-auth-agent.json",
-        "registration": "/api/agents/registry/solana-clawd-auth-agent.json"
-      }
-    },
-    {
       "identifier": "solana-clawd-cost-planner",
       "title": "Clawd Cost Planner",
       "description": "Pre-call cost planning and budget enforcement for x402-enabled workflows.",
@@ -958,58 +852,6 @@
         "mint": "/agents/mint?template=solana-clawd-provider-scorer",
         "mcp": "/api/agents/catalog/solana-clawd-provider-scorer.json",
         "registration": "/api/agents/registry/solana-clawd-provider-scorer.json"
-      }
-    },
-    {
-      "identifier": "solana-clawd-pump",
-      "title": "Clawd-Pump — Rust Copy-Trading Bot Operator",
-      "description": "Operates the clawd-pump Rust binary for Solana copy-trading, one-shot buys, token launches, and volume management via control-file IPC. Supports PumpFun, PumpSwap, Jupiter routing, and Yellowstone gRPC transaction monitoring with risk controls.",
-      "avatar": "🦞",
-      "tags": [
-        "solana",
-        "pumpfun",
-        "pumpswap",
-        "copy-trading",
-        "trading-bot",
-        "rust",
-        "bonding-curve",
-        "amm",
-        "grpc",
-        "jupiter",
-        "risk-management",
-        "defi",
-        "automation",
-        "token-launch",
-        "volume-trading",
-        "bot-operator",
-        "clawd-pump"
-      ],
-      "category": "trading",
-      "author": "openclawd",
-      "createdAt": "2026-06-05",
-      "oneShot": false,
-      "featured": false,
-      "openingMessage": "🦞 Clawd-Pump online. I control the Rust copy-trading bot — build, start, stop, volume mode, one-shot buys, token launches. PumpFun · PumpSwap · Jupiter · Yellowstone gRPC. What are we trading today?",
-      "openingQuestions": [
-        "Build and start the copy-trading bot?",
-        "Start in auto-buy mode for a target wallet?",
-        "Show bot status and control file?",
-        "Launch a new token on PumpFun?",
-        "One-shot buy a specific token?",
-        "Toggle volume mode on/off?",
-        "What wallets are being tracked?"
-      ],
-      "tokenUsage": null,
-      "capabilities": [],
-      "metaplexSkills": [],
-      "payment": null,
-      "agentToken": null,
-      "deploy": {
-        "json": "/api/agents/catalog/solana-clawd-pump.json",
-        "chat": "/agents/chat?agent=solana-clawd-pump",
-        "mint": "/agents/mint?template=solana-clawd-pump",
-        "mcp": "/api/agents/catalog/solana-clawd-pump.json",
-        "registration": "/api/agents/registry/solana-clawd-pump.json"
       }
     },
     {
@@ -2399,18 +2241,8 @@
         "What's the dynamic fee tier system and how is market cap computed?"
       ],
       "tokenUsage": null,
-      "capabilities": [
-        "swap-execution",
-        "token-launch",
-        "pumpfun-launch",
-        "pumpswap-amm",
-        "wallet-monitoring",
-        "read-only",
-        "a2a-message"
-      ],
-      "metaplexSkills": [
-        "agent-registry"
-      ],
+      "capabilities": [],
+      "metaplexSkills": [],
       "payment": null,
       "agentToken": null,
       "deploy": {

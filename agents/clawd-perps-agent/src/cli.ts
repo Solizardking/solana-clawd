@@ -54,16 +54,6 @@ import {
   getOnchainMarketMakerStatus,
   runOnchainMarketMaker,
 } from "./onchainMarketMaker.js";
-import { withSpinner } from "./ui/spinner.js";
-import {
-  solanaPulse,
-  clawdSpin,
-  walletHeartbeat,
-  tokenOrbit,
-  pumpLoader,
-  mevScan,
-  degenDice,
-} from "./ui/clawd-spinners.js";
 import {
   buildTwammAutomation,
   buildTwammBuildPlan,
@@ -312,22 +302,22 @@ async function main() {
     case "status":
     case "health": {
       const runtime = createRuntime();
-      printJson(await withSpinner("Checking runtime health...", solanaPulse, () => runtime.getRuntimeHealth()));
+      printJson(await runtime.getRuntimeHealth());
       return;
     }
     case "frontend": {
       const runtime = createRuntime();
-      printJson(await withSpinner("Building frontend status...", pumpLoader, () => buildPerpsFrontendStatus(runtime)));
+      printJson(await buildPerpsFrontendStatus(runtime));
       return;
     }
     case "telegram": {
       const runtime = createRuntime();
-      printJson(await withSpinner("Handling Telegram command...", clawdSpin, () => handleTelegramPerpsCommand(runtime, parsed.rest.join(" ") || "/perps")));
+      printJson(await handleTelegramPerpsCommand(runtime, parsed.rest.join(" ") || "/perps"));
       return;
     }
     case "vulcan": {
       const runtime = createRuntime();
-      printJson(await withSpinner("Fetching Vulcan catalog...", tokenOrbit, () => runtime.getVulcanCatalogSummary()));
+      printJson(await runtime.getVulcanCatalogSummary());
       return;
     }
     case "paper-long": {
@@ -366,31 +356,27 @@ async function main() {
     }
     case "imperial-health": {
       const client = new ImperialClient();
-      printJson(await withSpinner("Imperial health check...", walletHeartbeat, () => client.healthCheck()));
+      printJson(await client.healthCheck());
       return;
     }
     case "imperial-scan": {
       const symbols = parseSymbols(parsed.options.symbols);
       const client = new ImperialClient(symbols ? { allowedSymbols: symbols } : undefined);
       printJson(
-        await withSpinner("Scanning markets...", mevScan, () =>
-          client.runScan({
-            sizeUsd: asNumber(parsed.options.size, 100),
-            autoRoute: Boolean(parsed.options["auto-route"]),
-          })
-        ),
+        await client.runScan({
+          sizeUsd: asNumber(parsed.options.size, 100),
+          autoRoute: Boolean(parsed.options["auto-route"]),
+        }),
       );
       return;
     }
     case "imperial-cycle": {
       const client = new ImperialClient();
       printJson(
-        await withSpinner("Running imperial cycle...", degenDice, () =>
-          client.runCycle(parsed.rest[0] || "SOL", {
-            sizeUsd: asNumber(parsed.options.size, 100),
-            autoRoute: Boolean(parsed.options["auto-route"]),
-          })
-        ),
+        await client.runCycle(parsed.rest[0] || "SOL", {
+          sizeUsd: asNumber(parsed.options.size, 100),
+          autoRoute: Boolean(parsed.options["auto-route"]),
+        }),
       );
       return;
     }
