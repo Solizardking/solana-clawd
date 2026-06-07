@@ -3,14 +3,14 @@ FROM node:22-bookworm-slim AS deps
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
 COPY gateway/package*.json ./
-RUN npm ci --omit=dev --no-audit --no-fund
+RUN npm install --omit=dev --no-audit --no-fund
 
 # ── Stage 2: build TypeScript ─────────────────────────────────────────────────
 FROM node:22-bookworm-slim AS build
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
 COPY gateway/package*.json ./
-RUN npm ci --no-audit --no-fund
+RUN npm install --no-audit --no-fund
 COPY gateway/ ./gateway/
 COPY formal_verification/ ./formal_verification/
 WORKDIR /build/gateway
