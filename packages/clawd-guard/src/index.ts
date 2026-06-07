@@ -10,7 +10,7 @@ import {
   postCleanComment,
 } from "./github.js";
 import { scanDiff, formatFindingsForComment } from "./scanner.js";
-import { analyzeFullDiff, formatGrokFindings } from "./grok.js";
+import { analyzeFullDiff, formatClaudeFindings } from "./claude.js";
 
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
 
@@ -126,24 +126,24 @@ async function handlePullRequestEvent(payload: Record<string, unknown>) {
     0
   );
 
-  // Grok AI scan (runs in parallel with regex)
-  let grokSection = "";
-  if (process.env.XAI_API_KEY) {
+  // Claude Opus AI scan (runs in parallel with regex)
+  let claudeSection = "";
+  if (process.env.ANTHROPIC_API_KEY) {
     try {
-      const grokAnalyses = await analyzeFullDiff(
+      const claudeAnalyses = await analyzeFullDiff(
         scannable.map((f) => ({ filename: f.filename, patch: f.patch }))
       );
-      grokSection = formatGrokFindings(grokAnalyses);
+      claudeSection = formatClaudeFindings(claudeAnalyses);
     } catch (err) {
-      console.error("[clawd-guard] Grok scan failed:", err);
+      console.error("[clawd-guard] Claude scan failed:", err);
     }
   }
 
-  const hasFindings = totalRegexFindings > 0 || grokSection.length > 0;
+  const hasFindings = totalRegexFindings > 0 || claudeSection.length > 0;
 
   if (hasFindings) {
     const regexComment = formatFindingsForComment(regexResults);
-    const fullComment = regexComment + grokSection;
+    const fullComment = regexComment + claudeSection;
 
     await postPRComment(octokit, owner, repoName, pullNumber, fullComment);
     await createCheckRun(
@@ -252,8 +252,8 @@ app.listen(PORT, () => {
     console.error(`[clawd-guard] Missing required env vars: ${missing.join(", ")}`);
     process.exit(1);
   }
-  if (!process.env.XAI_API_KEY) {
-    console.warn("[clawd-guard] XAI_API_KEY not set — Grok AI analysis disabled, regex-only mode");
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.warn("[clawd-guard] ANTHROPIC_API_KEY not set — Claude Opus analysis disabled, regex-only mode");
   }
 });
 

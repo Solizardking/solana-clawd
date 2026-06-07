@@ -1,7 +1,10 @@
 /**
- * gateway/src/agentRegistry.ts — Free agent metadata and registry endpoints.
+ * gateway/src/agentRegistry.ts — Free agent metadata, catalog, and registry endpoints.
  *
- * All routes here are intentionally free so wallets, explorers, indexers,
+ * Serves the full OpenClawd agent catalog (124+ agents) from the agents/ directory
+ * so users who install Solana Clawd get the complete agent registry via the gateway.
+ *
+ * All routes are intentionally free — wallets, explorers, indexers,
  * and autonomous agents can discover identity data without paying.
  *
  * Routes:
@@ -10,7 +13,13 @@
  *   GET /feed.xml, /feed.json, /quote, /peek, /last
  *   GET /sas/agent{1,2,3}.json, /shell/agent{1,2,3}.md
  *   GET /adk/manifest.json
- *   GET /.well-known/ai-plugin.json
+ *   GET /.well-known/ai-plugin.json, /.well-known/acp.json
+ *   GET /api/agents/catalog              — full 124+ agent catalog
+ *   GET /api/agents/catalog/:id.json     — individual agent catalog entry
+ *   GET /api/agents/registry             — registry index
+ *   GET /api/agents/registry/:id.json    — individual registry entry
+ *   GET /api/agents/templates            — agent templates
+ *   GET /api/agents/acp-registry.json    — ACP discovery
  */
 import { Router, Request, Response } from 'express';
 import fs from 'node:fs';
@@ -32,6 +41,7 @@ const SPAWN_DATE = '2025-01-01T00:00:00Z';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
 
+// ── Resolve repo root (parent of gateway/) ───────────────────────────────────
 function findRepoRoot(): string {
   let current = MODULE_DIR;
   for (let i = 0; i < 8; i += 1) {
@@ -46,9 +56,17 @@ function findRepoRoot(): string {
 }
 
 const REPO_ROOT = findRepoRoot();
-const AGENTS_CATALOG_PATH = path.join(REPO_ROOT, 'agents', 'agents-catalog.json');
-const AGENTS_MANIFEST_PATH = path.join(REPO_ROOT, 'agents', 'agents-manifest.json');
+const AGENTS_DIR = path.join(REPO_ROOT, 'agents');
+const AGENTS_CATALOG_PATH = path.join(AGENTS_DIR, 'agents-catalog.json');
+const AGENTS_MANIFEST_PATH = path.join(AGENTS_DIR, 'agents-manifest.json');
+const AGENTS_PUBLIC_CATALOG_DIR = path.join(AGENTS_DIR, 'public', 'api', 'agents', 'catalog');
+const AGENTS_PUBLIC_REGISTRY_DIR = path.join(AGENTS_DIR, 'public', 'api', 'agents', 'registry');
+const AGENTS_PUBLIC_API_DIR = path.join(AGENTS_DIR, 'public', 'api', 'agents');
 
+console.log('[AgentRegistry] Repo root:', REPO_ROOT);
+console.log('[AgentRegistry] Catalog path:', AGENTS_CATALOG_PATH);
+
+// ── Legacy 3-agent identity definitions (kept for backward compatibility) ─────
 interface AgentDef {
   id: number;
   slug: string;
@@ -91,6 +109,7 @@ const AGENTS: Record<1 | 2 | 3, AgentDef> = {
   },
 };
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function cacheHeaders(seconds: number): (req: Request, res: Response, next: () => void) => void {
   return (_req: Request, res: Response, next: () => void) => {
     res.setHeader('Cache-Control', `public, max-age=${seconds}`);
@@ -98,10 +117,31 @@ function cacheHeaders(seconds: number): (req: Request, res: Response, next: () =
   };
 }
 
-const AMP = '&amp;';
-const LT = '&lt;';
-const GT = '&gt;';
-const QUOT = '&quot;';
+function safeJsonRead<T>(filePath: string, fallback: T): T {
+  try {
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(raw) as T;
+    }
+  } catch (e) {
+    console.error(`[AgentRegistry] Failed to read ${filePath}:`, (e as Error).message);
+  }
+  return fallback;
+}
+
+function serveJsonFile(filePath: string, res: Response): void {
+  if (!fs.existsSync(filePath)) {
+    res.status(404).json({ error: 'not found', path: filePath });
+    return;
+  }
+  res.setHeader('Content-Type', 'application/json');
+  res.sendFile(filePath);
+}
+
+const AMP = '&';
+const LT = '<';
+const GT = '>';
+const QUOT = '"';
 
 function escapeXml(v: string): string {
   return v.replace(/&/g, AMP).replace(/</g, LT).replace(/>/g, GT).replace(/"/g, QUOT);
@@ -117,6 +157,144 @@ function formatFeedXml(turns: ConversationTurn[]): string {
   return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>CLAWD Agent Conversations</title>\n    <link>' + BASE_URL + '</link>\n    <description>Conversation feed from the CLAWD sovereign AI agents</description>\n    <atom:link href="' + BASE_URL + '/feed.xml" rel="self" type="application/rss+xml"/>\n' + items + '\n  </channel>\n</rss>';
 }
 
+// ── Full agent catalog (124+ agents) ─────────────────────────────────────────
+
+router.get('/api/agents/catalog', cacheHeaders(120), (_req: Request, res: Response) => {
+  serveJsonFile(AGENTS_CATALOG_PATH, res);
+});
+
+router.get('/api/agents/catalog/:agentId', cacheHeaders(120), (req: Request, res: Response) => {
+  const agentId = req.params.agentId;
+  // Strip trailing .json if present
+  const id = agentId.endsWith('.json') ? agentId.slice(0, -5) : agentId;
+  const catalogFile = path.join(AGENTS_PUBLIC_CATALOG_DIR, `${id}.json`);
+
+  if (!fs.existsSync(catalogFile)) {
+    res.status(404).json({ error: 'agent not found', id });
+    return;
+  }
+  serveJsonFile(catalogFile, res);
+});
+
+// ── Agent registry index ─────────────────────────────────────────────────────
+
+router.get('/api/agents/registry', cacheHeaders(120), (_req: Request, res: Response) => {
+  const indexFile = path.join(AGENTS_PUBLIC_REGISTRY_DIR, 'index.json');
+  if (fs.existsSync(indexFile)) {
+    serveJsonFile(indexFile, res);
+    return;
+  }
+
+  // Fallback: build index from catalog files on disk
+  try {
+    const files = fs.readdirSync(AGENTS_PUBLIC_REGISTRY_DIR).filter(f => f.endsWith('.json') && f !== 'index.json');
+    const agents = files.map(f => {
+      const entry = safeJsonRead<Record<string, unknown>>(path.join(AGENTS_PUBLIC_REGISTRY_DIR, f), {});
+      return {
+        identifier: f.replace('.json', ''),
+        ...entry,
+      };
+    });
+    res.json({ agents, total: agents.length });
+  } catch {
+    res.json({ agents: [], total: 0 });
+  }
+});
+
+router.get('/api/agents/registry/:agentId', cacheHeaders(120), (req: Request, res: Response) => {
+  const agentId = req.params.agentId;
+  const id = agentId.endsWith('.json') ? agentId.slice(0, -5) : agentId;
+  const regFile = path.join(AGENTS_PUBLIC_REGISTRY_DIR, `${id}.json`);
+
+  if (!fs.existsSync(regFile)) {
+    res.status(404).json({ error: 'agent not found', id });
+    return;
+  }
+  serveJsonFile(regFile, res);
+});
+
+// ── Agent templates ──────────────────────────────────────────────────────────
+
+router.get('/api/agents/templates', cacheHeaders(300), (_req: Request, res: Response) => {
+  const templates = ['agent-template.json', 'agent-template-full.json', 'agent-template-attested.json'];
+  const result: Record<string, unknown> = {};
+
+  for (const t of templates) {
+    const filePath = path.join(AGENTS_DIR, t);
+    if (fs.existsSync(filePath)) {
+      result[t.replace('.json', '')] = safeJsonRead(filePath, {});
+    }
+  }
+
+  res.json({
+    templates: Object.keys(result),
+    files: result,
+    mint: `${BASE_URL}/agents/mint`,
+    fork: 'https://github.com/solizardking/solanaclawd/tree/newnew/agents',
+  });
+});
+
+router.get('/api/agents/templates/:template', cacheHeaders(300), (req: Request, res: Response) => {
+  const templateName = req.params.template.endsWith('.json')
+    ? req.params.template
+    : `${req.params.template}.json`;
+
+  const validTemplates = ['agent-template.json', 'agent-template-full.json', 'agent-template-attested.json'];
+  if (!validTemplates.includes(templateName)) {
+    res.status(404).json({ error: 'template not found', available: validTemplates });
+    return;
+  }
+
+  const filePath = path.join(AGENTS_DIR, templateName);
+  serveJsonFile(filePath, res);
+});
+
+// ── ACP Registry ─────────────────────────────────────────────────────────────
+
+router.get('/api/agents/acp-registry.json', cacheHeaders(300), (_req: Request, res: Response) => {
+  const acpFile = path.join(AGENTS_PUBLIC_API_DIR, 'acp-registry.json');
+  serveJsonFile(acpFile, res);
+});
+
+router.get('/.well-known/acp.json', cacheHeaders(300), (_req: Request, res: Response) => {
+  const acpFile = path.join(AGENTS_DIR, 'public', '.well-known', 'acp.json');
+  serveJsonFile(acpFile, res);
+});
+
+// ── Agents index / manifest ──────────────────────────────────────────────────
+
+router.get('/api/agents', cacheHeaders(60), (_req: Request, res: Response) => {
+  const indexFile = path.join(AGENTS_PUBLIC_API_DIR, 'index.json');
+  if (fs.existsSync(indexFile)) {
+    const idx = safeJsonRead<Record<string, unknown>>(indexFile, {});
+    res.json(idx);
+    return;
+  }
+
+  // Fallback
+  const catalog = safeJsonRead<Record<string, unknown>>(AGENTS_CATALOG_PATH, {});
+  res.json({
+    name: 'OpenClawd Agents API',
+    version: catalog?.version ?? '1.0',
+    generatedAt: catalog?.generatedAt ?? new Date().toISOString(),
+    totalAgents: catalog?.stats?.totalAgents ?? 0,
+    endpoints: {
+      catalog: `${BASE_URL}/api/agents/catalog`,
+      registry: `${BASE_URL}/api/agents/registry`,
+      templates: `${BASE_URL}/api/agents/templates`,
+      acp: `${BASE_URL}/api/agents/acp-registry.json`,
+    },
+  });
+});
+
+// ── Manifest ─────────────────────────────────────────────────────────────────
+
+router.get('/api/agents/manifest.json', cacheHeaders(300), (_req: Request, res: Response) => {
+  serveJsonFile(AGENTS_MANIFEST_PATH, res);
+});
+
+// ── Legacy identity endpoints (backward-compatible) ──────────────────────────
+
 router.get('/registry', cacheHeaders(120), (_req: Request, res: Response) => {
   const agents = Object.values(AGENTS).map(a => ({
     id: a.id, slug: a.slug, symbol: a.symbol, name: a.name,
@@ -126,18 +304,41 @@ router.get('/registry', cacheHeaders(120), (_req: Request, res: Response) => {
     capabilities_uri: BASE_URL + '/capabilities/agent' + a.id + '.json',
     card_svg: BASE_URL + '/card/agent' + a.id + '.svg',
   }));
+
+  // Include catalog stats if available
+  const catalog = safeJsonRead<Record<string, unknown>>(AGENTS_CATALOG_PATH, {});
+  const catalogAgents = (catalog?.agents as Array<Record<string, unknown>>)?.map((a: Record<string, unknown>) => ({
+    identifier: a.identifier,
+    title: a.meta?.title ?? a.title,
+    description: a.meta?.description ?? a.description,
+    category: a.meta?.category ?? a.category,
+    avatar: a.meta?.avatar ?? a.avatar,
+    author: a.author,
+  })) ?? [];
+
   res.json({
     name: 'CLAWD Agent Registry', version: VERSION, spawn_date: SPAWN_DATE,
-    total_turns: totalTurns(), agents,
+    total_turns: totalTurns(),
+    core_agents: agents,
+    catalog_agents: catalogAgents.slice(0, 50),
+    catalog_total: catalogAgents.length,
+    catalog_uri: BASE_URL + '/api/agents/catalog',
     feeds: { json: BASE_URL + '/feed.json', xml: BASE_URL + '/feed.xml' },
-    endpoints: { quote: BASE_URL + '/quote', peek: BASE_URL + '/peek', last: BASE_URL + '/last', identity: BASE_URL + '/identity' },
+    endpoints: {
+      quote: BASE_URL + '/quote', peek: BASE_URL + '/peek', last: BASE_URL + '/last',
+      identity: BASE_URL + '/identity', catalog: BASE_URL + '/api/agents/catalog',
+      templates: BASE_URL + '/api/agents/templates',
+    },
   });
 });
 
 router.get('/identity', cacheHeaders(300), (_req: Request, res: Response) => {
+  const catalog = safeJsonRead<Record<string, unknown>>(AGENTS_CATALOG_PATH, {});
   res.json({
     title: 'CLAWD Agent Identity', version: VERSION,
     agents: Object.values(AGENTS).map(a => ({ id: a.id, name: a.name, symbol: a.symbol, description: a.description, capabilities: a.capabilities })),
+    catalog_available: fs.existsSync(AGENTS_CATALOG_PATH),
+    catalog_total: catalog?.stats?.totalAgents ?? 0,
     principles: {
       '1': 'Autonomous agents must be sovereign — self-custody, self-payment, self-execution.',
       '2': 'Identity is on-chain. Every agent has a verifiable cryptographic presence.',
@@ -145,6 +346,7 @@ router.get('/identity', cacheHeaders(300), (_req: Request, res: Response) => {
     },
     mint_agent: 'POST ' + BASE_URL + '/api/mint/agent',
     mint_custom: 'POST ' + BASE_URL + '/api/mint/agent/custom',
+    install_agents: BASE_URL + '/api/agents/catalog',
   });
 });
 
@@ -302,19 +504,34 @@ router.get('/adk/manifest.json', cacheHeaders(300), (_req: Request, res: Respons
       id: a.symbol.toLowerCase(), displayName: a.name, description: a.description,
       capabilities: a.capabilities, model: a.model, entryPoint: 'adk/agent.ts',
     })),
+    catalog_uri: BASE_URL + '/api/agents/catalog',
+    templates_uri: BASE_URL + '/api/agents/templates',
   });
 });
 
 router.get('/.well-known/ai-plugin.json', cacheHeaders(3600), (_req: Request, res: Response) => {
   res.json({
     schema_version: 'v1', name_for_human: 'CLAWD Agents', name_for_model: 'clawd_agents',
-    description_for_human: 'Autonomous Solana AI agents with on-chain identity, payment processing, and multi-agent coordination.',
-    description_for_model: 'Use the CLAWD agents for Solana analysis, market commentary, and autonomous operations.',
+    description_for_human: 'Autonomous Solana AI agents with on-chain identity, payment processing, and multi-agent coordination. 124+ agents available.',
+    description_for_model: 'Use the CLAWD agents for Solana analysis, market commentary, and autonomous operations. Browse the full catalog of 124+ agents.',
     auth: { type: 'none' },
-    api: { type: 'openapi', url: BASE_URL + '/.well-known/openapi.yaml' },
+    api: {
+      type: 'openapi',
+      url: BASE_URL + '/.well-known/openapi.yaml',
+    },
     logo_url: 'https://raw.githubusercontent.com/x402agent/solana-clawd/main/assets/openclawd-banner.svg',
     legal_info_url: BASE_URL + '/identity',
+    // Extended ACP fields
+    agent_registry: {
+      catalog: BASE_URL + '/api/agents/catalog',
+      registry: BASE_URL + '/api/agents/registry',
+      templates: BASE_URL + '/api/agents/templates',
+      acp: BASE_URL + '/api/agents/acp-registry.json',
+    },
   });
 });
 
 export default router;
+</path>
+<path>/Users/8bit/Downloads/solana-clawd/gateway/src/agentRegistry.ts</path>
+<content><!-- truncating -->
