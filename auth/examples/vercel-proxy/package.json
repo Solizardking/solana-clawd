@@ -1,32 +1,28 @@
 {
-  "name": "vercel-proxy",
+  "name": "clawd-gateway",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3105",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "db:push": "drizzle-kit push",
-    "db:generate": "drizzle-kit generate"
+    "lint": "eslint"
   },
   "dependencies": {
-    "@better-auth/agent-auth": "workspace:*",
-    "@better-auth/passkey": "1.5.4",
-    "@simplewebauthn/browser": "^13.3.0",
-    "better-auth": "1.5.4",
-    "drizzle-orm": "^0.44.2",
+    "@clawd/agent-auth-solana": "workspace:*",
+    "@auth/agent": "workspace:*",
+    "jose": "^5.9.6",
     "next": "16.1.6",
-    "postgres": "^3.4.5",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "tailwind-merge": "^3.0.0",
+    "tw-animate-css": "^1.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "drizzle-kit": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",

@@ -19,6 +19,61 @@ Legacy static-agent domains are not part of the production router path. Use `x40
 - Keeps public service metadata open: health, models, local stats, CLAWD status, and relay snapshots.
 - Exposes an x402 API relay status block that checks the production public APIs used by the app.
 
+## Architecture
+
+```text
+clawdrouter/
+├── src/
+│   ├── index.ts                # Express server entry — mounts all routes
+│   ├── types.ts                # Shared TypeScript types
+│   ├── auth/
+│   │   └── platform.ts         # clawd_sk_... key validation via x402.wtf
+│   ├── models/
+│   │   └── registry.ts         # OpenAI-compatible model list + CLAWD tier metadata
+│   ├── router/
+│   │   ├── scorer.ts           # 15-dimension prompt scorer (clawdrouter/auto)
+│   │   ├── profiles.ts         # Routing profiles per model family
+│   │   └── tiers.ts            # CLAWD holder tier → model access mapping
+│   ├── token/
+│   │   └── clawd-gate.ts       # SPL holder checks (Helius + public RPC fallback)
+│   ├── wallet/
+│   │   └── solana.ts           # Wallet CLAWD balance / token account queries
+│   ├── relay/
+│   │   └── aggregator.ts       # External API health checks (Solana/perps/x402)
+│   ├── upstream/
+│   │   └── openrouter.ts       # OpenRouter streaming proxy client
+│   ├── proxy/
+│   │   └── server.ts           # Express middleware: auth → score → upstream
+│   ├── commands/
+│   │   └── slash.ts            # Optional slash-command hook handling
+│   └── x402/
+│       └── payment.ts          # x402 payment verification helpers
+├── tests/                      # Integration + unit tests
+├── docs/                       # Supplemental docs
+├── fly.toml                    # Fly.io deployment config (region: ewr)
+├── Dockerfile                  # Node 22 slim image
+└── tsconfig.json
+```
+
+### Request flow
+
+```text
+client
+  └─ POST /v1/chat/completions  (Bearer clawd_sk_...)
+       ├─ auth/platform.ts      validates key → x402.wtf/api/auth/validate-key
+       ├─ token/clawd-gate.ts   checks CLAWD holder tier (Helius / RPC)
+       ├─ router/scorer.ts      picks best OpenRouter model (15-dim score)
+       └─ upstream/openrouter.ts  streams response back
+```
+
+### What runs publicly (no auth)
+
+`/health`, `/v1/models`, `/v1/stats`, `/v1/clawd/status`, `/v1/relay/*` — all read-only metadata, no secrets exposed.
+
+### What requires a `clawd_sk_...` key
+
+`POST /v1/chat/completions` — validated server-side against x402.wtf before any upstream call is made.
+
 ## Hosted Endpoints
 
 | Endpoint | Auth | Description |

@@ -406,3 +406,15 @@ programs/target/
 **/target/release/
 **/target/sbpf-solana-solana/
 .anchor/target/
+
+# ============================================================================
+# HUGGING FACE — homebase build dir + token belt-and-suspenders
+# The hf/ dir holds local copies of Space repos pushed to huggingface.co.
+# Keep it out of the public GitHub mirror entirely.
+# ============================================================================
+hf/
+.huggingface/
+huggingface_token*
+hf_token*
+# Never commit raw HF user access tokens (hf_xxxx...)
+**/stored_tokens
