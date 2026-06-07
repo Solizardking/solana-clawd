@@ -12,7 +12,7 @@
     "@clawd/agent-auth-solana": "workspace:*",
     "@auth/agent": "workspace:*",
     "jose": "^5.9.6",
-    "next": "16.1.6",
+    "next": "15.5.18",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.0.0",
