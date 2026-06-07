@@ -1,0 +1,12 @@
+{
+  "name": "@openclawd/agent-characters",
+  "version": "1.0.0",
+  "description": "Character definition files for Clawd agents — trading personas, DeFi archetypes, and AI agent personalities",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/8bitsats/solana-clawd.git",
+    "directory": "agents/characters"
+  }
+}
