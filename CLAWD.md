@@ -120,7 +120,7 @@ Clawd agents are discoverable through:
 ## Repository Structure
 
 ```
-/Users/8bit/Downloads/solana-clawd/
+solana-clawd/
 ├── .claude/          # Clawd agent harness config (standalone git repo)
 ├── .agents/          # Solana-native agent manifests (standalone git repo)
 ├── .solana/          # Solana-native AI configuration directory
@@ -138,6 +138,7 @@ Clawd agents are discoverable through:
 ├── scripts/          # Deployment and automation scripts
 ├── skills/           # 95+ Clawd skills for specialized agent capabilities
 ├── src/              # Core Clawd runtime and services
+├── staking/          # Agent staking protocol (Anchor + CLI)
 ├── CONSTITUTION.md   # The Clawd Constitution — the world's first Solana-native agent harness constitution
 ├── three-laws.md     # The Three Laws of the Leviathan — immutable core
 ├── CLAWD.md          # This file — agent context for all Clawd spawns

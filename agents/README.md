@@ -47,14 +47,14 @@ Current layers:
 
 ## OpenClawd Agent Staking Docs
 
-Use these local references when working on Metaplex Agent staking, pay-gated agent APIs, and terminal operator flows:
+Use these repo-relative paths when working on Metaplex Agent staking, pay-gated agent APIs, and terminal operator flows:
 
-- Main app README: `/Users/8bit/Downloads/clawd-terminal/README.md`
-- Agents catalog README: `/Users/8bit/Downloads/clawd-terminal/agents/README.md`
-- Pay Agents guide: `/Users/8bit/Downloads/clawd-terminal/docs/pay-agents.md`
-- Clawd Stake program: `/Users/8bit/Downloads/clawd-terminal/programs/clawd-stake/README.md`
-- Clawd TUI README: `/Users/8bit/Downloads/clawd-terminal/clawd-tui/clawd-tui/README.md`
-- Dark Ralph TUI README: `/Users/8bit/fraud/OpenClawd/dark-ralph/README.md`
+- [Main repo README](../README.md)
+- [Agents catalog README](./README.md) — this file
+- [Staking protocol](../staking/README.md) — Anchor program + CLI
+- [Agent staking lock layer](../staking/programs/mpl-corenft-staking/src/lib.rs)
+- [Gateway source](../gateway/) — Telegram bot + HTTP API + agent registry
+- [Clawd TUI packages](../packages/clawd/)
 
 ---
 
