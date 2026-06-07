@@ -1,13 +1,19 @@
-# OpenClawd Agent Staking Protocol
+# 🦞 OpenClawd Agent Staking Protocol
+
+[![x402](https://img.shields.io/badge/x402.wtf-payments-1E5AA8?style=for-the-badge)](https://x402.wtf)
+[![$CLAWD](https://img.shields.io/badge/$CLAWD-8cHzQH...pump-C85C2B?style=for-the-badge&logo=solana&logoColor=white)](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](./LICENSE)
+
+*Powered by [x402.wtf](https://x402.wtf) · $CLAWD: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`*
+
+---
 
 OpenClawd Agent Staking is an Anchor program and frontend-ready transaction
 surface for staking Metaplex Core agent assets on Solana. It lets an agent owner
 lock a Core asset in place by adding a frozen `FreezeDelegate` plugin, then later
 unstake by unfreezing and removing that plugin.
 
-This is a staking primitive for Solana-native agents. The asset stays in the
-owner wallet; the program tracks only global staking state and enforces owner,
-collection, and admin recovery rules.
+**No escrow. No custody transfer. The asset stays in the owner's wallet.**
 
 ## Position in the OpenClawd stack
 
@@ -60,32 +66,35 @@ the Core asset `FreezeDelegate` state.
 - Allows normal unstake by owner and emergency unstake by the configured admin.
 - Provides a TypeScript CLI for `init`, `stake`/`lock`, and `unstake`/`unlock`.
 
-## What It Does Not Do Yet
-
-- It does not issue token rewards.
-- It does not create per-position accounts.
-- It does not enforce lock durations, tiers, or reward weights.
-- It does not escrow the agent asset; the asset remains in the owner's wallet.
-
-Those features can be layered later with additional accounts, indexers, and
-reward vault logic. The current scope is intentionally narrow: prove agent
-ownership and lock transferability at the Core asset layer.
-
 ## Project Layout
 
 ```text
-programs/mpl-corenft-staking/   Anchor Rust program
-cli/                            command-line init/stake/unstake entrypoint
-lib/                            IDL, constants, and transaction builders
-tests/                          Anchor integration tests
-Anchor.toml                     cluster, wallet, and program-id config
-```
-
-Related frontend files in the main OpenClawd app:
-
-```text
-client/src/lib/agentStaking.ts
-client/src/pages/AgentStake.tsx
+staking/
+├── programs/mpl-corenft-staking/   Anchor Rust program
+│   └── src/
+│       ├── lib.rs                  declare_id! + instruction dispatch
+│       ├── constant.rs             PDA seeds
+│       ├── state.rs                GlobalPool account struct
+│       ├── error.rs                StakingError enum
+│       └── instructions/
+│           ├── mod.rs
+│           ├── initialize.rs       Create global pool
+│           ├── stake_agent.rs      Add FreezeDelegate plugin
+│           └── unstake_agent.rs    Remove FreezeDelegate plugin
+├── cli/
+│   ├── command.ts                  Commander CLI entrypoint
+│   └── scripts.ts                  CLI orchestration (init, stake, unstake)
+├── lib/
+│   ├── constant.ts                 Program ID, seeds, collection, RPC config
+│   ├── idl.ts                      Hardcoded IDL (no Anchor workspace needed)
+│   ├── scripts.ts                  Transaction builder helpers
+│   └── util.ts                     Metaplex PDA derivation helpers
+├── tests/
+│   └── mpl-corenft-pnft-staking.ts Anchor integration test
+├── Anchor.toml                     Solana cluster, wallet, program ID config
+├── package.json                    @openclawdsolana/agent-staking
+├── tsconfig.json
+└── README.md                       This file
 ```
 
 ## Program Accounts
@@ -99,7 +108,6 @@ seed: ["global-authority"]
 ```
 
 Accounts:
-
 - `admin` signer and payer
 - `global_pool` PDA
 - `system_program`
@@ -109,7 +117,6 @@ Accounts:
 Adds a frozen Core `FreezeDelegate` plugin.
 
 Accounts:
-
 - `owner` asset owner
 - `user` signer and payer, must equal `owner`
 - `global_pool`
@@ -119,7 +126,6 @@ Accounts:
 - `system_program`
 
 Validation:
-
 - `user == owner`
 - decoded Core `asset.owner == owner`
 - decoded Core `asset.update_authority == Collection(collection)`
@@ -129,7 +135,6 @@ Validation:
 Unfreezes and removes the Core `FreezeDelegate` plugin.
 
 Accounts:
-
 - `owner` asset owner
 - `user` signer and payer
 - `global_pool`
@@ -139,7 +144,6 @@ Accounts:
 - `system_program`
 
 Validation:
-
 - `asset.owner == owner`
 - decoded Core `asset.update_authority == Collection(collection)`
 - `user == owner`, or `user == global_pool.admin` for emergency recovery
@@ -153,7 +157,6 @@ export SOLANA_RPC_URL="https://api.devnet.solana.com"
 export ANCHOR_WALLET="$HOME/.config/solana/id.json"
 export OPENCLAWD_AGENT_STAKING_PROGRAM_ID="D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP"
 export OPENCLAWD_AGENT_COLLECTION="<metaplex-core-collection-address>"
-export NPM_TOKEN="${NPM_TOKEN:-unused}"
 ```
 
 Mainnet should use a dedicated deployer or Squads-controlled upgrade authority:
@@ -171,45 +174,50 @@ production API secrets.
 ## Install
 
 ```bash
+cd staking
 npm install
+npm run build       # anchor build — compiles Rust program
 ```
 
-If Yarn or npm reads a global `.npmrc` with `${NPM_TOKEN}`, set a placeholder
-before running scripts:
+## CLI Usage
+
+Initialize the global pool (first deploy only):
 
 ```bash
-export NPM_TOKEN="${NPM_TOKEN:-unused}"
+npm run script:devnet -- init
 ```
 
-## Build
+Stake (lock) a Metaplex Core agent asset:
 
 ```bash
-npm run build
+npm run script:devnet -- stake \
+  --asset <agent-core-asset-address> \
+  --collection "$OPENCLAWD_AGENT_COLLECTION"
 ```
 
-Anchor writes the binary and IDL into `target/`. The active program id must
-match all of:
-
-- `declare_id!()` in `programs/mpl-corenft-staking/src/lib.rs`
-- `Anchor.toml`
-- `OPENCLAWD_AGENT_STAKING_PROGRAM_ID`
-- `lib/constant.ts`
-- `client/src/lib/agentStaking.ts` if the frontend is targeting the same deploy
-
-The current local toolchain has emitted a warning when `anchor-cli` is `0.32.1`
-and the program dependencies use `anchor-lang` / `@coral-xyz/anchor` `0.30.1`.
-For deterministic release builds, align those versions before mainnet.
-
-## Test
+Alias:
 
 ```bash
-npm test
+npm run script:devnet -- lock \
+  --asset <agent-core-asset-address> \
+  --collection "$OPENCLAWD_AGENT_COLLECTION"
 ```
 
-Run localnet/devnet tests before mainnet. The basic test initializes the global
-pool; production readiness needs fixture tests that mint a Core collection,
-mint an agent asset, stake it, verify `FreezeDelegate.frozen`, unstake it, and
-verify the plugin removal.
+Unstake (unlock):
+
+```bash
+npm run script:devnet -- unstake \
+  --asset <agent-core-asset-address> \
+  --collection "$OPENCLAWD_AGENT_COLLECTION"
+```
+
+Alias:
+
+```bash
+npm run script:devnet -- unlock \
+  --asset <agent-core-asset-address> \
+  --collection "$OPENCLAWD_AGENT_COLLECTION"
+```
 
 ## Deploy
 
@@ -229,12 +237,9 @@ Initialize the global pool after a first deploy:
 npm run script:devnet -- init
 ```
 
-If the pool already exists, do not initialize it again.
-
 ### Mainnet Gate
 
 Mainnet deployment should only happen after:
-
 - clean build with aligned Anchor versions
 - devnet stake and unstake test with a real Core collection
 - confirmed program id and upgrade authority
@@ -244,46 +249,6 @@ Mainnet deployment should only happen after:
 - admin recovery runbook reviewed
 
 The current `Anchor.toml` intentionally omits `[programs.mainnet]`.
-
-## CLI Usage
-
-Initialize:
-
-```bash
-npm run script:devnet -- init
-```
-
-Stake:
-
-```bash
-npm run script:devnet -- stake \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
-```
-
-Alias:
-
-```bash
-npm run script:devnet -- lock \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
-```
-
-Unstake:
-
-```bash
-npm run script:devnet -- unstake \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
-```
-
-Alias:
-
-```bash
-npm run script:devnet -- unlock \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
-```
 
 ## Frontend Usage
 
@@ -298,7 +263,6 @@ VITE_SOLANA_RPC_URL="$SOLANA_RPC_URL"
 ```
 
 User flow:
-
 1. Connect a Solana wallet.
 2. Paste a Metaplex Core agent asset address.
 3. Paste or preconfigure the agent collection address.
@@ -307,22 +271,12 @@ User flow:
 6. Click `unstake` to unfreeze and remove the delegate.
 
 Admin recovery flow:
-
 1. Connect the admin wallet.
 2. Paste the asset address and collection.
 3. Paste the real asset owner into the owner override field.
 4. Submit `unstake`.
 
-## Safety Notes
-
-- This is a lock/unlock primitive, not a yield product.
-- The admin can emergency-unstake assets only through the program constraints.
-- Use a dedicated deployer and program upgrade authority.
-- Public RPC is not reliable enough for production.
-- Keep the collection address pinned in frontend/backend config.
-- Run `anchor keys sync` after changing the program keypair.
-
-## OpenClawd Integration
+## Integration with OpenClawd Ecosystem
 
 This protocol sits under the OpenClawd Solana-native agent economy:
 
@@ -333,7 +287,17 @@ This protocol sits under the OpenClawd Solana-native agent economy:
 - policy checks in the OpenClawd backend
 - staking status indexing for dashboards and future rewards
 - admin runbooks for emergency unlocks
+- **All powered by [x402.wtf](https://x402.wtf)** — the HTTP 402 micropayment protocol on Solana USDC
+
+## Safety Notes
+
+- This is a lock/unlock primitive, not a yield product.
+- The admin can emergency-unstake assets only through the program constraints.
+- Use a dedicated deployer and program upgrade authority.
+- Public RPC is not reliable enough for production.
+- Keep the collection address pinned in frontend/backend config.
+- Run `anchor keys sync` after changing the program keypair.
 
 ## License
 
-MIT
+MIT · Powered by [x402.wtf](https://x402.wtf) · $CLAWD: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
