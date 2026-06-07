@@ -1,0 +1,253 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║  SOLANA CLAWD — GATEWAY × AGENTS INTEGRATION                          ║
+║  For use by agents integrating the gateway into documentation.        ║
+║  Last updated: 2026-06-07                                            ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+1. ARCHITECTURE OVERVIEW
+──────────────────────────────────────────────────────────────────────────
+
+The CLAWD Gateway (`gateway/src/agentRegistry.ts`) serves the full 124+ agent
+catalog from the `agents/` directory. When a user runs `install.sh --gateway`,
+they get:
+
+  • Telegram bot  —  /menu, /wallet, /trade, /alerts, x402 tier gating
+  • HTTP API      —  Express server on port 8080 (or GATEWAY_PORT)
+  • Agent catalog —  Static JSON served from `agents/agents-catalog.json`
+  • Agent registry—  Individual agent JSONs from `agents/public/api/agents/`
+  • Templates     —  agent-template.json, attested, full
+  • ACP discovery —  .well-known/ai-plugin.json, .well-known/acp.json
+  • MCP endpoints —  modelcontextprotocol discovery
+
+The gateway resolves the repo root by walking up from `gateway/src/` until it
+finds `agents/agents-catalog.json`. No secrets, API keys, or credentials
+are exposed — it reads only static JSON files from disk.
+
+──────────────────────────────────────────────────────────────────────────
+File layout:
+
+  solanaclawd/
+  ├── agents/
+  │   ├── agents-catalog.json          ◄── 208KB, 124+ agents, served at /api/agents/catalog
+  │   ├── agent-template.json          ◄── user-facing scaffold
+  │   ├── agent-template-full.json     ◄── full schema template
+  │   ├── agent-template-attested.json ◄── attested identity template
+  │   ├── agents-manifest.json         ◄── manifest
+  │   ├── src/                         ◄── 80+ individual agent source JSONs
+  │   └── public/api/agents/
+  │       ├── catalog/                 ◄── per-agent catalog JSONs (130+ files)
+  │       ├── registry/                ◄── per-agent registry JSONs (130+ files)
+  │       ├── acp-registry.json        ◄── ACP discovery
+  │       └── index.json               ◄── API landing
+  └── gateway/
+      └── src/
+          ├── agentRegistry.ts         ◄── THE BRIDGE — serves everything below
+          ├── index.ts                 ◄── Express server + Telegram bot
+          ├── telegram.ts              ◄── Telegram Bot API wrapper
+          ├── solana.ts                ◄── Helius/Solana RPC
+          ├── birdeye.ts               ◄── Birdeye price/alerts WebSocket
+          ├── x402.ts                  ◄── x402.wtf tier gating
+          ├── nlTrading.ts             ◄── Claude-powered natural-language trading
+          ├── sessionStore.ts          ◄── per-user state
+          ├── menus.ts                 ◄── Telegram inline keyboards
+          ├── gaslessMint.ts           ◄── MPL Core gasless mint
+          ├── skillHub.ts              ◄── Skill discovery
+          └── supabase.ts              ◄── Optional persistence
+
+
+2. GATEWAY ENDPOINTS (ALL FREE, NO AUTH)
+──────────────────────────────────────────────────────────────────────────
+
+  # Full 124+ agent catalog
+  GET  /api/agents/catalog
+
+  # Individual agent catalog entry
+  GET  /api/agents/catalog/{identifier}.json
+  GET  /api/agents/catalog/{identifier}       (without .json, same response)
+
+  # Registry index + per-agent entries
+  GET  /api/agents/registry
+  GET  /api/agents/registry/{identifier}.json
+
+  # Agent templates (standard, full, attested)
+  GET  /api/agents/templates
+  GET  /api/agents/templates/{name}
+
+  # ACP discovery documents
+  GET  /api/agents/acp-registry.json
+  GET  /.well-known/acp.json
+  GET  /.well-known/ai-plugin.json
+
+  # API landing + manifest
+  GET  /api/agents
+  GET  /api/agents/manifest.json
+
+  # Legacy identity (backward-compatible, 3 core agents + catalog stats)
+  GET  /registry
+  GET  /identity
+
+  # Feed + conversation surface
+  GET  /quote       GET  /peek       GET  /last
+  GET  /feed.json   GET  /feed.xml
+
+  # Agent metadata + cards (SVG)
+  GET  /metadata/agent{1,2,3}.json
+  GET  /capabilities/agent{1,2,3}.json
+  GET  /card/agent{1,2,3}.svg
+  GET  /sas/agent{1,2,3}.json
+  GET  /shell/agent{1,2,3}.md
+  GET  /adk/manifest.json
+
+  # Telegram webhook (for Fly.io / Vercel deployments)
+  POST /telegram/webhook
+
+  # Health check
+  GET  /health
+
+
+3. INSTALL FLOW — HOW USERS GET THE GATEWAY
+──────────────────────────────────────────────────────────────────────────
+
+  # Full install (everything)
+  curl -fsSL https://raw.githubusercontent.com/solizardking/solanaclawd/main/install.sh | bash -s -- --full
+
+  # Gateway only
+  curl -fsSL https://raw.githubusercontent.com/solizardking/solanaclawd/main/install.sh | bash -s -- --gateway
+
+  # Or clone and run manually
+  git clone https://github.com/solizardking/solanaclawd
+  cd solanaclawd
+  bash install.sh --gateway
+
+The --gateway flag in install.sh does:
+  1. cd gateway && npm install
+  2. npm run build (tsc)
+  3. Ready to start: cd gateway && npm start
+
+When the gateway starts:
+  • agentRegistry.ts resolves REPO_ROOT → finds agents/agents-catalog.json
+  • Express mounts all catalog/registry/template endpoints
+  • Telegram bot starts (webhook or long-polling mode)
+  • Birdeye WebSocket connects for price alerts
+  • /health reports status
+
+
+4. HOW THE GATEWAY DISCOVERS THE CATALOG
+──────────────────────────────────────────────────────────────────────────
+
+The gateway does NOT use hardcoded paths. It uses a `findRepoRoot()`
+function that walks up from `gateway/src/` looking for `agents/agents-catalog.json`:
+
+  gateway/src/agentRegistry.ts (compiled from gateway/src/ directory)
+    → ../../ (repo root)
+    → checks agents/agents-catalog.json
+    → if found: all endpoints work
+    → if not found: graceful fallback, returns empty arrays
+
+This means the gateway works in any deployment layout as long as the
+`agents/` directory is a sibling of `gateway/`:
+
+  ✓  /app/agents/agents-catalog.json  +  /app/gateway/src/index.ts
+  ✓  /repo/agents/...                  +  /repo/gateway/...
+
+Set GATEWAY_BASE_URL to control the base URL in responses. Default is
+https://x402.wtf.
+
+
+5. SECURITY — WHAT IS AND IS NOT EXPOSED
+──────────────────────────────────────────────────────────────────────────
+
+  EXPOSED (public, intentional):
+    • All agent catalog JSONs (src/, public/api/agents/)
+    • Catalog metadata (agents-catalog.json)
+    • Agent templates
+    • ACP/.well-known discovery documents
+    • /health, /identity, /registry endpoints
+
+  NOT EXPOSED (protected):
+    • No .env files (gitignored, never read by agentRegistry)
+    • No private keys (SOLANA_PRIVATE_KEY used ONLY by solana.ts for signing)
+    • No API keys (HELIUS_API_KEY, BIRDEYE_API_KEY, ANTHROPIC_API_KEY
+      used ONLY by their respective modules, never in agentRegistry)
+    • No session data (sessionStore.ts reads from /data/sessions.json,
+      not served via HTTP)
+    • No wrangler/cloudflare state (.wrangler/ is gitignored)
+    • No Rust target/ directories (gitignored)
+
+
+6. QUICK INTEGRATION EXAMPLES
+──────────────────────────────────────────────────────────────────────────
+
+  # Load the full catalog
+  curl https://x402.wtf/api/agents/catalog | jq '.stats'
+
+  # List all agent identifiers
+  curl https://x402.wtf/api/agents/catalog | jq '.agents[].identifier'
+
+  # Get a single agent
+  curl https://x402.wtf/api/agents/catalog/clawdex.json
+
+  # Check catalog stats from any code
+  const catalog = await fetch('https://x402.wtf/api/agents/catalog').then(r => r.json());
+  console.log(`${catalog.stats.totalAgents} agents available`);
+
+  # Templates
+  curl https://x402.wtf/api/agents/templates | jq '.templates'
+
+  # Health check
+  curl https://x402.wtf/health
+
+
+7. REPO LOCATIONS
+──────────────────────────────────────────────────────────────────────────
+
+  Agents catalog (this repo):
+    https://github.com/solizardking/solana-clawd/tree/newnew/agents
+
+  Gateway source:
+    https://github.com/solizardking/solana-clawd/tree/newnew/gateway
+
+  Installer:
+    https://github.com/solizardking/solanaclawd  (install.sh)
+
+  Live hub:
+    https://x402.wtf/agents
+
+  x402 terminal:
+    https://x402.wtf/terminal
+
+
+8. KEY FILES TO SHOW IN README
+──────────────────────────────────────────────────────────────────────────
+
+  For the README, include these gateway-specific highlights:
+
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │ 🤖 CLAWD Gateway — Telegram Bot + HTTP API + Agent Registry        │
+  │                                                                     │
+  │ The gateway ships with every Solana Clawd install and provides:     │
+  │                                                                     │
+  │ • Telegram bot — /menu, /wallet, /trade, /alerts, /price, /search │
+  │ • x402 tier gating — $CLAWD holder tiers unlock features           │
+  │ • Full 124+ agent catalog served over HTTP (no auth required)      │
+  │ • Birdeye real-time price + whale trade alerts                     │
+  │ • Claude-powered natural-language trading ("buy 0.05 SOL of ...") │
+  │ • Helius DAS asset discovery                                       │
+  │                                                                     │
+  │ Quick Start:                                                        │
+  │   bash install.sh --gateway                                         │
+  │   cd gateway && npm start                                           │
+  │                                                                     │
+  │ Catalog API (free, no auth):                                        │
+  │   GET /api/agents/catalog         — 124+ agents                    │
+  │   GET /api/agents/catalog/:id     — individual agent               │
+  │   GET /api/agents/registry        — registry index                 │
+  │   GET /api/agents/templates       — agent scaffolds                │
+  │   GET /.well-known/ai-plugin.json — ACP discovery                  │
+  │   GET /health                     — wallet, Birdeye, uptime        │
+  │                                                                     │
+  │ Deploy anywhere:                                                    │
+  │   Fly.io:  cd gateway && fly deploy                                │
+  │   Vercel:  vercel --cwd gateway                                    │
+  │   Railway: connect repo, set build dir = gateway                   │
+  └─────────────────────────────────────────────────────────────────────┘
