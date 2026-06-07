@@ -1,21 +1,12 @@
 ---
 name: pump-token-lifecycle
-description: Full token lifecycle from creation through bonding curve trading, graduation
-  detection, AMM migration, fee collection, and volume tracking on Solana using PumpSdk
-  and OnlinePumpSdk.
+description: "Full token lifecycle from creation through bonding curve trading, graduation detection, AMM migration, fee collection, and volume tracking on Solana using PumpSdk and OnlinePumpSdk."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
+    homepage: https://github.com/8bitsats/pump-fun-sdk
     requires:
       env:
-      - SOLANA_RPC_URL
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-token-lifecycle
-  - https://x402.wtf/skills/pump-token-lifecycle
-homepage: https://x402.wtf/skills/pump-token-lifecycle
+        - SOLANA_RPC_URL
 ---
 
 # Token Lifecycle — Create, Trade, Graduate, Migrate & Collect

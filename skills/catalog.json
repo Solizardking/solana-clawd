@@ -1258,5 +1258,85 @@
     "manifest": "https://x402.wtf/skills/sponge-wallet/manifest.json",
     "attested": true,
     "attested_at": "2026-06-04"
+  },
+  {
+    "slug": "UltraThink-SKill",
+    "name": "UltraThink",
+    "description": "Deep reasoning and ultra-thinking patterns for complex multi-step problems.",
+    "category": "Utilities",
+    "homepage": "https://x402.wtf/skills/UltraThink-SKill",
+    "manifest": "https://x402.wtf/skills/UltraThink-SKill/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "agent-auth",
+    "name": "agent-auth",
+    "description": "Solana-native agent identity and authentication — SIWS, CAAP/1.0 on-chain attestation, Phala TEE confidential compute, Clerk identity bridge, and CLAWD token-gated subscription tiers.",
+    "category": "Utilities",
+    "homepage": "https://x402.wtf/skills/agent-auth",
+    "manifest": "https://x402.wtf/skills/agent-auth/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "pay",
+    "name": "pay",
+    "description": "User-authorized paid HTTP/API access for agents through local Pay MCP and TouchID gated payments (x402 MPP HTTP 402). Covers search, scraping, enrichment, AI/media generation, blockchain data, and more.",
+    "category": "Utilities",
+    "homepage": "https://x402.wtf/skills/pay",
+    "manifest": "https://x402.wtf/skills/pay/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "gemini-antigravity",
+    "name": "gemini-antigravity",
+    "description": "Run code-execution tasks in an isolated Linux sandbox using the Gemini Antigravity Managed Agent. Provisions a fresh environment with Python, Node.js, and 4-CPU/16GB RAM per invocation.",
+    "category": "Media / Devices",
+    "homepage": "https://x402.wtf/skills/gemini-antigravity",
+    "manifest": "https://x402.wtf/skills/gemini-antigravity/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "gemini-deep-research",
+    "name": "gemini-deep-research",
+    "description": "Run autonomous multi-step web research with citations using the Gemini Deep Research Agent. Supports collaborative planning, visualizations, MCP servers, file search, and multimodal inputs.",
+    "category": "Media / Devices",
+    "homepage": "https://x402.wtf/skills/gemini-deep-research",
+    "manifest": "https://x402.wtf/skills/gemini-deep-research/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "nano-banana",
+    "name": "nano-banana",
+    "description": "Generate and edit images using Nano Banana 2 (Gemini 3.1 Flash Image) with Google Search grounding, up to 4K, 14 reference images, video-to-image, and thinking mode.",
+    "category": "Media / Devices",
+    "homepage": "https://x402.wtf/skills/nano-banana",
+    "manifest": "https://x402.wtf/skills/nano-banana/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "veo-video",
+    "name": "veo-video",
+    "description": "Generate cinematic 8-second videos with native audio using Veo 3.1. Supports portrait/landscape, video extension, frame interpolation, reference images, and up to 4K resolution.",
+    "category": "Media / Devices",
+    "homepage": "https://x402.wtf/skills/veo-video",
+    "manifest": "https://x402.wtf/skills/veo-video/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "solana-dev-skill-main",
+    "name": "solana-dev",
+    "description": "End-to-end Solana development patterns — programs, clients, testing, deployment, and toolchain setup.",
+    "category": "DeFi / Solana",
+    "homepage": "https://x402.wtf/skills/solana-dev-skill-main",
+    "manifest": "https://x402.wtf/skills/solana-dev-skill-main/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
   }
 ]

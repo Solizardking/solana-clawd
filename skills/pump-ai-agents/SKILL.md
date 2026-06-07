@@ -1,18 +1,9 @@
 ---
 name: pump-ai-agents
-description: AI agent integration layer for the Pump SDK — agent instruction files,
-  .well-known discovery, LLM context documents, 15+ skill files, MCP server prompts,
-  and terminal management rules for GitHub Copilot, Claude, and Gemini.
+description: "AI agent integration layer for the Pump SDK — agent instruction files, .well-known discovery, LLM context documents, 15+ skill files, MCP server prompts, and terminal management rules for GitHub Copilot, Claude, and Gemini."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-ai-agents
-  - https://x402.wtf/skills/pump-ai-agents
-homepage: https://x402.wtf/skills/pump-ai-agents
+    homepage: https://github.com/8bitsats/pump-fun-sdk
 ---
 
 # AI Agent Integration — Agent Scaffolding & Discovery

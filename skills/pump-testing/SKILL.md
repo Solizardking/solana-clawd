@@ -1,18 +1,9 @@
 ---
 name: pump-testing
-description: Multi-language test infrastructure for the Pump SDK — Rust unit/integration/security/performance
-  tests, TypeScript Jest tests, Python fuzz tests, shell test orchestration, Criterion
-  benchmarks, and CI quality gates.
+description: "Multi-language test infrastructure for the Pump SDK — Rust unit/integration/security/performance tests, TypeScript Jest tests, Python fuzz tests, shell test orchestration, Criterion benchmarks, and CI quality gates."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-testing
-  - https://x402.wtf/skills/pump-testing
-homepage: https://x402.wtf/skills/pump-testing
+    homepage: https://github.com/8bitsats/pump-fun-sdk
 ---
 
 # Testing & Quality — Multi-Language Test Infrastructure

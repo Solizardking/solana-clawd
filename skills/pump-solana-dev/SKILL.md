@@ -1,21 +1,12 @@
 ---
 name: pump-solana-dev
-description: Solana development patterns used in the Pump SDK — Anchor IDL-based program
-  interaction, SPL Token and Token-2022 management, transaction construction with
-  instruction composition, RPC batching, and cross-program coordination.
+description: "Solana development patterns used in the Pump SDK — Anchor IDL-based program interaction, SPL Token and Token-2022 management, transaction construction with instruction composition, RPC batching, and cross-program coordination."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
+    homepage: https://github.com/8bitsats/pump-fun-sdk
     requires:
       env:
-      - SOLANA_RPC_URL
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-solana-dev
-  - https://x402.wtf/skills/pump-solana-dev
-homepage: https://x402.wtf/skills/pump-solana-dev
+        - SOLANA_RPC_URL
 ---
 
 # Solana Development — Web3.js, Anchor, SPL Tokens & On-Chain Patterns

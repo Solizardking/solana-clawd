@@ -1,18 +1,9 @@
 ---
 name: pump-security
-description: Defense-in-depth security across Rust, TypeScript, and Bash for the Pump
-  SDK — cryptographic key handling, memory zeroization, secure file I/O, input validation,
-  privilege management, dependency auditing, and a 60+ item security checklist.
+description: "Defense-in-depth security across Rust, TypeScript, and Bash for the Pump SDK — cryptographic key handling, memory zeroization, secure file I/O, input validation, privilege management, dependency auditing, and a 60+ item security checklist."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-security
-  - https://x402.wtf/skills/pump-security
-homepage: https://x402.wtf/skills/pump-security
+    homepage: https://github.com/8bitsats/pump-fun-sdk
 ---
 
 # Security Practices — Cryptographic Safety, Memory Zeroization & Hardened I/O

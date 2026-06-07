@@ -1,23 +1,13 @@
 ---
 name: pump-shell-scripts
-description: Production-quality Bash scripts for Solana vanity generation, keypair
-  verification, batch operations, dependency auditing, and test orchestration — with
-  security-hardened patterns including file permissions, input validation, and cleanup
-  traps.
+description: "Production-quality Bash scripts for Solana vanity generation, keypair verification, batch operations, dependency auditing, and test orchestration — with security-hardened patterns including file permissions, input validation, and cleanup traps."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
+    homepage: https://github.com/8bitsats/pump-fun-sdk
     requires:
       bins:
-      - bash
-      - solana-keygen
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-shell-scripts
-  - https://x402.wtf/skills/pump-shell-scripts
-homepage: https://x402.wtf/skills/pump-shell-scripts
+        - bash
+        - solana-keygen
 ---
 
 # Shell Scripting & CLI Tools — Production Bash Scripts

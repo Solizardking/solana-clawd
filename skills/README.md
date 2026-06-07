@@ -8,7 +8,7 @@
 ```
   ╔═══════════════════════════════════════════════════════════════════╗
   ║   O P E N C L A W D   S K I L L S   C A T A L O G               ║
-  ║   130+ installable agent skill packs                             ║
+  ║   140+ installable agent skill packs                             ║
   ╠═══════════════════════════════════════════════════════════════════╣
   ║                                                                   ║
   ║  🦀 Perps          vulcan (18) · imperial (11)                   ║
@@ -213,8 +213,12 @@ pump.fun skills/
 | `gifgrep` | GIF search + frame extraction |
 | `canvas` | canvas/drawing integration |
 | `gemini` | Google Gemini API |
+| `gemini-antigravity` | Gemini Antigravity — isolated Linux sandbox (Python/Node, 4-CPU/16GB) |
+| `gemini-deep-research` | Gemini Deep Research — autonomous multi-step web research with citations |
+| `nano-banana` | Nano Banana 2 — Gemini 3.1 Flash image gen, 4K, grounding, video-to-image |
+| `nano-banana-pro` | Nano Banana Pro — Gemini 3 Pro image generation + editing |
+| `veo-video` | Veo 3.1 — cinematic 8-sec video with native audio, up to 4K |
 | `sag` | short-form audio generation |
-| `nano-banana-pro` | Nano Banana Pro hardware integration |
 | `nano-pdf` | PDF extraction + parsing |
 | `summarize` | document summarization |
 | `songsee` | song recognition (Shazam-style) |
@@ -284,6 +288,8 @@ pump.fun skills/
 | `sponge-wallet` | sponge wallet operations |
 | `model-usage` | model cost + token usage tracking |
 | `UltraThink-SKill` | deep reasoning + ultra-thinking patterns |
+| `agent-auth` | Solana agent identity — SIWS, CAAP attestation, TEE, CLAWD token gates |
+| `pay` | user-authorized paid API access via x402/HTTP 402 (search, scrape, AI, and more) |
 
 ---
 
@@ -291,7 +297,7 @@ pump.fun skills/
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  130+ SKILLS  ·  x402.wtf/skills  ·  x402.wtf/skills             ║
+║  140+ SKILLS  ·  x402.wtf/skills  ·  x402.wtf/skills             ║
 ╠════════════════════════╦═════════════════════════════════════════════════╣
 ║  PERPS (29)            ║  vulcan × 18  ·  imperial × 11                 ║
 ╠════════════════════════╬═════════════════════════════════════════════════╣
@@ -302,8 +308,9 @@ pump.fun skills/
 ║  DEV TOOLS (9)         ║  github · tmux · oracle · skill-creator        ║
 ║                        ║  mcporter · claude-code · clawdhub · session   ║
 ╠════════════════════════╬═════════════════════════════════════════════════╣
-║  MEDIA/AI (15)         ║  whisper × 2 · image-gen · tts · voice        ║
-║                        ║  video-frames · camsnap · gifgrep · gemini     ║
+║  MEDIA/AI (20)         ║  whisper × 2 · image-gen · tts · voice        ║
+║                        ║  gemini × 3 · veo-video · nano-banana × 2     ║
+║                        ║  video-frames · camsnap · gifgrep · nano-pdf   ║
 ╠════════════════════════╬═════════════════════════════════════════════════╣
 ║  MESSAGING (8)         ║  slack · discord · imsg · himalaya · wacli    ║
 ╠════════════════════════╬═════════════════════════════════════════════════╣
@@ -313,7 +320,8 @@ pump.fun skills/
 ╠════════════════════════╬═════════════════════════════════════════════════╣
 ║  LOCAL/WEB (5)         ║  food-order · ordercli · goplaces · weather   ║
 ╠════════════════════════╬═════════════════════════════════════════════════╣
-║  UTILITIES (6)         ║  1password · eightctl · peekaboo · UltraThink ║
+║  UTILITIES (8)         ║  1password · eightctl · peekaboo · UltraThink ║
+║                        ║  agent-auth · pay                              ║
 ╚════════════════════════╩═════════════════════════════════════════════════╝
 ```
 
@@ -361,6 +369,6 @@ Publish to the catalog: **[x402.wtf/skills](https://x402.wtf/skills)** · **[x40
   ╚═════════════════════════════════════════════════════════════════╝
 ```
 
-*[x402.wtf](https://x402.wtf) · [x402.wtf](https://x402.wtf) · [github.com/solizardking/solanaclawd](https://github.com/solizardking/solanaclawd)*
+*[x402.wtf](https://x402.wtf) · [x402.wtf](https://x402.wtf) · [github.com/solizardking/solana-clawd](https://github.com/solizardking/solana-clawd)*
 
 </div>

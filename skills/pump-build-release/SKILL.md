@@ -1,18 +1,9 @@
 ---
 name: pump-build-release
-description: Build and release pipeline for the Pump SDK — tsup TypeScript builds,
-  Cargo release profiles, semantic release with commitizen, npm publishing, linting,
-  Makefile targets, Vercel deployment, and MCP server distribution.
+description: "Build and release pipeline for the Pump SDK — tsup TypeScript builds, Cargo release profiles, semantic release with commitizen, npm publishing, linting, Makefile targets, Vercel deployment, and MCP server distribution."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-build-release
-  - https://x402.wtf/skills/pump-build-release
-homepage: https://x402.wtf/skills/pump-build-release
+    homepage: https://github.com/8bitsats/pump-fun-sdk
 ---
 
 # Build & Release — SDK Build Pipeline & Publishing
@@ -72,7 +63,7 @@ Commit format: `type(scope): description`
 
 ```bash
 npm publish --access public
-# Package: @nirholas/pump-sdk
+# Package: @8bitsats/pump-sdk
 ```
 
 ## Vercel Website Deployment

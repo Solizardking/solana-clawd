@@ -1,18 +1,9 @@
 ---
 name: pump-fee-system
-description: Complete Pump protocol fee system — tiered protocol fees based on market
-  cap, creator fee collection across two programs, basis point arithmetic, and ceiling
-  division for dust-safe calculations.
+description: "Complete Pump protocol fee system — tiered protocol fees based on market cap, creator fee collection across two programs, basis point arithmetic, and ceiling division for dust-safe calculations."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-fee-system
-  - https://x402.wtf/skills/pump-fee-system
-homepage: https://x402.wtf/skills/pump-fee-system
+    homepage: https://github.com/8bitsats/pump-fun-sdk
 ---
 
 # Fee System — Tiered Fees, Creator Fees & Protocol Fees

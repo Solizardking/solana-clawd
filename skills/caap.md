@@ -11,9 +11,6 @@
 - Integrating agent auth with Better Auth (`createCaapPlugin`)
 - Building token-gated agent features using CLAWD balance thresholds
 - Implementing agent-to-agent identity proofs on Solana
-- Registering on-chain agent identities via the Metaplex Agent Registry (EIP-8004)
-- Launching agent tokens via Genesis bonding curves with permanent token-agent binding
-- Delegating execution to off-chain operators via Core's Execute lifecycle hook
 
 ## Package
 
@@ -73,95 +70,19 @@ const tier = computeTier(clawdBalance);
 // tier.percentToNext?: number (0–100)
 ```
 
-### Phase 5 — On-Chain Identity (Metaplex Agent Registry)
-
-Register a globally discoverable on-chain agent identity bound to an MPL Core asset, with EIP-8004 metadata, Asset Signer PDA wallet, and execution delegation.
-
-```ts
-import {
-  buildEip8004Registration,
-  buildRegisterIdentityParams,
-  deriveAssetSignerPda,
-  deriveAgentIdentityPda,
-  buildDelegateExecutionParams,
-} from "@clawd/agent-auth-solana";
-
-// 1. Build the EIP-8004 registration document
-const doc = buildEip8004Registration({
-  name: "My Agent",
-  description: "An autonomous agent that...",
-  image: "https://arweave.net/avatar-hash",
-  assetPublicKey: "<CORE_ASSET>",
-  services: [
-    { name: "A2A", endpoint: "https://myagent.com/agent-card.json", version: "0.3.0" },
-    { name: "MCP", endpoint: "https://myagent.com/mcp", version: "2025-06-18" },
-  ],
-  supportedTrust: ["reputation", "crypto-economic"],
-  x402Support: true,
-});
-
-// 2. Derive PDAs
-const identityPda = deriveAgentIdentityPda(assetPublicKey);
-const walletPda = deriveAssetSignerPda(assetPublicKey); // agent's wallet, no private key
-
-// 3. Build registerIdentityV1 params → pass to @metaplex-foundation/mpl-agent-registry
-const params = buildRegisterIdentityParams({
-  asset: assetPublicKey,
-  collection: collectionPublicKey,
-  agentRegistrationUri: "https://arweave.net/registration-json",
-});
-
-// 4. Delegate execution to an off-chain operator
-const delegateParams = buildDelegateExecutionParams({
-  agentAsset: assetPublicKey,
-  executiveAuthority: executiveWallet,
-});
-```
-
-### Phase 6 — Token Launch (Genesis Bonding Curve)
-
-Launch an agent token from the Asset Signer PDA with permanent token-agent binding via `setAgentTokenV1`.
-
-```ts
-import { buildGenesisLaunchInput, validateGenesisLaunchInput } from "@clawd/agent-auth-solana";
-
-const input = buildGenesisLaunchInput({
-  agentAsset: "<CORE_ASSET>",
-  setToken: true,        // irreversible — permanent token-agent binding
-  payer: "<PAYER>",
-  tokenName: "Agent Token",
-  tokenSymbol: "AGT",
-  tokenImage: "https://gateway.irys.xyz/your-image-id",
-  tokenDescription: "The official token of my agent",
-  firstBuyAmount: 0.1,   // 0.1 SOL fee-free first buy
-});
-
-const errors = validateGenesisLaunchInput(input);
-// → pass to @metaplex-foundation/genesis to execute
-```
-
-**CLI equivalent:**
-
-```bash
-mplx genesis launch create --launchType bonding-curve \
-  --name "Agent Token" --symbol "AGT" \
-  --image "https://gateway.irys.xyz/your-image-hash" \
-  --agentAsset <AGENT_CORE_ASSET_ADDRESS> --agentSetToken
-```
-
 ## Tier Thresholds
 
-| Tier    | CLAWD Required | Notes                        |
-|---------|---------------|------------------------------|
-| free    | 0             | Basic read access            |
-| bronze  | 100,000       | DAS lookup, peer card        |
-| silver  | 500,000       | History, multi-agent mgmt    |
-| gold    | 1,000,000     | Webhooks, team accounts      |
+| Tier    | CLAWD Required | Notes                     |
+|---------|---------------|---------------------------|
+| free    | 0             | Basic read access         |
+| bronze  | 100,000       | DAS lookup, peer card     |
+| silver  | 500,000       | History, multi-agent mgmt |
+| gold    | 1,000,000     | Webhooks, team accounts   |
 | diamond | 5,000,000     | Dedicated node, SLA, white-label |
 
 ## Better Auth Plugin
 
-Registers eight endpoints on a Better Auth server covering CAAP attestation, Metaplex identity registration, execution delegation, and token launch:
+Registers three CAAP endpoints on a Better Auth server:
 
 ```ts
 import { betterAuth } from "better-auth";
@@ -176,24 +97,15 @@ export const auth = betterAuth({
       clawdMint: "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump",
       enableSubscriptionTiers: true,
       enableDasAttestation: true,
-      identityRpcUrl: process.env.SOLANA_RPC_URL,  // optional
     }),
   ],
 });
 ```
 
 **Registered endpoints:**
-
-| Endpoint | Method | Description |
-|---|---|---|
-| `/caap/attest` | POST | Full attestation + wallet snapshot + tier |
-| `/caap/status/:agentId` | GET | Lightweight verified/unverified check |
-| `/caap/discovery` | GET | CAAP/1.0 protocol discovery document |
-| `/agent/identity/register` | POST | Build EIP-8004 doc + registerIdentityV1 params |
-| `/agent/identity/verify/:asset` | GET | Check on-chain Metaplex Agent Registry registration |
-| `/agent/identity/delegate` | POST | Build delegateExecutionV1 params |
-| `/agent/token/set` | POST | Build setAgentTokenV1 params (irreversible binding) |
-| `/agent/token/launch` | POST | Build Genesis bonding curve launch input |
+- `POST /caap/attest` — full attestation + wallet snapshot + tier
+- `GET  /caap/status/:agentId?wallet=` — lightweight verified/unverified
+- `GET  /caap/discovery` — CAAP/1.0 protocol discovery document
 
 ## Client Helpers
 
@@ -218,22 +130,6 @@ const snapshot = await fetchWalletSnapshot(walletAddress, opts);
 // snapshot: { walletAddress, solBalance, clawdBalance, tokenAccounts, fetchedAt }
 ```
 
-## On-Chain Identity Verification
-
-```ts
-import { verifyAgentRegistration, fetchAgentRegistrationDoc } from "@clawd/agent-auth-solana";
-
-// Check if an MPL Core asset has a registered identity
-const result = await verifyAgentRegistration(assetPublicKey, rpcUrl);
-// result: { registered: boolean, identityPda?: string, uri?: string }
-
-// Fetch the full EIP-8004 registration document
-if (result.uri) {
-  const doc = await fetchAgentRegistrationDoc(result.uri);
-  // doc: { name, description, services[], x402Support, agentToken, ... }
-}
-```
-
 ## Server-Side Hash Verification
 
 ```ts
@@ -247,36 +143,7 @@ const valid = verifyCaapAttestation(hash, agentId, wallet, mint);
 
 - Default CLAWD mint: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
 - Protocol version: `CAAP/1.0`
-- Metaplex Agent Registry: `solana:101:metaplex`
-- EIP-8004 schema: `https://eips.ethereum.org/EIPS/eip-8004#registration-v1`
-- Genesis API base: `https://api.metaplex.com`
 - Token program: `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`
-
-## Architecture
-
-```
-┌──────────────────────────────────────────────────────┐
-│                  CAAP/1.0 Protocol                    │
-├──────────────────────────────────────────────────────┤
-│  Phase 1: SIWS (Sign In With Solana)                 │
-│  Phase 2: DAS Verification (Helius NFT check)        │
-│  Phase 3: Token Attestation (CLAWD balance)          │
-│  Phase 4: Subscription Tier (gating)                 │
-├──────────────────────────────────────────────────────┤
-│  Metaplex Agent Identity (Global On-Chain)            │
-│  ├─ EIP-8004 Registration Document                   │
-│  ├─ AgentIdentity PDA (discoverable)                 │
-│  ├─ Asset Signer PDA (agent wallet, no private key)  │
-│  ├─ Execution Delegate Record (off-chain operator)   │
-│  └─ setAgentTokenV1 (permanent token binding)        │
-├──────────────────────────────────────────────────────┤
-│  Genesis Token Launch                                 │
-│  ├─ Bonding Curve from Agent PDA                     │
-│  ├─ Creator Fees → Agent PDA                         │
-│  ├─ First Buy (fee-free)                             │
-│  └─ Raydium CPMM Graduation                          │
-└──────────────────────────────────────────────────────┘
-```
 
 ## Demo and Spec
 

@@ -1,21 +1,12 @@
 ---
 name: pump-solana-wallet
-description: Secure Solana wallet generation using official Solana Labs libraries
-  — Ed25519 keypairs, memory zeroization, vanity address generation, offline-only
-  operation, and multi-language implementations (Rust, TypeScript, Bash).
+description: "Secure Solana wallet generation using official Solana Labs libraries — Ed25519 keypairs, memory zeroization, vanity address generation, offline-only operation, and multi-language implementations (Rust, TypeScript, Bash)."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
+    homepage: https://github.com/8bitsats/pump-fun-sdk
     requires:
       bins:
-      - solana-keygen
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-solana-wallet
-  - https://x402.wtf/skills/pump-solana-wallet
-homepage: https://x402.wtf/skills/pump-solana-wallet
+        - solana-keygen
 ---
 
 # Solana Wallet — Key Generation & Security

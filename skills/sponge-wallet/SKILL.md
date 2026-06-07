@@ -1,23 +1,16 @@
 ---
 name: sponge-wallet
 version: 0.2.2
-description: Crypto wallet, token swaps, cross-chain bridges, and access to paid external
-  services (search, image gen, web scraping, AI, and more) via x402 payments.
+description: Crypto wallet, token swaps, cross-chain bridges, and access to paid external services (search, image gen, web scraping, AI, and more) via x402 payments.
 homepage: https://wallet.paysponge.com
 metadata:
   openclaw:
-    emoji: 🧽
+    emoji: "\U0001F9FD"
     category: finance
     primaryEnv: SPONGE_API_KEY
     requires:
       env:
-      - SPONGE_API_KEY
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/sponge-wallet
-  - https://x402.wtf/skills/sponge-wallet
+        - SPONGE_API_KEY
 ---
 
 # Sponge Wallet API — Agent Skills Guide (OpenClawd Edition)

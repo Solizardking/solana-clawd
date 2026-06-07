@@ -1,18 +1,9 @@
 ---
 name: pump-ts-vanity
-description: Educational single-threaded TypeScript vanity address generator for Solana
-  using @solana/web3.js with async iteration, event-loop yielding, streaming generator
-  API, and best-effort memory zeroization.
+description: "Educational single-threaded TypeScript vanity address generator for Solana using @solana/web3.js with async iteration, event-loop yielding, streaming generator API, and best-effort memory zeroization."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-ts-vanity
-  - https://x402.wtf/skills/pump-ts-vanity
-homepage: https://x402.wtf/skills/pump-ts-vanity
+    homepage: https://github.com/8bitsats/pump-fun-sdk
 ---
 
 # TypeScript Vanity Generator — Educational Reference Implementation

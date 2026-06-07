@@ -1,20 +1,12 @@
 ---
 name: pump-token-incentives
-description: Volume-based PUMP token reward system with day-indexed epochs, pro-rata
-  distribution, accumulator tracking, and cross-program claiming on Solana.
+description: "Volume-based PUMP token reward system with day-indexed epochs, pro-rata distribution, accumulator tracking, and cross-program claiming on Solana."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
+    homepage: https://github.com/8bitsats/pump-fun-sdk
     requires:
       env:
-      - SOLANA_RPC_URL
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-token-incentives
-  - https://x402.wtf/skills/pump-token-incentives
-homepage: https://x402.wtf/skills/pump-token-incentives
+        - SOLANA_RPC_URL
 ---
 
 # Token Incentives — Volume-Based PUMP Token Rewards

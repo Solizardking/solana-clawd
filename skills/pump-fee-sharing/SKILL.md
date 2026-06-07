@@ -1,21 +1,12 @@
 ---
 name: pump-fee-sharing
-description: Configure and distribute creator fees to multiple shareholders using
-  the PumpFees program with BPS-based share allocation, admin management, and cross-program
-  fee consolidation for graduated tokens.
+description: "Configure and distribute creator fees to multiple shareholders using the PumpFees program with BPS-based share allocation, admin management, and cross-program fee consolidation for graduated tokens."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
+    homepage: https://github.com/8bitsats/pump-fun-sdk
     requires:
       env:
-      - SOLANA_RPC_URL
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-fee-sharing
-  - https://x402.wtf/skills/pump-fee-sharing
-homepage: https://x402.wtf/skills/pump-fee-sharing
+        - SOLANA_RPC_URL
 ---
 
 # Fee Sharing — Multi-Party Creator Fee Distribution

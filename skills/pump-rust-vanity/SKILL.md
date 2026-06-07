@@ -1,21 +1,12 @@
 ---
 name: pump-rust-vanity
-description: Production-grade multi-threaded Rust vanity address generator for Solana
-  — 100K+ keys/sec using Rayon parallel iterators with solana-sdk, Base58 pattern
-  matching, prefix/suffix support, security-hardened file output, and Criterion benchmarks.
+description: "Production-grade multi-threaded Rust vanity address generator for Solana — 100K+ keys/sec using Rayon parallel iterators with solana-sdk, Base58 pattern matching, prefix/suffix support, security-hardened file output, and Criterion benchmarks."
 metadata:
   openclaw:
-    homepage: https://github.com/nirholas/pump-fun-sdk
+    homepage: https://github.com/8bitsats/pump-fun-sdk
     requires:
       bins:
-      - cargo
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pump-rust-vanity
-  - https://x402.wtf/skills/pump-rust-vanity
-homepage: https://x402.wtf/skills/pump-rust-vanity
+        - cargo
 ---
 
 # Rust Vanity Generator — High-Performance Solana Address Mining
