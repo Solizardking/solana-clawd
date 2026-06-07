@@ -289,6 +289,19 @@ This protocol sits under the OpenClawd Solana-native agent economy:
 - admin runbooks for emergency unlocks
 - **All powered by [x402.wtf](https://x402.wtf)** — the HTTP 402 micropayment protocol on Solana USDC
 
+### Connected modules
+
+| Module | Path | Role |
+|---|---|---|
+| **Agents catalog** | [`../agents/`](../agents/) | 124+ Solana agent JSONs; staking is the commitment layer for Core assets minted here |
+| **Agent hub** | [`../agents/README.md`](../agents/README.md) | Agent lifecycle: mint → register → stake → index → route rewards |
+| **Gateway** | [`../gateway/`](../gateway/) | Serves agent catalog via REST; `/agents/stake` flows call into this protocol |
+| **CLAWD Router** | [`../clawdrouter/`](../clawdrouter/) | Routes gacha fees into `clawd-stake` reward protocol |
+| **Programs** | [`../programs/programs/`](../programs/programs/) | On-chain AI inference protocol with token staking |
+| **Main repo** | [`../README.md`](../README.md) | Full OpenClawd documentation |
+
+See [`../agents/README.md`](../agents/README.md) § "Agent Staking Is Part Of The Agent Hub" for the hub's perspective on staking as a first-class agent lifecycle state.
+
 ## Safety Notes
 
 - This is a lock/unlock primitive, not a yield product.

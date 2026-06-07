@@ -2150,6 +2150,7 @@ Full 493-route map: [`convex/x402-api-routes.json`](convex/x402-api-routes.json)
 | 🪙 Token CA | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
 | 📈 pump.fun | [Trade $CLAWD](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump) |
 | 📊 DexScreener | [Chart](https://dexscreener.com/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump) |
+| 🤗 HF Homebase | [solanaclawd/homebase](https://huggingface.co/spaces/solanaclawd/homebase) · [clawd-computer](https://huggingface.co/spaces/solanaclawd/clawd-computer) |
 
 </div>
 
