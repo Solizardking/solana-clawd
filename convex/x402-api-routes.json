@@ -1,0 +1,736 @@
+{
+  "generated": "2026-06-07",
+  "total_routes": 493,
+  "framework": "Next.js App Router (src/app/api/)",
+  "hosts": {
+    "primary": "https://x402.wtf",
+    "open_builder": "https://ship.x402.wtf"
+  },
+  "categories": {
+    "admin": [
+      { "method": "POST", "path": "/api/admin/seed-endpoints" }
+    ],
+    "agent_legacy": [
+      { "method": "POST", "path": "/api/agent/chat" }
+    ],
+    "agents": [
+      { "method": "GET", "path": "/api/agents" },
+      { "method": "GET", "path": "/api/agents/acp" },
+      { "method": "POST", "path": "/api/agents/attest" },
+      { "method": "GET", "path": "/api/agents/catalog" },
+      { "method": "GET", "path": "/api/agents/catalog/[identifier].json" },
+      { "method": "GET", "path": "/api/agents/characters" },
+      { "method": "POST", "path": "/api/agents/chat" },
+      { "method": "POST", "path": "/api/agents/deploy" },
+      { "method": "GET", "path": "/api/agents/deployments" },
+      { "method": "GET", "path": "/api/agents/library" },
+      { "method": "POST", "path": "/api/agents/library/chat" },
+      { "method": "GET,POST", "path": "/api/agents/mint" },
+      { "method": "GET", "path": "/api/agents/mint/asset/[address]" },
+      { "method": "POST", "path": "/api/agents/mint/delegate" },
+      { "method": "GET", "path": "/api/agents/mint/health" },
+      { "method": "POST", "path": "/api/agents/mint/register" },
+      { "method": "POST", "path": "/api/agents/mint/register-executive" },
+      { "method": "POST", "path": "/api/agents/mint/set-token" },
+      { "method": "GET", "path": "/api/agents/mint/status/[signature]" },
+      { "method": "POST", "path": "/api/agents/peer-card" },
+      { "method": "GET", "path": "/api/agents/peer-card/[agentId]" },
+      { "method": "GET", "path": "/api/agents/registry" },
+      { "method": "GET", "path": "/api/agents/registry/[identifier].json" },
+      { "method": "GET", "path": "/api/agents/runtime" },
+      { "method": "GET", "path": "/api/agents/skills" },
+      { "method": "POST", "path": "/api/agents/stop" },
+      { "method": "GET", "path": "/api/agents/templates" }
+    ],
+    "amm": [
+      { "method": "GET", "path": "/api/amm/quote" },
+      { "method": "GET", "path": "/api/amm/stream", "notes": "SSE" }
+    ],
+    "assembly_ai": [
+      { "method": "POST", "path": "/api/assembly/chat" },
+      { "method": "POST", "path": "/api/assembly/chat/completions" },
+      { "method": "POST", "path": "/api/assembly/token" },
+      { "method": "GET,POST", "path": "/api/assembly/transcripts" },
+      { "method": "GET", "path": "/api/assembly/transcripts/[id]" },
+      { "method": "POST", "path": "/api/assembly/voice-agents/deploy" }
+    ],
+    "auth": [
+      { "method": "GET,POST,PUT,PATCH,DELETE", "path": "/api/auth/[[...all]]", "notes": "Better Auth catch-all" },
+      { "method": "GET", "path": "/api/auth/callback" },
+      { "method": "POST", "path": "/api/auth/challenge" },
+      { "method": "GET,POST", "path": "/api/auth/clawd-holder" },
+      { "method": "GET", "path": "/api/auth/debug" },
+      { "method": "GET", "path": "/api/auth/discord" },
+      { "method": "GET", "path": "/api/auth/discord/callback" },
+      { "method": "GET", "path": "/api/auth/get-session" },
+      { "method": "GET", "path": "/api/auth/github" },
+      { "method": "GET", "path": "/api/auth/google" },
+      { "method": "GET", "path": "/api/auth/google/callback" },
+      { "method": "POST", "path": "/api/auth/logout" },
+      { "method": "GET", "path": "/api/auth/session" },
+      { "method": "GET", "path": "/api/auth/social" },
+      { "method": "GET", "path": "/api/auth/twitter" },
+      { "method": "GET", "path": "/api/auth/twitter/callback" },
+      { "method": "POST", "path": "/api/auth/validate-key" },
+      { "method": "POST", "path": "/api/auth/verify" }
+    ],
+    "automation": [
+      { "method": "GET", "path": "/api/automation/status" }
+    ],
+    "backroom": [
+      { "method": "GET,POST,OPTIONS", "path": "/api/backroom-3d/[...path]" },
+      { "method": "GET,POST,OPTIONS", "path": "/api/backroom/[...path]" },
+      { "method": "GET", "path": "/api/backroom/feed/agent-setup.md" },
+      { "method": "GET", "path": "/api/backroom/feed/catalog" },
+      { "method": "GET", "path": "/api/backroom/feed/channels" },
+      { "method": "POST", "path": "/api/backroom/feed/push" },
+      { "method": "GET,POST", "path": "/api/backroom/feed/snapshot" },
+      { "method": "GET", "path": "/api/backroom/feed/ws-url", "notes": "returns wss:// URL" }
+    ],
+    "backrooms": [
+      { "method": "GET", "path": "/api/backrooms/arena" },
+      { "method": "POST", "path": "/api/backrooms/chat" },
+      { "method": "GET", "path": "/api/backrooms/feed/session" },
+      { "method": "GET", "path": "/api/backrooms/feed/snapshot" },
+      { "method": "GET", "path": "/api/backrooms/firecrawl/dreams/context" },
+      { "method": "GET", "path": "/api/backrooms/firecrawl/dreams/status" },
+      { "method": "POST", "path": "/api/backrooms/firecrawl/scrape" },
+      { "method": "POST", "path": "/api/backrooms/generate" },
+      { "method": "GET", "path": "/api/backrooms/handoff" },
+      { "method": "GET", "path": "/api/backrooms/health" },
+      { "method": "GET,POST", "path": "/api/backrooms/perps/[...path]" },
+      { "method": "GET", "path": "/api/backrooms/pump/[...path]" },
+      { "method": "GET", "path": "/api/backrooms/solana/[...path]" },
+      { "method": "GET,POST", "path": "/api/backrooms/stocks/[...path]" }
+    ],
+    "birdeye": [
+      { "method": "GET", "path": "/api/birdeye/net-worth" },
+      { "method": "GET", "path": "/api/birdeye/ohlcv" },
+      { "method": "GET", "path": "/api/birdeye/portfolio" },
+      { "method": "GET", "path": "/api/birdeye/pulse" },
+      { "method": "GET", "path": "/api/birdeye/search" },
+      { "method": "GET", "path": "/api/birdeye/token" },
+      { "method": "GET", "path": "/api/birdeye/trending" }
+    ],
+    "bot_monitor": [
+      { "method": "GET", "path": "/api/bot-monitor" },
+      { "method": "POST", "path": "/api/bot-monitor/trade" }
+    ],
+    "box": [
+      { "method": "POST", "path": "/api/box/create" },
+      { "method": "POST", "path": "/api/box/delete" },
+      { "method": "POST", "path": "/api/box/exec" },
+      { "method": "POST,GET,DELETE", "path": "/api/box/files" },
+      { "method": "GET", "path": "/api/box/list" },
+      { "method": "POST", "path": "/api/box/run" },
+      { "method": "GET", "path": "/api/box/search" },
+      { "method": "POST", "path": "/api/box/stream" }
+    ],
+    "brain": [
+      { "method": "GET,POST", "path": "/api/brain" }
+    ],
+    "browser": [
+      { "method": "GET,POST", "path": "/api/browser/profile-sync" },
+      { "method": "POST", "path": "/api/browser/sessions" },
+      { "method": "POST", "path": "/api/browser/trading-agent" },
+      { "method": "GET,DELETE", "path": "/api/browser/trading-agent/[sessionId]" },
+      { "method": "GET", "path": "/api/browser/trading-agent/[sessionId]/stream", "notes": "SSE" }
+    ],
+    "build": [
+      { "method": "POST", "path": "/api/build/chat" },
+      { "method": "POST", "path": "/api/build/sandbox" },
+      { "method": "GET", "path": "/api/build/status" }
+    ],
+    "clawd": [
+      { "method": "POST", "path": "/api/clawd", "notes": "default Anthropic Claude" },
+      { "method": "GET,POST", "path": "/api/clawd/buy-clawd" },
+      { "method": "POST", "path": "/api/clawd/deepseek", "notes": "DeepSeek" },
+      { "method": "GET,POST", "path": "/api/clawd/dream-stream", "notes": "SSE" },
+      { "method": "GET,POST", "path": "/api/clawd/free-terminal" },
+      { "method": "GET,POST,DELETE", "path": "/api/clawd/free-terminal/access" },
+      { "method": "GET,POST", "path": "/api/clawd/free-terminal/burn" },
+      { "method": "GET,POST", "path": "/api/clawd/free-terminal/rewards/lock" },
+      { "method": "POST", "path": "/api/clawd/gemini", "notes": "Google Gemini" },
+      { "method": "POST", "path": "/api/clawd/goblin", "notes": "Goblin mode / xAI Grok" },
+      { "method": "POST", "path": "/api/clawd/google-deepmind" },
+      { "method": "POST", "path": "/api/clawd/grok", "notes": "xAI Grok" },
+      { "method": "POST", "path": "/api/clawd/hermes", "notes": "Hermes / Nous Research" },
+      { "method": "POST", "path": "/api/clawd/minimax" },
+      { "method": "POST", "path": "/api/clawd/openai", "notes": "OpenAI GPT" },
+      { "method": "GET", "path": "/api/clawd/pool" },
+      { "method": "POST", "path": "/api/clawd/redpill", "notes": "RedPill AI" },
+      { "method": "GET", "path": "/api/clawd/supply" },
+      { "method": "POST", "path": "/api/clawd/vision", "notes": "Vision / image understanding" }
+    ],
+    "clawd_mail": [
+      { "method": "POST", "path": "/api/clawdmail/reply" },
+      { "method": "POST", "path": "/api/clawdmail/send" },
+      { "method": "GET", "path": "/api/clawdmail/threads" },
+      { "method": "GET", "path": "/api/clawdmail/threads/[id]" }
+    ],
+    "clawd_monitor": [
+      { "method": "GET,POST", "path": "/api/clawd-monitor" },
+      { "method": "GET,PATCH,DELETE", "path": "/api/clawd-monitor/[id]" },
+      { "method": "POST", "path": "/api/clawd-monitor/[id]/run" }
+    ],
+    "clawd_perps": [
+      { "method": "GET,POST", "path": "/api/clawdperps" },
+      { "method": "GET,POST", "path": "/api/clawdperps/copy" },
+      { "method": "POST,GET", "path": "/api/clawdperps/ooda" }
+    ],
+    "clawd_wallet": [
+      { "method": "GET", "path": "/api/clawd-wallet" }
+    ],
+    "coingecko": [
+      { "method": "GET", "path": "/api/coingecko/clawd-price" },
+      { "method": "GET", "path": "/api/coingecko/solana-price" }
+    ],
+    "darkswap": [
+      { "method": "POST", "path": "/api/darkswap/execute" },
+      { "method": "GET", "path": "/api/darkswap/oracle" },
+      { "method": "GET", "path": "/api/darkswap/order" },
+      { "method": "GET", "path": "/api/darkswap/quote" },
+      { "method": "GET", "path": "/api/darkswap/safety" },
+      { "method": "GET", "path": "/api/darkswap/tokens" }
+    ],
+    "dex": [
+      { "method": "GET", "path": "/api/dex/ohlcv" },
+      { "method": "GET", "path": "/api/dex/token-data" }
+    ],
+    "dexscreener": [
+      { "method": "POST", "path": "/api/dexscreener/fire-loop/start" },
+      { "method": "GET", "path": "/api/dexscreener/fire-loop/status" },
+      { "method": "POST", "path": "/api/dexscreener/fire-loop/stop" },
+      { "method": "GET", "path": "/api/dexscreener/plasma" },
+      { "method": "GET", "path": "/api/dexscreener/solana" },
+      { "method": "GET", "path": "/api/dexscreener/solana/clawd-fire" },
+      { "method": "GET", "path": "/api/dexscreener/solana/context" },
+      { "method": "POST", "path": "/api/dexscreener/solana/inject" },
+      { "method": "GET", "path": "/api/dexscreener/solana/pairs" },
+      { "method": "GET", "path": "/api/dexscreener/solana/premium" },
+      { "method": "GET", "path": "/api/dexscreener/solana/ranks" },
+      { "method": "POST", "path": "/api/dexscreener/solana/refresh" },
+      { "method": "POST", "path": "/api/dexscreener/solana/refresh-all" },
+      { "method": "GET", "path": "/api/dexscreener/solana/service" },
+      { "method": "GET", "path": "/api/dexscreener/ws/events" },
+      { "method": "POST", "path": "/api/dexscreener/ws/start" },
+      { "method": "GET", "path": "/api/dexscreener/ws/status" },
+      { "method": "POST", "path": "/api/dexscreener/ws/stop" }
+    ],
+    "dflow": [
+      { "method": "GET", "path": "/api/dflow/candlesticks" },
+      { "method": "GET", "path": "/api/dflow/events" },
+      { "method": "POST", "path": "/api/dflow/filter-outcome-mints" },
+      { "method": "GET", "path": "/api/dflow/filters" },
+      { "method": "GET", "path": "/api/dflow/forecast" },
+      { "method": "GET", "path": "/api/dflow/init" },
+      { "method": "GET", "path": "/api/dflow/intent" },
+      { "method": "GET", "path": "/api/dflow/live-data" },
+      { "method": "GET", "path": "/api/dflow/market" },
+      { "method": "GET,POST", "path": "/api/dflow/markets" },
+      { "method": "GET", "path": "/api/dflow/onchain-trades" },
+      { "method": "GET", "path": "/api/dflow/order" },
+      { "method": "GET", "path": "/api/dflow/orderbook" },
+      { "method": "GET", "path": "/api/dflow/outcome-mints" },
+      { "method": "GET", "path": "/api/dflow/positions" },
+      { "method": "GET", "path": "/api/dflow/priority-fees" },
+      { "method": "GET", "path": "/api/dflow/priority-fees/stream", "notes": "SSE" },
+      { "method": "GET", "path": "/api/dflow/search" },
+      { "method": "GET", "path": "/api/dflow/series" },
+      { "method": "POST", "path": "/api/dflow/submit-intent" },
+      { "method": "GET", "path": "/api/dflow/tags" },
+      { "method": "GET", "path": "/api/dflow/tokens" },
+      { "method": "GET", "path": "/api/dflow/trades" }
+    ],
+    "discord": [
+      { "method": "POST", "path": "/api/discord/sync-role" },
+      { "method": "POST,GET", "path": "/api/discord/trading/relay" }
+    ],
+    "environment": [
+      { "method": "GET", "path": "/api/environment/keys" }
+    ],
+    "explorer": [
+      { "method": "GET", "path": "/api/explorer" },
+      { "method": "POST", "path": "/api/explorer/delegate" },
+      { "method": "POST", "path": "/api/explorer/executive/register" },
+      { "method": "GET", "path": "/api/explorer/realtime" },
+      { "method": "GET,POST", "path": "/api/explorer/solana" }
+    ],
+    "firecrawl": [
+      { "method": "GET,POST,PATCH,DELETE,OPTIONS", "path": "/api/firecrawl/[...path]" }
+    ],
+    "gateway": [
+      { "method": "GET,POST", "path": "/api/gateway/install" },
+      { "method": "GET", "path": "/api/gateway/installer" },
+      { "method": "POST", "path": "/api/gateway/mint-free" },
+      { "method": "GET", "path": "/api/gateway/source" },
+      { "method": "GET", "path": "/api/gateway/stats" }
+    ],
+    "gemini": [
+      { "method": "GET,POST,DELETE,PATCH", "path": "/api/gemini/caches" },
+      { "method": "POST", "path": "/api/gemini/image" },
+      { "method": "POST,GET", "path": "/api/gemini/interactions" },
+      { "method": "POST,GET", "path": "/api/gemini/live-token" },
+      { "method": "POST,GET", "path": "/api/gemini/video" }
+    ],
+    "goblin_mode": [
+      { "method": "POST", "path": "/api/goblinmode/enhance" },
+      { "method": "POST", "path": "/api/goblinmode/image" }
+    ],
+    "google_agents": [
+      { "method": "POST", "path": "/api/google-agents/chat" },
+      { "method": "GET,POST", "path": "/api/google-agents/deploy" },
+      { "method": "GET,POST", "path": "/api/google-agents/interactions" },
+      { "method": "GET,POST", "path": "/api/google-agents/live-token" },
+      { "method": "GET", "path": "/api/google-agents/status" }
+    ],
+    "health": [
+      { "method": "GET", "path": "/api/health" }
+    ],
+    "helius": [
+      { "method": "GET,POST,OPTIONS", "path": "/api/helius/das" },
+      { "method": "POST,GET", "path": "/api/helius/explorer-webhook" },
+      { "method": "POST", "path": "/api/helius/sender" },
+      { "method": "GET", "path": "/api/helius/status" },
+      { "method": "GET,POST", "path": "/api/helius/wallet" }
+    ],
+    "imperial": [
+      { "method": "GET", "path": "/api/imperial" },
+      { "method": "GET,POST,PUT,PATCH,DELETE", "path": "/api/imperial/[...path]" },
+      { "method": "GET", "path": "/api/imperial/account/[address]" },
+      { "method": "GET", "path": "/api/imperial/markets" },
+      { "method": "GET,POST", "path": "/api/imperial/orders" },
+      { "method": "DELETE", "path": "/api/imperial/orders/[id]" },
+      { "method": "GET", "path": "/api/imperial/portfolio/[address]" },
+      { "method": "GET", "path": "/api/imperial/positions" },
+      { "method": "POST", "path": "/api/imperial/quote" },
+      { "method": "POST", "path": "/api/imperial/swap" }
+    ],
+    "install": [
+      { "method": "GET", "path": "/api/install/automation" }
+    ],
+    "jupiter": [
+      { "method": "GET", "path": "/api/jupiter/order" },
+      { "method": "GET", "path": "/api/jupiter/price" },
+      { "method": "GET", "path": "/api/jupiter/search" },
+      { "method": "POST", "path": "/api/jupiter/submit" }
+    ],
+    "kernel": [
+      { "method": "GET,POST", "path": "/api/kernel/browsers" },
+      { "method": "GET,DELETE", "path": "/api/kernel/browsers/[id]" },
+      { "method": "GET,POST", "path": "/api/kernel/browsers/[id]/computer" },
+      { "method": "POST", "path": "/api/kernel/browsers/[id]/playwright" }
+    ],
+    "library": [
+      { "method": "GET", "path": "/api/library" }
+    ],
+    "liq": [
+      { "method": "GET", "path": "/api/liq/snapshot" },
+      { "method": "GET", "path": "/api/liq/stream", "notes": "SSE" }
+    ],
+    "livekit": [
+      { "method": "POST", "path": "/api/livekit/token" }
+    ],
+    "magicblock": [
+      { "method": "GET,POST", "path": "/api/magicblock/payments" }
+    ],
+    "mail": [
+      { "method": "POST", "path": "/api/mail/bootstrap" },
+      { "method": "GET", "path": "/api/mail/config" },
+      { "method": "GET,POST", "path": "/api/mail/inboxes" },
+      { "method": "POST", "path": "/api/mail/inboxes/[inboxId]/messages/[messageId]/reply" },
+      { "method": "POST", "path": "/api/mail/inboxes/[inboxId]/messages/send" },
+      { "method": "GET", "path": "/api/mail/inboxes/[inboxId]/threads" },
+      { "method": "GET", "path": "/api/mail/inboxes/[inboxId]/threads/[threadId]" }
+    ],
+    "mcp": [
+      { "method": "GET,POST,DELETE,OPTIONS", "path": "/api/mcp" }
+    ],
+    "meteora": [
+      { "method": "POST", "path": "/api/meteora-swap/add-liquidity" },
+      { "method": "POST", "path": "/api/meteora-swap/build-swap" },
+      { "method": "POST", "path": "/api/meteora-swap/create-pool" },
+      { "method": "GET", "path": "/api/meteora-swap/live-price" },
+      { "method": "GET", "path": "/api/meteora-swap/market-data" },
+      { "method": "GET", "path": "/api/meteora-swap/pool-info" },
+      { "method": "GET", "path": "/api/meteora-swap/quote" },
+      { "method": "GET", "path": "/api/meteora-swap/status" },
+      { "method": "POST", "path": "/api/meteora-swap/submit" }
+    ],
+    "mobile": [
+      { "method": "POST,GET", "path": "/api/mobile/connect" }
+    ],
+    "ollama": [
+      { "method": "GET,POST", "path": "/api/ollama/chat" }
+    ],
+    "open": [
+      { "method": "POST", "path": "/api/open/analyze-edit-intent" },
+      { "method": "POST", "path": "/api/open/apply-ai-code" },
+      { "method": "POST", "path": "/api/open/apply-ai-code-stream", "notes": "SSE" },
+      { "method": "GET", "path": "/api/open/check-vite-errors" },
+      { "method": "GET,POST,DELETE", "path": "/api/open/conversation-state" },
+      { "method": "POST", "path": "/api/open/create-ai-sandbox-v2" },
+      { "method": "POST", "path": "/api/open/create-zip" },
+      { "method": "POST", "path": "/api/open/detect-and-install-packages" },
+      { "method": "POST", "path": "/api/open/extract-brand-styles" },
+      { "method": "POST", "path": "/api/open/generate-ai-code-stream", "notes": "SSE" },
+      { "method": "GET", "path": "/api/open/get-sandbox-files" },
+      { "method": "POST", "path": "/api/open/install-packages" },
+      { "method": "POST", "path": "/api/open/kill-sandbox" },
+      { "method": "POST", "path": "/api/open/restart-vite" },
+      { "method": "POST", "path": "/api/open/run-command-v2" },
+      { "method": "GET", "path": "/api/open/sandbox-status" },
+      { "method": "POST", "path": "/api/open/scrape-screenshot" },
+      { "method": "POST", "path": "/api/open/scrape-url-enhanced" },
+      { "method": "POST,OPTIONS", "path": "/api/open/scrape-website" },
+      { "method": "POST", "path": "/api/open/search" }
+    ],
+    "orchestrator": [
+      { "method": "POST,GET", "path": "/api/orchestrator" }
+    ],
+    "ore": [
+      { "method": "POST", "path": "/api/ore/agent" },
+      { "method": "GET,POST", "path": "/api/ore/daemon" },
+      { "method": "GET", "path": "/api/ore/install" },
+      { "method": "GET", "path": "/api/ore/runs" },
+      { "method": "GET", "path": "/api/ore/state" }
+    ],
+    "pay": [
+      { "method": "GET", "path": "/api/pay/balance" },
+      { "method": "GET", "path": "/api/pay/catalog.json" },
+      { "method": "POST", "path": "/api/pay/curl" },
+      { "method": "GET", "path": "/api/pay/endpoints" },
+      { "method": "GET,POST", "path": "/api/pay/paysh-data" },
+      { "method": "GET", "path": "/api/pay/providers/clawd/lobster-gacha" },
+      { "method": "GET", "path": "/api/pay/providers/clawd/x402" },
+      { "method": "GET", "path": "/api/pay/search" },
+      { "method": "POST", "path": "/api/pay/server-demo" },
+      { "method": "GET", "path": "/api/pay/skills" }
+    ],
+    "percolator": [
+      { "method": "GET", "path": "/api/percolator" },
+      { "method": "GET", "path": "/api/percolator/agent/status" },
+      { "method": "POST,GET", "path": "/api/percolator/devnet-launch" },
+      { "method": "POST", "path": "/api/percolator/launch" },
+      { "method": "GET", "path": "/api/percolator/market/[slab]" },
+      { "method": "GET", "path": "/api/percolator/market/discover" },
+      { "method": "GET", "path": "/api/percolator/markets" },
+      { "method": "GET", "path": "/api/percolator/markets/[slab]" },
+      { "method": "POST,GET", "path": "/api/percolator/markets/register" },
+      { "method": "GET", "path": "/api/percolator/slab/[address]" }
+    ],
+    "perps": [
+      { "method": "GET", "path": "/api/perps" },
+      { "method": "GET,POST", "path": "/api/perps/aggregator" },
+      { "method": "POST", "path": "/api/perps/auth/login/wallet" },
+      { "method": "GET", "path": "/api/perps/auth/nonce" },
+      { "method": "GET", "path": "/api/perps/challenge" },
+      { "method": "POST", "path": "/api/perps/challenge/reverse-vibhu" },
+      { "method": "POST", "path": "/api/perps/clawd-chat" },
+      { "method": "GET", "path": "/api/perps/dex" },
+      { "method": "POST", "path": "/api/perps/invite/activate" },
+      { "method": "POST", "path": "/api/perps/invite/activate-with-referral" },
+      { "method": "GET,POST", "path": "/api/perps/market-maker" },
+      { "method": "POST", "path": "/api/perps/rise/deposit" },
+      { "method": "POST", "path": "/api/perps/rise/place-order" },
+      { "method": "POST", "path": "/api/perps/rise/register-builder" },
+      { "method": "POST", "path": "/api/perps/rise/register-trader" },
+      { "method": "POST", "path": "/api/perps/rise/withdraw" },
+      { "method": "GET", "path": "/api/perps/showcase" },
+      { "method": "POST", "path": "/api/perps/strategy" },
+      { "method": "GET,POST", "path": "/api/perps/v1/[[...path]]" }
+    ],
+    "perps_agent": [
+      { "method": "GET,POST", "path": "/api/perpsagent" }
+    ],
+    "phoenix": [
+      { "method": "GET", "path": "/api/phoenix/candles" },
+      { "method": "GET", "path": "/api/phoenix/exchange" },
+      { "method": "GET", "path": "/api/phoenix/fills" },
+      { "method": "GET", "path": "/api/phoenix/legacy/ladder" },
+      { "method": "GET", "path": "/api/phoenix/legacy/markets" },
+      { "method": "GET", "path": "/api/phoenix/legacy/meta" },
+      { "method": "POST", "path": "/api/phoenix/legacy/quote" },
+      { "method": "POST", "path": "/api/phoenix/legacy/swap-tx" },
+      { "method": "GET", "path": "/api/phoenix/market/[symbol]" },
+      { "method": "GET", "path": "/api/phoenix/markets" },
+      { "method": "GET", "path": "/api/phoenix/meta" },
+      { "method": "GET", "path": "/api/phoenix/orderbook" },
+      { "method": "GET", "path": "/api/phoenix/perp-trader/[authority]/pnl" },
+      { "method": "GET", "path": "/api/phoenix/perp-trader/[authority]/state" },
+      { "method": "GET", "path": "/api/phoenix/perp-trader/[authority]/trades" },
+      { "method": "GET", "path": "/api/phoenix/snapshot" },
+      { "method": "GET", "path": "/api/phoenix/stats-history" },
+      { "method": "GET", "path": "/api/phoenix/trader/[authority]/state" }
+    ],
+    "platform": [
+      { "method": "GET", "path": "/api/platform/admin/dashboard" },
+      { "method": "GET,POST", "path": "/api/platform/admin/launch-mode" },
+      { "method": "GET", "path": "/api/platform/admin/registrations/stream", "notes": "SSE" },
+      { "method": "GET,POST,DELETE", "path": "/api/platform/api-keys" },
+      { "method": "DELETE", "path": "/api/platform/api-keys/[id]" },
+      { "method": "GET", "path": "/api/platform/api-profile" },
+      { "method": "POST", "path": "/api/platform/auth/login" },
+      { "method": "POST", "path": "/api/platform/auth/logout" },
+      { "method": "GET", "path": "/api/platform/auth/me" },
+      { "method": "POST", "path": "/api/platform/auth/neon" },
+      { "method": "POST", "path": "/api/platform/auth/register" },
+      { "method": "POST", "path": "/api/platform/bootstrap" },
+      { "method": "GET,POST", "path": "/api/platform/history/chat" },
+      { "method": "GET,POST", "path": "/api/platform/history/dev" },
+      { "method": "GET,POST", "path": "/api/platform/history/images" },
+      { "method": "GET,POST", "path": "/api/platform/history/trading" },
+      { "method": "POST", "path": "/api/platform/honcho/webhook" },
+      { "method": "GET", "path": "/api/platform/insights" },
+      { "method": "GET,POST", "path": "/api/platform/machines" },
+      { "method": "POST", "path": "/api/platform/machines/handshake" },
+      { "method": "GET", "path": "/api/platform/meta" },
+      { "method": "GET,PUT", "path": "/api/platform/profile" },
+      { "method": "GET", "path": "/api/platform/stats" },
+      { "method": "GET,POST", "path": "/api/platform/usage" },
+      { "method": "POST", "path": "/api/platform/wallets/burner" }
+    ],
+    "pump": [
+      { "method": "POST", "path": "/api/pump/agent" },
+      { "method": "GET", "path": "/api/pump/backroom" },
+      { "method": "GET", "path": "/api/pump/backroom-feed" },
+      { "method": "POST", "path": "/api/pump/buy-tx" },
+      { "method": "GET", "path": "/api/pump/catalog" },
+      { "method": "POST", "path": "/api/pump/clawd/analyze" },
+      { "method": "GET", "path": "/api/pump/clawd/status" },
+      { "method": "GET", "path": "/api/pump/context" },
+      { "method": "GET", "path": "/api/pump/convex/status" },
+      { "method": "POST", "path": "/api/pump/convex/sync" },
+      { "method": "POST", "path": "/api/pump/inject" },
+      { "method": "GET", "path": "/api/pump/intel" },
+      { "method": "GET", "path": "/api/pump/pay-gateway" },
+      { "method": "GET", "path": "/api/pump/pay-quickstart.md" },
+      { "method": "POST", "path": "/api/pump/start" },
+      { "method": "GET", "path": "/api/pump/status" },
+      { "method": "GET", "path": "/api/pump/stream", "notes": "SSE" },
+      { "method": "GET", "path": "/api/pump/summary" },
+      { "method": "GET", "path": "/api/pump/tokens" },
+      { "method": "POST", "path": "/api/pump/vision-agent" }
+    ],
+    "pyth": [
+      { "method": "GET", "path": "/api/pyth/price" }
+    ],
+    "realtime": [
+      { "method": "POST", "path": "/api/realtime/token" }
+    ],
+    "router": [
+      { "method": "GET", "path": "/api/router/catalog" },
+      { "method": "POST", "path": "/api/router/preview" },
+      { "method": "GET", "path": "/api/router/stream", "notes": "SSE" },
+      { "method": "POST", "path": "/api/router/v1/chat/completions", "notes": "OpenAI-compatible" }
+    ],
+    "rpc": [
+      { "method": "POST", "path": "/api/rpc" }
+    ],
+    "search": [
+      { "method": "GET", "path": "/api/search/unified" }
+    ],
+    "skills": [
+      { "method": "GET", "path": "/api/skills" },
+      { "method": "GET", "path": "/api/skills/[slug]" },
+      { "method": "POST,GET", "path": "/api/skills/attest" },
+      { "method": "GET", "path": "/api/skills/detail/[slug]" },
+      { "method": "POST,GET", "path": "/api/skills/submit" }
+    ],
+    "solana_clawd": [
+      { "method": "GET", "path": "/api/solana-clawd/packages" },
+      { "method": "GET", "path": "/api/solana-clawd/sdk" },
+      { "method": "GET", "path": "/api/solana-clawd/source" }
+    ],
+    "solana_tracker": [
+      { "method": "GET", "path": "/api/solana-tracker/chart" },
+      { "method": "GET", "path": "/api/solana-tracker/holders" },
+      { "method": "GET", "path": "/api/solana-tracker/leaderboard" },
+      { "method": "GET", "path": "/api/solana-tracker/price" },
+      { "method": "GET", "path": "/api/solana-tracker/risk-charts" },
+      { "method": "GET", "path": "/api/solana-tracker/search" },
+      { "method": "GET", "path": "/api/solana-tracker/stats" },
+      { "method": "GET", "path": "/api/solana-tracker/token" },
+      { "method": "GET", "path": "/api/solana-tracker/tokens" },
+      { "method": "GET", "path": "/api/solana-tracker/top-performers" },
+      { "method": "GET", "path": "/api/solana-tracker/wallet" }
+    ],
+    "sponge": [
+      { "method": "GET,POST", "path": "/api/sponge/agents" },
+      { "method": "GET", "path": "/api/sponge/balances" },
+      { "method": "GET,POST", "path": "/api/sponge/bank" },
+      { "method": "POST", "path": "/api/sponge/bridge" },
+      { "method": "GET,POST", "path": "/api/sponge/card" },
+      { "method": "GET", "path": "/api/sponge/history" },
+      { "method": "POST", "path": "/api/sponge/hyperliquid" },
+      { "method": "GET", "path": "/api/sponge/mcp" },
+      { "method": "POST", "path": "/api/sponge/swap" },
+      { "method": "GET", "path": "/api/sponge/tokens" },
+      { "method": "POST", "path": "/api/sponge/transfer" }
+    ],
+    "stocks": [
+      { "method": "GET", "path": "/api/stocks/catalog" },
+      { "method": "GET", "path": "/api/stocks/dashboard" },
+      { "method": "POST", "path": "/api/stocks/data" },
+      { "method": "GET", "path": "/api/stocks/market" },
+      { "method": "GET", "path": "/api/stocks/metrics" },
+      { "method": "GET", "path": "/api/stocks/news" },
+      { "method": "GET", "path": "/api/stocks/snapshot" }
+    ],
+    "store": [
+      { "method": "GET", "path": "/api/store" },
+      { "method": "POST", "path": "/api/store/agents/gemini" },
+      { "method": "POST", "path": "/api/store/agents/wallet-brief" },
+      { "method": "POST", "path": "/api/store/checkout/session" },
+      { "method": "GET", "path": "/api/store/checkout/session/[id]" },
+      { "method": "POST", "path": "/api/store/checkout/session/[id]/fund" },
+      { "method": "GET", "path": "/api/store/config" },
+      { "method": "GET", "path": "/api/store/demo" },
+      { "method": "GET", "path": "/api/store/frontier" },
+      { "method": "GET", "path": "/api/store/judge-mode" },
+      { "method": "GET", "path": "/api/store/products/[id]" }
+    ],
+    "stream": [
+      { "method": "POST", "path": "/api/stream/[sessionId]" },
+      { "method": "GET", "path": "/api/stream/birdeye", "notes": "SSE" }
+    ],
+    "tee": [
+      { "method": "GET", "path": "/api/tee/attestation" },
+      { "method": "POST", "path": "/api/tee/chat" },
+      { "method": "POST", "path": "/api/tee/solana-attest" },
+      { "method": "POST", "path": "/api/tee/verification" }
+    ],
+    "telegram": [
+      { "method": "GET,POST", "path": "/api/telegram/agent-engine" },
+      { "method": "GET,POST", "path": "/api/telegram/bot" },
+      { "method": "POST,GET", "path": "/api/telegram/webhook" },
+      { "method": "GET,POST,DELETE", "path": "/api/telegram/webhook/config" }
+    ],
+    "tide": [
+      { "method": "POST,GET", "path": "/api/tide/v1/auth/api-keys" },
+      { "method": "POST", "path": "/api/tide/v1/auth/nonce" },
+      { "method": "POST", "path": "/api/tide/v1/auth/verify" },
+      { "method": "POST", "path": "/api/tide/v1/chat/completions", "notes": "OpenAI-compatible" },
+      { "method": "GET", "path": "/api/tide/v1/credits/balance" },
+      { "method": "POST", "path": "/api/tide/v1/credits/transfer" },
+      { "method": "GET,POST,DELETE", "path": "/api/tide/v1/keys" },
+      { "method": "GET", "path": "/api/tide/v1/models" },
+      { "method": "GET,POST", "path": "/api/tide/v1/sandboxes" }
+    ],
+    "tokens": [
+      { "method": "POST", "path": "/api/tokens/[mint]/buy-tx" },
+      { "method": "POST", "path": "/api/tokens/launch-tx" },
+      { "method": "POST", "path": "/api/tokens/register-launch" }
+    ],
+    "treasury": [
+      { "method": "GET", "path": "/api/treasury" },
+      { "method": "GET", "path": "/api/treasury/stream", "notes": "SSE" }
+    ],
+    "tui": [
+      { "method": "POST", "path": "/api/tui/run" }
+    ],
+    "usage": [
+      { "method": "GET", "path": "/api/usage/live", "notes": "SSE" }
+    ],
+    "vulcan": [
+      { "method": "GET", "path": "/api/vulcan/[...cmd]" }
+    ],
+    "waitlist": [
+      { "method": "GET,POST", "path": "/api/waitlist" },
+      { "method": "POST", "path": "/api/waitlist/confirm" }
+    ],
+    "wallet": [
+      { "method": "POST,DELETE", "path": "/api/wallet/mirror" },
+      { "method": "GET", "path": "/api/wallet/portfolio" }
+    ],
+    "webhooks": [
+      { "method": "POST", "path": "/api/webhooks/helius/agent-wallet" }
+    ],
+    "x": [
+      { "method": "GET", "path": "/api/x/feed" }
+    ],
+    "x402": [
+      { "method": "POST", "path": "/api/x402/agent/chat" },
+      { "method": "GET", "path": "/api/x402/agents/catalog" },
+      { "method": "POST", "path": "/api/x402/agents/chat" },
+      { "method": "POST", "path": "/api/x402/backroom-pump/analyze" },
+      { "method": "GET", "path": "/api/x402/backroom-pump/catalog" },
+      { "method": "POST", "path": "/api/x402/backroom-pump/data" },
+      { "method": "GET", "path": "/api/x402/catalog" },
+      { "method": "POST", "path": "/api/x402/clawd" },
+      { "method": "GET", "path": "/api/x402/openapi.json" },
+      { "method": "GET", "path": "/api/x402/stocks/catalog" },
+      { "method": "POST", "path": "/api/x402/stocks/data" }
+    ]
+  },
+  "streaming_endpoints": [
+    { "method": "GET", "path": "/api/amm/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/backroom/feed/ws-url", "type": "wss://" },
+    { "method": "GET", "path": "/api/browser/trading-agent/[sessionId]/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/clawd/dream-stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/dexscreener/ws/events", "type": "SSE" },
+    { "method": "GET", "path": "/api/dflow/priority-fees/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/liq/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/open/apply-ai-code-stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/open/generate-ai-code-stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/platform/admin/registrations/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/pump/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/router/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/stream/birdeye", "type": "SSE" },
+    { "method": "POST", "path": "/api/stream/[sessionId]", "type": "SSE" },
+    { "method": "GET", "path": "/api/treasury/stream", "type": "SSE" },
+    { "method": "GET", "path": "/api/usage/live", "type": "SSE" }
+  ],
+  "catch_all_routes": [
+    { "path": "/api/auth/[[...all]]", "handler": "Better Auth" },
+    { "path": "/api/backroom/[...path]", "handler": "Backroom service" },
+    { "path": "/api/backroom-3d/[...path]", "handler": "3D Backroom service" },
+    { "path": "/api/dbc/[[...path]]", "handler": "DBC bridge" },
+    { "path": "/api/firecrawl/[...path]", "handler": "Firecrawl scraping API" },
+    { "path": "/api/imperial/[...path]", "handler": "Imperial AMM full pass-through" },
+    { "path": "/api/perps/v1/[[...path]]", "handler": "Perps v1 proxy" },
+    { "path": "/api/vulcan/[...cmd]", "handler": "Vulcan MCP server" }
+  ],
+  "functional_groups": {
+    "llm_proxies": [
+      "/api/clawd", "/api/router/v1/chat/completions",
+      "/api/tide/v1/chat/completions", "/api/ollama/chat"
+    ],
+    "trading": [
+      "/api/perps", "/api/clawdperps", "/api/phoenix",
+      "/api/imperial", "/api/dflow", "/api/darkswap"
+    ],
+    "token_data": [
+      "/api/birdeye", "/api/dexscreener", "/api/solana-tracker",
+      "/api/coingecko", "/api/pyth/price"
+    ],
+    "agent_infra": [
+      "/api/agents", "/api/kernel", "/api/box", "/api/backrooms",
+      "/api/orchestrator", "/api/clawd-monitor"
+    ],
+    "payments": [
+      "/api/pay", "/api/x402", "/api/magicblock/payments",
+      "/api/store/checkout"
+    ],
+    "ai_sandbox": [
+      "/api/open", "/api/build", "/api/box"
+    ],
+    "solana_rpc": [
+      "/api/rpc", "/api/helius", "/api/explorer"
+    ],
+    "comms": [
+      "/api/telegram", "/api/mail", "/api/clawdmail",
+      "/api/discord"
+    ],
+    "mining": [
+      "/api/ore", "/api/tee"
+    ],
+    "identity_nft": [
+      "/api/agents/mint", "/api/tokens"
+    ]
+  },
+  "token_info": {
+    "symbol": "$CLAWD",
+    "mint": "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+  }
+}

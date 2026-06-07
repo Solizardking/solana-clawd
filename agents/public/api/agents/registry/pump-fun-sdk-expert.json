@@ -2,7 +2,7 @@
   "schemaVersion": "erc-8004-agent-registration-v1",
   "protocol": "metaplex-agent-registry",
   "name": "Pump Fun SDK Expert",
-  "description": "Specialized assistant for the @nirholas/pump-sdk — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
+  "description": "Specialized assistant for the pump.fun SDK — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
   "image": "https://x402.wtf/nich.jpg",
   "external_url": "https://x402.wtf/agents/pump-fun-sdk-expert",
   "active": true,

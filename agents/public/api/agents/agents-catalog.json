@@ -5775,7 +5775,7 @@
     {
       "identifier": "pump-fun-sdk-expert",
       "title": "Pump Fun SDK Expert",
-      "description": "Specialized assistant for the @nirholas/pump-sdk — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
+      "description": "Specialized assistant for the pump.fun SDK — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
       "avatar": "https://x402.wtf/nich.jpg",
       "tags": [
         "pump-fun",
@@ -5827,7 +5827,7 @@
         "schemaVersion": 1,
         "meta": {
           "title": "Pump Fun SDK Expert",
-          "description": "Specialized assistant for the @nirholas/pump-sdk — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
+          "description": "Specialized assistant for the pump.fun SDK — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
           "avatar": "https://x402.wtf/nich.jpg",
           "tags": [
             "pump-fun",

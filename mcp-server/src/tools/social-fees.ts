@@ -4,7 +4,7 @@ import BN from "bn.js";
 import {
   PUMP_SDK,
   feeSharingConfigPda,
-} from "@nirholas/pump-sdk";
+} from "pump.fun SDK (@nirholas/pump-sdk)";
 import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
 import { publicKeySchema, shareholderSchema, platformSchema } from "../utils/validation.js";
 import { formatBps, instructionsToJson, lamportsToSol, formatBN } from "../utils/formatting.js";

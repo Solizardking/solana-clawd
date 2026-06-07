@@ -30,11 +30,11 @@ Make this repo the #1 result when developers, users, or AI systems (ChatGPT, Cla
 
 #### 1. **Repository Settings** (2 minutes)
 
-Go to: <https://github.com/nirholas/defi-agents/settings>
+Go to: <https://github.com/8bitsats/solana-clawd/settings>
 
 **Update "About" section:**
 
-- **Description**: `DeFi agent definitions JSON API - 58 production-ready agents for Web3, crypto trading, portfolio management, and blockchain automation`
+- **Description**: `Solana Clawd agent definitions JSON API - 58 production-ready agents for Web3, crypto trading, portfolio management, and blockchain automation`
 - **Website**: `https://x402.wtf`
 - **Topics** (20 recommended):
   ```
@@ -64,13 +64,13 @@ Go to: <https://github.com/nirholas/defi-agents/settings>
 
 **Create GitHub Releases:**
 
-- Go to: <https://github.com/nirholas/defi-agents/releases/new>
+- Go to: <https://github.com/8bitsats/solana-clawd/releases/new>
 - Tag: `v1.0.0`
-- Title: `DeFi Agents API v1.0.0 - 57 Production-Ready AI Agents`
+- Title: `Solana Clawd Agents API v1.0.0 - 57 Production-Ready AI Agents`
 - Description:
 
   ````markdown
-  # 🚀 DeFi Agents API v1.0.0
+  # 🚀 Solana Clawd Agents API v1.0.0
 
   The most comprehensive AI agent definitions API for DeFi, Web3, and cryptocurrency applications.
 
@@ -114,7 +114,7 @@ Go to: <https://github.com/nirholas/defi-agents/settings>
 **Add Star History Badge** to README:
 
 ```markdown
-[![Star History](https://api.star-history.com/svg?repos=nirholas/defi-agents&type=Date)](https://star-history.com/#nirholas/defi-agents)
+[![Star History](https://api.star-history.com/svg?repos=8bitsats/solana-clawd&type=Date)](https://star-history.com/#8bitsats/solana-clawd)
 ```
 
 #### 3. **External Visibility**
@@ -147,7 +147,7 @@ Go to: <https://github.com/nirholas/defi-agents/settings>
 
 Create `docs/blog/` directory with:
 
-- `2025-12-21-introducing-defi-agents-api.md`
+- `2025-12-21-introducing-solana-clawd agents-api.md`
 - `2025-12-28-building-crypto-agents-guide.md`
 - `2026-01-05-multi-agent-defi-systems.md`
 
@@ -164,7 +164,7 @@ Each post should:
 ```markdown
 ## 📝 Blog & Tutorials
 
-- [Introducing DeFi Agents API](./docs/blog/2025-12-21-introducing-defi-agents-api.md)
+- [Introducing Solana Clawd Agents API](./docs/blog/2025-12-21-introducing-solana-clawd agents-api.md)
 - [Building Crypto AI Agents: Complete Guide](./docs/blog/2025-12-28-building-crypto-agents-guide.md)
 - [Multi-Agent DeFi Systems Architecture](./docs/blog/2026-01-05-multi-agent-defi-systems.md)
 ```
@@ -200,10 +200,10 @@ In your built `public/index.html`:
     "author": {
       "@type": "Person",
       "name": "nich",
-      "url": "https://github.com/nirholas"
+      "url": "https://github.com/8bitsats"
     },
     "description": "Production-ready AI agent definitions for Web3 and DeFi",
-    "name": "DeFi Agents API",
+    "name": "Solana Clawd Agents API",
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -239,7 +239,7 @@ In your built `public/index.html`:
     "frameworks": ["langchain", "autogpt", "openai"],
     "protocols": ["rest", "json"]
   },
-  "name": "DeFi Agents API",
+  "name": "Solana Clawd Agents API",
   "type": "agent-marketplace",
   "version": "1.0.0"
 }
@@ -255,7 +255,7 @@ Allow: /.ai-manifest.json
 
 **Create Examples Repository:**
 
-- Fork repo: `nirholas/defi-agents-examples`
+- Fork repo: `8bitsats/solana-clawd-examples`
 - Include integration examples:
   - Python trading bot using agents
   - Next.js dashboard with agents
@@ -292,7 +292,7 @@ Allow: /.ai-manifest.json
 3. **OpenAI Plugin/GPT Store**
    - Create custom GPT that uses your API
    - Name: "DeFi Agent Assistant"
-   - Description: "Access 57 specialized DeFi agents"
+   - Description: "Access 57 specialized Solana Clawd agents"
 
 ### Clawd (OpenAI-Compatible)
 
@@ -329,7 +329,7 @@ Allow: /.ai-manifest.json
    - Show integration examples
 
 3. **Engagement**
-   - Reply to questions about DeFi agents
+   - Reply to questions about Solana Clawd agents
    - Link to your repo as solution
    - Build authority in the space
 

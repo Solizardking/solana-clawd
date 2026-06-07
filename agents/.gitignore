@@ -49,6 +49,8 @@ __MACOSX
 
 # cloudflare
 .wrangler/
+cloudflare-agent-api/.env
+cloudflare-agent-api/.dev.vars
 
 # rust
 **/target/

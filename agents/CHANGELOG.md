@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the DeFi Agents API are documented in this file.
+All notable changes to the Solana Clawd Agents API are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -228,7 +228,7 @@ No vulnerabilities have been reported in the JSON API format. All agent definiti
 
 For questions, issues, or feedback:
 
-- **GitHub Issues**: <https://github.com/nirholas/defi-agents/issues>
+- **GitHub Issues**: <https://github.com/8bitsats/solana-clawd/issues>
 - **Documentation**: [docs/API.md](docs/API.md)
 - **Contributing**: [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
 

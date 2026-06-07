@@ -29,7 +29,7 @@
   ],
   "meta": {
     "title": "Pump Fun SDK Expert",
-    "description": "Specialized assistant for the @nirholas/pump-sdk — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
+    "description": "Specialized assistant for the pump.fun SDK — token creation, bonding curve trading, fee sharing, and AMM migration on Solana",
     "tags": [
       "pump-fun",
       "solana",

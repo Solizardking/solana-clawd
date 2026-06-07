@@ -24,11 +24,16 @@ import {
 // HELPERS
 // ─────────────────────────────────────────────────
 
-function corsHeaders(env: Env): HeadersInit {
+function corsHeaders(env: Env, requestOrigin?: string): HeadersInit {
+  const allowed = (env.CORS_ORIGIN || '').split(',').map(o => o.trim()).filter(Boolean);
+  const origin = requestOrigin && allowed.includes(requestOrigin)
+    ? requestOrigin
+    : allowed[0] ?? 'https://x402.wtf';
   return {
-    'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
+    'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, X-Agent-API-Key, X-Agent-Session',
+    'Vary': 'Origin',
   };
 }
 

@@ -1,0 +1,16 @@
+{
+    "name": "openclawd-agents",
+    "description": "Official OpenClawd Solana agent registry, catalog API, MCP discovery documents, and Metaplex Core staking platform.",
+    "version": "1.42.0",
+    "publisher": "x402agent",
+    "repository": "https://github.com/x402agent/openclawd-agents",
+    "language": "TypeScript",
+    "topics": [
+        "defi",
+        "openclawd",
+        "solana",
+        "metaplex",
+        "agents",
+        "open-source"
+    ]
+}

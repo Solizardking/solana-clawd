@@ -1,32 +1,42 @@
 /**
  * gateway/src/honcho.ts — Persistent user memory via Honcho.
  *
- * Honcho stores per-user conversation history and derived facts so the
- * CLAWD Gateway can personalise NL trading responses across sessions.
- *
- * Docs: https://honcho.dev
- * SDK:  honcho-ai
- *
  * Env vars:
- *   HONCHO_APP_ID   — your Honcho application id (create at app.honcho.dev)
- *   HONCHO_API_KEY  — optional if using the cloud-hosted tier
+ *   HONCHO_APP_NAME  — app name to create/resolve (default: "solana-clawd")
+ *   HONCHO_API_KEY   — optional for cloud-hosted tier
  */
 
 import Honcho from 'honcho-ai';
 
-const APP_ID = process.env.HONCHO_APP_ID ?? 'solana-clawd';
+const APP_NAME = process.env.HONCHO_APP_NAME ?? 'solana-clawd';
 const API_KEY = process.env.HONCHO_API_KEY;
 
 let _client: Honcho | null = null;
+let _appId: string | null = null;
 
 function client(): Honcho {
   if (!_client) {
-    _client = new Honcho({
-      appId: APP_ID,
-      ...(API_KEY ? { apiKey: API_KEY } : {}),
-    });
+    _client = new Honcho({ ...(API_KEY ? { apiKey: API_KEY } : {}) });
   }
   return _client;
+}
+
+async function appId(): Promise<string> {
+  if (_appId) return _appId;
+  const app = await client().apps.getOrCreate(APP_NAME);
+  _appId = app.id;
+  return _appId;
+}
+
+async function getOrCreateSession(aid: string, userId: string): Promise<string> {
+  const h = client();
+  const user = await h.apps.users.getOrCreate(aid, userId);
+  const page = await h.apps.users.sessions.list(aid, user.id, { size: 1, page: 1 });
+  if (page.items && page.items.length > 0) {
+    return page.items[0].id;
+  }
+  const session = await h.apps.users.sessions.create(aid, user.id, { metadata: { source: 'clawd-gateway' } });
+  return session.id;
 }
 
 // ---------------------------------------------------------------------------
@@ -40,16 +50,13 @@ export async function storeExchange(
   assistantReply: string,
 ): Promise<void> {
   try {
+    const aid = await appId();
     const h = client();
-    const session = await h.apps.users.sessions.getOrCreate(APP_ID, userId, {
-      metadata: { source: 'clawd-gateway' },
-    });
-    await h.apps.users.sessions.messages.create(APP_ID, userId, session.id, [
-      { is_user: true, content: userMessage },
-      { is_user: false, content: assistantReply },
-    ]);
+    const user = await h.apps.users.getOrCreate(aid, userId);
+    const sessionId = await getOrCreateSession(aid, userId);
+    await h.apps.users.sessions.messages.create(aid, user.id, sessionId, { content: userMessage, is_user: true });
+    await h.apps.users.sessions.messages.create(aid, user.id, sessionId, { content: assistantReply, is_user: false });
   } catch (err) {
-    // Non-fatal — memory failure should not block trading
     console.warn('[Honcho] storeExchange failed:', (err as Error).message);
   }
 }
@@ -60,16 +67,17 @@ export async function getHistory(
   limit = 10,
 ): Promise<{ role: 'user' | 'assistant'; content: string }[]> {
   try {
+    const aid = await appId();
     const h = client();
-    const session = await h.apps.users.sessions.getOrCreate(APP_ID, userId, {});
-    const page = await h.apps.users.sessions.messages.list(APP_ID, userId, session.id, {
+    const user = await h.apps.users.getOrCreate(aid, userId);
+    const sessionId = await getOrCreateSession(aid, userId);
+    const page = await h.apps.users.sessions.messages.list(aid, user.id, sessionId, {
       size: limit,
-      reverse: true,
+      page: 1,
     });
     return (page.items ?? [])
-      .reverse()
       .map((m: { is_user: boolean; content: string }) => ({
-        role: m.is_user ? 'user' : 'assistant',
+        role: m.is_user ? ('user' as const) : ('assistant' as const),
         content: m.content,
       }));
   } catch (err) {
@@ -78,13 +86,13 @@ export async function getHistory(
   }
 }
 
-/** Store a derived user fact (preference, wallet alias, risk tolerance, etc.). */
+/** Store a derived user fact in user metadata. */
 export async function storeFact(userId: string, key: string, value: string): Promise<void> {
   try {
+    const aid = await appId();
     const h = client();
-    await h.apps.users.getOrCreate(APP_ID, userId, {
-      metadata: { [key]: value },
-    });
+    const user = await h.apps.users.getOrCreate(aid, userId);
+    await h.apps.users.update(aid, user.id, { metadata: { ...((user.metadata ?? {}) as object), [key]: value } });
   } catch (err) {
     console.warn('[Honcho] storeFact failed:', (err as Error).message);
   }
@@ -93,8 +101,9 @@ export async function storeFact(userId: string, key: string, value: string): Pro
 /** Retrieve all stored facts (metadata) for a user. */
 export async function getFacts(userId: string): Promise<Record<string, string>> {
   try {
+    const aid = await appId();
     const h = client();
-    const user = await h.apps.users.getOrCreate(APP_ID, userId, {});
+    const user = await h.apps.users.getOrCreate(aid, userId);
     return (user.metadata ?? {}) as Record<string, string>;
   } catch (err) {
     console.warn('[Honcho] getFacts failed:', (err as Error).message);

@@ -1,4 +1,4 @@
-# DeFi Agents API - Keywords & Use Cases
+# Solana Clawd Agents API - Keywords & Use Cases
 
 ## Primary Keywords
 
@@ -18,7 +18,7 @@ This repository provides solutions for:
 
 ### Crypto & Blockchain Keywords
 
-- **DeFi agents** - Decentralized Finance automation
+- **Solana Clawd agents** - Decentralized Finance automation
 - **Web3 agents** - Blockchain interaction helpers
 - **Crypto agents** - Cryptocurrency analysis and trading
 - **Blockchain agents** - Smart contract and protocol assistants
@@ -91,7 +91,7 @@ This repository provides solutions for:
 ### What Users Search For
 
 - "best AI agents for crypto trading"
-- "DeFi agent marketplace"
+- "Solana Clawd agent marketplace"
 - "blockchain agent API"
 - "Web3 chatbot agents"
 - "crypto portfolio management agents"
@@ -104,7 +104,7 @@ This repository provides solutions for:
 ### What Developers Search For
 
 - "crypto agent API documentation"
-- "DeFi agent integration examples"
+- "Solana Clawd agent integration examples"
 - "blockchain agent schema"
 - "Web3 agent marketplace index"
 - "LLM-compatible agent format"
@@ -118,7 +118,7 @@ This repository provides solutions for:
 
 - "agent definitions database"
 - "crypto agent catalog"
-- "DeFi agent registry"
+- "Solana Clawd agent registry"
 - "blockchain agent specifications"
 - "Web3 agent schemas"
 - "trading agent templates"
@@ -163,7 +163,7 @@ This repository provides solutions for:
 
 ### Why This Repo Stands Out
 
-1. **Largest DeFi agent collection** - 57 specialized agents
+1. **Largest Solana Clawd agent collection** - 57 specialized agents
 2. **Most languages supported** - 18 language translations
 3. **Best documentation** - Comprehensive guides and examples
 4. **Machine-readable** - Structured for AI consumption

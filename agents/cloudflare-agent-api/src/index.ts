@@ -73,12 +73,17 @@ export interface Session {
 // CORS HEADERS
 // ─────────────────────────────────────────────────
 
-function corsHeaders(env: Env): HeadersInit {
+function corsHeaders(env: Env, requestOrigin?: string): HeadersInit {
+  const allowed = (env.CORS_ORIGIN || '').split(',').map(o => o.trim()).filter(Boolean);
+  const origin = requestOrigin && allowed.includes(requestOrigin)
+    ? requestOrigin
+    : allowed[0] ?? 'https://x402.wtf';
   return {
-    'Access-Control-Allow-Origin': env.CORS_ORIGIN || '*',
+    'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, X-Agent-API-Key, X-Agent-Session',
     'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
   };
 }
 
@@ -102,9 +107,10 @@ function errorResponse(message: string, status = 500, env?: Env): Response {
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const requestOrigin = request.headers.get('Origin') ?? undefined;
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders(env) });
+      return new Response(null, { headers: corsHeaders(env, requestOrigin) });
     }
 
     const url = new URL(request.url);

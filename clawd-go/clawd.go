@@ -3,15 +3,17 @@
 // management, SOL transfers, SPL token operations, transaction handling, and
 // address lookup table resolution.
 //
-// Quick start:
+// Zero-config quick start (no API keys needed):
+//
+//	clawd := clawdgo.NewDefault()
+//	defer clawd.Close()
+//	balance, _ := clawd.GetBalance(ctx, pubKey)       // Solana RPC via x402.wtf
+//	reply, _ := clawdgo.Chat(ctx, "Hello, Solana!")    // AI chat via x402.wtf
+//
+// With custom endpoints:
 //
 //	clawd, err := clawdgo.New(clawdgo.DevNet)
-//	if err != nil {
-//	    log.Fatal(err)
-//	}
 //	defer clawd.Close()
-//
-//	balance, err := clawd.GetBalance(ctx, pubKey)
 //
 // This package re-exports key solana-go types for convenience.
 package clawdgo
@@ -32,17 +34,22 @@ import (
 	"github.com/anthropic/clawd-go/pkg/transfer"
 	"github.com/anthropic/clawd-go/pkg/tx"
 	"github.com/anthropic/clawd-go/pkg/wallet"
+	"github.com/anthropic/clawd-go/pkg/x402"
 )
 
 // Re-export commonly used solana-go types.
 type (
-	PublicKey            = solana.PublicKey
-	PrivateKey           = solana.PrivateKey
-	Signature            = solana.Signature
-	Transaction          = solana.Transaction
-	Instruction          = solana.Instruction
-	TokenAccount         = rpc.TokenAccount
-	AddressLookupTable   = addresslookuptable.AddressLookupTableState
+	PublicKey          = solana.PublicKey
+	PrivateKey         = solana.PrivateKey
+	Signature          = solana.Signature
+	Transaction        = solana.Transaction
+	Instruction        = solana.Instruction
+	TokenAccount       = rpc.TokenAccount
+	AddressLookupTable = addresslookuptable.AddressLookupTableState
+
+	// AI chat types.
+	ChatMessage  = x402.ChatMessage
+	ChatResponse = x402.ChatResponse
 )
 
 // Re-export constants.
@@ -60,6 +67,34 @@ var (
 type Clawd struct {
 	client   *client.Client
 	wsClient *ws.Client
+
+	// x402LLM is the default endpoint for AI chat (defaults to Claude).
+	x402LLM string
+}
+
+// NewDefault creates a Clawd client that uses x402.wtf for both Solana RPC
+// and AI chat — no API keys or configuration needed. This is the recommended
+// constructor for developers who just want things to work out of the box.
+//
+// The RPC is routed through https://x402.wtf/api/rpc and AI through
+// https://x402.wtf/api/clawd (Anthropic Claude).
+func NewDefault() *Clawd {
+	return &Clawd{
+		client:   client.NewClientWithEndpoint(x402.EndpointRPC, ""),
+		wsClient: nil,
+		x402LLM:  x402.EndpointClawd,
+	}
+}
+
+// NewDefaultWithLLM is like NewDefault but lets you pick the AI model endpoint.
+// Use one of the x402 endpoint constants: EndpointGemini, EndpointOpenAI,
+// EndpointGrok, EndpointDeepSeek, EndpointVision.
+func NewDefaultWithLLM(llmEndpoint string) *Clawd {
+	return &Clawd{
+		client:   client.NewClientWithEndpoint(x402.EndpointRPC, ""),
+		wsClient: nil,
+		x402LLM:  llmEndpoint,
+	}
 }
 
 // New creates a new Clawd client connected to the given cluster with the
@@ -119,6 +154,64 @@ func (c *Clawd) RPC() *rpc.Client {
 // WS returns the underlying WebSocket client (may be nil).
 func (c *Clawd) WS() *ws.Client {
 	return c.wsClient
+}
+
+// ----- AI CHAT (zero-config via x402.wtf) -----
+
+// Chat sends a prompt to the Clawd's default AI endpoint and returns the response.
+// For a NewDefault() client this is Anthropic Claude via x402.wtf.
+// No API key is needed — the x402 proxy holds the credentials.
+func (c *Clawd) Chat(ctx context.Context, userMessage string) (string, error) {
+	return x402.QuickChatAt(ctx, c.llmEndpoint(), userMessage)
+}
+
+// ChatWithSystem sends a prompt with a system message to the AI endpoint.
+func (c *Clawd) ChatWithSystem(ctx context.Context, systemPrompt string, userMessage string) (string, error) {
+	resp, err := x402.ChatAt(ctx, c.llmEndpoint(), systemPrompt, userMessage)
+	if err != nil {
+		return "", err
+	}
+	return resp.Content, nil
+}
+
+// ChatFull sends a prompt and returns the full response including model info and token usage.
+func (c *Clawd) ChatFull(ctx context.Context, systemPrompt string, userMessage string) (*ChatResponse, error) {
+	return x402.ChatAt(ctx, c.llmEndpoint(), systemPrompt, userMessage)
+}
+
+// ChatStream streams AI response tokens to the callback as they arrive.
+func (c *Clawd) ChatStream(ctx context.Context, systemPrompt string, userMessage string, onChunk func(chunk string) error) error {
+	return x402.ChatStreamAt(ctx, c.llmEndpoint(), systemPrompt, userMessage, onChunk)
+}
+
+func (c *Clawd) llmEndpoint() string {
+	if c.x402LLM != "" {
+		return c.x402LLM
+	}
+	return x402.EndpointClawd
+}
+
+// ----- PACKAGE-LEVEL AI CHAT (no client needed) -----
+
+// Chat sends a prompt to the default AI (Claude via x402.wtf). No client needed.
+func Chat(ctx context.Context, userMessage string) (string, error) {
+	return x402.QuickChat(ctx, userMessage)
+}
+
+// ChatWithModel sends a prompt to a specific AI model via x402.wtf.
+// endpoint: one of x402.EndpointClawd, EndpointGemini, EndpointOpenAI, etc.
+func ChatWithModel(ctx context.Context, endpoint string, userMessage string) (string, error) {
+	return x402.QuickChatAt(ctx, endpoint, userMessage)
+}
+
+// ChatWithSystemPrompt sends a prompt with a system message to the default AI.
+func ChatWithSystemPrompt(ctx context.Context, systemPrompt string, userMessage string) (*ChatResponse, error) {
+	return x402.Chat(ctx, systemPrompt, userMessage)
+}
+
+// ChatStreamDefault streams AI response tokens using the default model.
+func ChatStreamDefault(ctx context.Context, userMessage string, onChunk func(chunk string) error) error {
+	return x402.ChatStream(ctx, "", userMessage, onChunk)
 }
 
 // ----- WALLET -----
@@ -184,20 +277,17 @@ func (c *Clawd) RequestAirdrop(ctx context.Context, to solana.PublicKey, lamport
 
 // CreateATA creates an associated token account for the given owner/mint.
 // Returns the transaction (nil if ATA already exists), the ATA public key, and error.
-// The caller must send and confirm the returned transaction themselves.
 func (c *Clawd) CreateATA(ctx context.Context, payer *solana.PrivateKey, owner, mint solana.PublicKey) (*solana.Transaction, solana.PublicKey, error) {
 	return token.CreateATA(ctx, c.client.RPC, payer, owner, mint)
 }
 
 // CreateATAAndConfirm creates an ATA, sends it, and confirms the transaction.
-// Returns the signature and ATA public key. If the ATA already exists, signature is zero.
 func (c *Clawd) CreateATAAndConfirm(ctx context.Context, payer *solana.PrivateKey, owner, mint solana.PublicKey) (solana.Signature, solana.PublicKey, error) {
 	txx, ata, err := token.CreateATA(ctx, c.client.RPC, payer, owner, mint)
 	if err != nil {
 		return solana.Signature{}, solana.PublicKey{}, err
 	}
 
-	// If transaction is nil, ATA already exists — no need to send.
 	if txx == nil {
 		return solana.Signature{}, ata, nil
 	}
@@ -235,7 +325,6 @@ func (c *Clawd) GetTokenBalance(ctx context.Context, tokenAccount solana.PublicK
 }
 
 // GetTokenAccounts returns all token accounts owned by the given public key.
-// Returns the raw RPC result with parsed token accounts.
 func (c *Clawd) GetTokenAccounts(ctx context.Context, owner solana.PublicKey) (*rpc.GetTokenAccountsResult, error) {
 	return token.GetTokenAccountsByOwnerTokenProgram(ctx, c.client.RPC, owner)
 }
@@ -269,8 +358,6 @@ func (c *Clawd) GetTransaction(ctx context.Context, sig solana.Signature) (*sola
 }
 
 // DecodeInstruction decodes a single instruction from a transaction.
-// Returns the decoded instruction as interface{}; cast to the appropriate
-// type (e.g. *system.Transfer, *token.Transfer, etc.).
 func (c *Clawd) DecodeInstruction(txx *solana.Transaction, index int) (interface{}, error) {
 	return tx.DecodeInstruction(txx, index)
 }

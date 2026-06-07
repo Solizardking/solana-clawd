@@ -721,7 +721,7 @@ app.get('/api/tokens/:address?', async (req: Request, res: Response) => {
 });
 
 app.get('/api/price/:address', async (req: Request, res: Response) => {
-  try { res.json(await getTokenPrice(req.params.address)); }
+  try { res.json(await getTokenPrice(req.params.address as string)); }
   catch (e: unknown) { res.status(400).json({ error: (e as Error).message }); }
 });
 
@@ -792,11 +792,19 @@ async function main(): Promise<void> {
   app.listen(PORT, () => console.log(`[Gateway] HTTP on :${PORT}`));
   birdeye.connect();
 
-  if (WEBHOOK_URL) {
-    await setWebhook(WEBHOOK_URL);
-    console.log('[Gateway] Webhook mode active');
+  if (process.env.TELEGRAM_BOT_TOKEN) {
+    try {
+      if (WEBHOOK_URL) {
+        await setWebhook(WEBHOOK_URL);
+        console.log('[Gateway] Webhook mode active');
+      } else {
+        await bot.startPolling();
+      }
+    } catch (err) {
+      console.warn('[Gateway] Telegram init failed (non-fatal):', (err as Error).message);
+    }
   } else {
-    await bot.startPolling();
+    console.log('[Gateway] No TELEGRAM_BOT_TOKEN — Telegram disabled');
   }
 }
 

@@ -135,7 +135,7 @@ COMMUNICATION STYLE:
 - Encourage user questions
 ```
 
-For DeFi agents, balance between:
+For Solana Clawd agents, balance between:
 
 - **Technical accuracy** (for experienced users)
 - **Accessibility** (for newcomers)

@@ -3,9 +3,9 @@
 # Wrangler configuration for deployment
 # ═══════════════════════════════════════════════════════════════
 
-name = "agent-api"
+name = "clawd-agent-api"
 main = "src/index.ts"
-compatibility_date = "2024-01-01"
+compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ─────────────────────────────────────────────────
@@ -43,7 +43,7 @@ id = "4f231b976c6a4465aa082705a2d28527"
 
 [vars]
 ENVIRONMENT = "production"
-CORS_ORIGIN = "*"
+CORS_ORIGIN = "https://x402.wtf,https://openclawd.net,https://dex.x402.wtf,https://vibe.x402.wtf"
 CLAWD_CATALOG_URL = "https://x402.wtf/api/agents"
 CLAWD_AUTH_URL = "https://x402.wtf/api/auth"
 CLAWD_GATEWAY_URL = "https://clawd-gateway.fly.dev"

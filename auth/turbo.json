@@ -1,0 +1,27 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": [
+        "DATABASE_URL",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL",
+        "PORTLESS_URL",
+        "STRIPE_SECRET_KEY",
+        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+        "STRIPE_CONNECT_CLIENT_ID",
+        "MPP_SECRET_KEY",
+        "STRIPE_AGENTS_URL",
+        "ADMIN_EMAILS"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["build"]
+    }
+  }
+}

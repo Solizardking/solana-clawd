@@ -19,7 +19,7 @@ Push your `agent.json` into the repo and everything else is automatic.
 
 ```bash
 git clone https://github.com/clawdsolana/OpenClawd.git
-cd openclawd/defi-agents
+cd openclawd/solana-clawd agents
 cp agent-template.json src/your-agent-name.json
 # edit src/your-agent-name.json
 bun install

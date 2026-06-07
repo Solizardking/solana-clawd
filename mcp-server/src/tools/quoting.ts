@@ -10,7 +10,7 @@ import {
   getGraduationProgress,
   getTokenPrice,
   getBondingCurveSummary,
-} from "@nirholas/pump-sdk";
+} from "pump.fun SDK (@nirholas/pump-sdk)";
 import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
 import { publicKeySchema, bnStringSchema } from "../utils/validation.js";
 import { lamportsToSol, rawToTokens, formatBN } from "../utils/formatting.js";

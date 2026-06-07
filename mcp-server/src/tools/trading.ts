@@ -33,7 +33,7 @@ export async function buildBuyInstructions(
     const { bondingCurveAccountInfo, bondingCurve, associatedUserAccountInfo } =
       await sdk.fetchBuyState(mint, user);
 
-    const { getBuyTokenAmountFromSolAmount } = await import("@nirholas/pump-sdk");
+    const { getBuyTokenAmountFromSolAmount } = await import("pump.fun SDK (@nirholas/pump-sdk)");
     const amount = getBuyTokenAmountFromSolAmount({
       global,
       feeConfig,
@@ -87,7 +87,7 @@ export async function buildSellInstructions(
     const { bondingCurveAccountInfo, bondingCurve } =
       await sdk.fetchSellState(mint, user);
 
-    const { getSellSolAmountFromTokenAmount } = await import("@nirholas/pump-sdk");
+    const { getSellSolAmountFromTokenAmount } = await import("pump.fun SDK (@nirholas/pump-sdk)");
     const solAmount = getSellSolAmountFromTokenAmount({
       global,
       feeConfig,
@@ -176,7 +176,7 @@ export async function buildCreateAndBuy(
 
     const global = await sdk.fetchGlobal();
     const feeConfig = await sdk.fetchFeeConfig();
-    const { newBondingCurve, getBuyTokenAmountFromSolAmount } = await import("@nirholas/pump-sdk");
+    const { newBondingCurve, getBuyTokenAmountFromSolAmount } = await import("pump.fun SDK (@nirholas/pump-sdk)");
     const freshCurve = newBondingCurve(global);
 
     const amount = getBuyTokenAmountFromSolAmount({

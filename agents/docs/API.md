@@ -10,7 +10,7 @@ This is the data layer behind the [/agents](https://x402.wtf/agents) hub — any
 
 - Static JSON API (CDN): `https://x402.wtf`
 - Hub + dynamic endpoints: `https://x402.wtf`
-- MCP Streamable HTTP: `https://modelcontextprotocol.name/mcp/defi-agents`
+- MCP Streamable HTTP: `https://modelcontextprotocol.name/mcp/solana-clawd agents`
 
 ---
 
@@ -208,10 +208,10 @@ interface Agent {
 ```python
 import requests
 
-# List Solana DeFi agents
+# List Solana Solana Clawd agents
 agents = requests.get("https://x402.wtf/index.json").json()
 defi = [a for a in agents if a["meta"]["category"] == "defi"]
-print(f"Found {len(defi)} Solana DeFi agents")
+print(f"Found {len(defi)} Solana Solana Clawd agents")
 
 # Load a localized agent
 agent = requests.get("https://x402.wtf/solana-portfolio-manager.es-ES.json").json()
@@ -300,7 +300,7 @@ Plug the hub into Clawd Desktop, Cursor, or ClawdOS via Streamable HTTP:
   "mcpServers": {
     "openclawd-agents": {
       "type": "http",
-      "url": "https://modelcontextprotocol.name/mcp/defi-agents"
+      "url": "https://modelcontextprotocol.name/mcp/solana-clawd agents"
     }
   }
 }

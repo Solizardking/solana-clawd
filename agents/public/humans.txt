@@ -1,6 +1,6 @@
 /* TEAM */
-Creator: nirholas
-GitHub: https://github.com/nirholas
+Creator: 8bitsats
+GitHub: https://github.com/8bitsats
 From: Earth
 
 /* SITE */

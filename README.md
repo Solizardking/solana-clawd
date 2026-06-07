@@ -53,6 +53,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 | 🔐 **CAAP/1.0 Agent Auth** | Vendored 5-package auth stack — 116 TS files, SIWS, DAS, TEE attestation, Clerk bridge |
 | 🛡️ **Formal Verification** | Kani Rust Verifier + STRIDE scoring for skill registry |
 | 🎨 **Skill Hub** | Formally verified skill registry with Ed25519 signature-gated registration |
+| 🐹 **clawd-go — Solana Go SDK** | Full solana-go v1.16.0 wrapper — zero-config RPC + free AI via x402.wtf, no keys needed |
 
 ---
 
@@ -1969,6 +1970,120 @@ curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/inst
 ```
 
 > **Node:** 20.x, 22.x, or 24.x. Node 25+ hits a `sharp` build issue in transitive deps.
+
+---
+
+## 🐹 clawd-go — Solana Go SDK (zero-config)
+
+`clawd-go/` is a complete Go SDK wrapping [solana-go v1.16.0](https://github.com/gagliardetto/solana-go) with zero-config defaults through x402.wtf. No API keys reach the developer's machine — the x402 proxy holds all credentials server-side.
+
+```go
+import clawdgo "github.com/anthropic/clawd-go"
+
+// Zero-config — RPC + AI both work immediately:
+clawd := clawdgo.NewDefault()
+defer clawd.Close()
+
+balance, _ := clawd.GetBalance(ctx, pubKey)       // Solana RPC via x402.wtf
+reply, _   := clawd.Chat(ctx, "Explain Solana")    // Claude via x402.wtf
+```
+
+### Package Map
+
+```
+clawd-go/
+├── go.mod / go.sum              Module github.com/anthropic/clawd-go
+├── clawd.go                     Top-level Clawd client (NewDefault, New, Chat, Transfer, …)
+└── pkg/
+    ├── client/                  RPC + WS client: rate limiting, custom headers, timeouts, clusters
+    ├── wallet/                  Key creation, base58/keygen-file/byte-file loading, signers
+    ├── transfer/                SOL transfers, airdrops, SOL↔lamports big.Float conversion
+    ├── token/                   SPL token transfers, ATA creation, balance queries, decimal math
+    ├── tx/                      Send, confirm, decode instructions, pretty-print, get balance/info
+    ├── lookup/                  Address lookup table resolution for versioned transactions
+    └── x402/                    Zero-config RPC + LLM proxy through x402.wtf (no keys needed)
+```
+
+### Zero-config Constructors
+
+| Constructor | RPC | AI | WS |
+|---|---|---|---|
+| `clawdgo.NewDefault()` | `x402.wtf/api/rpc` | Claude | ❌ |
+| `clawdgo.NewDefaultWithLLM(endpoint)` | `x402.wtf/api/rpc` | model of choice | ❌ |
+| `clawdgo.New(cluster, opts...)` | custom | ❌ | ✅ |
+| `clawdgo.NewCustom(rpcURL, wsURL, opts...)` | custom | ❌ | ✅ |
+
+### AI Models Available (all free, no keys)
+
+| Constant | Model |
+|---|---|
+| `x402.EndpointClawd` | Anthropic Claude (default) |
+| `x402.EndpointGemini` | Google Gemini |
+| `x402.EndpointOpenAI` | OpenAI GPT |
+| `x402.EndpointGrok` | xAI Grok |
+| `x402.EndpointDeepSeek` | DeepSeek |
+
+### Quick Examples
+
+```go
+// Wallet creation
+wallet, _ := clawdgo.NewWallet()
+
+// SOL transfer (sign + send + confirm)
+sig, _ := clawd.TransferSOL(ctx, fromPk, toPubkey, clawdgo.LamportsPerSOL)
+
+// SPL token: derive ATA, transfer
+ata := clawdgo.FindATA(owner, mint)
+sig, _ := clawd.TransferToken(ctx, token.TransferParams{From: payer, To: ata, Amount: rawAmt})
+
+// Transaction decode
+tx, _ := clawd.GetTransaction(ctx, sig)
+decoded, _ := clawd.DecodeInstruction(tx, 0)
+clawd.PrettyPrintTransaction(tx, "My Transaction")
+
+// Package-level AI (no client needed)
+reply, _ := clawdgo.Chat(ctx, "What is Solana's throughput?")
+
+// Stream tokens
+clawd.ChatStream(ctx, "You are a Solana dev.", "Write a token program in Anchor.",
+    func(chunk string) error { fmt.Print(chunk); return nil })
+```
+
+**Build:** `go build ./...` and `go vet ./...` pass cleanly with Go 1.24+.
+
+---
+
+## 🌐 x402.wtf — Complete API Route Map (493 routes)
+
+The x402.wtf API surface — every route available through the clawd-go proxy. Full structured JSON at [`convex/x402-api-routes.json`](convex/x402-api-routes.json).
+
+```
+Canonical hosts:  https://x402.wtf              (primary — x402 gateway + agent catalog)
+                  https://ship.x402.wtf         (Open Builder — AI website cloner + sandbox)
+```
+
+### Functional Groups
+
+| Group | Routes | What It Does |
+|---|---|---|
+| **LLM proxies** | `/api/clawd/*`, `/api/router/v1/chat/completions`, `/api/tide/v1/chat/completions` | Multi-provider AI chat (Claude, GPT, Gemini, Grok, DeepSeek) |
+| **Solana RPC** | `/api/rpc`, `/api/helius/*`, `/api/explorer/*` | RPC proxy, DAS, webhooks, wallet monitoring |
+| **Trading** | `/api/perps/*`, `/api/phoenix/*`, `/api/imperial/*`, `/api/dflow/*`, `/api/darkswap/*` | Perpetuals, spot, prediction markets, OTC |
+| **Token data** | `/api/birdeye/*`, `/api/dexscreener/*`, `/api/solana-tracker/*`, `/api/pyth/price` | Price feeds, analytics, trending, holder data |
+| **Agent infra** | `/api/agents/*`, `/api/kernel/*`, `/api/box/*`, `/api/backrooms/*` | Agent registry, browser automation, sandbox execution |
+| **Payments** | `/api/pay/*`, `/api/x402/*`, `/api/magicblock/payments` | x402 micropayments, catalog, balance |
+| **AI sandbox** | `/api/open/*`, `/api/build/*`, `/api/box/*` | AI code generation, website cloning, sandbox envs |
+| **Comms** | `/api/telegram/*`, `/api/mail/*`, `/api/clawdmail/*`, `/api/discord/*` | Bot webhooks, email, Discord relay |
+
+### Streaming Endpoints (SSE)
+
+`/api/amm/stream`, `/api/clawd/dream-stream`, `/api/dflow/priority-fees/stream`, `/api/liq/stream`, `/api/pump/stream`, `/api/router/stream`, `/api/treasury/stream`, `/api/usage/live`, `/api/open/apply-ai-code-stream`, `/api/open/generate-ai-code-stream`, `/api/browser/trading-agent/[sessionId]/stream`
+
+### Catch-All Proxy Routes
+
+`/api/auth/[[...all]]` → Better Auth, `/api/backroom/[...path]` → Backroom, `/api/firecrawl/[...path]` → Web scraping, `/api/imperial/[...path]` → AMM, `/api/vulcan/[...cmd]` → Vulcan MCP
+
+Full 493-route map: [`convex/x402-api-routes.json`](convex/x402-api-routes.json)
 
 ---
 

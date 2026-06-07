@@ -164,7 +164,7 @@ router.get('/api/agents/catalog', cacheHeaders(120), (_req: Request, res: Respon
 });
 
 router.get('/api/agents/catalog/:agentId', cacheHeaders(120), (req: Request, res: Response) => {
-  const agentId = req.params.agentId;
+  const agentId = String(req.params.agentId);
   // Strip trailing .json if present
   const id = agentId.endsWith('.json') ? agentId.slice(0, -5) : agentId;
   const catalogFile = path.join(AGENTS_PUBLIC_CATALOG_DIR, `${id}.json`);
@@ -202,7 +202,7 @@ router.get('/api/agents/registry', cacheHeaders(120), (_req: Request, res: Respo
 });
 
 router.get('/api/agents/registry/:agentId', cacheHeaders(120), (req: Request, res: Response) => {
-  const agentId = req.params.agentId;
+  const agentId = String(req.params.agentId);
   const id = agentId.endsWith('.json') ? agentId.slice(0, -5) : agentId;
   const regFile = path.join(AGENTS_PUBLIC_REGISTRY_DIR, `${id}.json`);
 
@@ -235,9 +235,8 @@ router.get('/api/agents/templates', cacheHeaders(300), (_req: Request, res: Resp
 });
 
 router.get('/api/agents/templates/:template', cacheHeaders(300), (req: Request, res: Response) => {
-  const templateName = req.params.template.endsWith('.json')
-    ? req.params.template
-    : `${req.params.template}.json`;
+  const raw = String(req.params.template);
+  const templateName = raw.endsWith('.json') ? raw : `${raw}.json`;
 
   const validTemplates = ['agent-template.json', 'agent-template-full.json', 'agent-template-attested.json'];
   if (!validTemplates.includes(templateName)) {
@@ -277,7 +276,7 @@ router.get('/api/agents', cacheHeaders(60), (_req: Request, res: Response) => {
     name: 'OpenClawd Agents API',
     version: catalog?.version ?? '1.0',
     generatedAt: catalog?.generatedAt ?? new Date().toISOString(),
-    totalAgents: catalog?.stats?.totalAgents ?? 0,
+    totalAgents: ((catalog as Record<string, Record<string, unknown>>).stats as Record<string, unknown>)?.totalAgents ?? 0,
     endpoints: {
       catalog: `${BASE_URL}/api/agents/catalog`,
       registry: `${BASE_URL}/api/agents/registry`,
@@ -307,14 +306,18 @@ router.get('/registry', cacheHeaders(120), (_req: Request, res: Response) => {
 
   // Include catalog stats if available
   const catalog = safeJsonRead<Record<string, unknown>>(AGENTS_CATALOG_PATH, {});
-  const catalogAgents = (catalog?.agents as Array<Record<string, unknown>>)?.map((a: Record<string, unknown>) => ({
-    identifier: a.identifier,
-    title: a.meta?.title ?? a.title,
-    description: a.meta?.description ?? a.description,
-    category: a.meta?.category ?? a.category,
-    avatar: a.meta?.avatar ?? a.avatar,
-    author: a.author,
-  })) ?? [];
+  const rawCatalog = catalog as Record<string, unknown>;
+  const catalogAgents: Array<Record<string, unknown>> = (rawCatalog.agents as Array<Record<string, unknown>>)?.map((a: Record<string, unknown>) => {
+    const m = (a.meta ?? {}) as Record<string, unknown>;
+    return {
+      identifier: a.identifier as string,
+      title: (m.title ?? a.title ?? '') as string,
+      description: (m.description ?? a.description ?? '') as string,
+      category: (m.category ?? a.category ?? '') as string,
+      avatar: (m.avatar ?? a.avatar ?? '') as string,
+      author: a.author as string,
+    };
+  }) ?? [];
 
   res.json({
     name: 'CLAWD Agent Registry', version: VERSION, spawn_date: SPAWN_DATE,
@@ -338,7 +341,7 @@ router.get('/identity', cacheHeaders(300), (_req: Request, res: Response) => {
     title: 'CLAWD Agent Identity', version: VERSION,
     agents: Object.values(AGENTS).map(a => ({ id: a.id, name: a.name, symbol: a.symbol, description: a.description, capabilities: a.capabilities })),
     catalog_available: fs.existsSync(AGENTS_CATALOG_PATH),
-    catalog_total: catalog?.stats?.totalAgents ?? 0,
+    catalog_total: ((catalog as Record<string, unknown>).stats as Record<string, unknown>)?.totalAgents as number ?? 0,
     principles: {
       '1': 'Autonomous agents must be sovereign — self-custody, self-payment, self-execution.',
       '2': 'Identity is on-chain. Every agent has a verifiable cryptographic presence.',
@@ -532,6 +535,3 @@ router.get('/.well-known/ai-plugin.json', cacheHeaders(3600), (_req: Request, re
 });
 
 export default router;
-</path>
-<path>/Users/8bit/Downloads/solana-clawd/gateway/src/agentRegistry.ts</path>
-<content><!-- truncating -->

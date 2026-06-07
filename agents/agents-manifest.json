@@ -276,12 +276,12 @@
     "Machine-readable indexes",
     "Automated i18n workflow"
   ],
-  "homepage": "https://github.com/nirholas/defi-agents",
+  "homepage": "https://github.com/8bitsats/solana-clawd",
   "license": "MIT",
   "name": "DeFi Agents API",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nirholas/defi-agents.git"
+    "url": "https://github.com/8bitsats/solana-clawd.git"
   },
   "schemaVersion": 1,
   "stats": {
@@ -316,7 +316,7 @@
     "curl": "curl https://x402.wtf/index.json",
     "python": "import requests; agents = requests.get('https://x402.wtf/index.json').json()",
     "javascript": "const agents = await fetch('https://x402.wtf/index.json').then(r => r.json())",
-    "documentation": "https://github.com/nirholas/defi-agents/blob/main/docs/API.md"
+    "documentation": "https://github.com/8bitsats/solana-clawd/blob/main/docs/API.md"
   },
   "version": "1.0.0"
 }

@@ -66,7 +66,7 @@ Test it 5-10 times with real scenarios. If you consistently get quality results 
 
 ### How do I submit an agent to AI Agents Library?
 
-1. Fork the repository: github.com/nirholas/AI-Agents-Library
+1. Fork the repository: github.com/8bitsats/AI-Agents-Library
 2. Create your agent in `/src/your-agent-name.json`
 3. Test thoroughly
 4. Submit a Pull Request
