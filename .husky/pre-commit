@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# clawd-guard pre-commit hook — blocks commits containing secrets
+
+set -euo pipefail
+
+DIFF=$(git diff --cached)
+
+if [ -z "$DIFF" ]; then
+  exit 0
+fi
+
+FAILED=0
+
+check() {
+  local label="$1"
+  local pattern="$2"
+  local result
+  result=$(echo "$DIFF" | grep "^+" | grep -v "^+++" | grep -E "$pattern" 2>/dev/null | head -3 || true)
+  if [ -n "$result" ]; then
+    echo "🚨 CLAWD GUARD: $label detected in staged changes"
+    echo "$result" | sed 's/./*/g' | head -3
+    FAILED=1
+  fi
+}
+
+check "Solana private key (base58)" "[1-9A-HJ-NP-Za-km-z]{87,88}"
+check "Ethereum private key" "0x[a-fA-F0-9]{64}"
+check "AWS Access Key ID" "AKIA[0-9A-Z]{16}"
+check "GitHub token" "gh[pousr]_[A-Za-z0-9_]{36,}"
+check "XAI/OpenAI/Anthropic API key" "(xai-|sk-ant-|sk-proj-)[A-Za-z0-9_-]{20,}"
+check "PEM private key block" "BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY"
+check "Database URL with password" "(mongodb|postgresql|mysql)://[^:@]+:[^@]+@"
+
+# Check for accidentally staged secret files
+SECRET_FILES=$(git diff --cached --name-only | grep -iE "\.(env|pem|key)$|wallet\.json|keypair\.json|id\.json" || true)
+if [ -n "$SECRET_FILES" ]; then
+  echo "🚨 CLAWD GUARD: Secret file(s) staged for commit:"
+  echo "$SECRET_FILES"
+  FAILED=1
+fi
+
+if [ "$FAILED" -eq 1 ]; then
+  echo ""
+  echo "❌ Commit blocked by clawd-guard. Fix the above issues before committing."
+  echo "   Run: git restore --staged <file>  to unstage a file"
+  echo "   If already committed: rotate the credential + git filter-repo to purge history"
+  exit 1
+fi
+
+echo "✅ clawd-guard: No secrets detected"
+exit 0

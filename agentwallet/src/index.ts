@@ -6,6 +6,7 @@
 // Types
 export type {
   ChainType,
+  Network,
   WalletEntry,
   WalletInfo,
   VaultConfig,
@@ -16,6 +17,9 @@ export type {
   KeypairResult,
   VaultEnvelope,
 } from "./types.js";
+
+// Network helpers
+export { getRpcUrl, parseNetwork, isMainnet, networkLabel } from "./network.js";
 
 // Vault
 export { Vault, defaultVaultConfig } from "./vault.js";

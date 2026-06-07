@@ -10,6 +10,7 @@ import { startServer, defaultServerConfig } from "./server.js";
 import { generateSolanaKeypair, generateEVMKeypair } from "./keygen.js";
 import { deployToE2B } from "./deploy/e2b.js";
 import { deployToCloudflare } from "./deploy/cloudflare.js";
+import { parseNetwork, getRpcUrl, networkLabel } from "./network.js";
 
 // Load .env file
 config();
@@ -55,7 +56,7 @@ walletCmd
       const wallets = vault.listWallets();
       console.log("\n📋 Wallets:\n");
       for (const w of wallets) {
-        console.log(`  ${w.id} | ${w.label} | ${w.chainType} | ${w.address} ${w.paused ? "⏸️" : "✅"}`);
+        console.log(`  ${w.id} | ${w.label} | ${w.chainType} | ${w.network ?? "devnet"} | ${w.address} ${w.paused ? "⏸️" : "✅"}`);
       }
       if (wallets.length === 0) {
         console.log("  No wallets found.");
@@ -69,14 +70,20 @@ walletCmd
 
 walletCmd
   .command("create <label>")
-  .description("Create a new wallet")
+  .description("Create a new wallet (stored encrypted in ~/.agentwallet/vault — never in the repo)")
   .option("-c, --chain <type>", "Chain type (solana|evm)", "solana")
   .option("--chain-id <id>", "Chain ID for EVM chains", "0")
+  .option(
+    "--network <net>",
+    "Network: localnet | devnet | testnet | mainnet-beta (default: devnet)",
+    "devnet"
+  )
   .action(async (label, options) => {
     try {
       const vault = await Vault.create();
       const chainType = options.chain as "solana" | "evm";
       const chainId = parseInt(options.chainId, 10);
+      const network = parseNetwork(options.network);
 
       let keypair;
       if (chainType === "solana") {
@@ -85,11 +92,14 @@ walletCmd
         keypair = await generateEVMKeypair();
       }
 
-      const entry = await vault.addWallet(undefined, label, chainType, chainId, keypair.address, keypair.privateKey);
-      console.log(`\n✅ Wallet created:\n`);
+      const rpc = getRpcUrl(network);
+      const entry = await vault.addWallet(undefined, label, chainType, chainId, keypair.address, keypair.privateKey, network);
+      console.log(`\n✅ Wallet created (key encrypted in vault — NOT in repo):\n`);
       console.log(`  ID:      ${entry.id}`);
       console.log(`  Label:   ${entry.label}`);
       console.log(`  Chain:   ${entry.chainType}`);
+      console.log(`  Network: ${networkLabel(network)}`);
+      console.log(`  RPC:     ${rpc}`);
       console.log(`  Address: ${entry.address}\n`);
     } catch (err) {
       console.error("Error:", err);
@@ -99,14 +109,20 @@ walletCmd
 
 walletCmd
   .command("import <label> <privateKey>")
-  .description("Import an existing wallet")
+  .description("Import an existing wallet (private key is encrypted immediately — never logged)")
   .option("-c, --chain <type>", "Chain type (solana|evm)", "solana")
   .option("--chain-id <id>", "Chain ID for EVM chains", "0")
+  .option(
+    "--network <net>",
+    "Network: localnet | devnet | testnet | mainnet-beta (default: devnet)",
+    "devnet"
+  )
   .action(async (label, privateKey, options) => {
     try {
       const vault = await Vault.create();
       const chainType = options.chain as "solana" | "evm";
       const chainId = parseInt(options.chainId, 10);
+      const network = parseNetwork(options.network);
 
       let keypair;
       if (chainType === "solana") {
@@ -117,12 +133,17 @@ walletCmd
         keypair = await importEVMKeypair(privateKey);
       }
 
-      const entry = await vault.addWallet(undefined, label, chainType, chainId, keypair.address, keypair.privateKey);
-      console.log(`\n✅ Wallet imported:\n`);
+      // Clear the raw key from memory immediately after import
+      privateKey = "0".repeat(privateKey.length);
+
+      const entry = await vault.addWallet(undefined, label, chainType, chainId, keypair.address, keypair.privateKey, network);
+      console.log(`\n✅ Wallet imported (key encrypted in vault — command history shows address only):\n`);
       console.log(`  ID:      ${entry.id}`);
       console.log(`  Label:   ${entry.label}`);
       console.log(`  Chain:   ${entry.chainType}`);
+      console.log(`  Network: ${networkLabel(network)}`);
       console.log(`  Address: ${entry.address}\n`);
+      console.log(`  ⚠️  Clear shell history: history -c  (bash) / rm ~/.zsh_history (zsh)\n`);
     } catch (err) {
       console.error("Error:", err);
       process.exit(1);

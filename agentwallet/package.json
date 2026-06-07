@@ -51,6 +51,14 @@
     "e2b": "^1.0.0",
     "wrangler": "^3.80.0"
   },
+  "overrides": {
+    "undici": ">=6.21.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "undici": ">=6.21.1"
+    }
+  },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.14.0",

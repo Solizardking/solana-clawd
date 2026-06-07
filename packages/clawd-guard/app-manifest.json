@@ -1,0 +1,23 @@
+{
+  "name": "Clawd Guard",
+  "description": "Secret & private key scanner for PRs — powered by Grok AI. Protects your repo from accidentally committing API keys, Solana/ETH private keys, passwords, and other credentials.",
+  "url": "https://github.com/openclawdsolana/clawd-guard",
+  "hook_attributes": {
+    "url": "https://your-deployment-url.com/webhook",
+    "active": true
+  },
+  "redirect_url": "https://your-deployment-url.com/github/callback",
+  "callback_urls": ["https://your-deployment-url.com/github/callback"],
+  "public": true,
+  "default_permissions": {
+    "checks": "write",
+    "contents": "read",
+    "issues": "write",
+    "pull_requests": "write",
+    "statuses": "write"
+  },
+  "default_events": [
+    "pull_request",
+    "push"
+  ]
+}

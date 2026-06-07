@@ -5,12 +5,20 @@
 /** Supported blockchain families */
 export type ChainType = "solana" | "evm";
 
+/** Solana / EVM network identifiers */
+export type Network =
+  | "localnet"   // http://127.0.0.1:8899 — solana-test-validator
+  | "devnet"     // https://api.devnet.solana.com
+  | "testnet"    // https://api.testnet.solana.com
+  | "mainnet-beta"; // https://api.mainnet-beta.solana.com
+
 /** Encrypted wallet record stored in the vault */
 export interface WalletEntry {
   id: string;
   label: string;
   chainType: ChainType;
   chainId: number;
+  network: Network;
   address: string;
   encryptedKey: string; // AES-256-GCM hex-encoded ciphertext
   nonce: string; // GCM nonce hex
@@ -24,6 +32,7 @@ export interface WalletInfo {
   label: string;
   chainType: ChainType;
   chainId: number;
+  network: Network;
   address: string;
   createdAt: string;
   paused: boolean;

@@ -1,0 +1,31 @@
+{
+  "name": "@openclawdsolana/clawd-guard",
+  "version": "1.0.0",
+  "description": "Clawd Guard — GitHub App that scans PRs for exposed secrets and private keys, powered by Grok AI",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@octokit/app": "^15.1.0",
+    "@octokit/webhooks": "^13.3.0",
+    "@octokit/rest": "^21.0.0",
+    "express": "^4.19.2",
+    "openai": "^4.52.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

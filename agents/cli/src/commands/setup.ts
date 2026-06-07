@@ -10,6 +10,8 @@ import {
   printWarn,
   printDone,
 } from "../banner.js";
+import { withSpinner, spinSync } from "../ui/spinner.js";
+import { solanaPulse, walletHeartbeat, blockFinality, pumpLoader } from "../ui/clawd-spinners.js";
 import {
   CLAWD_PROJECT_ID,
   CLAWD_REASONING_ENGINE_URN,
@@ -50,10 +52,15 @@ function installSkills(): void {
     return;
   }
 
+  spinSync("Installing skills...", blockFinality, () => {
+    for (const skill of skillDirs) {
+      const src = join(skillsDir, skill);
+      const dst = join(targetBase, skill);
+      cpSync(src, dst, { recursive: true });
+    }
+  });
+
   for (const skill of skillDirs) {
-    const src = join(skillsDir, skill);
-    const dst = join(targetBase, skill);
-    cpSync(src, dst, { recursive: true });
     printOk(`~/.agents/skills/${skill}`);
   }
 }
@@ -107,7 +114,9 @@ async function setupClawdRouter(): Promise<void> {
   let openRouterConfigured = false;
   let serverTier = "FREE";
   try {
-    const healthRes = await fetch(`${CLAWDROUTER_URL}/health`, { signal: AbortSignal.timeout(8000) });
+    const healthRes = await withSpinner("Checking router health...", solanaPulse, () =>
+      fetch(`${CLAWDROUTER_URL}/health`, { signal: AbortSignal.timeout(8000) })
+    );
     if (healthRes.ok) {
       const h = (await healthRes.json()) as RouterHealth;
       routerOnline = true;
@@ -127,7 +136,9 @@ async function setupClawdRouter(): Promise<void> {
   // Provision a free agent key
   let freeKey = "";
   try {
-    const keyRes = await fetch(`${CLAWDROUTER_URL}/v1/agent-key`, { signal: AbortSignal.timeout(8000) });
+    const keyRes = await withSpinner("Minting free agent key...", walletHeartbeat, () =>
+      fetch(`${CLAWDROUTER_URL}/v1/agent-key`, { signal: AbortSignal.timeout(8000) })
+    );
     if (keyRes.ok) {
       const k = (await keyRes.json()) as AgentKeyResponse;
       freeKey = k.key;
@@ -164,11 +175,11 @@ async function setupClawdRouter(): Promise<void> {
 
 export async function runSetup(args: { global?: boolean }): Promise<void> {
   printSection("1. Node.js");
-  const nodeOk = checkNode();
+  const nodeOk = spinSync("Checking Node.js...", pumpLoader, checkNode);
   if (!nodeOk) process.exitCode = 1;
 
   printSection("2. gcloud (optional)");
-  checkGcloud();
+  spinSync("Checking gcloud...", pumpLoader, checkGcloud);
 
   printSection("3. Skills Installation");
   installSkills();

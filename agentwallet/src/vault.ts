@@ -6,7 +6,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { WalletEntry, WalletInfo, VaultConfig, VaultEnvelope, ChainType } from "./types.js";
+import type { WalletEntry, WalletInfo, VaultConfig, VaultEnvelope, ChainType, Network } from "./types.js";
+import { isMainnet, networkLabel } from "./network.js";
 import { deriveKey, encrypt, decrypt, generateId, toHex, fromHex } from "./crypto.js";
 
 const VAULT_VERSION = 1;
@@ -68,10 +69,17 @@ export class Vault {
     chainType: ChainType,
     chainId: number,
     address: string,
-    privateKey: Uint8Array
+    privateKey: Uint8Array,
+    network: Network = "devnet"
   ): Promise<WalletEntry> {
     const walletId = id ?? generateId(8);
-    
+
+    if (isMainnet(network)) {
+      console.warn(`\n[VAULT] ⚠️  MAINNET WALLET — ${networkLabel(network)}`);
+      console.warn("[VAULT]     This wallet will hold REAL funds. Keep your vault passphrase safe.");
+      console.warn(`[VAULT]     Key stored at: ${this.storePath} (never inside the repo)\n`);
+    }
+
     const { ciphertext, nonce } = encrypt(Buffer.from(privateKey), this.masterKey);
 
     const entry: WalletEntry = {
@@ -79,6 +87,7 @@ export class Vault {
       label,
       chainType,
       chainId,
+      network,
       address,
       encryptedKey: toHex(ciphertext),
       nonce: toHex(nonce),
@@ -251,6 +260,7 @@ export class Vault {
       label: entry.label,
       chainType: entry.chainType,
       chainId: entry.chainId,
+      network: entry.network ?? "devnet",
       address: entry.address,
       createdAt: entry.createdAt,
       paused: entry.paused,

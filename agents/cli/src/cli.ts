@@ -3,6 +3,8 @@ import { printBanner } from "./banner.js";
 import { runDeploy } from "./commands/deploy.js";
 import { runEval } from "./commands/eval.js";
 import { runGoalComplete, runGoalCreate, runGoalList, runGoalStatus } from "./commands/goals.js";
+import { runOptimize } from "./commands/optimize.js";
+import { runPack } from "./commands/pack.js";
 import { runPublish } from "./commands/publish.js";
 import { runPump } from "./commands/pump.js";
 import { runRegister } from "./commands/register.js";
@@ -64,6 +66,8 @@ USAGE
   clawd-agents <command> [subcommand] [options]
 
 COMMANDS
+  optimize                 Select provider + skill pack for the task; always wires Solana perps
+  pack [skills...]         Flatten SKILL.md files into a single context pack (repomix-style)
   setup                    Install skills and show registered Agent Registry endpoints
   register --name <name>   Create/register a catalog agent JSON
   scaffold create <name>   Create a new Solana agent project
@@ -103,6 +107,16 @@ GOALS COMMANDS
   goals complete <id>      Mark a goal as complete
 
 OPTIONS
+  --task <type>            optimize: perps | research | code | ops | full | auto (default)
+  --provider <name>        optimize: claude | openai | grok | gemini | ollama
+  --strategy <name>        optimize: twap | grid | ta | scan
+  --ta-config <preset>     optimize: generate TA config JSON (ema-cross | rsi-reversion | macd-trend)
+  --starter                optimize: print minimal always-on context pack and exit
+  --print-context          optimize: print packed context for other runtimes (Grok, etc.)
+  --xml                    optimize/pack: wrap output in XML tags for Grok-compat System Instructions
+  --write                  optimize: save harness config to ~/.openclawd/harness.json
+  --list                   pack: list all discoverable skills
+  --out <file>             pack: write output to file instead of stdout
   --help, -h               Show help
   --dry-run                Preview without executing
   --json                   Output as JSON where supported
@@ -136,6 +150,15 @@ OPTIONS
   --priority <p>           Goal priority: high|medium|low
 
 EXAMPLES
+  clawd-agents optimize
+  clawd-agents optimize --task perps --strategy twap --symbol SOL
+  clawd-agents optimize --task full --provider claude --write
+  clawd-agents optimize --task perps --print-context --xml
+  clawd-agents optimize --starter --xml
+  clawd-agents optimize --ta-config ema-cross --symbol SOL
+  clawd-agents pack --list
+  clawd-agents pack vulcan vulcan-risk-management vulcan-lot-size-calculator --xml
+  clawd-agents pack vulcan vulcan-grid-trading vulcan-twap-execution --out ~/.openclawd/perps-pack.md
   clawd-agents setup
   clawd-agents pump
   clawd-agents pump build
@@ -165,6 +188,29 @@ async function main(): Promise<void> {
   printBanner();
 
   switch (cmd) {
+    case "pack":
+      await runPack({
+        skills: positional.slice(1),
+        xml: flag(flags, "xml"),
+        outFile: strFlag(flags, "out"),
+        list: flag(flags, "list"),
+        json: flag(flags, "json"),
+      });
+      break;
+    case "optimize":
+      await runOptimize({
+        task: strFlag(flags, "task") ?? sub,
+        provider: strFlag(flags, "provider"),
+        strategy: strFlag(flags, "strategy"),
+        symbol: strFlag(flags, "symbol") ?? positional[2],
+        printContext: flag(flags, "print-context"),
+        xml: flag(flags, "xml"),
+        starter: flag(flags, "starter"),
+        taConfig: strFlag(flags, "ta-config"),
+        write: flag(flags, "write"),
+        json: flag(flags, "json"),
+      });
+      break;
     case "setup":
       runSetup({ global: flag(flags, "global") });
       break;
