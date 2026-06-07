@@ -16,6 +16,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { getHistory, storeFact, storeExchange } from './honcho.js';
 import * as pump from './pumpBridge.js';
+import { chat as grokChat, grokEnabled } from './grok.js';
 
 const MODEL = process.env.CLAWD_NL_MODEL ?? 'claude-haiku-4-5-20251001';
 
@@ -144,6 +145,18 @@ Result: ${result ? JSON.stringify(result) : 'N/A (informational only)'}
 
 Keep responses under 3 sentences unless showing data. Never show raw JSON to the user.`;
 
+  // Prefer Grok when XAI_API_KEY is configured
+  if (grokEnabled()) {
+    const grokMsgs = [
+      { role: 'system' as const, content: systemPrompt },
+      ...history.map(h => ({ role: h.role as 'system' | 'user' | 'assistant', content: h.content })),
+      { role: 'user' as const, content: userMessage },
+    ];
+    const grokReply = await grokChat(grokMsgs, { max_tokens: 512, reasoning_effort: 'low' });
+    if (grokReply) return grokReply;
+  }
+
+  // Fallback to Claude
   const msgs: Anthropic.MessageParam[] = [
     ...history.map(h => ({ role: h.role as 'user' | 'assistant', content: h.content })),
     { role: 'user', content: userMessage },
@@ -178,9 +191,9 @@ export async function handleNLMessage(
   userId: string,
   message: string,
 ): Promise<NLTradingResponse> {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.ANTHROPIC_API_KEY && !grokEnabled()) {
     return {
-      reply: 'ANTHROPIC_API_KEY not set — NL trading disabled. Use direct commands instead.',
+      reply: 'No LLM configured (set ANTHROPIC_API_KEY or XAI_API_KEY) — NL trading disabled.',
       intent: { action: 'unknown', userMessage: message },
       executed: false,
     };

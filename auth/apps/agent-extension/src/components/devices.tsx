@@ -220,13 +220,13 @@ function ConnectDeviceView({ onDone, onCancel }: { onDone: () => void; onCancel:
           <button
             type="button"
             onClick={() =>
-              handleCopy(`npx @better-auth/agent-auth enroll --token ${created.enrollmentToken}`)
+              handleCopy(`npx @auth/agent-cli enroll --token ${created.enrollmentToken}`)
             }
             className="w-full flex items-center gap-2 p-2.5 rounded-sm border border-border bg-muted/30 hover:bg-muted/50 transition-colors text-left cursor-pointer group"
           >
             <Terminal className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
             <code className="flex-1 text-[10px] font-mono text-foreground break-all">
-              npx @better-auth/agent-auth enroll --token{" "}
+              npx @auth/agent-cli enroll --token{" "}
               <span className="text-muted-foreground">{"<token>"}</span>
             </code>
             <Copy className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />

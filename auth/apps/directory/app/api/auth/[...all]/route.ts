@@ -1,62 +1,86 @@
-import { auth } from "@/lib/auth";
-import { toNextJsHandler } from "better-auth/next-js";
-import { eq } from "drizzle-orm";
-import { db } from "@/lib/db";
-import * as schema from "@/lib/db/schema";
-import { isLoopback, isLoopbackPortVariant, normalizeTokenRequest } from "@/lib/loopback";
+// CAAP/1.0 auth handler — replaces better-auth toNextJsHandler.
+import { cookies } from "next/headers";
+import { type NextRequest, NextResponse } from "next/server";
+import {
+  BASE_URL,
+  buildRpcUrl,
+  CLAWD_MINT,
+  computeTier,
+  createSession,
+  createSiwsInput,
+  fetchWalletSnapshot,
+  verifySession,
+  verifySiws,
+} from "@/lib/auth";
 
-const handler = toNextJsHandler(auth);
+export async function GET(_req: NextRequest, props: { params: Promise<{ all: string[] }> }) {
+  const { all } = await props.params;
+  const path = `/${all.join("/")}`;
 
-// Normalize redirect_uri in token exchange POST so it matches the
-// localhost-normalized value stored during authorize (Vercel rewrites
-// 127.0.0.1 → localhost in GET query strings but not in POST bodies).
-// Uses normalizeTokenRequest which always reconstructs the Request
-// to avoid "Body already read" on runtimes with unreliable clone().
-export async function POST(req: Request) {
-  try {
-    const normalized = await normalizeTokenRequest(req);
-    if (normalized) return handler.POST!(normalized);
-  } catch {
-    // Never block the token flow
+  if (path === "/siws") {
+    return NextResponse.json(
+      createSiwsInput({
+        domain: new URL(BASE_URL).hostname,
+        statement: "Sign in to the CLAWD Agent Directory. No gas fees.",
+      }),
+    );
   }
-  return handler.POST!(req);
+
+  if (path === "/session") {
+    const jar = await cookies();
+    const token = jar.get("caap_session")?.value;
+    if (!token) return NextResponse.json(null);
+    return NextResponse.json(await verifySession(token));
+  }
+
+  if (path === "/discovery") {
+    return NextResponse.json({
+      protocol: "CAAP/1.0",
+      issuer: BASE_URL,
+      clawdMint: CLAWD_MINT,
+      endpoints: {
+        attest: `${BASE_URL}/api/caap/attest`,
+        session: `${BASE_URL}/api/auth/session`,
+        signout: `${BASE_URL}/api/auth/signout`,
+        siws: `${BASE_URL}/api/auth/siws`,
+      },
+    });
+  }
+
+  return NextResponse.json({ error: "Not found" }, { status: 404 });
 }
 
-// RFC 8252 §7.3 — loopback redirect URIs ignore port during matching.
-// Native clients use ephemeral ports, so the port may differ between
-// DCR and authorize. We add the requested port variant to the client's
-// stored redirect URIs before Better Auth validates.
-export async function GET(req: Request) {
-  try {
-    const url = new URL(req.url);
-    if (url.pathname.endsWith("/oauth2/authorize")) {
-      const redirectUri = url.searchParams.get("redirect_uri");
-      const clientId = url.searchParams.get("client_id");
-      if (redirectUri && clientId) {
-        const ru = new URL(redirectUri);
-        if (ru.protocol === "http:" && isLoopback(ru.hostname)) {
-          const [client] = await db
-            .select()
-            .from(schema.oauthClient)
-            .where(eq(schema.oauthClient.clientId, clientId))
-            .limit(1);
-          if (
-            client &&
-            !client.redirectUris.includes(redirectUri) &&
-            isLoopbackPortVariant(redirectUri, client.redirectUris)
-          ) {
-            await db
-              .update(schema.oauthClient)
-              .set({
-                redirectUris: [...client.redirectUris, redirectUri],
-              })
-              .where(eq(schema.oauthClient.clientId, clientId));
-          }
-        }
-      }
-    }
-  } catch {
-    // Never block the authorize flow
+export async function POST(req: NextRequest, props: { params: Promise<{ all: string[] }> }) {
+  const { all } = await props.params;
+  const path = `/${all.join("/")}`;
+
+  if (path === "/siws") {
+    const body = (await req.json()) as {
+      input: Parameters<typeof verifySiws>[0];
+      output: Parameters<typeof verifySiws>[1];
+    };
+
+    const valid = verifySiws(body.input, body.output);
+    if (!valid) return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+
+    const walletAddress = body.input.address ?? "";
+    if (!walletAddress) return NextResponse.json({ error: "Missing address" }, { status: 400 });
+
+    const opts = { heliusRpcUrl: buildRpcUrl(), clawdMint: CLAWD_MINT };
+    const snapshot = await fetchWalletSnapshot(walletAddress, opts);
+    const tierInfo = computeTier(snapshot.clawdBalance);
+    const token = await createSession(walletAddress, tierInfo.tier);
+
+    const res = NextResponse.json({ walletAddress, tier: tierInfo.tier, tierInfo });
+    res.cookies.set("caap_session", token, { httpOnly: true, sameSite: "lax", path: "/" });
+    return res;
   }
-  return handler.GET!(req);
+
+  if (path === "/signout") {
+    const res = NextResponse.json({ ok: true });
+    res.cookies.set("caap_session", "", { httpOnly: true, maxAge: 0, path: "/" });
+    return res;
+  }
+
+  return NextResponse.json({ error: "Not found" }, { status: 404 });
 }

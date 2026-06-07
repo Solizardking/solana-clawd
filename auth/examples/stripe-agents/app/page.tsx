@@ -1,121 +1,129 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { signIn, signUp, useSession } from "@/lib/auth-client";
-import { StripeAgentsLogo } from "@/components/icons";
+import { useEffect, useState } from "react";
+import { getSession, getSiwsChallenge, signOut } from "@/lib/auth-client";
 
-export default function AuthPage() {
-  const { data: session, isPending } = useSession();
-  const router = useRouter();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+interface Session {
+  walletAddress: string;
+  tier: string;
+}
+
+export default function HomePage() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
-    if (session && !isPending) router.push("/dashboard");
-  }, [session, isPending, router]);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res =
-        mode === "signup"
-          ? await signUp.email({ email, password, name })
-          : await signIn.email({ email, password });
-      if (res.error) {
-        setError(res.error.message ?? "Failed");
-        return;
-      }
-      router.push("/dashboard");
-    } finally {
+    getSession().then((s) => {
+      setSession(s as Session | null);
       setLoading(false);
-    }
+    });
+  }, []);
+
+  async function handleSignIn() {
+    setStatus("Requesting SIWS challenge…");
+    const challenge = await getSiwsChallenge();
+    setStatus("Connect your Solana wallet → window.solana.signIn(challenge)");
+    console.info("SIWS challenge:", challenge);
   }
 
-  if (isPending) return null;
+  async function handleSignOut() {
+    await signOut();
+    setSession(null);
+  }
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-black text-white">
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-700 border-t-violet-500" />
+      </main>
+    );
+  }
 
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-[380px]">
-        <div className="rounded-lg border border-border bg-card shadow-md p-8">
-          <div className="text-center mb-7">
-            <div className="inline-flex items-center gap-2.5 mb-3">
-              <StripeAgentsLogo className="h-8 w-8" />
-            </div>
-            <h1 className="text-[18px] font-semibold text-foreground tracking-tight">
-              {mode === "signin" ? "Sign in to Stripe Agents" : "Create your account"}
-            </h1>
-            <p className="text-[13px] text-muted-foreground mt-1.5">AI agents pay, you approve.</p>
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-4xl font-bold tracking-tight">CLAWD Pay</span>
+        <span className="text-sm text-zinc-400">
+          Solana-native token payments · CAAP/1.0 · SIWS
+        </span>
+      </div>
+
+      {session ? (
+        <div className="flex w-full max-w-sm flex-col gap-3">
+          <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+            <span className="font-mono text-xs text-zinc-400">
+              {session.walletAddress.slice(0, 8)}…{session.walletAddress.slice(-4)}
+            </span>
+            <TierBadge tier={session.tier} />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            {mode === "signup" && (
-              <div className="space-y-1.5">
-                <label className="text-[12px] font-medium text-foreground">Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full name"
-                  required
-                  className="w-full px-3 py-2 rounded-md bg-card border border-border placeholder:text-muted-foreground/50 text-[13px] outline-none text-foreground focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
-                />
-              </div>
-            )}
-            <div className="space-y-1.5">
-              <label className="text-[12px] font-medium text-foreground">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="w-full px-3 py-2 rounded-md bg-card border border-border placeholder:text-muted-foreground/50 text-[13px] outline-none text-foreground focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-[12px] font-medium text-foreground">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                minLength={8}
-                className="w-full px-3 py-2 rounded-md bg-card border border-border placeholder:text-muted-foreground/50 text-[13px] outline-none text-foreground focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all"
-              />
-            </div>
-            {error && (
-              <div className="px-3 py-2 rounded-md bg-red-50 border border-red-200 text-red-600 text-[12px]">
-                {error}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 text-[13px] font-semibold rounded-md bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50 cursor-pointer transition-all shadow-sm"
-            >
-              {loading ? "..." : mode === "signin" ? "Sign in" : "Create account"}
-            </button>
-          </form>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Capabilities
+            </h2>
+            <ul className="space-y-2">
+              {[
+                { cap: "pay.balance", req: "free", desc: "CLAWD + SOL balance" },
+                { cap: "pay.swap", req: "bronze", desc: "Jupiter token swap" },
+                { cap: "pay.transfer", req: "silver", desc: "Send SOL or CLAWD" },
+                { cap: "pay.history", req: "free", desc: "On-chain tx history" },
+              ].map(({ cap, req, desc }) => (
+                <li key={cap} className="flex items-center justify-between text-sm">
+                  <span>
+                    <code className="text-xs text-violet-400">{cap}</code>
+                    <span className="ml-2 text-xs text-zinc-500">{desc}</span>
+                  </span>
+                  <span className="text-xs text-zinc-700">{req}+</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <p className="mt-5 text-center text-[12px] text-muted-foreground">
-            {mode === "signin" ? "Don\u2019t have an account?" : "Already have an account?"}{" "}
-            <button
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-              className="text-primary hover:text-primary/80 font-medium cursor-pointer"
-            >
-              {mode === "signin" ? "Sign up" : "Sign in"}
-            </button>
-          </p>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="rounded-lg bg-zinc-800 py-2 text-sm hover:bg-zinc-700"
+          >
+            Sign out
+          </button>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="flex flex-col items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900 p-8">
+          <p className="text-sm text-zinc-400">
+            Sign in with your Solana wallet. No Stripe, no credit card.
+          </p>
+          <button
+            type="button"
+            onClick={handleSignIn}
+            className="rounded-lg bg-violet-600 px-6 py-2.5 text-sm font-semibold hover:bg-violet-500"
+          >
+            Sign In With Solana
+          </button>
+          {status && <p className="max-w-xs text-center text-xs text-zinc-400">{status}</p>}
+        </div>
+      )}
+
+      <p className="text-xs text-zinc-600">
+        CAAP/1.0 · SIWS · $CLAWD tiers · No Stripe · No email
+      </p>
+    </main>
+  );
+}
+
+function TierBadge({ tier }: { tier: string }) {
+  const colors: Record<string, string> = {
+    free: "bg-zinc-700 text-zinc-300",
+    bronze: "bg-amber-900 text-amber-300",
+    silver: "bg-slate-700 text-slate-200",
+    gold: "bg-yellow-900 text-yellow-300",
+    diamond: "bg-cyan-900 text-cyan-300",
+  };
+  return (
+    <span
+      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${colors[tier] ?? colors.free}`}
+    >
+      {tier}
+    </span>
   );
 }

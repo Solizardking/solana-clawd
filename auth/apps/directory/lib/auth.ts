@@ -1,67 +1,52 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { createAuthMiddleware } from "better-auth/api";
-import { jwt } from "better-auth/plugins";
-import { oauthProvider } from "@better-auth/oauth-provider";
-import { db } from "./db";
-import * as schema from "./db/schema";
-import { normalizeLoopbackUri } from "./loopback";
+// CAAP/1.0 auth for the agent directory — SIWS replaces email/password + GitHub OAuth.
+import {
+  attestAgent,
+  computeTier,
+  createCaapPlugin,
+  createSiwsInput,
+  fetchWalletSnapshot,
+  verifySiws,
+} from "@clawd/agent-auth-solana";
+import { jwtVerify, SignJWT } from "jose";
 
-const BASE_URL =
-  process.env.BETTER_AUTH_URL ?? process.env.PORTLESS_URL ?? "http://directory.localhost";
+export const CLAWD_MINT = "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump";
+export const BASE_URL =
+  process.env.CAAP_BASE_URL ?? process.env.PORTLESS_URL ?? "http://directory.localhost";
 
-export const auth = betterAuth({
-  baseURL: BASE_URL,
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema,
-  }),
-  emailAndPassword: {
-    enabled: true,
-  },
-  socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    },
-  },
-  disabledPaths: ["/token"],
-  hooks: {
-    before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === "/oauth2/register" && ctx.body) {
-        const body = { ...ctx.body, token_endpoint_auth_method: "none" };
+const SESSION_SECRET = new TextEncoder().encode(
+  process.env.SESSION_SECRET ?? "clawd-directory-dev-secret-32chars"
+);
 
-        // Vercel rewrites 127.0.0.1 → localhost in query strings,
-        // so we normalize stored redirect URIs to localhost to ensure
-        // the authorize comparison matches. See RFC 8252 §7.3.
-        if (Array.isArray(body.redirect_uris)) {
-          body.redirect_uris = body.redirect_uris.map(normalizeLoopbackUri);
-        }
+export function buildRpcUrl(): string {
+  const key = process.env.HELIUS_API_KEY ?? "";
+  return key
+    ? `https://mainnet.helius-rpc.com/?api-key=${key}`
+    : "https://api.mainnet-beta.solana.com";
+}
 
-        return { context: { body } };
-      }
-    }),
-  },
-  plugins: [
-    jwt(),
-    oauthProvider({
-      loginPage: "/sign-in",
-      consentPage: "/consent",
-      allowDynamicClientRegistration: true,
-      allowUnauthenticatedClientRegistration: true,
-      // RFC 8707 — resource indicator sent by MCP clients during token exchange
-      validAudiences: [BASE_URL, `${BASE_URL}/`, `${new URL(BASE_URL).origin}/api/mcp`],
-      rateLimit: {
-        register: { window: 60, max: 50 },
-      },
-      // The /.well-known/oauth-authorization-server/[...path] route already
-      // handles the /api/auth subpath the plugin checks for at boot.
-      silenceWarnings: {
-        oauthAuthServerConfig: true,
-      },
-    }),
-  ],
-  trustedOrigins: ["chrome-extension://", "https://claude.ai", "https://api.anthropic.com"],
+export async function createSession(walletAddress: string, tier: string): Promise<string> {
+  return new SignJWT({ walletAddress, tier, iss: BASE_URL })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("24h")
+    .sign(SESSION_SECRET);
+}
+
+export async function verifySession(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, SESSION_SECRET);
+    return payload as { walletAddress: string; tier: string };
+  } catch {
+    return null;
+  }
+}
+
+// CAAP plugin — exposes /caap/attest, /caap/status/:agentId, /caap/discovery
+export const caap = createCaapPlugin({
+  heliusApiKey: process.env.HELIUS_API_KEY,
+  clawdMint: CLAWD_MINT,
+  enableSubscriptionTiers: true,
+  enableDasAttestation: true,
 });
 
-export type Auth = typeof auth;
+export { attestAgent, computeTier, createSiwsInput, fetchWalletSnapshot, verifySiws };

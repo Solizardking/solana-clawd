@@ -21,8 +21,10 @@ primary_region = "iad"
   X402_API_URL         = "https://x402.wtf/api"
   # clawd-pump subprocess bridge — not available in cloud; keep dry-run on
   PUMP_DRY_RUN         = "true"
-  # NL trading model
+  # NL trading model (Claude fallback when Grok unavailable)
   CLAWD_NL_MODEL       = "claude-haiku-4-5-20251001"
+  # xAI Grok model — used for response generation when XAI_API_KEY secret is set
+  GROK_MODEL           = "grok-4.3"
 
 # ── HTTP service ───────────────────────────────────────────────────────────────
 [http_service]
