@@ -3,7 +3,10 @@
 
 set -euo pipefail
 
-DIFF=$(git diff --cached)
+# Build diff excluding documentation/example files where fake examples live
+DIFF=$(git diff --cached -- \
+  ':!*.md' ':!*.txt' ':!*.example' ':!*.sample' ':!*.template' \
+  ':!**/README*' ':!**/CHANGELOG*' ':!**/CONTRIBUTING*')
 
 if [ -z "$DIFF" ]; then
   exit 0
@@ -32,7 +35,7 @@ check "PEM private key block" "BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY"
 check "Database URL with password" "(mongodb|postgresql|mysql)://[^:@]+:[^@]+@"
 
 # Check for accidentally staged secret files
-SECRET_FILES=$(git diff --cached --name-only | grep -iE "\.(env|pem|key)$|wallet\.json|keypair\.json|id\.json" || true)
+SECRET_FILES=$(git diff --cached --name-only | grep -iE "\.(env|pem|key)$|wallet\.json|keypair\.json|(^|[/_-])id\.json$" || true)
 if [ -n "$SECRET_FILES" ]; then
   echo "🚨 CLAWD GUARD: Secret file(s) staged for commit:"
   echo "$SECRET_FILES"
