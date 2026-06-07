@@ -1,22 +1,45 @@
-FROM node:22-alpine AS deps
-WORKDIR /app
+# ── Stage 1: install production deps ─────────────────────────────────────────
+FROM node:22-bookworm-slim AS deps
+RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
+WORKDIR /build
 COPY gateway/package*.json ./
-RUN npm install --omit=dev --no-audit --no-fund
+RUN npm ci --omit=dev --no-audit --no-fund
 
-FROM node:22-alpine AS build
-WORKDIR /app
+# ── Stage 2: build TypeScript ─────────────────────────────────────────────────
+FROM node:22-bookworm-slim AS build
+RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
+WORKDIR /build
 COPY gateway/package*.json ./
-RUN npm install --no-audit --no-fund
-COPY gateway ./gateway
-COPY formal_verification ./formal_verification
-WORKDIR /app/gateway
+RUN npm ci --no-audit --no-fund
+COPY gateway/ ./gateway/
+COPY formal_verification/ ./formal_verification/
+WORKDIR /build/gateway
 RUN npm run build
 
-FROM node:22-alpine AS runtime
+# ── Stage 3: minimal runtime image ───────────────────────────────────────────
+FROM node:22-bookworm-slim AS runtime
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends dumb-init \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY gateway/package*.json ./
+
+# Non-root user for reduced attack surface
+RUN groupadd -r clawd && useradd -r -g clawd clawd \
+    && install -d -o clawd -g clawd /data
+
+COPY --from=deps  --chown=clawd:clawd /build/node_modules ./node_modules
+COPY --from=build --chown=clawd:clawd /build/dist         ./dist
+COPY --chown=clawd:clawd gateway/package*.json ./
+
+# /data is the Fly persistent volume mount point for sessions.json
+VOLUME ["/data"]
+
+USER clawd
 EXPOSE 8080
+
+# dumb-init ensures SIGTERM propagates cleanly on Fly machine stop
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/gateway/src/index.js"]

@@ -1,29 +1,56 @@
-app = "clawd-gateway"
+app            = "clawd-gateway"
 primary_region = "iad"
 
+# ── Build ──────────────────────────────────────────────────────────────────────
 [build]
+  # Context is the monorepo root (directory containing fly.toml) — formal_verification/ is accessible
   dockerfile = "gateway/Dockerfile"
 
+# ── Non-secret env vars ────────────────────────────────────────────────────────
+# Secrets (API keys, private keys) must be set via:
+#   fly secrets set TELEGRAM_BOT_TOKEN=... ANTHROPIC_API_KEY=... etc.
 [env]
-  GATEWAY_PORT = "8080"
-  GATEWAY_BASE_URL = "https://clawd-gateway.fly.dev"
+  GATEWAY_PORT         = "8080"
+  GATEWAY_BASE_URL     = "https://clawd-gateway.fly.dev"
+  # Telegram webhook — set to your Fly app URL to enable webhook mode.
+  # Leave unset to fall back to long-polling (simpler, but not recommended on Fly).
+  TELEGRAM_WEBHOOK_URL = "https://clawd-gateway.fly.dev/telegram/webhook"
+  # Persistent session storage (maps to the /data volume below)
+  DATA_DIR             = "/data"
+  # x402.wtf gateway
+  X402_API_URL         = "https://x402.wtf/api"
+  # clawd-pump subprocess bridge — not available in cloud; keep dry-run on
+  PUMP_DRY_RUN         = "true"
+  # NL trading model
+  CLAWD_NL_MODEL       = "claude-haiku-4-5-20251001"
 
+# ── HTTP service ───────────────────────────────────────────────────────────────
 [http_service]
-  internal_port = 8080
-  force_https = true
-  auto_stop_machines = "off"
-  auto_start_machines = true
+  internal_port        = 8080
+  force_https          = true
+  auto_stop_machines   = "off"   # always-on daemon — never spin down
+  auto_start_machines  = true
   min_machines_running = 1
-  processes = ["app"]
 
   [[http_service.checks]]
-    interval = "15s"
-    timeout = "3s"
-    grace_period = "20s"
-    method = "GET"
-    path = "/health"
+    interval     = "15s"
+    timeout      = "5s"
+    grace_period = "30s"
+    method       = "GET"
+    path         = "/health"
 
+# ── Machine size ───────────────────────────────────────────────────────────────
 [[vm]]
-  memory = "512mb"
+  memory   = "512mb"
   cpu_kind = "shared"
-  cpus = 1
+  cpus     = 1
+
+# ── Persistent volume for session state ───────────────────────────────────────
+# Create once:  fly volumes create clawd_data --region iad --size 1
+# The app mounts it at /data — sessions.json survives restarts + deploys.
+[[mounts]]
+  source      = "clawd_data"
+  destination = "/data"
+  auto_extend_size_threshold  = 80
+  auto_extend_size_increment  = "1GB"
+  auto_extend_size_limit      = "5GB"
