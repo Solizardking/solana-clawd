@@ -40,7 +40,7 @@
   "devDependencies": {
     "@better-auth/agent-auth": "workspace:*",
     "@types/node": "^25.3.0",
-    "better-auth": "1.5.4",
+    "better-auth": "1.6.11",
     "tsup": "^8.0.0",
     "typescript": "^5.8.0",
     "vitest": "^4.1.0"
