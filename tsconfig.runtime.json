@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "files": [
+    "./src/index.ts",
+    "./src/config.ts",
+    "./src/state/database.ts",
+    "./src/identity/wallet.ts",
+    "./src/identity/balances.ts",
+    "./src/identity/spawn-onchain.ts",
+    "./src/setup/wizard.ts",
+    "./src/molting/spawn.ts",
+    "./src/survival/monitor.ts",
+    "./src/agent/system-prompt.ts",
+    "./src/types/index.ts",
+    "./src/state/app-state.ts",
+    "./src/helius/index.ts",
+    "./src/services/x402/index.ts",
+    "./src/services/x402/types.ts",
+    "./src/buddy/index.ts",
+    "./src/gacha/index.ts",
+    "./src/identity/agentwallet.ts",
+    "./src/types/runtime-externals.d.ts"
+  ]
+}

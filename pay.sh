@@ -147,8 +147,8 @@ fi
 if [ "$INSTALL_SDK" = true ]; then
   info "Installing Solana SDK + wallet..."
   npm install -g @openclawdsolana/solana-sdk &>/dev/null || die "Failed to install @openclawdsolana/solana-sdk"
-  npm install -g @openclawdsolana/wallet &>/dev/null || die "Failed to install @openclawdsolana/wallet"
-  ok "@openclawdsolana/solana-sdk + @openclawdsolana/wallet"
+  npm install -g @openclawd/wallet &>/dev/null || die "Failed to install @openclawd/wallet"
+  ok "@openclawdsolana/solana-sdk + @openclawd/wallet"
 fi
 
 if [ "$INSTALL_PERPS" = true ]; then

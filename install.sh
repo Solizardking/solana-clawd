@@ -44,7 +44,7 @@ for arg in "$@"; do
       printf "  ${BOLD}--full${RESET}       Everything (TUI + registry + hub + leviathan + SDK + perps + x402 + pump)\n"
       printf "  ${BOLD}--perps${RESET}      Solana perps via Phoenix/Vulcan CLI (Rise SDK)\n"
       printf "  ${BOLD}--x402${RESET}       x402.wtf CLI (gateway + terminal launcher)\n"
-      printf "  ${BOLD}--sdk${RESET}        @openclawdsolana/solana-sdk + @openclawdsolana/wallet\n"
+      printf "  ${BOLD}--sdk${RESET}        @openclawdsolana/solana-sdk + @openclawd/wallet\n"
       printf "  ${BOLD}--pump${RESET}       Rust copy-trading bot (clawd-pump) — requires Rust toolchain\n"
       printf "  ${BOLD}--gateway${RESET}    CLAWD Gateway — Telegram bot + HTTP API (Helius/Birdeye)\n"
       printf "  ${BOLD}--leviathan${RESET}  @openclawdsolana/leviathan on-chain runtime\n"
@@ -121,8 +121,8 @@ if [ "$INSTALL_SDK" = true ]; then
   npm install -g @openclawdsolana/solana-sdk 2>&1 | tail -1
   ok "@openclawdsolana/solana-sdk"
   info "Installing Clawd wallet..."
-  npm install -g @openclawdsolana/wallet 2>&1 | tail -1
-  ok "@openclawdsolana/wallet"
+  npm install -g @openclawd/wallet 2>&1 | tail -1
+  ok "@openclawd/wallet"
 fi
 
 # ── x402.wtf CLI ─────────────────────────────────────────────────────────────

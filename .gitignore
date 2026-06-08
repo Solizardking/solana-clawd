@@ -114,6 +114,7 @@ pip-delete-this-directory.txt
 # Build / dist artifacts
 # ----------------------------------------------------------------------------
 dist/
+dist-web/
 build/
 !src/app/build/
 !src/app/build/**

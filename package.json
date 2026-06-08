@@ -2,6 +2,7 @@
   "name": "@openclawdsolana/leviathan",
   "version": "0.2.0",
   "description": "OpenClawd — Sovereign AI Lobster Runtime on Solana — $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump",
+  "packageManager": "pnpm@10.4.1",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -118,15 +119,15 @@
   ],
   "scripts": {
     "prepare": "git config core.hooksPath .husky || true",
-    "build": "tsc",
-    "build:all": "tsc && (cd packages/agentwallet && npm run build) && (cd packages/agent-registry && npm run build) && (cd packages/agent-hub && npm run build) && (cd packages/clawd-code-cli && npm run build) && (cd packages/cli-standalone && npm run build)",
+    "build": "tsc -p tsconfig.runtime.json",
+    "build:all": "npm run build && (cd packages/agentwallet && npm run build) && (cd packages/agent-registry && npm run build) && (cd packages/agent-hub && npm run build) && (cd packages/clawd-code-cli && npm run build) && (cd packages/cli-standalone && npm run build)",
     "build:web": "vite build",
     "dev": "tsx watch src/index.ts",
     "dev:web": "vite",
-    "test": "vitest run \"src/**/*.{test,spec}.ts\" --passWithNoTests",
+    "test": "pnpm exec vitest run \"src/**/*.{test,spec}.ts\" --passWithNoTests",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
-    "check": "tsc --noEmit",
+    "check": "tsc -p tsconfig.runtime.json --noEmit",
     "hub": "clawd-hub start --open",
     "hub:start": "clawd-hub start",
     "hub:status": "clawd-hub status",
@@ -235,6 +236,14 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "workspaces": [
+    "packages/*",
+    "mcp-server",
+    "x402",
+    "pay",
+    "vendor/agent-auth/packages/*",
+    "programs/programs/client"
+  ],
   "pnpm": {
     "onlyBuiltDependencies": [
       "better-sqlite3",

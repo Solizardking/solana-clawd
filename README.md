@@ -73,7 +73,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 [![npm registry](https://img.shields.io/badge/agent--registry-v2.0.0-1E5AA8?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/agent-registry)
 [![npm hub](https://img.shields.io/badge/agent--hub-v2.0.0-147D64?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/agent-hub)
 [![npm sdk](https://img.shields.io/badge/solana--sdk-v2.0.0-9B59B6?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/solana-sdk)
-[![npm wallet](https://img.shields.io/badge/wallet-v2.0.0-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/wallet)
+[![npm wallet](https://img.shields.io/badge/wallet-v2.0.0-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawd/wallet)
 [![@auth/agent](https://img.shields.io/badge/%40auth%2Fagent-v0.6.0-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@auth/agent)
 [![Telegram](https://img.shields.io/badge/t.me/clawdtoken-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/clawdtoken)
 [![X](https://img.shields.io/badge/@clawddevs-000000?style=flat-square&logo=x&logoColor=white)](https://x.com/clawddevs)
@@ -93,7 +93,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ║  registry║  @openclawdsolana/agent-registry         ║  📋 on-chain      ║
 ║  hub     ║  @openclawdsolana/agent-hub              ║  🌐 dashboard     ║
 ║  sdk     ║  @openclawdsolana/solana-sdk             ║  🛠  TypeScript    ║
-║  wallet  ║  @openclawdsolana/wallet                 ║  👛 Privy+Jupiter ║
+║  wallet  ║  @openclawd/wallet                       ║  👛 Privy+Jupiter ║
 ║  vault   ║  agentwallet-vault                       ║  🔐 keypair vault ║
 ║  gateway ║  @solana-clawd/gateway                   ║  🤖 Telegram+HTTP ║
 ╠══════════╬══════════════════════════════════════╬═══════════════════╣
@@ -136,6 +136,9 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ### PATH 1 — npm Install (recommended for users)
 
 **Prerequisites:** Node.js v20+ · npm
+
+> Source builds in this repo are managed with `pnpm`. Use the `npm install -g ...`
+> commands below only for packages that are already published to npm.
 
 **Step 1 — Install the core packages:**
 
@@ -324,15 +327,23 @@ pnpm install
 # Expected: "Done in ~4s" with no errors
 ```
 
-**Step 3 — Build all packages:**
+**Step 3 — Build the public runtime first:**
 
 ```bash
-npm run build:all
-# Builds: leviathan root → agentwallet → agent-registry → agent-hub → clawd → cli-standalone
-# Expected: clean output, no TypeScript errors
+pnpm run build
+# Builds the root Leviathan runtime export surface used by the published package.
 ```
 
-**Step 4 — Verify each package built correctly:**
+**Step 4 — Build workspace packages as needed:**
+
+```bash
+cd packages/agentwallet && npm run build
+cd ../agent-registry && npm run build
+cd ../agent-hub && npm run build
+cd ../clawd-code-cli && npm run build
+```
+
+**Step 5 — Verify each package built correctly:**
 
 ```bash
 ls packages/agentwallet/dist/      # should contain cli.js, vault.js, server.js, crypto.js
@@ -417,7 +428,7 @@ npm run registry:stats     # agent registry stats
 
 ```bash
 cd packages/clawd-sdk && npm run build      # @openclawdsolana/solana-sdk
-cd packages/clawd-wallet && npm run build   # @openclawdsolana/wallet (has pending TS fixes)
+cd packages/clawd-wallet && npm run build   # @openclawd/wallet
 cd packages/agentwallet && npm run build    # agentwallet-vault (builds clean)
 ```
 
@@ -923,7 +934,7 @@ packages/                    → packages/README.md for full detail
 │   ├── vault/               conviction staking · milestone locks · entropy burns
 │   └── idl/                 Anchor IDL types (clawd_protocol)
 │
-├── clawd-wallet/     ✅ npm  👛 @openclawdsolana/wallet@2.0.0
+├── clawd-wallet/     ✅ npm  👛 @openclawd/wallet@0.1.0
 │   ├── ClawdWallet          Privy-embedded Solana wallet wrapper
 │   ├── AgenticWallet        Grok-gated trading (deny/ask/allow)
 │   └── SwapService          Jupiter aggregator + slippage guard
@@ -1371,10 +1382,10 @@ npm install @openclawdsolana/solana-sdk
 ---
 
 <details>
-<summary><strong>👛 @openclawdsolana/wallet — Privy + AgenticWallet + Jupiter</strong></summary>
+<summary><strong>👛 @openclawd/wallet — Privy + AgenticWallet + Jupiter</strong></summary>
 
 ```typescript
-import { AgenticWallet } from "@openclawdsolana/wallet";
+import { AgenticWallet } from "@openclawd/wallet";
 
 const agent = new AgenticWallet(wallet, {
   privyAppId: process.env.PRIVY_APP_ID!,
@@ -1396,7 +1407,7 @@ const result = await agent.agentSwap({
 ```
 
 ```bash
-npm install @openclawdsolana/wallet
+npm install @openclawd/wallet
 ```
 
 </details>
@@ -1849,13 +1860,12 @@ clawd agent --help               # → "clawd agent [options] [command]"
 ```bash
 # 1. Install + build
 pnpm install                     # → "Done in ~4s"
-npm run build:all                # → 4 clean tsc outputs, no errors
+pnpm run build                   # → root Leviathan runtime builds cleanly
 
 # 2. Dist directories present
 ls packages/agentwallet/dist/    # → cli.js  vault.js  server.js  crypto.js  keygen.js
 ls packages/agent-registry/dist/ # → cli  index.js  indexer ...
 ls packages/agent-hub/dist/      # → cli.js  routes  server  ws
-ls packages/clawd/dist/          # → index.js  commands  agent  tools ...
 ls dist/                         # → index.js  gacha  identity  state ...
 
 # 3. CLIs work from dist
@@ -2062,7 +2072,7 @@ All 7 JS packages are published under `@openclawdsolana` on npm. Agent auth pack
 | [`@openclawdsolana/agent-registry`](https://www.npmjs.com/package/@openclawdsolana/agent-registry) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/agent-registry?color=C85C2B) | `npm install -g @openclawdsolana/agent-registry` |
 | [`@openclawdsolana/agent-hub`](https://www.npmjs.com/package/@openclawdsolana/agent-hub) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/agent-hub?color=C85C2B) | `npm install -g @openclawdsolana/agent-hub` |
 | [`@openclawdsolana/solana-sdk`](https://www.npmjs.com/package/@openclawdsolana/solana-sdk) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/solana-sdk?color=147D64) | `npm install @openclawdsolana/solana-sdk` |
-| [`@openclawdsolana/wallet`](https://www.npmjs.com/package/@openclawdsolana/wallet) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/wallet?color=147D64) | `npm install @openclawdsolana/wallet` |
+| [`@openclawd/wallet`](https://www.npmjs.com/package/@openclawd/wallet) | ![npm](https://img.shields.io/npm/v/@openclawd/wallet?color=147D64) | `npm install @openclawd/wallet` |
 | [`@openclawdsolana/leviathan`](https://www.npmjs.com/package/@openclawdsolana/leviathan) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/leviathan?color=1E5AA8) | `npm install -g @openclawdsolana/leviathan` |
 | [`@openclawdsolana/clawd-standalone`](https://www.npmjs.com/package/@openclawdsolana/clawd-standalone) | ![npm](https://img.shields.io/npm/v/@openclawdsolana/clawd-standalone?color=1E5AA8) | `npm install -g @openclawdsolana/clawd-standalone` |
 | [`@better-auth/agent-auth`](https://www.npmjs.com/package/@better-auth/agent-auth) | `^0.5.1` | `npm install @better-auth/agent-auth` |

@@ -9,13 +9,15 @@ import os from 'node:os';
 import path from 'node:path';
 import { SHELL_DIR_NAME } from '../config.js';
 
+type ShellDatabase = InstanceType<typeof Database>;
+
 const HOME = os.homedir();
 const SHELL_DIR = path.join(HOME, SHELL_DIR_NAME);
 const DB_PATH = path.join(SHELL_DIR, 'shell.db');
 
-let db: Database.Database | null = null;
+let db: ShellDatabase | null = null;
 
-export function getShellDb(): Database.Database {
+export function getShellDb(): ShellDatabase {
   if (db) return db;
   if (!fs.existsSync(SHELL_DIR)) fs.mkdirSync(SHELL_DIR, { recursive: true, mode: 0o700 });
   db = new Database(DB_PATH);
