@@ -10,7 +10,9 @@
  *   node scripts/mint-clawd-agent.mjs [--rpc <url>] [--keypair <path>] [--dry-run]
  *
  * Env vars (fallbacks):
- *   SOLANA_RPC_URL   – default: https://api.devnet.solana.com
+ *   HELIUS_RPC_URL   – preferred full RPC URL
+ *   HELIUS_API_KEY   – used to derive mainnet Helius RPC if HELIUS_RPC_URL is unset
+ *   SOLANA_RPC_URL   – fallback RPC URL
  *   KEYPAIR_PATH     – default: ~/.config/solana/id.json
  */
 
@@ -36,10 +38,14 @@ const getArg = (flag) => {
   return i !== -1 ? args[i + 1] : undefined;
 };
 const DRY_RUN = args.includes("--dry-run");
+const DEFAULT_HELIUS_RPC = process.env.HELIUS_API_KEY
+  ? `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`
+  : "https://api.mainnet-beta.solana.com";
 const RPC_URL =
   getArg("--rpc") ||
+  process.env.HELIUS_RPC_URL ||
   process.env.SOLANA_RPC_URL ||
-  "https://api.devnet.solana.com";
+  DEFAULT_HELIUS_RPC;
 const KEYPAIR_PATH =
   getArg("--keypair") ||
   process.env.KEYPAIR_PATH ||

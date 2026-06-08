@@ -176,7 +176,12 @@ if [ "$INSTALL_PERPS" = true ]; then
   fi
 
   # 3. Resolve Solana RPC URL
-  RPC_URL="${SOLANA_RPC_URL:-}"
+  HELIUS_KEY="${HELIUS_API_KEY:-}"
+  DERIVED_HELIUS_RPC=""
+  if [ -n "${HELIUS_KEY}" ]; then
+    DERIVED_HELIUS_RPC="https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}"
+  fi
+  RPC_URL="${HELIUS_RPC_URL:-${SOLANA_RPC_URL:-${DERIVED_HELIUS_RPC}}}"
   VULCAN_CFG="${HOME}/.vulcan/config.toml"
 
   if [ -z "${RPC_URL}" ]; then
@@ -185,14 +190,14 @@ if [ "$INSTALL_PERPS" = true ]; then
       info "Using existing Vulcan RPC URL: ${RPC_URL}"
     elif [ -t 0 ]; then
       printf "\n  ${BOLD}Solana RPC URL${RESET}\n"
-      printf "  ${DIM}Paste your Helius, Triton, or QuickNode URL. Leave blank for public mainnet.${RESET}\n"
+      printf "  ${DIM}Paste your Helius, Triton, or QuickNode URL. Leave blank to use HELIUS_API_KEY or public mainnet.${RESET}\n"
       printf "  ${DIM}e.g. https://mainnet.helius-rpc.com/?api-key=YOUR_KEY${RESET}\n"
       printf "  ${CYAN}RPC URL:${RESET} "
       read -r RPC_URL
-      RPC_URL="${RPC_URL:-https://api.mainnet-beta.solana.com}"
+      RPC_URL="${RPC_URL:-${DERIVED_HELIUS_RPC:-https://api.mainnet-beta.solana.com}}"
     else
-      RPC_URL="https://api.mainnet-beta.solana.com"
-      warn "Non-interactive: using public mainnet RPC. Set SOLANA_RPC_URL or edit ~/.vulcan/config.toml"
+      RPC_URL="${DERIVED_HELIUS_RPC:-https://api.mainnet-beta.solana.com}"
+      warn "Non-interactive: using ${DERIVED_HELIUS_RPC:+derived Helius RPC from HELIUS_API_KEY}${DERIVED_HELIUS_RPC:+' '}${DERIVED_HELIUS_RPC:-public mainnet RPC}. Set HELIUS_RPC_URL or SOLANA_RPC_URL to override."
     fi
   fi
   ok "RPC URL: ${RPC_URL}"
@@ -245,6 +250,22 @@ TOML
 
   CLAWD_ENV="${HOME}/.clawd/.env"
   if [ -f "${CLAWD_ENV}" ]; then
+    if grep -q "HELIUS_API_KEY" "${CLAWD_ENV}"; then
+      sed -i'' "s|# *HELIUS_API_KEY=.*|HELIUS_API_KEY=${HELIUS_KEY}|" "${CLAWD_ENV}" 2>/dev/null || \
+        sed -i   "s|# *HELIUS_API_KEY=.*|HELIUS_API_KEY=${HELIUS_KEY}|" "${CLAWD_ENV}" 2>/dev/null || true
+      sed -i'' "s|^HELIUS_API_KEY=.*|HELIUS_API_KEY=${HELIUS_KEY}|"  "${CLAWD_ENV}" 2>/dev/null || \
+        sed -i   "s|^HELIUS_API_KEY=.*|HELIUS_API_KEY=${HELIUS_KEY}|"  "${CLAWD_ENV}" 2>/dev/null || true
+    elif [ -n "${HELIUS_KEY}" ]; then
+      printf "\nHELIUS_API_KEY=%s\n" "${HELIUS_KEY}" >> "${CLAWD_ENV}"
+    fi
+    if grep -q "HELIUS_RPC_URL" "${CLAWD_ENV}"; then
+      sed -i'' "s|# *HELIUS_RPC_URL=.*|HELIUS_RPC_URL=${RPC_URL}|" "${CLAWD_ENV}" 2>/dev/null || \
+        sed -i   "s|# *HELIUS_RPC_URL=.*|HELIUS_RPC_URL=${RPC_URL}|" "${CLAWD_ENV}" 2>/dev/null || true
+      sed -i'' "s|^HELIUS_RPC_URL=.*|HELIUS_RPC_URL=${RPC_URL}|"  "${CLAWD_ENV}" 2>/dev/null || \
+        sed -i   "s|^HELIUS_RPC_URL=.*|HELIUS_RPC_URL=${RPC_URL}|"  "${CLAWD_ENV}" 2>/dev/null || true
+    else
+      printf "\nHELIUS_RPC_URL=%s\n" "${RPC_URL}" >> "${CLAWD_ENV}"
+    fi
     if grep -q "SOLANA_RPC_URL" "${CLAWD_ENV}"; then
       sed -i'' "s|# *SOLANA_RPC_URL=.*|SOLANA_RPC_URL=${RPC_URL}|" "${CLAWD_ENV}" 2>/dev/null || \
         sed -i   "s|# *SOLANA_RPC_URL=.*|SOLANA_RPC_URL=${RPC_URL}|" "${CLAWD_ENV}" 2>/dev/null || true
@@ -253,7 +274,7 @@ TOML
     else
       printf "\nSOLANA_RPC_URL=%s\n" "${RPC_URL}" >> "${CLAWD_ENV}"
     fi
-    ok "SOLANA_RPC_URL → ~/.clawd/.env"
+    ok "HELIUS + SOLANA RPC env → ~/.clawd/.env"
   fi
 fi
 

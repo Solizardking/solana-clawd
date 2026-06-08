@@ -197,7 +197,8 @@ XAI_API_KEY=${XAI_API_KEY_VAL}
 
 # ── Solana ─────────────────────────────────────────────────────────────────
 HELIUS_API_KEY=${HELIUS_KEY_VAL}
-# SOLANA_RPC_URL=https://mainnet.helius-rpc.com/?api-key=\${HELIUS_API_KEY}
+HELIUS_RPC_URL=${HELIUS_KEY_VAL:+https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY_VAL}}
+SOLANA_RPC_URL=${HELIUS_KEY_VAL:+https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY_VAL}}
 # SOLANA_PRIVATE_KEY=${SOL_KEY_VAL}
 
 # ── x402 micropayments ─────────────────────────────────────────────────────

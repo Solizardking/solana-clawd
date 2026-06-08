@@ -24,7 +24,9 @@
  *
  * Env (only needed in --local mode):
  *   XAI_API_KEY        xAI key for Grok + image gen
- *   SOLANA_RPC_URL     Override RPC
+ *   HELIUS_RPC_URL     Preferred full Helius RPC URL
+ *   HELIUS_API_KEY     Used to derive Helius RPC when HELIUS_RPC_URL is unset
+ *   SOLANA_RPC_URL     Override fallback RPC
  *   KEYPAIR_PATH       Override keypair path
  */
 
@@ -51,7 +53,12 @@ const NO_IMAGE   = flag("--no-image") || DRY_RUN;
 const NO_MINT    = flag("--no-mint")  || DRY_RUN;
 const NO_GROK    = flag("--no-grok")  || DRY_RUN;
 const LOCAL_MODE = flag("--local");
-const RPC_URL    = getArg("--rpc") || process.env.SOLANA_RPC_URL || "https://api.devnet.solana.com";
+const DEFAULT_HELIUS_RPC =
+  process.env.HELIUS_RPC_URL ||
+  (process.env.HELIUS_API_KEY
+    ? `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`
+    : "https://api.mainnet-beta.solana.com");
+const RPC_URL    = getArg("--rpc") || DEFAULT_HELIUS_RPC || process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
 const KEYPAIR_PATH = getArg("--keypair") || process.env.KEYPAIR_PATH || join(homedir(), ".config/solana/id.json");
 const RESOLUTION = getArg("--resolution") || "1k";
 const GATEWAY    = getArg("--gateway") || "https://x402.wtf";

@@ -16,8 +16,10 @@ import bs58 from 'bs58';
 // ---------------------------------------------------------------------------
 // Config from env
 // ---------------------------------------------------------------------------
-const HELIUS_RPC = process.env.HELIUS_RPC_URL ?? '';
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY ?? '';
+const HELIUS_RPC = process.env.HELIUS_RPC_URL || (HELIUS_API_KEY
+  ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`
+  : '');
 const HELIUS_PARSE_URL = process.env.HELIUS_PARSE_URL ?? '';
 const GATEKEEPER_RPC = process.env.GATEKEEPER_RPC_URL ?? '';
 const PRIVATE_KEY = process.env.SOLANA_PRIVATE_KEY ?? '';
@@ -34,7 +36,10 @@ if (!GATEKEEPER_RPC && !HELIUS_RPC) {
 
 export const connection = new Connection(rpcUrl, {
   commitment: 'confirmed',
-  wsEndpoint: process.env.HELIUS_ATLAS_WSS_URL || process.env.HELIUS_WSS_URL,
+  wsEndpoint:
+    process.env.HELIUS_ATLAS_WSS_URL ||
+    process.env.HELIUS_WSS_URL ||
+    (HELIUS_API_KEY ? `wss://atlas-mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` : undefined),
 });
 
 export function getRpcUrl(): string {

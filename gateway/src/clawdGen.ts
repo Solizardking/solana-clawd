@@ -21,7 +21,9 @@ const router = Router();
 const XAI_KEY        = process.env.XAI_API_KEY ?? '';
 const FEE_PAYER_KEY  = process.env.FEE_PAYER_SECRET_KEY ?? process.env.SOLANA_PRIVATE_KEY ?? '';
 const HELIUS_KEY     = process.env.HELIUS_API_KEY ?? '';
-const SOLANA_RPC     = process.env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com';
+const HELIUS_RPC_URL = process.env.HELIUS_RPC_URL ??
+  (HELIUS_KEY ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}` : '');
+const SOLANA_RPC     = HELIUS_RPC_URL || process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
 const GATEWAY_BASE   = process.env.GATEWAY_BASE_URL ?? 'https://x402.wtf';
 
 // Minimum $CLAWD balance for a covered mint (matches HOLDER tier in clawd-gate)
@@ -166,7 +168,7 @@ async function doGaslessMint(ownerPubkey: string, name: string, uri: string): Pr
   const { keypairIdentity, generateSigner, publicKey: umiPublicKey } = await import('@metaplex-foundation/umi');
   const bs58 = await import('bs58');
 
-  const rpcUrl = process.env.HELIUS_RPC_URL ?? SOLANA_RPC;
+  const rpcUrl = HELIUS_RPC_URL || SOLANA_RPC;
   const umi = createUmi(rpcUrl).use(mplCore());
 
   let secretBytes: Uint8Array;
