@@ -22,6 +22,7 @@ const HELIUS_PARSE_URL = process.env.HELIUS_PARSE_URL ?? '';
 const GATEKEEPER_RPC = process.env.GATEKEEPER_RPC_URL ?? '';
 const PRIVATE_KEY = process.env.SOLANA_PRIVATE_KEY ?? '';
 const PUBLIC_KEY = process.env.SOLANA_PUBLIC_KEY ?? '';
+export const CLAWD_MINT = '8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump';
 
 // ---------------------------------------------------------------------------
 // Connection — prefer Gatekeeper (beta), fallback to standard Helius
@@ -35,6 +36,10 @@ export const connection = new Connection(rpcUrl, {
   commitment: 'confirmed',
   wsEndpoint: process.env.HELIUS_ATLAS_WSS_URL || process.env.HELIUS_WSS_URL,
 });
+
+export function getRpcUrl(): string {
+  return rpcUrl;
+}
 
 // ---------------------------------------------------------------------------
 // Wallet
@@ -133,9 +138,20 @@ export async function heliusParseTransactions(signatures: string[]): Promise<unk
 }
 
 export async function heliusGetAssetsByOwner(owner?: string): Promise<unknown> {
+  return heliusDasRequest('getAssetsByOwner', {
+    ownerAddress: owner ?? getPublicKey()?.toBase58(),
+    page: 1,
+    limit: 50,
+  });
+}
+
+export async function heliusDasRequest(method: string, params: Record<string, unknown>): Promise<unknown> {
   if (!HELIUS_API_KEY && !HELIUS_RPC) return { error: 'No Helius API key' };
-  const pubkey = owner ?? getPublicKey()?.toBase58();
-  if (!pubkey) throw new Error('No wallet address');
+  const bodyParams = { ...params };
+  if (method === 'getAssetsByOwner') {
+    bodyParams.ownerAddress = bodyParams.ownerAddress ?? getPublicKey()?.toBase58();
+    if (!bodyParams.ownerAddress) throw new Error('No wallet address');
+  }
 
   const url = HELIUS_RPC || `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
   const resp = await fetch(url, {
@@ -143,13 +159,137 @@ export async function heliusGetAssetsByOwner(owner?: string): Promise<unknown> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       jsonrpc: '2.0',
-      id: 'assets',
-      method: 'getAssetsByOwner',
-      params: { ownerAddress: pubkey, page: 1, limit: 50 },
+      id: method,
+      method,
+      params: bodyParams,
     }),
   });
-  if (!resp.ok) throw new Error(`Helius getAssetsByOwner failed: ${resp.status}`);
+  if (!resp.ok) throw new Error(`Helius ${method} failed: ${resp.status}`);
   return resp.json();
+}
+
+export interface DasAsset {
+  id: string;
+  interface?: string;
+  content?: {
+    metadata?: {
+      name?: string;
+      symbol?: string;
+      description?: string;
+    };
+  };
+  grouping?: Array<{ group_key?: string; group_value?: string }>;
+  ownership?: {
+    owner?: string;
+    frozen?: boolean;
+  };
+  token_info?: {
+    balance?: number | string;
+    decimals?: number;
+    symbol?: string;
+  };
+  compression?: {
+    compressed?: boolean;
+  };
+  authorities?: Array<{ address?: string; scopes?: string[] }>;
+  creators?: Array<{ address?: string; share?: number; verified?: boolean }>;
+  [key: string]: unknown;
+}
+
+interface DasAssetsByOwnerResponse {
+  result?: {
+    total?: number;
+    limit?: number;
+    page?: number;
+    items?: DasAsset[];
+  };
+  error?: unknown;
+}
+
+interface ClawdHolding {
+  mint: string;
+  amount: string;
+  uiAmount: number;
+  source: 'das' | 'token-accounts';
+}
+
+function dasTokenUiAmount(asset: DasAsset): number {
+  const balance = Number(asset.token_info?.balance ?? 0);
+  const decimals = Number(asset.token_info?.decimals ?? 0);
+  if (!Number.isFinite(balance)) return 0;
+  return balance / 10 ** decimals;
+}
+
+function isCollectionMatch(asset: DasAsset, collection?: string): boolean {
+  if (!collection) return true;
+  return (asset.grouping ?? []).some((group) =>
+    group.group_key === 'collection' && group.group_value === collection
+  );
+}
+
+export function assetIsFrozen(asset: DasAsset): boolean {
+  if (asset.ownership?.frozen === true) return true;
+  const plugins = asset.plugins as Record<string, unknown> | undefined;
+  const freezeDelegate = plugins?.freezeDelegate as { frozen?: boolean } | undefined;
+  return freezeDelegate?.frozen === true;
+}
+
+export async function heliusGetAsset(assetId: string): Promise<DasAsset | null> {
+  const resp = await heliusDasRequest('getAsset', { id: assetId }) as { result?: DasAsset };
+  return resp.result ?? null;
+}
+
+export async function getClawdTokenHolding(owner: string): Promise<ClawdHolding> {
+  const das = await heliusDasRequest('getAssetsByOwner', {
+    ownerAddress: owner,
+    page: 1,
+    limit: 1000,
+    options: {
+      showFungible: true,
+      showZeroBalance: false,
+    },
+  }) as DasAssetsByOwnerResponse;
+
+  const dasToken = das.result?.items?.find((asset) => asset.id === CLAWD_MINT);
+  const dasAmount = dasToken ? dasTokenUiAmount(dasToken) : 0;
+  if (dasAmount > 0) {
+    return {
+      mint: CLAWD_MINT,
+      amount: String(dasToken?.token_info?.balance ?? '0'),
+      uiAmount: dasAmount,
+      source: 'das',
+    };
+  }
+
+  const tokenAccount = (await getTokenAccounts(owner).catch(() => []))
+    .find((token) => token.mint === CLAWD_MINT);
+
+  return {
+    mint: CLAWD_MINT,
+    amount: tokenAccount?.amount ?? '0',
+    uiAmount: tokenAccount?.uiAmount ?? 0,
+    source: 'token-accounts',
+  };
+}
+
+export async function getOwnerDasAssets(owner: string, collection?: string): Promise<{
+  total: number;
+  assets: DasAsset[];
+}> {
+  const resp = await heliusDasRequest('getAssetsByOwner', {
+    ownerAddress: owner,
+    page: 1,
+    limit: 1000,
+    options: {
+      showFungible: false,
+      showCollectionMetadata: true,
+      showUnverifiedCollections: true,
+    },
+  }) as DasAssetsByOwnerResponse;
+
+  const items = resp.result?.items ?? [];
+  const assets = items.filter((asset) => isCollectionMatch(asset, collection));
+  return { total: resp.result?.total ?? items.length, assets };
 }
 
 // ---------------------------------------------------------------------------

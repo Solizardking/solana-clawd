@@ -1,7 +1,7 @@
 {
   "name": "@openclawd/agent-definitions",
   "version": "1.0.0",
-  "description": "Agent definition JSON catalog — 124 production-ready Solana agents for trading, DeFi, NFTs, security, and x402 flows",
+  "description": "Agent definition JSON catalog — 124 production-ready Solana agents for trading, DeFi, NFTs, security, staking, and x402 flows",
   "private": true,
   "license": "MIT",
   "repository": {

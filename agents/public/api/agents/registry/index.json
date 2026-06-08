@@ -1,6 +1,6 @@
 {
   "schemaVersion": "openclawd.metaplex.registry.index.v1",
-  "generatedAt": "2026-05-17T19:14:42.636Z",
+  "generatedAt": "2026-06-08T20:32:27.165Z",
   "registry": "metaplex-agent-registry",
   "host": "https://x402.wtf",
   "count": 124,
@@ -310,6 +310,13 @@
       "id": "solana-onchain-sleuth",
       "name": "On-Chain Investigation Specialist",
       "registrationUri": "https://x402.wtf/api/agents/registry/solana-onchain-sleuth.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
+    {
+      "id": "solana-openclawd-agent-staking",
+      "name": "OpenClawd Agent Staking Operator",
+      "registrationUri": "https://x402.wtf/api/agents/registry/solana-openclawd-agent-staking.json",
       "agentRegistry": "solana:mainnet:metaplex-agent-registry",
       "status": "pending-onchain-registration"
     },
@@ -863,13 +870,6 @@
       "id": "whale-watcher",
       "name": "Crypto Whale Watcher",
       "registrationUri": "https://x402.wtf/api/agents/registry/whale-watcher.json",
-      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
-      "status": "pending-onchain-registration"
-    },
-    {
-      "id": "yield-dashboard-builder",
-      "name": "Personal DeFi Dashboard Builder",
-      "registrationUri": "https://x402.wtf/api/agents/registry/yield-dashboard-builder.json",
       "agentRegistry": "solana:mainnet:metaplex-agent-registry",
       "status": "pending-onchain-registration"
     }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "openclawd.acp.registry.v1",
   "protocol": "Agent Commerce Protocol",
-  "generatedAt": "2026-05-17T19:14:42.636Z",
+  "generatedAt": "2026-06-08T20:32:27.165Z",
   "host": "https://x402.wtf",
   "discover": {
     "catalog": "https://x402.wtf/api/agents/catalog",
@@ -68,8 +68,8 @@
     ],
     "coverage": {
       "agent-registry": 42,
+      "core": 4,
       "genesis": 1,
-      "core": 3,
       "token-metadata": 4,
       "bubblegum": 3,
       "candy-machine": 2,
@@ -119,6 +119,7 @@
     "byCategory": {
       "defi": 60,
       "payments": 25,
+      "nft": 3,
       "trading": 8,
       "security": 8,
       "research": 1,
@@ -126,13 +127,12 @@
       "education": 3,
       "analytics": 11,
       "infrastructure": 1,
-      "nft": 2,
-      "dev-tools": 3
+      "dev-tools": 2
     },
     "metaplexEnabledAgents": 42,
     "tradingCapableAgents": 10,
     "launchCapableAgents": 1,
-    "mintCapableAgents": 2
+    "mintCapableAgents": 3
   },
   "agents": [
     {
@@ -1144,6 +1144,40 @@
           "agentRegistry": "solana:mainnet:metaplex-agent-registry",
           "status": "pending-onchain-registration",
           "registrationUri": "https://x402.wtf/api/agents/registry/solana-onchain-sleuth.json"
+        }
+      ]
+    },
+    {
+      "id": "solana-openclawd-agent-staking",
+      "title": "OpenClawd Agent Staking Operator",
+      "category": "nft",
+      "capabilities": [
+        "helius-das-wallet-scan",
+        "metaplex-mint-core-nft",
+        "metaplex-register-identity",
+        "metaplex-core-freeze-delegate",
+        "agent-stake",
+        "agent-unstake",
+        "x402-gateway-routing"
+      ],
+      "metaplexSkills": [
+        "agent-registry",
+        "core"
+      ],
+      "oneShot": false,
+      "featured": false,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/solana-openclawd-agent-staking.json",
+        "registration": "https://x402.wtf/api/agents/registry/solana-openclawd-agent-staking.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=solana-openclawd-agent-staking"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:solana-openclawd-agent-staking",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/solana-openclawd-agent-staking.json"
         }
       ]
     },
@@ -3247,34 +3281,6 @@
           "agentRegistry": "solana:mainnet:metaplex-agent-registry",
           "status": "pending-onchain-registration",
           "registrationUri": "https://x402.wtf/api/agents/registry/whale-watcher.json"
-        }
-      ]
-    },
-    {
-      "id": "yield-dashboard-builder",
-      "title": "Personal DeFi Dashboard Builder",
-      "category": "dev-tools",
-      "capabilities": [
-        "read-only",
-        "a2a-message"
-      ],
-      "metaplexSkills": [
-        "agent-registry"
-      ],
-      "oneShot": false,
-      "featured": false,
-      "endpoints": {
-        "catalog": "https://x402.wtf/api/agents/catalog/yield-dashboard-builder.json",
-        "registration": "https://x402.wtf/api/agents/registry/yield-dashboard-builder.json",
-        "a2a": "https://x402.wtf/api/agents/a2a",
-        "mint": "https://x402.wtf/agents/mint?template=yield-dashboard-builder"
-      },
-      "registrations": [
-        {
-          "agentId": "openclawd:yield-dashboard-builder",
-          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
-          "status": "pending-onchain-registration",
-          "registrationUri": "https://x402.wtf/api/agents/registry/yield-dashboard-builder.json"
         }
       ]
     }

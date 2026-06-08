@@ -53,7 +53,7 @@ const writeJson = (p, data) => {
 function loadAgents() {
   const files = fs
     .readdirSync(SRC_DIR)
-    .filter((f) => f.endsWith(".json"))
+    .filter((f) => f.endsWith(".json") && f !== "package.json")
     .sort();
 
   return files.map((f) => {
@@ -98,7 +98,7 @@ function loadSupplementalRegistryAgents(existingIds) {
 
   const files = fs
     .readdirSync(PUBLIC_REGISTRY_DIR)
-    .filter((file) => file.endsWith(".json") && file !== "index.json")
+    .filter((file) => file.endsWith(".json") && file !== "index.json" && file !== "package.json")
     .sort();
 
   return files

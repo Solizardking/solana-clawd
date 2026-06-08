@@ -41,6 +41,7 @@ import { supabase } from './supabase.js';
 import agentRegistryRouter from './agentRegistry.js';
 import gaslessMintRouter from './gaslessMint.js';
 import skillHubRouter from './skillHub.js';
+import stakingRouter from './staking.js';
 import { handleNLMessage } from './nlTrading.js';
 import {
   mainMenu, mainMenuText, portfolioMenu, tradeMenu,
@@ -76,6 +77,7 @@ const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET ?? '';
 app.use('/', agentRegistryRouter);
 app.use('/', gaslessMintRouter);
 app.use('/', skillHubRouter);
+app.use('/', stakingRouter);
 
 // ---------------------------------------------------------------------------
 // Birdeye WebSocket

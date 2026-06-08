@@ -1,7 +1,7 @@
 {
   "$schema": "https://x402.wtf/schema/clawdAgentCatalog.v1.json",
   "apiVersion": "1.0",
-  "generatedAt": "2026-05-17T19:14:42.636Z",
+  "generatedAt": "2026-06-08T20:32:27.165Z",
   "hub": {
     "gallery": "https://x402.wtf/agents",
     "mint": "https://x402.wtf/agents/mint",
@@ -16,6 +16,7 @@
     "byCategory": {
       "defi": 60,
       "payments": 25,
+      "nft": 3,
       "trading": 8,
       "security": 8,
       "research": 1,
@@ -23,13 +24,12 @@
       "education": 3,
       "analytics": 11,
       "infrastructure": 1,
-      "nft": 2,
-      "dev-tools": 3
+      "dev-tools": 2
     },
     "metaplexEnabledAgents": 42,
     "tradingCapableAgents": 10,
     "launchCapableAgents": 1,
-    "mintCapableAgents": 2
+    "mintCapableAgents": 3
   },
   "metaplexSkill": {
     "installCommand": "npx skills add metaplex-foundation/skill",
@@ -81,8 +81,8 @@
     ],
     "coverage": {
       "agent-registry": 42,
+      "core": 4,
       "genesis": 1,
-      "core": 3,
       "token-metadata": 4,
       "bubblegum": 3,
       "candy-machine": 2,
@@ -1807,6 +1807,55 @@
         "mint": "/agents/mint?template=solana-onchain-sleuth",
         "mcp": "/api/agents/catalog/solana-onchain-sleuth.json",
         "registration": "/api/agents/registry/solana-onchain-sleuth.json"
+      }
+    },
+    {
+      "identifier": "solana-openclawd-agent-staking",
+      "title": "OpenClawd Agent Staking Operator",
+      "description": "Helius DAS powered CLAWD and Metaplex Core agent staking and unstaking operator.",
+      "avatar": "S",
+      "tags": [
+        "solana",
+        "openclawd",
+        "clawd",
+        "staking",
+        "unstaking",
+        "helius",
+        "das",
+        "metaplex",
+        "mpl-core",
+        "agent-registry",
+        "x402"
+      ],
+      "category": "nft",
+      "author": "openclawd",
+      "createdAt": "2026-06-08",
+      "oneShot": false,
+      "featured": false,
+      "openingMessage": null,
+      "openingQuestions": [],
+      "tokenUsage": null,
+      "capabilities": [
+        "helius-das-wallet-scan",
+        "metaplex-mint-core-nft",
+        "metaplex-register-identity",
+        "metaplex-core-freeze-delegate",
+        "agent-stake",
+        "agent-unstake",
+        "x402-gateway-routing"
+      ],
+      "metaplexSkills": [
+        "agent-registry",
+        "core"
+      ],
+      "payment": null,
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/solana-openclawd-agent-staking.json",
+        "chat": "/agents/chat?agent=solana-openclawd-agent-staking",
+        "mint": "/agents/mint?template=solana-openclawd-agent-staking",
+        "mcp": "/api/agents/catalog/solana-openclawd-agent-staking.json",
+        "registration": "/api/agents/registry/solana-openclawd-agent-staking.json"
       }
     },
     {
@@ -6678,88 +6727,6 @@
             "das"
           ],
           "category": "analytics"
-        },
-        "config": {
-          "openingMessage": null,
-          "openingQuestions": []
-        },
-        "solana": {
-          "capabilities": [
-            "read-only",
-            "a2a-message"
-          ],
-          "metaplexSkills": [
-            "agent-registry"
-          ]
-        },
-        "payment": null,
-        "agentToken": null
-      }
-    },
-    {
-      "identifier": "yield-dashboard-builder",
-      "title": "Personal DeFi Dashboard Builder",
-      "description": "Design and track your custom DeFi portfolio dashboard",
-      "avatar": "https://x402.wtf/nich.jpg",
-      "tags": [
-        "dashboard",
-        "tracking",
-        "portfolio",
-        "analytics",
-        "monitoring",
-        "clawd",
-        "solana",
-        "yield",
-        "dev-tools"
-      ],
-      "category": "dev-tools",
-      "author": "openclawd",
-      "createdAt": "2026-04-16",
-      "oneShot": false,
-      "featured": false,
-      "openingMessage": null,
-      "openingQuestions": [],
-      "tokenUsage": null,
-      "capabilities": [
-        "read-only",
-        "a2a-message"
-      ],
-      "metaplexSkills": [
-        "agent-registry"
-      ],
-      "payment": null,
-      "agentToken": null,
-      "deploy": {
-        "json": "/api/agents/catalog/yield-dashboard-builder.json",
-        "chat": "/agents/chat?agent=yield-dashboard-builder",
-        "mint": "/agents/mint?template=yield-dashboard-builder",
-        "mcp": "/api/agents/catalog/yield-dashboard-builder.json",
-        "registration": "/api/agents/registry/yield-dashboard-builder.json"
-      },
-      "rawCatalog": {
-        "identifier": "yield-dashboard-builder",
-        "author": "openclawd",
-        "homepage": "https://x402.wtf/agents/yield-dashboard-builder",
-        "createdAt": "2026-04-16",
-        "oneShot": false,
-        "featured": false,
-        "schemaVersion": 1,
-        "meta": {
-          "title": "Personal DeFi Dashboard Builder",
-          "description": "Design and track your custom DeFi portfolio dashboard",
-          "avatar": "https://x402.wtf/nich.jpg",
-          "tags": [
-            "dashboard",
-            "tracking",
-            "portfolio",
-            "analytics",
-            "monitoring",
-            "clawd",
-            "solana",
-            "yield",
-            "dev-tools"
-          ],
-          "category": "dev-tools"
         },
         "config": {
           "openingMessage": null,
