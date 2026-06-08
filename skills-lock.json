@@ -6,6 +6,13 @@
       "sourceType": "github",
       "skillPath": "skills/pay/SKILL.md",
       "computedHash": "ab360f7398ee4c1a1f404cb4795921a49855e72e356099f91a7390b3d27f71a3"
+    },
+    "greptile": {
+      "source": "greptile/greptile-docs",
+      "sourceType": "url",
+      "sourceUrl": "https://www.greptile.com/docs/llms.txt",
+      "skillPath": "skills/greptile/SKILL.md",
+      "computedHash": "3f1068a7b9e0cf2d4c1a24f6e8d9b05c7a31e2d4f9c6a8b1e5d7f3c2a4b6e8d9"
     }
   }
 }

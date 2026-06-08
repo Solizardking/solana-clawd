@@ -26,7 +26,15 @@ check() {
   fi
 }
 
-check "Solana private key (base58)" "[1-9A-HJ-NP-Za-km-z]{87,88}"
+# Solana private key check: base58 strings 87-88 chars (Solana private keys)
+# Exclude lines that cannot be base58 (base64 overlaps alphabet but has extra chars +/=)
+# Also exclude known sourcemap/data URL patterns
+SOLANA_RESULT=$(echo "$DIFF" | grep "^+" | grep -v "^+++" | grep -E "[1-9A-HJ-NP-Za-km-z]{87,88}" 2>/dev/null | grep -v "sourceMappingURL" | grep -v "data:application" | grep -v "[+/=]" | head -3 || true)
+if [ -n "$SOLANA_RESULT" ]; then
+  echo "🚨 CLAWD GUARD: Solana private key (base58) detected in staged changes"
+  echo "$SOLANA_RESULT" | sed 's/./*/g' | head -3
+  FAILED=1
+fi
 check "Ethereum private key" "0x[a-fA-F0-9]{64}"
 check "AWS Access Key ID" "AKIA[0-9A-Z]{16}"
 check "GitHub token" "gh[pousr]_[A-Za-z0-9_]{36,}"

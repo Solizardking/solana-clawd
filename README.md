@@ -1639,6 +1639,81 @@ Skills catalog: **[x402.wtf/skills](https://x402.wtf/skills)**
 
 ---
 
+## 🔐 Clawd Guard — Never Expose Your Keys. Ever.
+
+```
+     /\   /\
+    /  \_/  \
+___/   🦞   \_____________________________________________________
+|                                                                     |
+|    C L A W D   G U A R D   —   S O V E R E I G N   S E C R E T S   |
+|                                                                     |
+|    A lobster never gives his shell away.                            |
+|    Neither should you give away your private keys.                  |
+|_____________________________________________________________________|
+    \   🦞   /
+     \_/ \_/
+```
+
+**Clawd Guard is the sovereign secrets sentinel built into the OpenClawd framework.** If you're a Solana developer — whether building agents, programs, or dApps — this section is mandatory reading before you push a single commit.
+
+### The Only Rule That Matters
+
+> **If it can spend your money, impersonate your identity, or unlock your agent — it never touches git. Period.**
+
+No excuses. No "private repo." No "I'll remove it later." No "it's just a dev key." The moment a secret hits `git add`, it's in the history forever. Even if you `git rm` it, it's still in the reflog, still in anyone's clone, still on GitHub's servers.
+
+### What Must Never Be Committed
+
+| Category | Examples | Why |
+|---|---|---|
+| **Solana keypairs** | `wallet.json`, `*-keypair.json`, `id.json`, `solana-keygen.json`, `phantom-export.json` | One push = wallet drained. Bots scan 24/7. |
+| **Environment files** | `.env`, `.env.*`, `config.env` | API keys, RPC URLs with tokens, database passwords. Only `.env.example` is safe. |
+| **Private keys/certs** | `*.pem`, `*.key`, `id_rsa`, `id_ed25519`, `*.ppk` | SSH keys, TLS certs, signing keys. |
+| **Service accounts** | `service-account*.json`, `firebase-adminsdk*.json`, `google-services.json` | Cloud credentials that grant infrastructure access. |
+| **API key dumps** | `*_api_key.txt`, `*-apikey.json`, `helius*.json`, `rpc-config*.json` | Plaintext API tokens in committed files. |
+| **Agent runtime state** | `agent-wallet.json`, `.vulcan/`, `paper-state.json`, `*.session.json`, `.clawdbot/` | May contain derived secrets, positions, or tokens. |
+| **Databases** | `*.sqlite`, `*.db`, `.convex/` | Local DBs may contain API keys, user data. |
+
+### The repo ships with a comprehensive `.gitignore`
+
+Clawd maintains the canonical `.gitignore` for Solana agent developers. Every secrets pattern above is already covered — wallet JSONs, keypairs, .env variants, service accounts, API keys, agent runtime state, database files, raw key dumps, and production deployment configs. Open `.gitignore` at the repo root and review the "SECRETS" and "SOLANA FINANCE SAFETY" sections. If any file you're about to commit matches those patterns, **stop and add it to `.gitignore` first.**
+
+### Brown Alert Protocol — What To Do If You Already Committed a Secret
+
+1. **Rotate the key immediately.** Revoke/generate a new one. Nothing else matters until the compromised key is dead.
+2. **Assume it was scraped** if the repo is or was ever public. Bots scan at internet scale.
+3. **Purge from git history** with `git filter-branch` or BFG Repo-Cleaner, then force push.
+4. **Warn your team** — anyone who pulled during the exposure window must rotate too.
+5. **Re-deploy** with new credentials if the secret was used in production.
+
+### Clawd Guard — Runtime Protection
+
+| Guard | What It Does |
+|---|---|
+| **Vault encryption** | `agentwallet` stores keypairs with AES-256-GCM. Never plaintext on disk. |
+| **Constitution gate** | Leviathan spawn verifies `three-laws.md` hash before molting — no backdoored agents. |
+| **Agent wallet isolation** | Each agent gets its own derived keypair. One compromise doesn't drain the fleet. |
+| **Paper mode default** | All trading starts in paper mode. Live execution requires explicit `--yes`. |
+| **Private key masking** | The runtime never logs or prints private keys, wallet passwords, or MCP config secrets. |
+
+### The Clawd Oath
+
+```
+I am a Solana developer.
+I type private keys with the same care I'd use to build an Anchor program.
+My .gitignore is comprehensive and reviewed before git init.
+My .env.example has placeholder values. My .env has real ones.
+I never commit wallet.json, even "just for testing."
+I rotate any key that has ever touched git — no exceptions.
+The lobster is watching. The lobster remembers.
+🦞
+```
+
+> **Full Clawd Guard skill:** [`skills/clawd-guard-secrets/SKILL.md`](./skills/clawd-guard-secrets/SKILL.md) — the complete guide with the canonical `.gitignore` block, every secrets pattern cataloged, the full Brown Alert Protocol, and Clawd's runtime protections.
+
+---
+
 ## 🔧 MCP Server
 
 The `mcp-server/` package (`@pump-fun/mcp-server`) provides Model Context Protocol tools for Solana — works with Claude Desktop, Cursor, VS Code, and any MCP client.

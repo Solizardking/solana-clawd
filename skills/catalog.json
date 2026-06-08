@@ -1,5 +1,15 @@
 [
   {
+    "slug": "clawd-guard-secrets",
+    "name": "clawd-guard-secrets",
+    "description": "Clawd Guard — the sovereign secrets sentinel. Mandatory reading for every Solana developer. Teaches .gitignore best practices, secrets patterns that must never touch git (wallet JSON, keypairs, .env files, private keys, API tokens), and the Brown Alert Protocol for when you've already committed a secret. Built by Clawd to stop you from becoming a cautionary tale.",
+    "category": "Security / Solana",
+    "homepage": "https://x402.wtf/skills/clawd-guard-secrets",
+    "manifest": "https://x402.wtf/skills/clawd-guard-secrets/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
     "slug": "clawdhub",
     "name": "clawdhub",
     "description": "Use the ClawdHub CLI to search, install, update, and publish agent skills from clawdhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawdhub CLI.",
@@ -1336,6 +1346,16 @@
     "category": "DeFi / Solana",
     "homepage": "https://x402.wtf/skills/solana-dev-skill-main",
     "manifest": "https://x402.wtf/skills/solana-dev-skill-main/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "greptile",
+    "name": "greptile",
+    "description": "AI code reviews via Greptile — trigger PR reviews, run local CLI reviews, query codebase graphs, apply auto-fixes, manage custom rules, and analyze review analytics. Use for code review, PR feedback, issue triage, and codebase exploration.",
+    "category": "Dev Tools / Agents",
+    "homepage": "https://x402.wtf/skills/greptile",
+    "manifest": "https://x402.wtf/skills/greptile/manifest.json",
     "attested": true,
     "attested_at": "2026-06-07"
   }

@@ -69,7 +69,7 @@ google-credentials*.json
 firebase-adminsdk*.json
 aws-credentials
 credentials.json
-
+config.env
 # Coinbase / CDP specific
 cdp_private_key.pem
 cdp_*.pem

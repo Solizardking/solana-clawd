@@ -43,7 +43,7 @@ const DEFAULT_SEARCH_DIRS = [
   resolve(__dirname, '..', '..', '..', 'skills'),
 ];
 
-const DEFAULT_SKILLS = ['openclawd-code-skill', 'openclawd-clawd-code-skill-main'] as const;
+const DEFAULT_SKILLS = ['openclawd-code-skill', 'openclawd-clawd-code-skill-main', 'greptile'] as const;
 
 export type DefaultSkillId = (typeof DEFAULT_SKILLS)[number];
 

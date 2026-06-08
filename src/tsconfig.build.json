@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "../dist",
+    "rootDir": "."
+  },
+  "include": ["**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "packages",
+    "web",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "vulcan-cli-master/**",
+    "tailclawd/**",
+    "shims/**",
+    "upstreamproxy/**",
+    "telegram/**",
+    "voice/**"
+  ]
+}

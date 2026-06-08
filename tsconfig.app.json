@@ -36,7 +36,13 @@
     "noPropertyAccessFromIndexSignature": false,
     "noUncheckedSideEffectImports": false
   },
-  "include": [
-    "src"
+  "include": ["src"],
+  "exclude": [
+    "src/vulcan-cli-master",
+    "src/tailclawd",
+    "src/shims",
+    "src/upstreamproxy",
+    "src/telegram",
+    "src/voice"
   ]
 }

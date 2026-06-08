@@ -14,5 +14,15 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
-  "exclude": ["src/App.tsx", "src/main.tsx", "src/index.css"]
+  "exclude": [
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/index.css",
+    "src/vulcan-cli-master/**",
+    "src/tailclawd/**",
+    "src/shims/**",
+    "src/upstreamproxy/**",
+    "src/telegram/**",
+    "src/voice/**"
+  ]
 }
