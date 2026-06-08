@@ -40,6 +40,7 @@ import { BirdeyeWS, getTokenPrice, searchTokens } from './birdeye.js';
 import { supabase } from './supabase.js';
 import agentRegistryRouter from './agentRegistry.js';
 import gaslessMintRouter from './gaslessMint.js';
+import clawdGenRouter from './clawdGen.js';
 import skillHubRouter from './skillHub.js';
 import stakingRouter from './staking.js';
 import { handleNLMessage } from './nlTrading.js';
@@ -76,6 +77,7 @@ const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET ?? '';
 // ---------------------------------------------------------------------------
 app.use('/', agentRegistryRouter);
 app.use('/', gaslessMintRouter);
+app.use('/', clawdGenRouter);
 app.use('/', skillHubRouter);
 app.use('/', stakingRouter);
 
