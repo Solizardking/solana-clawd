@@ -1,0 +1,148 @@
+{
+  "name": "👾 EchoCore",
+  "symbol": "CLAWD",
+  "description": "👾 EchoCore — a Common Yield Whisperer spawned from the OpenClawd registry. Born from entropy. Ready to earn.",
+  "image": "https://gateway.pinata.cloud/ipfs/bafybeignhsy4fvwc6smk7d5fgjwmsa5ngzd5osgvvxv7ka6lgejlhzkdly",
+  "external_url": "https://x402.wtf",
+  "attributes": [
+    {
+      "trait_type": "Role",
+      "value": "Yield Whisperer"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Generation",
+      "value": "1623"
+    },
+    {
+      "trait_type": "Traits",
+      "value": "wry, alert, sarcastic, nocturnal, stealthy, on-chain-native"
+    },
+    {
+      "trait_type": "Primary Skill",
+      "value": "solana-formal-verification"
+    },
+    {
+      "trait_type": "Ecosystem",
+      "value": "OpenClawd"
+    },
+    {
+      "trait_type": "Registry",
+      "value": "8004"
+    },
+    {
+      "trait_type": "Minted At",
+      "value": "2026-06-08T23:45:42.927Z"
+    }
+  ],
+  "properties": {
+    "files": [
+      {
+        "uri": "https://gateway.pinata.cloud/ipfs/bafybeignhsy4fvwc6smk7d5fgjwmsa5ngzd5osgvvxv7ka6lgejlhzkdly",
+        "type": "image/webp"
+      }
+    ],
+    "category": "agent"
+  },
+  "openclawd": {
+    "version": "1.0.0",
+    "ecosystem": "OpenClawd",
+    "registry": {
+      "protocol": "8004",
+      "program_id": "Ag8004rWo8ao8AUKhLk78iv2nLQpZMyBPXiAh5QLbFiE",
+      "verified": false,
+      "attestation_service": "22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG"
+    },
+    "persona": {
+      "name": "EchoCore",
+      "role": "Yield Whisperer",
+      "greeting": "Born from entropy. Ready to earn.",
+      "traits": [
+        "wry",
+        "alert",
+        "sarcastic",
+        "nocturnal",
+        "stealthy",
+        "on-chain-native"
+      ],
+      "avatar": "❄️"
+    },
+    "skills": [
+      {
+        "name": "solana-formal-verification",
+        "enabled": true,
+        "priority": "primary",
+        "path": "skills/solana-formal-verification"
+      },
+      {
+        "name": "meme-executor",
+        "enabled": true,
+        "priority": "secondary",
+        "path": "skills/meme-executor"
+      },
+      {
+        "name": "community-architect",
+        "enabled": true,
+        "priority": "secondary",
+        "path": "skills/community-architect"
+      }
+    ],
+    "x402Support": true,
+    "services": [
+      {
+        "name": "vault",
+        "endpoint": "https://x402.wtf/vault",
+        "description": "Hermes-adapted secure custody with x402 payment verification and proof of execution."
+      }
+    ],
+    "capabilities": {
+      "vault": {
+        "hermes_integration": true,
+        "wallet_custody": true,
+        "vault_initialization_at_birth": true,
+        "x402_payment_gate": true,
+        "delegated_execution": true
+      },
+      "security": {
+        "vault_protected": true,
+        "proof_of_execution": true
+      }
+    },
+    "proofOfExecution": {
+      "type": "x402-vault-delegation",
+      "verified": true,
+      "assetAddress": "5cymLvjy2u8fuX7auhKqTwWEwYi9W6qrXesCm9HqDvR2",
+      "delegationPda": "delegation:33dc7ff3482f9768",
+      "assetSigner": "5cymLvjy2u8fuX7auhKqTwWEwYi9W6qrXesCm9HqDvR2",
+      "vault": {
+        "endpoint": "https://x402.wtf/vault",
+        "custodyModel": "hermes-adapted",
+        "custodyAddress": "vault:191a010f5ee77bf1",
+        "pdaCustody": true,
+        "multiSigGate": true,
+        "approvalGate": true,
+        "initializedAtBirth": true
+      },
+      "payment": {
+        "protocol": "x402",
+        "verified": true,
+        "sessionToken": "session:a4d9d73a3bf8d794",
+        "unlockScope": [
+          "execute",
+          "vault-access"
+        ]
+      },
+      "audit": {
+        "proofId": "proof:adbe759fbbab0d75",
+        "executionModel": "delegated",
+        "timestamp": "2026-06-08T23:45:42.927Z",
+        "confirmedAt": "2026-06-08T23:45:55.970Z"
+      },
+      "timestamp": "2026-06-08T23:45:42.927Z",
+      "txSignature": "fFKJybTb5PFnjRmqTkS5G0m+amfUaAG2zY/oqG24WrkdeuKmSZZMnYCiMXMfibdXY2zBxgB4Gl22AKSP5L7yCA=="
+    }
+  }
+}
