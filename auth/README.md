@@ -11,6 +11,7 @@ Agents discover your service, register with a cryptographic identity, request ca
 | [`@better-auth/agent-auth`](packages/agent-auth/) | Better Auth server plugin     | `npm i @better-auth/agent-auth` |
 | [`@auth/agent`](packages/sdk/)                    | Client SDK for agent runtimes | `npm i @auth/agent`             |
 | [`@auth/agent-cli`](packages/cli/)                | CLI and MCP server            | `npx @auth/agent-cli`           |
+| [`@clawd/agent-auth-solana`](packages/agent-auth-solana/) | Solana CAAP/SIWS extension    | `npm i @clawd/agent-auth-solana` |
 
 ## Examples
 
@@ -22,6 +23,16 @@ Next.js reference apps under [`examples/`](examples/) integrate `@better-auth/ag
 The [`apps/`](apps/) directory contains internal applications (directory, desktop, browser extension) used in development and demos.
 
 Additional packages and examples will be added over time.
+
+## Solana Extension
+
+[`@clawd/agent-auth-solana`](packages/agent-auth-solana/) adds Solana-native agent authentication on top of Agent Auth:
+
+- SIWS (Sign In With Solana)
+- CAAP attestation helpers
+- CLAWD token-aware subscription tier utilities
+
+Use it when you want agents to authenticate to sites with wallet-backed identity rather than email/password alone.
 
 ## CI and releases
 

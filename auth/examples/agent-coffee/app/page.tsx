@@ -1,159 +1,132 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getSession, getSiwsChallenge, signOut } from "@/lib/auth-client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
-interface Session {
-  walletAddress: string;
-  tier: string;
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  priceCents: number;
+  origin: string;
+  roastLevel: string;
+  inStock: boolean;
 }
 
-<<<<<<< Updated upstream
-const CAPS = [
-  { name: "pump.quote", req: "free", desc: "Bonding-curve quote" },
-  { name: "pump.buy", req: "bronze", desc: "Buy token" },
-  { name: "pump.sell", req: "bronze", desc: "Sell token" },
-  { name: "pump.launch", req: "gold", desc: "Launch new token" },
-];
-=======
-const TIER_REQUIRED: Record<string, string> = {
-  "pump.quote": "free",
-  "pump.buy": "bronze",
-  "pump.sell": "bronze",
-  "pump.launch": "gold",
+const ROAST_COLORS: Record<string, string> = {
+  Light: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+  Medium: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+  Dark: "bg-stone-200 text-stone-800 dark:bg-stone-800/50 dark:text-stone-300",
 };
->>>>>>> Stashed changes
 
-export default function HomePage() {
-  const [session, setSession] = useState<Session | null>(null);
+export default function CatalogPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState("");
 
   useEffect(() => {
-    getSession().then((s) => {
-      setSession(s as Session | null);
-      setLoading(false);
-    });
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => setProducts(data.products))
+      .finally(() => setLoading(false));
   }, []);
 
-  async function handleSignIn() {
-    setStatus("Requesting SIWS challenge…");
-    const challenge = await getSiwsChallenge();
-<<<<<<< Updated upstream
-    setStatus("Connect your Solana wallet and call window.solana.signIn(challenge)");
-    console.info("SIWS:", challenge);
-=======
-    setStatus("Connect your Solana wallet → call window.solana.signIn(challenge)");
-    console.info("SIWS challenge:", challenge);
->>>>>>> Stashed changes
-  }
-
-  async function handleSignOut() {
-    await signOut();
-    setSession(null);
-  }
-
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-black text-white">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-700 border-t-green-500" />
-      </main>
-    );
-  }
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
-      <div className="flex flex-col items-center gap-1">
-        <span className="text-4xl font-bold tracking-tight">CLAWD Pump</span>
-<<<<<<< Updated upstream
-        <span className="text-sm text-zinc-400">pump.fun agent · CAAP/1.0 · SIWS</span>
-=======
-        <span className="text-sm text-zinc-400">pump.fun agent — CAAP/1.0 · SIWS</span>
->>>>>>> Stashed changes
-      </div>
-
-      {session ? (
-        <div className="flex w-full max-w-sm flex-col gap-3">
-          <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-            <span className="font-mono text-xs text-zinc-400">
-              {session.walletAddress.slice(0, 8)}…{session.walletAddress.slice(-4)}
-            </span>
-            <TierBadge tier={session.tier} />
+    <div className="min-h-dvh">
+      <header className="border-b border-border">
+        <div className="max-w-[1000px] mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="text-lg">☕</span>
+            <span className="text-[15px] font-semibold tracking-tight">Agent Coffee Shop</span>
           </div>
-<<<<<<< Updated upstream
-
-          <div className="grid grid-cols-2 gap-2">
-            {CAPS.map(({ name, req, desc }) => (
-              <div key={name} className="rounded-lg border border-zinc-800 bg-zinc-950 p-3">
-                <code className="text-xs text-green-400">{name}</code>
-                <p className="mt-0.5 text-xs text-zinc-600">{desc}</p>
-                <p className="text-xs text-zinc-700">{req}+</p>
-              </div>
-            ))}
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="text-[13px] text-foreground/50 hover:text-foreground transition-colors"
+            >
+              My Orders
+            </Link>
+            <Link
+              href="/sign-in"
+              className="px-3 py-1.5 text-[13px] font-medium rounded-lg bg-foreground text-background hover:opacity-90 transition-all"
+            >
+              Sign In
+            </Link>
           </div>
-
-=======
-          <div className="grid grid-cols-2 gap-2">
-            {Object.entries(TIER_REQUIRED).map(([cap, req]) => (
-              <div key={cap} className="rounded-lg border border-zinc-800 bg-zinc-950 p-3">
-                <code className="text-xs text-green-400">{cap}</code>
-                <p className="mt-1 text-xs text-zinc-500">Requires {req}</p>
-              </div>
-            ))}
-          </div>
->>>>>>> Stashed changes
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="rounded-lg bg-zinc-800 py-2 text-sm hover:bg-zinc-700"
-          >
-            Sign out
-          </button>
         </div>
-      ) : (
-        <div className="flex flex-col items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900 p-8">
-<<<<<<< Updated upstream
-          <p className="text-sm text-zinc-400">Sign in with Solana to access pump.fun capabilities.</p>
-=======
-          <p className="text-sm text-zinc-400">
-            Sign in with Solana to access pump.fun agent capabilities.
+      </header>
+
+      <main className="max-w-[1000px] mx-auto px-6 py-10">
+        <div className="mb-8">
+          <h1 className="text-[26px] font-semibold tracking-tight">Fresh Coffee Beans</h1>
+          <p className="mt-1.5 text-[14px] text-foreground/45 max-w-lg">
+            Single-origin beans from around the world. Accepts payments via MPP — AI agents can
+            browse and buy programmatically.
           </p>
->>>>>>> Stashed changes
-          <button
-            type="button"
-            onClick={handleSignIn}
-            className="rounded-lg bg-green-600 px-6 py-2.5 text-sm font-semibold hover:bg-green-500"
-          >
-            Sign In With Solana
-          </button>
-          {status && <p className="max-w-xs text-center text-xs text-zinc-400">{status}</p>}
         </div>
-      )}
 
-<<<<<<< Updated upstream
-      <p className="text-xs text-zinc-600">CAAP/1.0 · SIWS · $CLAWD tiers · No email · No MPP</p>
-=======
-      <p className="text-xs text-zinc-600">
-        Auth: CAAP/1.0 · SIWS · $CLAWD tiers · No email · No OAuth
-      </p>
->>>>>>> Stashed changes
-    </main>
-  );
-}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-lg border border-border p-5 animate-pulse">
+                <div className="h-4 w-40 bg-foreground/[0.06] rounded mb-3" />
+                <div className="h-3 w-full bg-foreground/[0.04] rounded mb-2" />
+                <div className="h-3 w-24 bg-foreground/[0.04] rounded" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {products.map((p) => (
+              <div
+                key={p.id}
+                className="group rounded-lg border border-border p-5 hover:border-foreground/20 transition-all"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h2 className="text-[15px] font-semibold">{p.name}</h2>
+                    <p className="text-[12px] text-foreground/40 mt-0.5">{p.origin}</p>
+                  </div>
+                  <span className="text-[17px] font-semibold tabular-nums">
+                    ${(p.priceCents / 100).toFixed(2)}
+                  </span>
+                </div>
 
-function TierBadge({ tier }: { tier: string }) {
-  const colors: Record<string, string> = {
-    free: "bg-zinc-700 text-zinc-300",
-    bronze: "bg-amber-900 text-amber-300",
-    silver: "bg-slate-700 text-slate-200",
-    gold: "bg-yellow-900 text-yellow-300",
-    diamond: "bg-cyan-900 text-cyan-300",
-  };
-  return (
-    <span
-      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${colors[tier] ?? colors.free}`}
-    >
-      {tier}
-    </span>
+                <p className="text-[13px] text-foreground/50 leading-relaxed mb-4">
+                  {p.description}
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`inline-flex px-2 py-0.5 rounded text-[11px] font-medium ${ROAST_COLORS[p.roastLevel] ?? "bg-foreground/[0.06] text-foreground/50"}`}
+                  >
+                    {p.roastLevel} roast
+                  </span>
+                  <code className="text-[11px] font-mono text-foreground/30">
+                    POST /api/products/{p.slug}/buy
+                  </code>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-12 rounded-lg border border-dashed border-border p-6">
+          <h3 className="text-[14px] font-semibold mb-2">For AI Agents</h3>
+          <p className="text-[13px] text-foreground/45 mb-4">
+            This shop accepts payments via the Machine Payments Protocol. Send a POST request to buy
+            a product — you&apos;ll get a 402 challenge with payment details.
+          </p>
+          <div className="bg-foreground/[0.03] rounded-md p-3 font-mono text-[12px] text-foreground/60">
+            <div className="text-foreground/30 mb-1"># Browse products</div>
+            <div>curl &lt;origin&gt;/api/products</div>
+            <div className="text-foreground/30 mt-3 mb-1">
+              # Buy a product (returns 402 MPP challenge)
+            </div>
+            <div>curl -X POST &lt;origin&gt;/api/products/ethiopian-yirgacheffe/buy</div>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

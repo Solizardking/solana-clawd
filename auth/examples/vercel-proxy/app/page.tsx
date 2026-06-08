@@ -1,134 +1,122 @@
 "use client";
 
+import { signIn, useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getSession, getSiwsChallenge, signOut } from "@/lib/auth-client";
 
-interface Session {
-  walletAddress: string;
-  tier: string;
+function VercelLogo({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 76 65"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+    </svg>
+  );
 }
 
-export default function HomePage() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState("");
+function Spinner() {
+  return (
+    <svg
+      className="animate-spin h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
+    </svg>
+  );
+}
+
+export default function Home() {
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
+  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
-    getSession().then((s) => {
-      setSession(s as Session | null);
-      setLoading(false);
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
+
+  const handleSignIn = async () => {
+    setSigningIn(true);
+    await signIn.oauth2({
+      providerId: "vercel-mcp",
+      callbackURL: "/dashboard",
     });
-  }, []);
+  };
 
-  async function handleSignIn() {
-    setStatus("Requesting SIWS challenge…");
-    const challenge = await getSiwsChallenge();
-    setStatus("Connect your Solana wallet → window.solana.signIn(challenge)");
-    console.info("SIWS challenge:", challenge);
-  }
-
-  async function handleSignOut() {
-    await signOut();
-    setSession(null);
-  }
-
-  if (loading) {
+  if (isPending) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-black text-white">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-700 border-t-white" />
-      </main>
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner />
+      </div>
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
-      <div className="flex flex-col items-center gap-1">
-        <span className="text-4xl font-bold tracking-tight">CLAWD Gateway</span>
-        <span className="text-sm text-zinc-400">
-          CLAWD API gateway · CAAP/1.0 · SIWS
-        </span>
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-white/3 blur-[120px]" />
       </div>
 
-      {session ? (
-        <div className="flex w-full max-w-sm flex-col gap-3">
-          <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-            <span className="font-mono text-xs text-zinc-400">
-              {session.walletAddress.slice(0, 8)}…{session.walletAddress.slice(-4)}
+      <main className="relative z-10 flex w-full max-w-sm flex-col items-center gap-10 px-6">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-3">
+            <VercelLogo className="h-6 w-6 text-white" />
+            <div className="h-5 w-px bg-border" />
+            <span className="text-sm font-medium tracking-wide text-muted uppercase">
+              Agent Auth
             </span>
-            <TierBadge tier={session.tier} />
           </div>
 
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              Gateway Capabilities
-            </h2>
-            <ul className="space-y-2">
-              {[
-                { cap: "gateway.status", req: "free", desc: "Tier + rate limits" },
-                { cap: "gateway.llm", req: "bronze", desc: "Proxied LLM completions" },
-                { cap: "gateway.rpc", req: "bronze", desc: "Solana RPC proxy" },
-                { cap: "gateway.discovery", req: "free", desc: "CAAP/1.0 discovery doc" },
-              ].map(({ cap, req, desc }) => (
-                <li key={cap} className="flex items-center justify-between text-sm">
-                  <span>
-                    <code className="text-xs text-zinc-300">{cap}</code>
-                    <span className="ml-2 text-xs text-zinc-500">{desc}</span>
-                  </span>
-                  <span className="text-xs text-zinc-700">{req}+</span>
-                </li>
-              ))}
-            </ul>
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Vercel Proxy</h1>
+            <p className="max-w-xs text-sm leading-relaxed text-muted">
+              Proxy Vercel API access for AI agents. Sign in to connect your Vercel account.
+            </p>
           </div>
-
-          <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-950 p-4 font-mono text-xs text-zinc-500">
-            <p className="mb-1 text-zinc-600"># Discover gateway</p>
-            <p>auth-agent discover {"{gateway-url}"}</p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="rounded-lg bg-zinc-800 py-2 text-sm hover:bg-zinc-700"
-          >
-            Sign out
-          </button>
         </div>
-      ) : (
-        <div className="flex flex-col items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900 p-8">
-          <p className="text-sm text-zinc-400">
-            Sign in with Solana for tier-gated LLM and RPC access.
-          </p>
+
+        <div className="flex w-full flex-col gap-3">
           <button
-            type="button"
             onClick={handleSignIn}
-            className="rounded-lg bg-white px-6 py-2.5 text-sm font-semibold text-black hover:bg-zinc-100"
+            disabled={signingIn}
+            className="group flex h-11 w-full cursor-pointer items-center justify-center gap-2.5 rounded-lg bg-white text-sm font-medium text-black transition-all hover:bg-white/90 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60"
           >
-            Sign In With Solana
+            {signingIn ? (
+              <Spinner />
+            ) : (
+              <>
+                <VercelLogo className="h-3.5 w-3.5" />
+                Sign in with Vercel
+              </>
+            )}
           </button>
-          {status && <p className="max-w-xs text-center text-xs text-zinc-400">{status}</p>}
+
+          <p className="text-center text-xs text-muted/60">
+            Grants access to your Vercel projects, deployments, and resources
+          </p>
         </div>
-      )}
 
-      <p className="text-xs text-zinc-600">
-        CAAP/1.0 · SIWS · $CLAWD tiers · No Vercel OAuth · No passkeys
-      </p>
-    </main>
-  );
-}
-
-function TierBadge({ tier }: { tier: string }) {
-  const colors: Record<string, string> = {
-    free: "bg-zinc-700 text-zinc-300",
-    bronze: "bg-amber-900 text-amber-300",
-    silver: "bg-slate-700 text-slate-200",
-    gold: "bg-yellow-900 text-yellow-300",
-    diamond: "bg-cyan-900 text-cyan-300",
-  };
-  return (
-    <span
-      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${colors[tier] ?? colors.free}`}
-    >
-      {tier}
-    </span>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-4 text-xs text-muted/50">
+            <span>PKCE</span>
+            <span className="h-0.5 w-0.5 rounded-full bg-muted/30" />
+            <span>OAuth 2.0</span>
+            <span className="h-0.5 w-0.5 rounded-full bg-muted/30" />
+            <span>OpenID Connect</span>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

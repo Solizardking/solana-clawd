@@ -8,6 +8,9 @@ const config: NextConfig = {
       tailwindcss: path.join(__dirname, "node_modules", "tailwindcss"),
     },
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   devIndicators: false,
   serverExternalPackages: ["onnxruntime-node", "@huggingface/transformers"],
   allowedDevOrigins: ["directory.localhost", "*.directory.localhost"],

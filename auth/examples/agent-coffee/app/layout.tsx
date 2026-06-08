@@ -1,18 +1,7 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-
-const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
 
 export const metadata: Metadata = {
   title: "Agent Coffee Shop — Fresh beans, paid by agents",
@@ -27,7 +16,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontMono.variable} min-h-dvh font-sans antialiased`}>
+      <body className="min-h-dvh font-sans antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
