@@ -88,6 +88,16 @@ function getDefaultConfig(): ClawdRouterConfig {
     authMode,
     validationUrl,
     internalSecret: process.env['CLAWDROUTER_INTERNAL_SECRET'] ?? '',
+    redpillApiKey: process.env['REDPILL_API_KEY'] ?? process.env['CLAWDROUTER_REDPILL_API_KEY'] ?? '',
+    solrouterApiKey: process.env['SOLROUTER_API_KEY'] ?? process.env['CLAWDROUTER_SOLROUTER_API_KEY'] ?? '',
+    privacyProvider: (process.env['CLAWDROUTER_PRIVACY_PROVIDER'] ?? 'auto') as 'redpill' | 'solrouter' | 'auto',
+    cacheEnabled: process.env['CLAWDROUTER_CACHE_ENABLED'] === 'true',
+    cacheTtlSeconds: parseInt(process.env['CLAWDROUTER_CACHE_TTL'] ?? '300', 10),
+    guardrailsEnabled: process.env['CLAWDROUTER_GUARDRAILS_ENABLED'] === 'true',
+    guardrailConfigs: [],
+    fusionPanelModels: ['~anthropic/claude-opus-latest', '~openai/gpt-latest', '~google/gemini-pro-latest'],
+    fusionJudgeModel: '~anthropic/claude-opus-latest',
+    fusionMaxToolCalls: 8,
   };
 }
 

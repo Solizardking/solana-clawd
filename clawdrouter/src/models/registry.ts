@@ -437,12 +437,164 @@ const PREMIUM_MODELS: ModelEntry[] = [
   },
 ];
 
+// ── Privacy / TEE Models ─────────────────────────────────────────────
+// RedPill GPU-TEE (Chutes, Near AI, Phala, Tinfoil) + Solrouter Arcium+TDX
+
+const PRIVACY_MODELS: ModelEntry[] = [
+  // ── Solrouter (Arcium RescueCipher + Intel TDX) ─────────────────
+  {
+    id: 'solrouter/gpt-oss-20b',
+    provider: 'solrouter', name: 'GPT-OSS 20B (Solrouter TEE)',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 128_000, features: ['tee', 'privacy'], tier: 'budget',
+    qualityScore: 40, speedMs: 600, enabled: true, free: false,
+  },
+  {
+    id: 'solrouter/qwen3-8b',
+    provider: 'solrouter', name: 'Qwen3 8B (Solrouter TEE)',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 128_000, features: ['tee', 'privacy'], tier: 'budget',
+    qualityScore: 55, speedMs: 500, enabled: true, free: false,
+  },
+  // ── RedPill — Phala Network (GPU TEE) ───────────────────────────
+  {
+    id: 'phala/qwen3.5-27b',
+    provider: 'phala', name: 'Qwen3.5 27B (Phala TEE)',
+    inputPricePerM: 0.20, outputPricePerM: 0.80,
+    contextWindow: 32_768, features: ['tee'], tier: 'budget',
+    qualityScore: 68, speedMs: 450, enabled: true, free: false,
+  },
+  {
+    id: 'phala/qwen3-vl-30b-a3b-instruct',
+    provider: 'phala', name: 'Qwen3 VL 30B (Phala TEE)',
+    inputPricePerM: 0.25, outputPricePerM: 1.00,
+    contextWindow: 32_768, features: ['tee', 'vision'], tier: 'budget',
+    qualityScore: 66, speedMs: 500, enabled: true, free: false,
+  },
+  {
+    id: 'phala/gemma-3-27b',
+    provider: 'phala', name: 'Gemma 3 27B (Phala TEE)',
+    inputPricePerM: 0.20, outputPricePerM: 0.80,
+    contextWindow: 128_000, features: ['tee'], tier: 'budget',
+    qualityScore: 64, speedMs: 420, enabled: true, free: false,
+  },
+  {
+    id: 'phala/glm-4.7-flash',
+    provider: 'phala', name: 'GLM-4.7 Flash (Phala TEE)',
+    inputPricePerM: 0.10, outputPricePerM: 0.40,
+    contextWindow: 128_000, features: ['tee', 'code'], tier: 'budget',
+    qualityScore: 58, speedMs: 300, enabled: true, free: false,
+  },
+  {
+    id: 'phala/gpt-oss-20b',
+    provider: 'phala', name: 'GPT-OSS 20B (Phala TEE)',
+    inputPricePerM: 0.10, outputPricePerM: 0.40,
+    contextWindow: 128_000, features: ['tee'], tier: 'budget',
+    qualityScore: 40, speedMs: 350, enabled: true, free: false,
+  },
+  {
+    id: 'phala/qwen-2.5-7b-instruct',
+    provider: 'phala', name: 'Qwen 2.5 7B (Phala TEE)',
+    inputPricePerM: 0.07, outputPricePerM: 0.28,
+    contextWindow: 128_000, features: ['tee'], tier: 'budget',
+    qualityScore: 52, speedMs: 280, enabled: true, free: false,
+  },
+  // ── RedPill — Chutes (GPU TEE) ──────────────────────────────────
+  {
+    id: 'z-ai/glm-5.1',
+    provider: 'chutes', name: 'GLM 5.1 (Chutes TEE)',
+    inputPricePerM: 0.50, outputPricePerM: 2.00,
+    contextWindow: 128_000, features: ['tee', 'agentic'], tier: 'mid',
+    qualityScore: 78, speedMs: 600, enabled: true, free: false,
+  },
+  {
+    id: 'deepseek/deepseek-v3.2',
+    provider: 'chutes', name: 'DeepSeek V3.2 (Chutes TEE)',
+    inputPricePerM: 0.30, outputPricePerM: 1.20,
+    contextWindow: 131_000, features: ['tee', 'reasoning', 'code'], tier: 'mid',
+    qualityScore: 82, speedMs: 700, enabled: true, free: false,
+  },
+  {
+    id: 'moonshotai/kimi-k2.5',
+    provider: 'chutes', name: 'Kimi K2.5 (Chutes TEE)',
+    inputPricePerM: 0.55, outputPricePerM: 2.50,
+    contextWindow: 262_000, features: ['tee', 'vision'], tier: 'mid',
+    qualityScore: 76, speedMs: 550, enabled: true, free: false,
+  },
+  {
+    id: 'chutes/minimax-m2.5',
+    provider: 'chutes', name: 'MiniMax M2.5 (Chutes TEE)',
+    inputPricePerM: 0.30, outputPricePerM: 1.20,
+    contextWindow: 1_000_000, features: ['tee'], tier: 'budget',
+    qualityScore: 65, speedMs: 480, enabled: true, free: false,
+  },
+  // ── RedPill — Near AI (GPU TEE) ─────────────────────────────────
+  {
+    id: 'z-ai/glm-5',
+    provider: 'nearai', name: 'GLM-5 (Near AI TEE)',
+    inputPricePerM: 0.50, outputPricePerM: 2.00,
+    contextWindow: 128_000, features: ['tee', 'agentic'], tier: 'mid',
+    qualityScore: 76, speedMs: 620, enabled: true, free: false,
+  },
+  {
+    id: 'nearai/deepseek-v3.1',
+    provider: 'nearai', name: 'DeepSeek V3.1 (Near AI TEE)',
+    inputPricePerM: 0.28, outputPricePerM: 1.10,
+    contextWindow: 131_000, features: ['tee', 'reasoning'], tier: 'budget',
+    qualityScore: 80, speedMs: 680, enabled: true, free: false,
+  },
+  {
+    id: 'nearai/gpt-oss-120b',
+    provider: 'nearai', name: 'GPT-OSS 120B (Near AI TEE)',
+    inputPricePerM: 0.30, outputPricePerM: 1.20,
+    contextWindow: 128_000, features: ['tee', 'reasoning'], tier: 'budget',
+    qualityScore: 55, speedMs: 900, enabled: true, free: false,
+  },
+  {
+    id: 'nearai/qwen3-30b',
+    provider: 'nearai', name: 'Qwen3 30B (Near AI TEE)',
+    inputPricePerM: 0.20, outputPricePerM: 0.80,
+    contextWindow: 32_768, features: ['tee'], tier: 'budget',
+    qualityScore: 65, speedMs: 450, enabled: true, free: false,
+  },
+  // ── RedPill — Tinfoil (GPU TEE) ─────────────────────────────────
+  {
+    id: 'tinfoil/qwen3-coder-480b',
+    provider: 'tinfoil', name: 'Qwen3 Coder 480B (Tinfoil TEE)',
+    inputPricePerM: 0.50, outputPricePerM: 2.00,
+    contextWindow: 131_000, features: ['tee', 'code'], tier: 'mid',
+    qualityScore: 75, speedMs: 1200, enabled: true, free: false,
+  },
+  {
+    id: 'moonshotai/kimi-k2-thinking',
+    provider: 'tinfoil', name: 'Kimi K2 Thinking (Tinfoil TEE)',
+    inputPricePerM: 1.00, outputPricePerM: 4.00,
+    contextWindow: 131_000, features: ['tee', 'reasoning', 'agentic'], tier: 'mid',
+    qualityScore: 85, speedMs: 1500, enabled: true, free: false,
+  },
+  {
+    id: 'deepseek/deepseek-r1-0528',
+    provider: 'tinfoil', name: 'DeepSeek R1 (Tinfoil TEE)',
+    inputPricePerM: 0.55, outputPricePerM: 2.20,
+    contextWindow: 131_000, features: ['tee', 'reasoning'], tier: 'mid',
+    qualityScore: 88, speedMs: 1100, enabled: true, free: false,
+  },
+  {
+    id: 'tinfoil/llama-3.3-70b',
+    provider: 'tinfoil', name: 'Llama 3.3 70B (Tinfoil TEE)',
+    inputPricePerM: 0.25, outputPricePerM: 1.00,
+    contextWindow: 131_000, features: ['tee'], tier: 'budget',
+    qualityScore: 72, speedMs: 650, enabled: true, free: false,
+  },
+];
+
 // ── Full Registry ───────────────────────────────────────────────────
 
 export const MODEL_REGISTRY: ModelEntry[] = [
   ...BUDGET_MODELS,
   ...MID_MODELS,
   ...PREMIUM_MODELS,
+  ...PRIVACY_MODELS,
 ];
 
 // ── Tier → Model Mapping ────────────────────────────────────────────
@@ -452,21 +604,25 @@ export const TIER_MAPPING: Record<RequestTier, TierMapping> = {
     eco: 'nvidia/gpt-oss-120b',
     auto: 'google/gemini-2.5-flash',
     premium: 'nvidia/kimi-k2.5',
+    private: 'phala/qwen-2.5-7b-instruct',
   },
   MEDIUM: {
     eco: 'google/gemini-2.5-flash-lite',
     auto: 'nvidia/kimi-k2.5',
     premium: 'openai/gpt-5.3-codex',
+    private: 'phala/qwen3.5-27b',
   },
   COMPLEX: {
     eco: 'google/gemini-2.5-flash-lite',
     auto: 'google/gemini-3.1-pro',
     premium: 'anthropic/claude-opus-4.6',
+    private: 'z-ai/glm-5.1',
   },
   REASONING: {
     eco: 'xai/grok-4-1-fast',
     auto: 'xai/grok-4-1-fast-reasoning',
     premium: 'anthropic/claude-sonnet-4.6',
+    private: 'deepseek/deepseek-r1-0528',
   },
 };
 

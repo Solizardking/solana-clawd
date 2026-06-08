@@ -24,7 +24,7 @@ export function routeRequest(
   const targetModel = getModel(targetModelId);
 
   // Check if target model is available and not excluded
-  if (targetModel && targetModel.enabled && !isExcluded(targetModel.id, excludedModels)) {
+  if (targetModel?.enabled && !isExcluded(targetModel.id, excludedModels)) {
     return { model: targetModel, fallback: false };
   }
 
@@ -51,26 +51,31 @@ function findFallback(
       case 'premium':
         // Highest quality first
         return b.qualityScore - a.qualityScore;
+      case 'private':
+        // Privacy models first (has 'tee' or 'privacy' feature), then by quality
+        return (b.features.includes('tee') ? 1 : 0) - (a.features.includes('tee') ? 1 : 0)
+          || b.qualityScore - a.qualityScore;
       case 'auto':
-      default:
+      default: {
         // Balance: quality / cost ratio
-        const costA = estimateCostPerRequest(a) || 0.0001; // avoid div by zero
+        const costA = estimateCostPerRequest(a) || 0.0001;
         const costB = estimateCostPerRequest(b) || 0.0001;
         return (b.qualityScore / costB) - (a.qualityScore / costA);
+      }
     }
   });
 
   // Filter by tier requirements
   const tierFiltered = sorted.filter(m => modelFitsTier(m, tier));
 
-  if (tierFiltered.length > 0) return tierFiltered[0]!;
+  if (tierFiltered.length > 0) return tierFiltered[0] as ModelEntry;
 
   // Safety net: if all models in tier are excluded, ignore exclusions
   const allForTier = getEnabledModels([]).filter(m => modelFitsTier(m, tier));
-  if (allForTier.length > 0) return allForTier[0]!;
+  if (allForTier.length > 0) return allForTier[0] as ModelEntry;
 
   // Absolute fallback: return any enabled model
-  return available[0] ?? getEnabledModels([])[0]!;
+  return (available[0] ?? getEnabledModels([])[0]) as ModelEntry;
 }
 
 // ── Tier Fitness Check ──────────────────────────────────────────────
@@ -134,6 +139,13 @@ export const PROFILE_INFO: Record<RoutingProfile, {
     savings: '0%',
     bestFor: 'Mission-critical, complex reasoning',
   },
+  private: {
+    name: 'PRIVATE',
+    emoji: '🔐',
+    description: 'GPU TEE + Arcium encryption — zero-knowledge inference',
+    savings: 'varies',
+    bestFor: 'Sensitive data: legal, medical, financial, IP',
+  },
 };
 
 export function formatProfileTable(): string {
@@ -142,7 +154,7 @@ export function formatProfileTable(): string {
   lines.push('  ═════════════════════════════════════════════════════');
   lines.push('');
 
-  for (const [key, info] of Object.entries(PROFILE_INFO)) {
+  for (const [, info] of Object.entries(PROFILE_INFO)) {
     lines.push(`  ${info.emoji} ${info.name.padEnd(10)} ${info.description}`);
     lines.push(`     Savings: ${info.savings.padEnd(10)} Best for: ${info.bestFor}`);
     lines.push('');

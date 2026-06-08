@@ -154,6 +154,9 @@ export function createCommands(): SlashCommand[] {
             byModel: {},
             byTier: { SIMPLE: 0, MEDIUM: 0, COMPLEX: 0, REASONING: 0 },
             sessionStart: Date.now(),
+            cacheHits: 0,
+            cacheMisses: 0,
+            serverToolCalls: 0,
           };
           return '  ✓ Usage statistics reset';
         }
