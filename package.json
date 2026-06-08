@@ -234,7 +234,7 @@
     "vitest": "^4.1.6"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20 <25"
   },
   "workspaces": [
     "packages/*",
