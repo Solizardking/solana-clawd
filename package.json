@@ -118,6 +118,8 @@
     "README.md"
   ],
   "scripts": {
+    "mint:clawd": "node scripts/mint-clawd-agent.mjs",
+    "mint:clawd:dry": "node scripts/mint-clawd-agent.mjs --dry-run",
     "prepare": "git config core.hooksPath .husky || true",
     "build": "tsc -p tsconfig.runtime.json",
     "build:all": "npm run build && (cd packages/agentwallet && npm run build) && (cd packages/agent-registry && npm run build) && (cd packages/agent-hub && npm run build) && (cd packages/clawd-code-cli && npm run build) && (cd packages/cli-standalone && npm run build)",
