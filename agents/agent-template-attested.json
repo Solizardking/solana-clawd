@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "description": "Formally verified agent with on-chain attestation via Solana Attestation Service - vault-integrated wallet at birth, skill attestations via QEDGen, and Metaplex identity minting",
   "ecosystem": "OpenClawd",
+  "x402Support": true,
   "registry": {
     "protocol": "8004",
     "program_id": "Ag8004rWo8ao8AUKhLk78iv2nLQpZMyBPXiAh5QLbFiE",
@@ -39,6 +40,14 @@
       "verified": true,
       "provides": ["OPENROUTER_API_KEY"],
       "description": "OAuth PKCE sign-in with OpenRouter. Populates ~/.openclawd/.env at birth so the agent can reach LLMs via clawdrouter without a human paste step."
+    },
+    {
+      "name": "x402-payment-verification",
+      "enabled": true,
+      "priority": "required",
+      "path": "skills/x402-payment-verification",
+      "provides": ["PAYMENT_SESSION", "VAULT_ACCESS"],
+      "description": "Verifies x402 payment sessions and unlocks Hermes-adapted vault execution only for attested requests."
     }
   ],
   "capabilities": {
@@ -63,7 +72,9 @@
       "hermes_integration": true,
       "wallet_custody": true,
       "vault_initialization_at_birth": true,
-      "multi_sig_required": true
+      "multi_sig_required": true,
+      "x402_payment_gate": true,
+      "delegated_execution": true
     },
     "inference": {
       "openrouter_oauth_at_birth": true,
@@ -75,7 +86,21 @@
     "security": {
       "formal_verification": true,
       "attestation_verified": true,
-      "vault_protected": true
+      "vault_protected": true,
+      "proof_of_execution": true
+    }
+  },
+  "services": [
+    {
+      "name": "vault",
+      "endpoint": "https://x402.wtf/vault",
+      "description": "Hermes-adapted secure custody with x402 payment verification and proof of execution."
+    }
+  ],
+  "infrastructure": {
+    "proofOfExecution": {
+      "type": "x402-vault-delegation",
+      "verified": true
     }
   },
   "attestation": {
@@ -146,6 +171,11 @@
       "name": "vault-init",
       "description": "Initialize agent wallet in Hermès vault",
       "usage": "vault-init --agent <agent-id> --wallet <wallet-pubkey> [--vault <vault-address>]"
+    },
+    {
+      "name": "x402-verify-payment",
+      "description": "Verify x402 payment and unlock vault",
+      "usage": "x402-verify --session <token>"
     },
     {
       "name": "formal-verify",
