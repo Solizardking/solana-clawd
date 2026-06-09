@@ -6,7 +6,7 @@
 
 <div align="center">
 
-```
+```text
  ███████╗ ██████╗ ██╗      █████╗ ███╗   ██╗ █████╗      ██████╗██╗      █████╗ ██╗    ██╗██████╗
  ██╔════╝██╔═══██╗██║     ██╔══██╗████╗  ██║██╔══██╗    ██╔════╝██║     ██╔══██╗██║    ██║██╔══██╗
  ███████╗██║   ██║██║     ███████║██╔██╗ ██║███████║    ██║     ██║     ███████║██║ █╗ ██║██║  ██║
@@ -15,7 +15,43 @@
  ╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝     ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
 ```
 
-```
+<!-- MINTED_SCOREBOARD:START -->
+
+# 🦞 LIVE MINTING DASHBOARD
+
+<div align="center">
+
+![Minted Agents](./assets/minted-scoreboard.svg)
+
+</div>
+
+> **Real-time on-chain agent mint activity**
+>
+> Auto-generated from local mint artifacts and Metaplex Core registrations.
+
+| Agent | Role | Generation | Verification | Asset |
+|---------|---------|---------|---------|---------|
+| 👾 EchoCore | Yield Whisperer | Common #1623 | ✅ Verified | `5cymLvjy...HqDvR2` |
+| 🐱 HexCrypt | Bridge Wanderer | Common #5349 | ✅ Verified | `7rTnYyyP...1VjL19` |
+| 🦊 ZealBit | Memecoin Shaman | Common #4107 | ✅ Verified | `3rKCAoGT...AQvQQ3` |
+| 🌀 PsiCore | Alpha Hunter | Uncommon #5121 | ⏳ Pending | `4MNnYHHH...RicnE1` |
+
+### Mint Stats
+
+| Metric | Value |
+|----------|----------|
+| 🦞 Total Minted Agents | 125 |
+| 🎯 Installed Skills | 130+ |
+| 📦 Runtime Packages | 12 |
+| 🔐 CAAP Capabilities | 5 |
+| ⚡ Active Gateways | 1 |
+| 🌐 Ecosystem Status | Online |
+
+**Source:** `/agents/minted` • generated during catalog build • updates automatically
+
+<!-- MINTED_SCOREBOARD:END -->
+
+```text
      /\   /\              /\   /\              /\   /\              /\   /\
     /  \_/  \            /  \_/  \            /  \_/  \            /  \_/  \
 ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   \___
@@ -27,71 +63,16 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
      \_/ \_/              \_/ \_/              \_/ \_/              \_/ \_/
 ```
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║  SENSE → THINK → STRIKE → DRIFT  ·  earn USDC → go deeper → run better     ║
-║  x402.wtf  ·  $CLAWD: 8cHzQH...pump  ·  MIT            ║
+║  x402.wtf  ·  $CLAWD: 8cHzQH...pump  ·  MIT                                ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**🦞 125 agents · 🎯 130+ skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
-
----
-
-### 🔥 WHAT'S NEW — June 2026
-
-| 🆕 Update | Description |
-|---|---|
-| 🍌 **Nano Banana 2 Image Gen** | Gemini 3.1 Flash Image — text-to-image, editing, search grounding, 4K, 14 reference images |
-| 🎬 **Veo 3.1 Video Gen** | Cinematic 8s videos with native audio — portrait/landscape, extension, frame interpolation |
-| 🔬 **Deep Research Agent** | Autonomous multi-step web research with citations, visualizations, collaborative planning |
-| 🐚 **Antigravity Managed Agents** | Isolated Linux sandbox — code execution, Git/GCS sources, network rules, credential injection |
-| 🖥️ **Computer Use** | Browser automation — screenshot-based control with human-in-the-loop safety confirmation |
-| 🧠 **Gemini 3.5 Flash Provider** | Full `@google/genai` SDK integration — InferProvider adapter, search grounding, code execution |
-| 🤖 **CLAWD Gateway** | Telegram bot + HTTP API with Helius/Birdeye/Solana integration — `npm run gateway:start` |
-| 🔀 **ClawdRouter** | Solana-native LLM router — 15-dimension scoring, 55+ models, wallet-signed auth, USDC x402 |
-| 🔐 **CAAP/1.0 Agent Auth** | Vendored 5-package auth stack — 116 TS files, SIWS, DAS, TEE attestation, Clerk bridge |
-| 🛡️ **Formal Verification** | Kani Rust Verifier + STRIDE scoring for skill registry |
-| 🎨 **Skill Hub** | Formally verified skill registry with Ed25519 signature-gated registration |
-| 🐹 **clawd-go — Solana Go SDK** | Full solana-go v1.16.0 wrapper — zero-config RPC + free AI via x402.wtf, no keys needed |
-| 🦞 **Agent Staking Protocol** | Metaplex Core lock/unlock primitive — no escrow, no custody transfer, live on devnet |
-
----
-
-### `$CLAWD` — `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
-
-[![CA](https://img.shields.io/badge/CA-8cHzQH...pump-C85C2B?style=for-the-badge&logo=solana&logoColor=white)](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
-[![x402](https://img.shields.io/badge/x402.wtf-payments-1E5AA8?style=for-the-badge)](https://x402.wtf)
-[![Website](https://img.shields.io/badge/x402.wtf-website-147D64?style=for-the-badge)](https://x402.wtf)
-[![Agents](https://img.shields.io/badge/125_agents-C85C2B?style=for-the-badge&logo=robotframework&logoColor=white)](https://x402.wtf/agents)
-[![Skills](https://img.shields.io/badge/130+_skills-9B59B6?style=for-the-badge&logo=skillshare&logoColor=white)](https://x402.wtf/skills)
-[![Gateway](https://img.shields.io/badge/Gateway_Live-1E5AA8?style=for-the-badge&logo=telegram&logoColor=white)](https://x402.wtf/gateway)
-[![CAAP](https://img.shields.io/badge/CAAP%2F1.0-E67E22?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/Solizardking/agent-auth)
-[![PR](https://img.shields.io/badge/pay.sh-verified-2EA44F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/solana-foundation/pay/pull/376)
-
-[![npm clawd](https://img.shields.io/badge/clawd-v2.0.0-C85C2B?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/clawd)
-[![npm registry](https://img.shields.io/badge/agent--registry-v2.0.0-1E5AA8?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/agent-registry)
-[![npm hub](https://img.shields.io/badge/agent--hub-v2.0.0-147D64?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/agent-hub)
-[![npm sdk](https://img.shields.io/badge/solana--sdk-v2.0.0-9B59B6?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/solana-sdk)
-[![npm wallet](https://img.shields.io/badge/wallet-v2.0.0-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawd/wallet)
-[![@auth/agent](https://img.shields.io/badge/%40auth%2Fagent-v0.6.0-E67E22?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@auth/agent)
-[![Telegram](https://img.shields.io/badge/t.me/clawdtoken-26A5E4?style=flat-square&logo=telegram&logoColor=white)](https://t.me/clawdtoken)
-[![X](https://img.shields.io/badge/@clawddevs-000000?style=flat-square&logo=x&logoColor=white)](https://x.com/clawddevs)
-[![node](https://img.shields.io/badge/node-20–24-0B7285?style=flat-square)](https://nodejs.org)
-[![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](./LICENSE)
-[![v2.1.0](https://img.shields.io/badge/version-2.1.0-blue?style=flat-square)](./package.json)
+**🦞 125 agents · 🎯 130+ skills · 📦 12 packages · 🔐 CAAP/1.0 · ✅ pay.sh verified · ⚡ v2.1.0**
 
 </div>
-
-<!-- MINTED_SCOREBOARD:START -->
-## Live Minted Agent Scoreboard
-
-<div align="center">
-  <img src="./assets/minted-scoreboard.svg" alt="Live minted CLAWD agent scoreboard" width="100%" />
-</div>
-
-**Source:** [agents/minted](/agents/minted) · auto-generated from local mint artifacts
-
 | Agent | Role | Rarity / Gen | Proof | Asset |
 |---|---|---:|---|---|
 | 👾 EchoCore | Yield Whisperer | Common / 1623 | verified | `5cymLvjy...HqDvR2` |
