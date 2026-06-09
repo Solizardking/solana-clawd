@@ -789,7 +789,7 @@ curl -s https://x402.wtf/health | jq .
 ## XVIII. Contribute
 
 ```bash
-git clone https://github.com/Solizardking/solana-clawd
+git clone https://github.com/openclawd/solana-clawd
 cd solana-clawd
 pnpm install
 bash packages/test-all.sh   # must be 10/10 before your PR
@@ -831,7 +831,7 @@ If that isn't green, don't open the PR.
 ╚═══════════════════════════════════════════════════════════════════════╝
 ```
 
-**[solanaclawd.com](https://solanaclawd.com)** · **[x402.wtf](https://x402.wtf)** · **[$CLAWD](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)** · **[GitHub](https://github.com/Solizardking/solana-clawd)**
+**[solanaclawd.com](https://solanaclawd.com)** · **[x402.wtf](https://x402.wtf)** · **[$CLAWD](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)** · **[GitHub](https://github.com/openclawd/solana-clawd)**
 
 *OpenClawd is MIT licensed. The laws are immutable. Everything else can be changed by someone who earns the right to change it.*
 

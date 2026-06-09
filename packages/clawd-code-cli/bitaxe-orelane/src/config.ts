@@ -53,7 +53,7 @@ export function loadOrelaneAppConfig(env: NodeJS.ProcessEnv = process.env): Orel
     rpcUrl,
     keypairPath,
     keypairBase58,
-    bitaxeUrl: env.BITAXE_URL ?? 'http://192.168.1.174/',
+    bitaxeUrl: env.BITAXE_URL ?? 'http://192.168.1.100/',
     x402OreUrl: env.X402_ORE_URL ?? 'https://x402.wtf/ore',
     tickIntervalMs: Number.parseInt(env.TICK_INTERVAL_MS ?? '60000', 10),
     dryRun,

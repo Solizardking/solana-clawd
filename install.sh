@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  Solana Clawd — one-shot installer                                      ║
-# ║  curl -fsSL https://raw.githubusercontent.com/solizardking/solanaclawd/main/install.sh | bash
+# ║  curl -fsSL https://raw.githubusercontent.com/openclawd/solana-clawd/main/install.sh | bash
 # ║  $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump                  ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 set -euo pipefail
@@ -69,7 +69,7 @@ cat << 'BANNER'
    ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
 
   🦞  Solana Clawd — The LM Studio of Solana Agents
-  github.com/solizardking/solanaclawd
+  github.com/openclawd/solana-clawd
 
 BANNER
 printf "${RESET}"
@@ -293,8 +293,8 @@ if [ "$INSTALL_PUMP" = true ]; then
       warn "Build failed — check Rust toolchain and retry: npm run pump:build"
   else
     warn "clawd-pump/ directory not found — clone the repo first"
-    warn "  git clone https://github.com/solizardking/solanaclawd"
-    warn "  cd solanaclawd && bash install.sh --pump"
+    warn "  git clone https://github.com/openclawd/solana-clawd"
+    warn "  cd solana-clawd && bash install.sh --pump"
   fi
 fi
 
@@ -454,8 +454,8 @@ if [ "$INSTALL_GATEWAY" = true ]; then
     info "Or deploy to Fly.io: cd gateway && fly deploy"
   else
     warn "gateway/ directory not found — clone the repo first"
-    warn "  git clone https://github.com/solizardking/solanaclawd"
-    warn "  cd solanaclawd && bash install.sh --gateway"
+    warn "  git clone https://github.com/openclawd/solana-clawd"
+    warn "  cd solana-clawd && bash install.sh --gateway"
   fi
 fi
 
@@ -466,6 +466,6 @@ printf "  Skills:       ${CYAN}https://x402.wtf/skills${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"
 printf "  Phoenix docs: ${CYAN}https://docs.phoenix.trade${RESET}\n"
 printf "  Vulcan repo:  ${CYAN}https://github.com/Ellipsis-Labs/vulcan-cli${RESET}\n"
-printf "  GitHub:       ${CYAN}https://github.com/solizardking/solanaclawd${RESET}\n"
+printf "  GitHub:       ${CYAN}https://github.com/openclawd/solana-clawd${RESET}\n"
 printf "  \$CLAWD CA:   ${DIM}8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump${RESET}\n"
 printf "\n  ${YELLOW}The shell molts. The laws do not. 🦞${RESET}\n\n"

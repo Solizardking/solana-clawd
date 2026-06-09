@@ -97,9 +97,9 @@ Why these excludes?
 The copy came in clean **except** for `dashboard/.env.local` — which had:
 
 ```
-BITAXE_URL=http://192.168.1.174
-RPC=https://mainnet.helius-rpc.com/?api-key=c55c146c-71ef-…
-HELIUS_API_KEY=c55c146c-71ef-…
+BITAXE_URL=http://192.168.1.100
+RPC=https://mainnet.helius-rpc.com/?api-key=redacted
+HELIUS_API_KEY=redacted
 ```
 
 A live Helius API key and a home-network Bitaxe URL. That belongs in *one*
@@ -222,7 +222,7 @@ The `firmware/esp-miner-overlay/` directory contains a C patch for
 ESP-Miner that lets the Bitaxe Gamma 602 report rig state (hashrate, temp,
 power, frequency) to the controller over HTTP — *without* ever storing a
 Solana secret on the BM1370's flash. The whole rig runs with the keypair
-locked to the VPS, not the closet. The ESP32 only sees `192.168.1.174:80`.
+locked to the VPS, not the closet. The ESP32 only sees `192.168.1.100:80`.
 
 That separation — Bitcoin ASIC on isolated WiFi, Solana hot key on a $5 VPS
 that *reads* the ASIC — is what makes the whole design safe enough to publish.

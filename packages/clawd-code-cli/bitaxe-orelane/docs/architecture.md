@@ -76,7 +76,7 @@ That is less efficient than a native multi-square instruction path, but it works
 
 The controller defaults to the live Bitaxe the user provided:
 
-- `http://192.168.1.174/`
+- `http://192.168.1.100/`
 
 The x402 ORE app is tracked as the ORE operator surface:
 
@@ -86,7 +86,7 @@ That page currently behaves like a browser app, not a simple JSON API, so the co
 
 ## Verified live status
 
-The live Bitaxe at `http://192.168.1.174/` responds through AxeOS and is healthy:
+The live Bitaxe at `http://192.168.1.100/` responds through AxeOS and is healthy:
 
 - board `602`
 - firmware / AxeOS `v2.10.1`

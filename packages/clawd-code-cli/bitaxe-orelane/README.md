@@ -87,7 +87,7 @@
 ### 👛 Helius DAS API
 - Wallet asset lookup via Helius `getAssetsByOwner`
 - Shows SOL balance, fungible tokens with USD values, NFT count
-- Powered by Helius API key (already configured)
+- Powered by your configured Helius API key
 
 ### 🤖 Telegram Bot
 - **Natural language routing** via DeepSeek `deepseek-v4-pro` with tool-call structured output
@@ -170,7 +170,7 @@ npm install
 ### 2. Configure Environment
 ```bash
 cp .env .env.local
-# Edit .env — Helius API key and Telegram token are pre-configured
+# Edit .env — fill in Helius API key and Telegram token
 ```
 
 ### 3. Build
@@ -225,7 +225,7 @@ npm start
 ### Bitaxe
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `BITAXE_URL` | `http://192.168.1.174/` | AxeOS base URL |
+| `BITAXE_URL` | `http://192.168.1.100/` | AxeOS base URL |
 | `BITAXE_MAX_TEMP_C` | `72` | Safety gate: max chip temp |
 | `BITAXE_MAX_CPU` | `75` | Safety gate: max CPU usage % |
 | `BITAXE_MIN_FREE_HEAP` | `150000` | Safety gate: min free heap bytes |

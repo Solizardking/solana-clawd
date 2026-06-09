@@ -90,7 +90,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/solizardking/solanaclawd.git"
+    "url": "https://github.com/openclawd/solana-clawd.git"
   },
   "homepage": "https://x402.wtf",
   "publishConfig": {

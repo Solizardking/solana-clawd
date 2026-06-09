@@ -69,8 +69,8 @@ Then connect via the [LiveKit Agents Playground](https://agents-playground.livek
 
 | Var | Required | Notes |
 | --- | --- | --- |
-| `LIVEKIT_URL` | yes | `wss://solanaos-zn3w8h4f.livekit.cloud` |
-| `LIVEKIT_API_KEY` | yes | `APIdrfcEgLatYaG` |
+| `LIVEKIT_URL` | yes | `wss://your-project.livekit.cloud` |
+| `LIVEKIT_API_KEY` | yes | `your_livekit_api_key` |
 | `LIVEKIT_API_SECRET` | yes | (from LiveKit Cloud) |
 | `ASSEMBLYAI_API_KEY` | yes | STT |
 | `OPENAI_API_KEY` | yes | LLM |

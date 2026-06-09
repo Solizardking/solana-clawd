@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const BITAXE_URL = process.env.BITAXE_URL ?? 'http://192.168.1.174';
+const BITAXE_URL = process.env.BITAXE_URL ?? 'http://192.168.1.100';
 
 export async function GET() {
   try {

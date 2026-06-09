@@ -77,7 +77,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 [![Agents](https://img.shields.io/badge/125_agents-C85C2B?style=for-the-badge&logo=robotframework&logoColor=white)](https://x402.wtf/agents)
 [![Skills](https://img.shields.io/badge/130+_skills-9B59B6?style=for-the-badge&logo=skillshare&logoColor=white)](https://x402.wtf/skills)
 [![Gateway](https://img.shields.io/badge/Gateway_Live-1E5AA8?style=for-the-badge&logo=telegram&logoColor=white)](https://x402.wtf/gateway)
-[![CAAP](https://img.shields.io/badge/CAAP%2F1.0-E67E22?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/Solizardking/agent-auth)
+[![CAAP](https://img.shields.io/badge/CAAP%2F1.0-E67E22?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/better-auth/agent-auth)
 [![PR](https://img.shields.io/badge/pay.sh-verified-2EA44F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/solana-foundation/pay/pull/376)
 
 [![npm clawd](https://img.shields.io/badge/clawd-v2.0.0-C85C2B?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/@openclawdsolana/clawd)
@@ -403,7 +403,7 @@ x402.wtf curls        # print useful curl examples
 **Step 1 — Clone the repo:**
 
 ```bash
-git clone https://github.com/Solizardking/solana-clawd
+git clone https://github.com/openclawd/solana-clawd
 cd solana-clawd
 ```
 
@@ -576,10 +576,10 @@ open https://x402.wtf/terminal
 ║  ClawdRouter (clawdrouter/) ║  Solana-native LLM router · 55+ models     ║
 ║  CLAWD Gateway (gateway/)   ║  Telegram bot · Helius/Birdeye · agent API ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
-║  agent-auth                 ║  github.com/Solizardking/agent-auth        ║
+║  agent-auth                 ║  github.com/better-auth/agent-auth         ║
 ║  CAAP/1.0                   ║  Agent identity · JWT auth · capabilities  ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
-║  GitHub                     ║  github.com/Solizardking/solana-clawd      ║
+║  GitHub                     ║  github.com/openclawd/solana-clawd         ║
 ╚═════════════════════════════╩════════════════════════════════════════════╝
 ```
 
@@ -606,7 +606,7 @@ Most agent frameworks stop at chat. OpenClawd handles the hard parts:
 
 ## 🔐 Agent Auth — CAAP/1.0
 
-OpenClawd implements **CAAP/1.0** (Clawd Agent Attestation Protocol) — a SIWS-gated, capability-based authorization layer built on [`@better-auth/agent-auth`](https://github.com/Solizardking/agent-auth). Every agent on the platform can register a cryptographic identity, request capability grants, and sign authenticated requests to Clawd APIs.
+OpenClawd implements **CAAP/1.0** (Clawd Agent Attestation Protocol) — a SIWS-gated, capability-based authorization layer built on [`@better-auth/agent-auth`](https://github.com/better-auth/agent-auth). Every agent on the platform can register a cryptographic identity, request capability grants, and sign authenticated requests to Clawd APIs.
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
@@ -950,7 +950,7 @@ export OPENROUTER_MODEL3=openrouter/optimus-alpha:free             # slot 3: gen
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║         S O L A N A   C L A W D   —   R E P O   G A L A X Y             ║
 ╠══════════════════════════════════════════════════════════════════════════╣
-║  x402.wtf  ·  github.com/Solizardking/solana-clawd  ║
+║  x402.wtf  ·  github.com/openclawd/solana-clawd  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -2177,7 +2177,7 @@ npm install -g @openclawdsolana/clawd \
                @openclawdsolana/agent-hub
 
 # Via install.sh (flags: --sdk  --leviathan  --full  --tui-only  --minimal)
-curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/openclawd/solana-clawd/main/install.sh | bash
 # With SDK + leviathan:  bash install.sh --full
 ```
 
@@ -2331,13 +2331,13 @@ The client only calls the gateway. The gateway is the only place that touches th
 | 🤖 x402 Agents | [x402.wtf/agents](https://x402.wtf/agents) |
 | 🏛 x402 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
 | 🎯 x402 Skills | [x402.wtf/skills](https://x402.wtf/skills) |
-| 🔐 Agent Auth | [github.com/Solizardking/agent-auth](https://github.com/Solizardking/agent-auth) |
+| 🔐 Agent Auth | [github.com/better-auth/agent-auth](https://github.com/better-auth/agent-auth) |
 | 🔑 CAAP Discovery | [x402.wtf/.well-known/agent-auth.json](https://x402.wtf/.well-known/agent-auth.json) |
 | 🖥 AI Terminal | [x402.wtf/terminal](https://x402.wtf/terminal) |
 | 🤖 AI (Cheshire) | [cheshireterminal.ai](https://cheshireterminal.ai) |
 | 💬 Telegram | [t.me/clawdtoken](https://t.me/clawdtoken) |
 | 🐦 X / Twitter | [@clawddevs](https://x.com/clawddevs) |
-| 💻 GitHub | [Solizardking/solana-clawd](https://github.com/Solizardking/solana-clawd) |
+| 💻 GitHub | [openclawd/solana-clawd](https://github.com/openclawd/solana-clawd) |
 | 🪙 Token CA | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
 | 📈 pump.fun | [Trade $CLAWD](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump) |
 | 📊 DexScreener | [Chart](https://dexscreener.com/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump) |
