@@ -3,33 +3,35 @@
  *
  * End-to-end integration tests for Solana transaction signing.
  *
- * These tests validate:
- *   - Base64 transaction decoding (legacy + v0)
- *   - Signer validation (rejecting non-required signers)
- *   - Signing + submission flow (with injectable submitter)
- *   - Incomplete signer detection
- *   - Error handling for all SignErrorCode variants
- *
  * Run:
  *   npx vitest run pay/src/sign.test.ts
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   Transaction,
   VersionedTransaction,
   Keypair,
-  PublicKey,
   Connection,
   SystemProgram,
   TransactionMessage,
 } from "@solana/web3.js";
-import * as bs58 from "bs58";
+import bs58Module from "bs58";
+
+// bs58 v6 has different CJS/ESM interop. The default export is the namespace
+// with both `encode` and `decode`.
+const bs58: {
+  encode(buf: Uint8Array): string;
+  decode(str: string): Uint8Array;
+} = bs58Module as unknown as {
+  encode(buf: Uint8Array): string;
+  decode(str: string): Uint8Array;
+};
+
 import {
   signAndSubmit,
   checkIncompleteSigners,
   TransactionSubmitter,
-  SignConfig,
   SignErrorCode,
   RpcSubmitter,
 } from "./sign";
@@ -46,7 +48,6 @@ function makeLegacyTx(keypair: Keypair): string {
   );
   tx.feePayer = keypair.publicKey;
   tx.recentBlockhash = "GfEQj24NMUnPFYxwQGqRhnDEe5W4j9ZpCD4dQEjL6dYj";
-  // Don't sign yet — this is what the caller does
   return Buffer.from(tx.serialize({ requireAllSignatures: false })).toString("base64");
 }
 
@@ -68,7 +69,6 @@ function makeV0Tx(keypair: Keypair): string {
   return Buffer.from(tx.serialize()).toString("base64");
 }
 
-/** Fake submitter that captures what was submitted */
 class FakeSubmitter implements TransactionSubmitter {
   submittedTx: Transaction | VersionedTransaction | null = null;
   shouldFail = false;
@@ -94,8 +94,6 @@ describe("signAndSubmit", () => {
     keypair = Keypair.generate();
     privateKey = bs58.encode(keypair.secretKey);
   });
-
-  // ── Decoding ────────────────────────────────────────────────────────────
 
   it("decodes and signs a legacy transaction", async () => {
     const base64Tx = makeLegacyTx(keypair);
@@ -129,11 +127,9 @@ describe("signAndSubmit", () => {
     expect(result.signature).toMatch(/^fake_sig_/);
   });
 
-  // ── Signer Validation ───────────────────────────────────────────────────
-
   it("rejects when the Pay account is not a required signer", async () => {
     const otherKeypair = Keypair.generate();
-    const base64Tx = makeLegacyTx(otherKeypair); // Tx requires otherKeypair, not our keypair
+    const base64Tx = makeLegacyTx(otherKeypair);
 
     await expect(
       signAndSubmit(
@@ -146,54 +142,28 @@ describe("signAndSubmit", () => {
     });
   });
 
-  // ── Error Handling ─────────────────────────────────────────────────────
-
   it("rejects invalid base64", async () => {
     await expect(
-      signAndSubmit(
-        "not-base64!!!",
-        { privateKey },
-        new FakeSubmitter(),
-      ),
-    ).rejects.toMatchObject({
-      code: SignErrorCode.INVALID_BASE64,
-    });
+      signAndSubmit("not-base64!!!", { privateKey }, new FakeSubmitter()),
+    ).rejects.toMatchObject({ code: SignErrorCode.INVALID_BASE64 });
   });
 
   it("rejects empty string", async () => {
     await expect(
-      signAndSubmit(
-        "",
-        { privateKey },
-        new FakeSubmitter(),
-      ),
-    ).rejects.toMatchObject({
-      code: SignErrorCode.DECODE_FAILED,
-    });
+      signAndSubmit("", { privateKey }, new FakeSubmitter()),
+    ).rejects.toMatchObject({ code: SignErrorCode.DECODE_FAILED });
   });
 
   it("rejects missing private key", async () => {
     await expect(
-      signAndSubmit(
-        "deadbeef",
-        { privateKey: "" },
-        new FakeSubmitter(),
-      ),
-    ).rejects.toMatchObject({
-      code: SignErrorCode.MISSING_PRIVATE_KEY,
-    });
+      signAndSubmit("deadbeef", { privateKey: "" }, new FakeSubmitter()),
+    ).rejects.toMatchObject({ code: SignErrorCode.MISSING_PRIVATE_KEY });
   });
 
   it("rejects invalid private key", async () => {
     await expect(
-      signAndSubmit(
-        "deadbeef",
-        { privateKey: "not-a-key" },
-        new FakeSubmitter(),
-      ),
-    ).rejects.toMatchObject({
-      code: SignErrorCode.MISSING_PRIVATE_KEY,
-    });
+      signAndSubmit("deadbeef", { privateKey: "not-a-key" }, new FakeSubmitter()),
+    ).rejects.toMatchObject({ code: SignErrorCode.MISSING_PRIVATE_KEY });
   });
 
   it("handles submission failure", async () => {
@@ -214,8 +184,6 @@ describe("signAndSubmit", () => {
     });
   });
 
-  // ── Defaults ────────────────────────────────────────────────────────────
-
   it("defaults to mainnet-beta when network not specified", async () => {
     const base64Tx = makeLegacyTx(keypair);
     const fakeSubmitter = new FakeSubmitter();
@@ -229,8 +197,6 @@ describe("signAndSubmit", () => {
     expect(result.network).toBe("mainnet-beta");
   });
 });
-
-// ─── checkIncompleteSigners Tests ──────────────────────────────────────────
 
 describe("checkIncompleteSigners", () => {
   it("detects unsigned legacy transaction", () => {
@@ -270,7 +236,7 @@ describe("checkIncompleteSigners", () => {
       );
     tx.feePayer = kp1.publicKey;
     tx.recentBlockhash = "GfEQj24NMUnPFYxwQGqRhnDEe5W4j9ZpCD4dQEjL6dYj";
-    tx.partialSign(kp1); // Only kp1 signed
+    tx.partialSign(kp1);
 
     const incomplete = checkIncompleteSigners(tx);
     expect(incomplete.length).toBe(1);
@@ -290,23 +256,21 @@ describe("checkIncompleteSigners", () => {
     tx.recentBlockhash = "GfEQj24NMUnPFYxwQGqRhnDEe5W4j9ZpCD4dQEjL6dYj";
     tx.sign(kp);
 
-    const incomplete = checkIncompleteSigners(tx);
-    expect(incomplete.length).toBe(0);
+    expect(checkIncompleteSigners(tx).length).toBe(0);
   });
 
   it("detects unsigned v0 transaction", () => {
     const kp = Keypair.generate();
-    const instructions = [
-      SystemProgram.transfer({
-        fromPubkey: kp.publicKey,
-        toPubkey: Keypair.generate().publicKey,
-        lamports: 1000,
-      }),
-    ];
     const message = new TransactionMessage({
       payerKey: kp.publicKey,
       recentBlockhash: "GfEQj24NMUnPFYxwQGqRhnDEe5W4j9ZpCD4dQEjL6dYj",
-      instructions,
+      instructions: [
+        SystemProgram.transfer({
+          fromPubkey: kp.publicKey,
+          toPubkey: Keypair.generate().publicKey,
+          lamports: 1000,
+        }),
+      ],
     }).compileToV0Message();
     const tx = new VersionedTransaction(message);
 
@@ -316,40 +280,9 @@ describe("checkIncompleteSigners", () => {
   });
 });
 
-// ─── RpcSubmitter (mocked connection) ──────────────────────────────────────
-
 describe("RpcSubmitter", () => {
-  it("submit delegates to sendAndConfirmTransaction for legacy tx", async () => {
-    vi.mock("@solana/web3.js", async () => {
-      const actual = await vi.importActual("@solana/web3.js");
-      return {
-        ...actual,
-        sendAndConfirmTransaction: vi.fn().mockResolvedValue("mock_sig_123"),
-        Connection: vi.fn().mockImplementation(() => ({
-          sendRawTransaction: vi.fn(),
-          getLatestBlockhash: vi.fn(),
-          confirmTransaction: vi.fn(),
-        })),
-      };
-    });
-
-    const kp = Keypair.generate();
-    const tx = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: kp.publicKey,
-        toPubkey: Keypair.generate().publicKey,
-        lamports: 1000,
-      }),
-    );
-    tx.feePayer = kp.publicKey;
-    tx.recentBlockhash = "GfEQj24NMUnPFYxwQGqRhnDEe5W4j9ZpCD4dQEjL6dYj";
-    tx.sign(kp);
-
-    const connection = new Connection("http://localhost:8899");
+  it("exposes a submit() method", () => {
     const submitter = new RpcSubmitter();
-
-    // Since we can't easily mock constructors, this test validates that
-    // the submitter exists and has the correct interface
     expect(submitter).toBeInstanceOf(RpcSubmitter);
     expect(typeof submitter.submit).toBe("function");
   });

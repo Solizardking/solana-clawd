@@ -18,7 +18,12 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
-import * as bs58 from "bs58";
+import bs58Module from "bs58";
+
+// bs58 v6 exports `decode` / `encode` as named exports on the CJS namespace.
+const bs58: { encode(buf: Uint8Array): Uint8Array; decode(str: string): Uint8Array } =
+  (bs58Module as unknown as { encode(buf: Uint8Array): Uint8Array; decode(str: string): Uint8Array })
+    ?? (bs58Module as unknown as { encode(buf: Uint8Array): Uint8Array; decode(str: string): Uint8Array });
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -159,6 +164,18 @@ function isPaySigner(
   return { isSigner: index >= 0, index };
 }
 
+/**
+ * Ed25519-sign a message buffer using a Keypair. The Keypair's internal
+ * nacl signer is exposed as a private API on @solana/web3.js, so we go
+ * through tweetnacl directly when needed (loaded lazily to keep the worker
+ * entrypoint small).
+ */
+async function signMessageWithKeypair(keypair: Keypair, message: Uint8Array): Promise<Uint8Array> {
+  // Lazy import tweetnacl for portability across @solana/web3.js versions.
+  const nacl = await import("tweetnacl");
+  return nacl.sign.detached(message, keypair.secretKey.slice(0, 32));
+}
+
 async function signTransaction(
   tx: Transaction | VersionedTransaction,
   keypair: Keypair,
@@ -188,11 +205,14 @@ async function signTransaction(
       );
     }
   } else {
-    // Versioned transaction: sign message bytes
+    // Versioned transaction: sign message bytes via tweetnacl (keypair has
+    // no public .sign() on the @solana/web3.js Keypair type).
     try {
       const messageBytes = tx.message.serialize();
-      const signature = keypair.sign(Buffer.from(messageBytes)); // nacl sign returns Uint8Array
-      tx.signatures[index] = Buffer.from(signature);
+      const signature = await signMessageWithKeypair(keypair, Buffer.from(messageBytes));
+      const sigBuf = Buffer.from(signature);
+      // tx.signatures[i] is Uint8Array | null in @solana/web3.js
+      (tx.signatures[index] as Uint8Array | null) = sigBuf;
     } catch (err: any) {
       throw Object.assign(
         new Error(`Transaction signing failed: ${err?.message ?? "unknown error"}`),
@@ -295,9 +315,21 @@ export function checkIncompleteSigners(
     const requiredSigners = getRequiredSignatures(tx);
     const allZeros = Buffer.alloc(64);
     for (let i = 0; i < requiredSigners.length; i++) {
-      if (!tx.signatures[i] || tx.signatures[i].equals(allZeros)) {
+      const sig = tx.signatures[i];
+      // tx.signatures[i] is Uint8Array | null; compare bytes manually.
+      if (!sig) {
         incomplete.push(requiredSigners[i]);
+        continue;
       }
+      if (sig.length !== 64) {
+        incomplete.push(requiredSigners[i]);
+        continue;
+      }
+      let isZero = true;
+      for (let j = 0; j < 64; j++) {
+        if (sig[j] !== 0) { isZero = false; break; }
+      }
+      if (isZero) incomplete.push(requiredSigners[i]);
     }
   }
 

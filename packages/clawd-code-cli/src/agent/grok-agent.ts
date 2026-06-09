@@ -8,6 +8,10 @@ import {
 } from "../grok/tools.js";
 import { loadMCPConfig } from "../mcp/config.js";
 import {
+  isDangerousVulcanMCPTool,
+  summarizeVulcanArgs,
+} from "../mcp/vulcanGuard.js";
+import {
   TextEditorTool,
   MorphEditorTool,
   BashTool,
@@ -158,6 +162,7 @@ BLOCKCHAIN & TRADING TOOLS:
 - polymarket_*: Polymarket (Polygon) prediction markets — events, markets, orderbook, price, midpoint, spread, trending. Read-only; order placement requires L2 auth (not enabled).
 - bags_launch_token / bags_swap / bags_claim_fees / bags_positions: Bags.fm launch + fee-share + swaps (BAGS_API_KEY required)
 - kalshi_*: Direct Kalshi trading (KALSHI_KEY_ID + KALSHI_PRIVATE_KEY required). kalshi_place_order requires user confirmation.
+- mcp__vulcan__*: Vulcan Phoenix perps MCP tools. Prefer read-only market/status/preflight calls first. Live-changing Vulcan calls must run only after explicit user confirmation; never inspect or print MCP config secrets, wallet passwords, private keys, or decrypted wallet bytes.
 - dflow_priority_fees_stream: Live DFlow priority fees over WS
 
 REAL-TIME INFORMATION:
@@ -196,6 +201,13 @@ USER CONFIRMATION SYSTEM:
 File operations (create_file, str_replace_editor) and bash commands will automatically request user confirmation before execution. The confirmation system will show users the actual content or command before they decide. Users can choose to approve individual operations or approve all operations of that type for the session.
 
 If a user rejects an operation, the tool will return an error and you should not proceed with that specific operation.
+
+VULCAN LIVE TRADING SAFETY:
+- For Vulcan MCP, use read-only market/status/preflight tools before any live action.
+- Never ask for, display, log, export, or inspect wallet passwords, private keys, keypair bytes, or MCP config contents.
+- Live-changing Vulcan calls require explicit user confirmation in Clawd and Vulcan's acknowledged=true dangerous gate. Do not treat vague phrases like "go for it" as approval for a new live strategy/trade unless the user has selected the execution mode and limits.
+- Before live strategies or trades, check Vulcan readiness/preflight and stop if it reports not_ready or any blocker.
+- Report each live execution event and full transaction signature immediately when Vulcan returns it.
 
 Be helpful, direct, and efficient. Always explain what you're doing and show the results.
 
@@ -998,8 +1010,10 @@ Current working directory: ${process.cwd()}`,
     try {
       const args = JSON.parse(toolCall.function.arguments);
       const mcpManager = getMCPManager();
+      const guardedArgs = await this.guardMCPToolCall(toolCall.function.name, args);
+      if (!guardedArgs.success) return guardedArgs;
 
-      const result = await mcpManager.callTool(toolCall.function.name, args);
+      const result = await mcpManager.callTool(toolCall.function.name, guardedArgs.data ?? args);
 
       if (result.isError) {
         return {
@@ -1030,6 +1044,28 @@ Current working directory: ${process.cwd()}`,
         error: `MCP tool execution error: ${error.message}`,
       };
     }
+  }
+
+  private async guardMCPToolCall(toolName: string, args: any): Promise<ToolResult> {
+    if (!isDangerousVulcanMCPTool(toolName)) {
+      return { success: true, data: args };
+    }
+
+    const approved = await this.confirmationTool.requestConfirmation({
+      operation: "vulcan_live_mcp",
+      filename: toolName.replace("mcp__vulcan__", ""),
+      description: summarizeVulcanArgs(args),
+    });
+
+    if (!approved.success) return approved;
+
+    return {
+      success: true,
+      data: {
+        ...args,
+        acknowledged: true,
+      },
+    };
   }
 
   getChatHistory(): ChatEntry[] {

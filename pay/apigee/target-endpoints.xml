@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  pay/apigee/target-endpoints.xml
+
+  Apigee TargetEndpoint bundle: TE-x402wtf-store
+
+  Each TargetEndpoint forwards one of the /api/x402wtf/* routes to the
+  matching x402.wtf endpoint. The DefaultFaultRule raises a structured
+  RF-X402Challenge if the merchant cannot be reached, so the storefront
+  and the merchant registry both see a uniform 402 envelope.
+
+  All TargetEndpoints share the AM-SetX402Headers policy in the
+  Response flow.
+-->
+<TargetEndpoints>
+
+  <!-- ── /api/x402wtf/info  →  https://x402.wtf/payments/info ─────────── -->
+  <TargetEndpoint name="TE-x402wtf-info">
+    <PreFlow name="PreFlow">
+      <Request>
+        <Step>
+          <Name>AM-SetX402ChallengePath</Name>
+        </Step>
+      </Request>
+      <Response>
+        <Step>
+          <Name>AM-SetX402Headers</Name>
+        </Step>
+      </Response>
+    </PreFlow>
+    <HTTPTargetConnection>
+      <URL>https://x402.wtf/payments/info</URL>
+    </HTTPTargetConnection>
+    <DefaultFaultRule name="DR-x402wtf-info">
+      <AlwaysEnforce>true</AlwaysEnforce>
+      <Step>
+        <Name>RF-X402Challenge</Name>
+      </Step>
+    </DefaultFaultRule>
+  </TargetEndpoint>
+
+  <!-- ── /api/x402wtf/registry  →  https://x402.wtf/agents/registry ──── -->
+  <TargetEndpoint name="TE-x402wtf-registry">
+    <PreFlow name="PreFlow">
+      <Request/>
+      <Response>
+        <Step><Name>AM-SetX402Headers</Name></Step>
+      </Response>
+    </PreFlow>
+    <HTTPTargetConnection>
+      <URL>https://x402.wtf/agents/registry</URL>
+    </HTTPTargetConnection>
+    <DefaultFaultRule name="DR-x402wtf-registry">
+      <AlwaysEnforce>true</AlwaysEnforce>
+      <Step><Name>RF-X402Challenge</Name></Step>
+    </DefaultFaultRule>
+  </TargetEndpoint>
+
+  <!-- ── /api/x402wtf/agents  →  https://x402.wtf/agents/registry/agents -->
+  <TargetEndpoint name="TE-x402wtf-agents">
+    <PreFlow name="PreFlow">
+      <Request/>
+      <Response>
+        <Step><Name>AM-SetX402Headers</Name></Step>
+      </Response>
+    </PreFlow>
+    <HTTPTargetConnection>
+      <URL>https://x402.wtf/agents/registry/agents</URL>
+    </HTTPTargetConnection>
+    <DefaultFaultRule name="DR-x402wtf-agents">
+      <AlwaysEnforce>true</AlwaysEnforce>
+      <Step><Name>RF-X402Challenge</Name></Step>
+    </DefaultFaultRule>
+  </TargetEndpoint>
+
+  <!-- ── /api/x402wtf/agent/chat  →  https://x402.wtf/payments/agent/chat -->
+  <TargetEndpoint name="TE-x402wtf-agent-chat">
+    <PreFlow name="PreFlow">
+      <Request/>
+      <Response>
+        <Step><Name>AM-SetX402Headers</Name></Step>
+      </Response>
+    </PreFlow>
+    <HTTPTargetConnection>
+      <URL>https://x402.wtf/payments/agent/chat</URL>
+    </HTTPTargetConnection>
+    <DefaultFaultRule name="DR-x402wtf-agent-chat">
+      <AlwaysEnforce>true</AlwaysEnforce>
+      <Step><Name>RF-X402Challenge</Name></Step>
+    </DefaultFaultRule>
+  </TargetEndpoint>
+
+  <!-- ── /api/x402wtf/checkout  →  https://x402.wtf/payments/checkout ── -->
+  <TargetEndpoint name="TE-x402wtf-checkout">
+    <PreFlow name="PreFlow">
+      <Request/>
+      <Response>
+        <Step><Name>AM-SetX402Headers</Name></Step>
+      </Response>
+    </PreFlow>
+    <HTTPTargetConnection>
+      <URL>https://x402.wtf/payments/checkout</URL>
+    </HTTPTargetConnection>
+    <DefaultFaultRule name="DR-x402wtf-checkout">
+      <AlwaysEnforce>true</AlwaysEnforce>
+      <Step><Name>RF-X402Challenge</Name></Step>
+    </DefaultFaultRule>
+  </TargetEndpoint>
+
+  <!-- ── /api/x402wtf/verify  →  https://x402.wtf/payments/verify ────── -->
+  <TargetEndpoint name="TE-x402wtf-verify">
+    <PreFlow name="PreFlow">
+      <Request/>
+      <Response>
+        <Step><Name>AM-SetX402Headers</Name></Step>
+      </Response>
+    </PreFlow>
+    <HTTPTargetConnection>
+      <URL>https://x402.wtf/payments/verify</URL>
+    </HTTPTargetConnection>
+    <DefaultFaultRule name="DR-x402wtf-verify">
+      <AlwaysEnforce>true</AlwaysEnforce>
+      <Step><Name>RF-X402Challenge</Name></Step>
+    </DefaultFaultRule>
+  </TargetEndpoint>
+
+  <!-- ── /api/x402wtf/register  →  https://x402.wtf/agents/registry/register -->
+  <TargetEndpoint name="TE-x402wtf-register">
+    <PreFlow name="PreFlow">
+      <Request/>
+      <Response>
+        <Step><Name>AM-SetX402Headers</Name></Step>
+      </Response>
+    </PreFlow>
+    <HTTPTargetConnection>
+      <URL>https://x402.wtf/agents/registry/register</URL>
+    </HTTPTargetConnection>
+    <DefaultFaultRule name="DR-x402wtf-register">
+      <AlwaysEnforce>true</AlwaysEnforce>
+      <Step><Name>RF-X402Challenge</Name></Step>
+    </DefaultFaultRule>
+  </TargetEndpoint>
+
+</TargetEndpoints>

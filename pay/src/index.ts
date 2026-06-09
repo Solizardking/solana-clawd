@@ -20,6 +20,18 @@ export interface Env {
   PAY_RPC_URL?: string;
   PAY_NETWORK_ENFORCED?: string;
   PAY_ACTIVE_ACCOUNT?: string;
+  // ─── x402.wtf Real Store ─────────────────────────────────────────────────
+  X402_STORE_ENABLED?: string;
+  X402_STORE_BASE?: string;
+  X402_STORE_NAMESPACE?: string;
+  X402_STORE_REGISTRY_URL?: string;
+  X402_STORE_PAYMENTS_URL?: string;
+  X402_STORE_API_KEY?: string;
+  X402_MANIFEST_VERSION?: string;
+  OPERATOR_WALLET_PUBKEY?: string;
+  FEE_PAYER_WALLET_PUBKEY?: string;
+  APIGEE_PROXY_BASE?: string;
+  APIGEE_ENV?: string;
 }
 
 type JsonRecord = Record<string, unknown>;
@@ -28,7 +40,8 @@ const CORS_HEADERS: HeadersInit = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
   "Access-Control-Allow-Headers":
-    "Content-Type,Authorization,X-Payment,Payment-Receipt,X-Clawd-Pay-Receipt,X-Agent-Asset,X-Clawd-Wallet",
+    "Content-Type,Authorization,X-Payment,Payment-Receipt,X-Clawd-Pay-Receipt," +
+    "X-Agent-Asset,X-Clawd-Wallet,X-Clawd-Product,X-Clawd-Nonce",
 };
 
 function json(data: unknown, init: ResponseInit = {}) {
@@ -59,7 +72,7 @@ function baseQuote(env: Env) {
 
   return {
     service: "solana-clawd-pay",
-    version: "0.1.0",
+    version: "0.2.0",
     price: {
       usd: env.PRICE_USD ?? "0.01",
       atomic: env.PRICE_ATOMIC ?? "10000",
@@ -68,7 +81,7 @@ function baseQuote(env: Env) {
     networks,
     rails: {
       x402: {
-        enabled: Boolean(env.X402_OPENROUTER_URL),
+        enabled: Boolean(env.X402_OPENROUTER_URL) || env.X402_STORE_ENABLED === "true",
         url: env.X402_OPENROUTER_URL || null,
         header: "X-Payment",
       },
@@ -89,6 +102,20 @@ function baseQuote(env: Env) {
       clawdrouter: env.CLAWDROUTER_URL || null,
       x402OpenRouter: env.X402_OPENROUTER_URL || null,
       directOpenRouter: Boolean(env.OPENROUTER_API_KEY),
+      x402Wtf: {
+        enabled: env.X402_STORE_ENABLED === "true",
+        base: env.X402_STORE_BASE ?? "https://x402.wtf",
+        registry: env.X402_STORE_REGISTRY_URL ?? "https://x402.wtf/agents/registry",
+        payments: env.X402_STORE_PAYMENTS_URL ?? "https://x402.wtf/payments",
+      },
+    },
+    x402Store: {
+      enabled: env.X402_STORE_ENABLED === "true",
+      namespace: env.X402_STORE_NAMESPACE ?? "openclawd-pay",
+      operator: env.OPERATOR_WALLET_PUBKEY ?? null,
+      feePayer: env.FEE_PAYER_WALLET_PUBKEY ?? null,
+      network: env.PAY_NETWORK_ENFORCED ?? "solana-mainnet",
+      rpcUrl: env.PAY_RPC_URL ?? "https://api.mainnet-beta.solana.com",
     },
   };
 }
@@ -314,18 +341,45 @@ export default {
 
     const url = new URL(request.url);
 
+    // ─── /api/x402wtf/* — real paid x402.wtf store routes ──────────────────
+    if (url.pathname.startsWith("/api/x402wtf/")) {
+      const { handleX402WtfRoute } = await import("./x402wtf-proxy.js");
+      const result = await handleX402WtfRoute({
+        request,
+        url,
+        env: env as Record<string, string | undefined>,
+      });
+      if (result) return result;
+    }
+
     if (url.pathname === "/" || url.pathname === "/health") {
       return json({
         ok: true,
         service: "solana-clawd-pay",
         environment: env.ENVIRONMENT ?? "development",
         quote: baseQuote(env),
+        x402Store: {
+          enabled: env.X402_STORE_ENABLED === "true",
+          base: env.X402_STORE_BASE ?? "https://x402.wtf",
+          namespace: env.X402_STORE_NAMESPACE ?? "openclawd-pay",
+          manifest: "/api/x402wtf/manifest",
+          routes: [
+            "/api/x402wtf/info",
+            "/api/x402wtf/registry",
+            "/api/x402wtf/agents",
+            "/api/x402wtf/agent/chat",
+            "/api/x402wtf/checkout",
+            "/api/x402wtf/verify",
+            "/api/x402wtf/register",
+          ],
+        },
         capabilities: {
           signTransaction: true,
           signTransactionMCP: true,
           agentIdentityAttestation: true,
           metaplexAttestation: true,
           googleAgentRegistryBridge: true,
+          x402WtfStore: env.X402_STORE_ENABLED === "true",
         },
       });
     }

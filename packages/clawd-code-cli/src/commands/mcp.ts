@@ -3,6 +3,10 @@ import { addMCPServer, removeMCPServer, loadMCPConfig, PREDEFINED_SERVERS } from
 import { getMCPManager } from '../grok/tools.js';
 import { MCPServerConfig } from '../mcp/client.js';
 import chalk from 'chalk';
+import { execFile, spawn } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 export function createMCPCommand(): Command {
   const mcpCommand = new Command('mcp');
@@ -264,5 +268,121 @@ export function createMCPCommand(): Command {
       }
     });
 
+  // Secret-safe Vulcan live readiness command
+  mcpCommand
+    .command('vulcan-ready')
+    .description('Check whether the local Vulcan MCP configuration is ready for live trading without printing secrets')
+    .option('--target <target>', 'Agent target to inspect', 'claude')
+    .option('--scope <scope>', 'Configuration scope to inspect', 'user')
+    .action(async (options) => {
+      try {
+        const result = await runVulcanReadiness(options.target, options.scope);
+        const data = result.data ?? {};
+        const route = data.recommended_execution_path || data.route || (data.ready ? 'ready' : 'not_ready');
+
+        console.log(chalk.bold(`Vulcan MCP readiness (${data.target || options.target}/${data.scope || options.scope})`));
+        console.log(`  Route: ${route === 'ready' ? chalk.green(route) : chalk.yellow(route)}`);
+
+        const mcpReady = typeof data.mcp_ready === 'boolean' ? data.mcp_ready : data.mcp_configured;
+        if (typeof mcpReady === 'boolean') {
+          console.log(`  MCP configured: ${mcpReady ? chalk.green('true') : chalk.yellow('false')}`);
+        }
+        if (typeof data.dangerous_enabled === 'boolean') {
+          console.log(`  Live tools enabled: ${data.dangerous_enabled ? chalk.green('true') : chalk.yellow('false')}`);
+        }
+        if (typeof data.password_env_present === 'boolean') {
+          console.log(`  Wallet password env: ${data.password_env_present ? chalk.green('present') : chalk.yellow('missing')}`);
+        }
+        const cliEnvReady = typeof data.cli_env === 'boolean' ? data.cli_env : data.cli_env_unlock_present;
+        if (typeof cliEnvReady === 'boolean') {
+          console.log(`  CLI env unlock: ${cliEnvReady ? chalk.green('true') : chalk.yellow('false')}`);
+        }
+        if (Array.isArray(data.blocked) && data.blocked.length > 0) {
+          console.log(`  Blocked: ${chalk.yellow(data.blocked.join(', '))}`);
+        } else if (data.blocked) {
+          console.log(`  Blocked: ${chalk.yellow(String(data.blocked))}`);
+        } else if (data.blocking_reason) {
+          console.log(`  Blocked: ${chalk.yellow(String(data.blocking_reason))}`);
+        }
+
+        if (data.restart_required || data.restart_instructions) {
+          console.log(`  Restart: ${data.restart_instructions || 'restart the agent client so MCP settings reload'}`);
+        }
+        const installCommand = data.manual_install_command || data.install_command;
+        if (installCommand) {
+          console.log(`  Install: ${installCommand}`);
+        }
+        if (data.resolution_summary) {
+          console.log(`  Resolution: ${data.resolution_summary}`);
+        }
+
+        if (route !== 'ready' && (data.configured === false || data.mcp_configured === false)) {
+          console.log(chalk.dim('  Tip: run `clawd mcp add vulcan`, then restart the agent client. Add live signing only through Vulcan setup.'));
+        }
+      } catch (error: any) {
+        console.error(chalk.red(`Error checking Vulcan readiness: ${error.message}`));
+        process.exit(1);
+      }
+    });
+
+  mcpCommand
+    .command('vulcan-install-live')
+    .description('Run Vulcan’s interactive live MCP installer for this agent client')
+    .option('--target <target>', 'Agent target to configure', 'claude')
+    .option('--scope <scope>', 'Configuration scope to update', 'user')
+    .action(async (options) => {
+      if (!process.stdin.isTTY || !process.stdout.isTTY) {
+        console.error(chalk.red('Vulcan live MCP install requires an interactive terminal.'));
+        console.error(`Run: vulcan agent mcp install --target ${options.target} --scope ${options.scope} --dangerous`);
+        process.exit(1);
+      }
+
+      const code = await runInteractiveVulcanInstall(options.target, options.scope);
+      if (code !== 0) {
+        process.exit(code);
+      }
+    });
+
   return mcpCommand;
+}
+
+async function runVulcanReadiness(target: string, scope: string): Promise<any> {
+  const args = ['agent', 'live-ready', '--target', target, '--scope', scope, '-o', 'json'];
+
+  try {
+    const { stdout } = await execFileAsync('vulcan', args, {
+      maxBuffer: 1024 * 1024,
+    });
+    return JSON.parse(stdout);
+  } catch (error: any) {
+    const stdout = error?.stdout;
+    if (typeof stdout === 'string' && stdout.trim()) {
+      try {
+        return JSON.parse(stdout);
+      } catch {
+        // Fall through to the original error below.
+      }
+    }
+    throw error;
+  }
+}
+
+function runInteractiveVulcanInstall(target: string, scope: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const child = spawn('vulcan', [
+      'agent',
+      'mcp',
+      'install',
+      '--target',
+      target,
+      '--scope',
+      scope,
+      '--dangerous',
+    ], {
+      stdio: 'inherit',
+    });
+
+    child.on('error', reject);
+    child.on('close', (code) => resolve(code ?? 1));
+  });
 }

@@ -16,6 +16,10 @@ export function loadMCPConfig(): MCPConfig {
   if (payServer && !servers.some((server) => server.name === payServer.name)) {
     servers.push(payServer);
   }
+  const vulcanServer = vulcanMCPServerFromEnv();
+  if (vulcanServer && !servers.some((server) => server.name === vulcanServer.name)) {
+    servers.push(vulcanServer);
+  }
   return { servers };
 }
 
@@ -41,6 +45,35 @@ function payMCPServerFromEnv(): MCPServerConfig | undefined {
   return {
     name: "pay",
     command,
+    args,
+    env,
+  };
+}
+
+function vulcanMCPServerFromEnv(): MCPServerConfig | undefined {
+  if (process.env.CLAWD_VULCAN_MCP_ENABLED !== "1") return undefined;
+
+  return createVulcanMCPServerConfig();
+}
+
+function createVulcanMCPServerConfig(): MCPServerConfig {
+  const allowDangerous = process.env.CLAWD_VULCAN_ALLOW_DANGEROUS === "1";
+  const args = ["mcp", ...(allowDangerous ? ["--allow-dangerous"] : [])];
+  const env: Record<string, string> = {};
+
+  for (const key of [
+    "VULCAN_WALLET_NAME",
+    "VULCAN_RPC_URL",
+    "PHOENIX_API_URL",
+    "PHOENIX_API_KEY",
+  ]) {
+    const value = process.env[key];
+    if (value) env[key] = value;
+  }
+
+  return {
+    name: "vulcan",
+    command: process.env.CLAWD_VULCAN_MCP_COMMAND || "vulcan",
     args,
     env,
   };
@@ -84,5 +117,8 @@ export function getMCPServer(serverName: string): MCPServerConfig | undefined {
   return projectSettings.mcpServers?.[serverName];
 }
 
-// Predefined server configurations
-export const PREDEFINED_SERVERS: Record<string, MCPServerConfig> = {};
+// Predefined server configurations. These are local-only MCP launch profiles;
+// live signing secrets must stay in the user's agent/client environment.
+export const PREDEFINED_SERVERS: Record<string, MCPServerConfig> = {
+  vulcan: createVulcanMCPServerConfig(),
+};
