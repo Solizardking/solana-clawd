@@ -51,10 +51,31 @@ Use these repo-relative paths when working on Metaplex Agent staking, pay-gated 
 
 - [Main repo README](../README.md)
 - [Agents catalog README](./README.md) — this file
+- [x402 implementation map](./docs/X402_IMPLEMENTATION.md) — how agent JSONs map to the Solana payment gateway, Worker, SDK, and vault program
+- [Solana Clawd x402 subtree](../solana-clawd-x402/README.md) — full gateway, Worker, SDK, vault, and example flows
 - [Staking protocol](../staking/README.md) — Anchor program + CLI
 - [Agent staking lock layer](../staking/programs/mpl-corenft-staking/src/lib.rs)
 - [Gateway source](../gateway/) — Telegram bot + HTTP API + agent registry
 - [Clawd TUI packages](../packages/clawd/)
+
+---
+
+## x402 implementation in this repo
+
+The paid-agent catalog in `agents/src/*.json` is not the whole x402 implementation by itself. The actual payment rail lives in [`../solana-clawd-x402/`](../solana-clawd-x402/README.md), and the lighter embeddable package surfaces live in:
+
+- [`../x402/`](../x402/README.md) — library package for HTTP 402 payment middleware and client helpers
+- [`../packages/agents-x402-solana/`](../packages/agents-x402-solana/README.md) — MCP/HTTP monetization wrapper
+
+Use the full subtree when you need:
+
+- protocol negotiation across `x402`, `mpp`, `ap2`, and `a2a`
+- the Cloudflare Worker gateway and facilitator
+- the Solana transaction verifier and settlement path
+- the client SDK that auto-pays and retries
+- the Anchor vault / registry program
+
+Start with [`docs/X402_IMPLEMENTATION.md`](./docs/X402_IMPLEMENTATION.md) if you are working from an agent definition and need to find the runtime code behind it.
 
 ---
 

@@ -2,6 +2,8 @@
 
 Programmable pay-per-call agents on Solana: one gateway, four payment protocols, one settlement rail, one vault that turns agent usage into on-chain revenue.
 
+This subtree is the full in-repo x402 implementation behind the paid-agent surfaces documented in [`../agents/README.md`](../agents/README.md). If you are starting from an agent definition, use [`../agents/docs/X402_IMPLEMENTATION.md`](../agents/docs/X402_IMPLEMENTATION.md) as the bridge document back into this code.
+
 ```text
 caller or agent
     |
@@ -149,7 +151,7 @@ That makes Genesis:
 
 Important: `setToken: true` is permanent. Each Metaplex agent can only ever have one agent token; once set, it cannot be changed, replaced, or unset. Use `setToken: false` on devnet or while testing.
 
-See [METAPLEX_AGENT_TOKEN.md](/Users/8bit/bots/Cladwbot-solana/solana-clawd/x402/METAPLEX_AGENT_TOKEN.md) for the full launch flow.
+See [METAPLEX_AGENT_TOKEN.md](./METAPLEX_AGENT_TOKEN.md) for the full launch flow.
 
 ## Holder Discounts
 
@@ -166,7 +168,7 @@ The payer must match the wallet used for discount lookup. No borrowed-balance di
 ## Quick Start
 
 ```sh
-cd x402/worker
+cd solana-clawd-x402/worker
 npm install
 npm run typecheck
 npx wrangler dev
@@ -197,7 +199,7 @@ console.log(res.signature, res.receiptCid);
 ## Deploy
 
 ```sh
-cd x402/worker
+cd solana-clawd-x402/worker
 npm install
 npx wrangler secret put HELIUS_API_KEY
 npx wrangler secret put SOLANATRACKER_API_KEY
@@ -207,7 +209,7 @@ npx wrangler deploy
 ```
 
 ```sh
-cd x402/programs/clawd-vault
+cd solana-clawd-x402/programs/clawd-vault
 cargo check
 anchor build
 anchor deploy --provider.cluster mainnet
@@ -251,9 +253,9 @@ After `anchor build`, replace the placeholder `declare_id!("11111111111111111111
 ## Verification
 
 ```sh
-cd x402/worker && npm run typecheck
-cd x402/sdk && npm run typecheck
-cd x402/programs/clawd-vault && cargo check
+cd solana-clawd-x402/worker && npm run typecheck
+cd solana-clawd-x402/sdk && npm run typecheck
+cd solana-clawd-x402/programs/clawd-vault && cargo check
 ```
 
 Current status: the core gateway, SDK, and vault compile. External production readiness still depends on deployed program ids, real registry entries, funded token accounts, AP2 verifier configuration, and upstream agent endpoints.
