@@ -1,0 +1,39 @@
+{
+  "name": "@solana-clawd/clawd-code",
+  "version": "1.0.0",
+  "description": "World's first headless Grok × Codex × Claude Code hybrid — sovereign AI coding agent with perpetuals and realtime AI",
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "clawd-code": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "solana",
+    "ai-agent",
+    "grok",
+    "codex",
+    "claude-code",
+    "perpetuals",
+    "trading",
+    "x402",
+    "phoenix",
+    "vulcan"
+  ],
+  "author": "Solizardking",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
