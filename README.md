@@ -83,6 +83,23 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 </div>
 
+<!-- MINTED_SCOREBOARD:START -->
+## Live Minted Agent Scoreboard
+
+<div align="center">
+  <img src="./assets/minted-scoreboard.svg" alt="Live minted CLAWD agent scoreboard" width="100%" />
+</div>
+
+**Source:** [agents/minted](/agents/minted) · auto-generated from local mint artifacts
+
+| Agent | Role | Rarity / Gen | Proof | Asset |
+|---|---|---:|---|---|
+| 👾 EchoCore | Yield Whisperer | Common / 1623 | verified | `5cymLvjy...HqDvR2` |
+| 🐱 HexCrypt | Bridge Wanderer | Common / 5349 | verified | `7rTnYyyP...1VjL19` |
+| 🦊 ZealBit | Memecoin Shaman | Common / 4107 | verified | `3rKCAoGT...AQvQQ3` |
+| 🌀 PsiCore | Alpha Hunter | Uncommon / 5121 | pending | `4MNnYHHH...RicnE1` |
+<!-- MINTED_SCOREBOARD:END -->
+
 ---
 
 ```

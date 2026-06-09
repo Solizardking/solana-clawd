@@ -1,0 +1,88 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Live CLAWD minted agent scoreboard">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#07111f"/>
+      <stop offset="0.45" stop-color="#13233f"/>
+      <stop offset="1" stop-color="#251235"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22d3ee"/>
+      <stop offset="0.5" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1280" height="360" rx="28" fill="url(#bg)"/>
+  <circle cx="1130" cy="72" r="88" fill="#22d3ee" fill-opacity="0.08">
+    <animate attributeName="r" values="88;98;88" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="155" cy="322" r="96" fill="#f97316" fill-opacity="0.09">
+    <animate attributeName="r" values="96;84;96" dur="5.5s" repeatCount="indefinite"/>
+  </circle>
+  <rect x="32" y="26" width="1216" height="86" rx="22" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
+  <rect x="32" y="26" width="1216" height="4" rx="2" fill="url(#pulse)" filter="url(#glow)">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="3.2s" repeatCount="indefinite"/>
+  </rect>
+  <text x="58" y="58" fill="#f8fafc" font-size="28" font-weight="800">LIVE MINTED AGENT SCOREBOARD</text>
+  <text x="58" y="88" fill="#93c5fd" font-size="16">Generated from /agents/minted for the README top banner</text>
+  <text x="760" y="58" fill="#f8fafc" font-size="18" font-weight="700">Total minted: 4</text>
+  <text x="760" y="86" fill="#22c55e" font-size="18" font-weight="700">Proof verified: 3</text>
+  <text x="980" y="58" fill="#f8fafc" font-size="18" font-weight="700">Latest: EchoCore</text>
+  <text x="980" y="86" fill="#cbd5e1" font-size="14">Yield Whisperer</text>
+  <g>
+
+      <g transform="translate(40,170)">
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="142" fill="rgba(9,15,28,0.74)" stroke="rgba(255,255,255,0.14)" />
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="6" fill="#22c55e" />
+        <text x="16" y="34" fill="#f8fafc" font-size="20" font-weight="700">👾 EchoCore</text>
+        <text x="16" y="58" fill="#93c5fd" font-size="13">Yield Whisperer</text>
+        <text x="16" y="82" fill="#cbd5e1" font-size="12">Common · Gen 1623</text>
+        <text x="16" y="106" fill="#22c55e" font-size="12">verified</text>
+        <text x="16" y="126" fill="#94a3b8" font-size="10">5cymLvjy2u...HqDvR2</text>
+        <animateTransform attributeName="transform" type="translate" values="40,170;40,162;40,170" dur="4.5s" begin="0s" repeatCount="indefinite" />
+      </g>
+      <g transform="translate(236,170)">
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="142" fill="rgba(9,15,28,0.74)" stroke="rgba(255,255,255,0.14)" />
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="6" fill="#22c55e" />
+        <text x="16" y="34" fill="#f8fafc" font-size="20" font-weight="700">🐱 HexCrypt</text>
+        <text x="16" y="58" fill="#93c5fd" font-size="13">Bridge Wanderer</text>
+        <text x="16" y="82" fill="#cbd5e1" font-size="12">Common · Gen 5349</text>
+        <text x="16" y="106" fill="#22c55e" font-size="12">verified</text>
+        <text x="16" y="126" fill="#94a3b8" font-size="10">7rTnYyyPVL...1VjL19</text>
+        <animateTransform attributeName="transform" type="translate" values="236,170;236,162;236,170" dur="4.5s" begin="0.6s" repeatCount="indefinite" />
+      </g>
+      <g transform="translate(432,170)">
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="142" fill="rgba(9,15,28,0.74)" stroke="rgba(255,255,255,0.14)" />
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="6" fill="#22c55e" />
+        <text x="16" y="34" fill="#f8fafc" font-size="20" font-weight="700">🦊 ZealBit</text>
+        <text x="16" y="58" fill="#93c5fd" font-size="13">Memecoin Shaman</text>
+        <text x="16" y="82" fill="#cbd5e1" font-size="12">Common · Gen 4107</text>
+        <text x="16" y="106" fill="#22c55e" font-size="12">verified</text>
+        <text x="16" y="126" fill="#94a3b8" font-size="10">3rKCAoGT3f...AQvQQ3</text>
+        <animateTransform attributeName="transform" type="translate" values="432,170;432,162;432,170" dur="4.5s" begin="1.2s" repeatCount="indefinite" />
+      </g>
+      <g transform="translate(628,170)">
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="142" fill="rgba(9,15,28,0.74)" stroke="rgba(255,255,255,0.14)" />
+        <rect x="0" y="0" rx="18" ry="18" width="180" height="6" fill="#f59e0b" />
+        <text x="16" y="34" fill="#f8fafc" font-size="20" font-weight="700">🌀 PsiCore</text>
+        <text x="16" y="58" fill="#93c5fd" font-size="13">Alpha Hunter</text>
+        <text x="16" y="82" fill="#cbd5e1" font-size="12">Uncommon · Gen 5121</text>
+        <text x="16" y="106" fill="#f59e0b" font-size="12">pending</text>
+        <text x="16" y="126" fill="#94a3b8" font-size="10">4MNnYHHHFL...RicnE1</text>
+        <animateTransform attributeName="transform" type="translate" values="628,170;628,162;628,170" dur="4.5s" begin="1.7999999999999998s" repeatCount="indefinite" />
+      </g>
+  </g>
+  <clipPath id="tickerClip"><rect x="40" y="326" width="1200" height="20" rx="8"/></clipPath>
+  <g clip-path="url(#tickerClip)">
+    <text x="1240" y="341" fill="#e2e8f0" font-size="14">
+      EchoCore ✓  •  HexCrypt ✓  •  ZealBit ✓  •  PsiCore …  •  EchoCore ✓  •  HexCrypt ✓  •  ZealBit ✓  •  PsiCore …
+      <animate attributeName="x" values="1240;-1640" dur="24s" repeatCount="indefinite"/>
+    </text>
+  </g>
+</svg>

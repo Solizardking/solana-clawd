@@ -146,7 +146,7 @@ function buildMarkdown(agents) {
   <img src="./assets/minted-scoreboard.svg" alt="Live minted CLAWD agent scoreboard" width="100%" />
 </div>
 
-**Source:** [`agents/minted`](/agents/minted) · auto-generated from local mint artifacts
+**Source:** [agents/minted](/agents/minted) · auto-generated from local mint artifacts
 
 | Agent | Role | Rarity / Gen | Proof | Asset |
 |---|---|---:|---|---|
