@@ -1,22 +1,41 @@
 {
-  "name": "@x402agent/lobster-library",
+  "name": "@openclawd/lobster-library",
   "version": "2.0.0",
-  "description": "🦞 Solana Clawd agent fleet for trading, research, x402 payments, OpenClawd orchestration, and machine-native finance on Solana.",
-  "homepage": "https://github.com/x402agent/LobsterLibrary",
+  "description": "🦞 Solana Clawd agent fleet for trading, research, x402 payments, OpenClawd orchestration, and machine-native finance on Solana. Hosted at https://x402.wtf/library",
+  "homepage": "https://x402.wtf/library",
   "repository": {
     "type": "git",
-    "url": "https://github.com/x402agent/LobsterLibrary.git"
+    "url": "https://github.com/Solizardking/solana-clawd.git",
+    "directory": "library"
+  },
+  "bugs": {
+    "url": "https://github.com/Solizardking/solana-clawd/issues"
   },
   "license": "MIT",
   "author": "x402agent",
   "type": "module",
   "main": "public/index.json",
+  "exports": {
+    ".": "./public/index.json",
+    "./index.json": "./public/index.json",
+    "./meta.json": "./public/meta.json",
+    "./schema": "./schema/speraxAgentSchema_v1.json",
+    "./package.json": "./package.json"
+  },
   "files": [
-    "public"
+    "public",
+    "schema",
+    "src",
+    "scripts",
+    "AGENTS.md",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "LICENSE"
   ],
   "scripts": {
     "awesome": "bun scripts/commands/build.ts && bun scripts/commands/update-awesome.ts",
-    "build": "bun scripts/commands/build.ts",
+    "build": "node ../../scripts/sync-library.mjs",
     "format": "bun scripts/commands/format.ts",
     "generate": "node scripts/generate-lobster-agents.mjs",
     "i18n:clean": "bun scripts/commands/validate-language.ts --delete",
@@ -28,6 +47,7 @@
     "prettier": "prettier -c --write \"**/*.{json,ts,md}\"",
     "release": "semantic-release",
     "submit": "bun scripts/commands/auto-submit.ts",
+    "sync": "node ../../scripts/sync-library.mjs",
     "test": "bun scripts/commands/test.ts",
     "test:locale": "bun scripts/commands/test-locale.ts",
     "type-check": "tsc --noEmit"
@@ -78,6 +98,10 @@
     "x402",
     "openclawd",
     "clawd",
-    "solana-pay"
+    "solana-pay",
+    "x402.wtf",
+    "agent-fleet",
+    "nano-agent",
+    "agent-catalog"
   ]
 }

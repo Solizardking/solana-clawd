@@ -1,9 +1,39 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
+import bs58 from "bs58";
+import { readFileSync, existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { AgentIndex } from "@openclawdsolana/agent-registry/indexer";
-import { fetchAgent } from "@openclawdsolana/agent-registry/registry";
+import { fetchAgent, mintAgent } from "@openclawdsolana/agent-registry/registry";
 import type { AgentNetwork, SearchOptions } from "@openclawdsolana/agent-registry";
+
+function loadSecretKey(): Uint8Array {
+  const keyEnv = process.env.SOLANA_PRIVATE_KEY ?? process.env.X402_SVM_PRIVATE_KEY;
+  if (keyEnv) return bs58.decode(keyEnv);
+
+  const keyFile = join(homedir(), ".config", "solana", "id.json");
+  if (existsSync(keyFile)) {
+    const arr = JSON.parse(readFileSync(keyFile, "utf8")) as number[];
+    return Uint8Array.from(arr);
+  }
+
+  throw new Error(
+    "No keypair found. Set SOLANA_PRIVATE_KEY or create ~/.config/solana/id.json",
+  );
+}
+
+function buildInlineMetadataUri(name: string, description: string): string {
+  return `data:application/json,${encodeURIComponent(
+    JSON.stringify({
+      name,
+      description,
+      image: "https://x402.wtf/lobster.png",
+      external_url: "https://github.com/Solizardking/solana-clawd",
+    }),
+  )}`;
+}
 
 export function createAgentCommand(): Command {
   const agent = new Command("agent");
@@ -187,5 +217,73 @@ export function createAgentCommand(): Command {
       }
     });
 
+  agent
+    .command("mint-devnet")
+    .description("Mint and index an AI agent on Solana devnet")
+    .requiredOption("--name <name>", "agent name")
+    .requiredOption("--description <description>", "agent description")
+    .option("--uri <uri>", "public metadata URI")
+    .option("--service <name:endpoint>", "add a service (repeatable)", collect, [])
+    .option("--model <model>", "supported model (repeatable)", collect, [])
+    .option("--trust <trust>", "trust level (repeatable)", collect, [])
+    .option("-r, --rpc <url>", "Solana RPC URL")
+    .action(async (opts) => {
+      const spinner = ora("Minting agent on solana-devnet…").start();
+      try {
+        const services = (opts.service as string[]).map((s) => {
+          const [name, endpoint] = s.split(":", 2);
+          return { name, endpoint };
+        });
+
+        const metadata = {
+          type: "agent" as const,
+          name: opts.name,
+          description: opts.description,
+          services,
+          registrations: [],
+          supportedTrust: opts.trust as string[],
+          models: opts.model as string[],
+          active: true,
+          clawdVersion: "0.1.0",
+        };
+
+        const result = await mintAgent({
+          name: opts.name,
+          uri: opts.uri || buildInlineMetadataUri(opts.name, opts.description),
+          metadata,
+          network: "solana-devnet",
+          secretKey: loadSecretKey(),
+          rpcUrl: opts.rpc,
+        });
+
+        const idx = new AgentIndex();
+        idx.upsert({
+          assetAddress: result.assetAddress,
+          owner: "self",
+          name: opts.name,
+          uri: opts.uri || buildInlineMetadataUri(opts.name, opts.description),
+          metadata,
+          network: "solana-devnet",
+          mintSignature: result.signature,
+          registeredAt: Date.now(),
+          indexedAt: Date.now(),
+          active: true,
+        });
+        idx.close();
+
+        spinner.succeed(`Minted ${chalk.bold(opts.name)} on devnet`);
+        console.log(`\n  ${chalk.bold("Asset:")}      ${chalk.cyan(result.assetAddress)}`);
+        console.log(`  ${chalk.bold("Signature:")}  ${result.signature}`);
+        console.log(`  ${chalk.bold("Network:")}    solana-devnet`);
+        console.log(`  ${chalk.bold("Indexed:")}    local registry updated\n`);
+      } catch (err) {
+        spinner.fail(`Mint failed: ${(err as Error).message}`);
+      }
+    });
+
   return agent;
+}
+
+function collect(val: string, prev: string[]): string[] {
+  return [...prev, val];
 }

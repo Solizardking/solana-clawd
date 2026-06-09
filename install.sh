@@ -461,6 +461,7 @@ fi
 
 printf "\n  ${BOLD}Links:${RESET}\n"
 printf "  Website:      ${CYAN}https://x402.wtf${RESET}\n"
+printf "  Library:      ${CYAN}https://x402.wtf/library${RESET}\n"
 printf "  Skills:       ${CYAN}https://x402.wtf/skills${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"
 printf "  Phoenix docs: ${CYAN}https://docs.phoenix.trade${RESET}\n"

@@ -125,6 +125,56 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 ---
 
+## 🦞 Lobster Library — x402.wtf/library
+
+> The nano Solana financial trading, deep research, ML prediction market, x402 payment, and OpenClawd fleet library. **82+ specialized agents** for trading, DeFi, ML, payments, and orchestration. Served as a static catalog at **[https://x402.wtf/library](https://x402.wtf/library)** — backed by a React UI, a JSON index, and an OpenAPI schema.
+
+```text
+┌────────────────────────┬───────────────────────────────────────────┐
+│  82+ agents            │  payments · trading · defi · ml-prediction │
+│  13 categories         │  risk · deep-research · technical-analysis │
+│  291 tags              │  infrastructure · strategies · agentic     │
+│  JSON catalog          │  https://x402.wtf/library/index.json      │
+│  Schema (v1)           │  https://x402.wtf/library/schema/...v1    │
+│  npm package           │  @openclawd/lobster-library               │
+│  Workspace path        │  library/                                  │
+└────────────────────────┴───────────────────────────────────────────┘
+```
+
+### Endpoints
+
+| Method | URL | What it returns |
+|---|---|---|
+| GET | `https://x402.wtf/library/` | Interactive React UI for the catalog |
+| GET | `https://x402.wtf/library/index.json` | Full JSON catalog of all agents |
+| GET | `https://x402.wtf/library/{agent-id}.json` | A single agent definition |
+| GET | `https://x402.wtf/library/schema/speraxAgentSchema_v1.json` | OpenAPI-style JSON schema |
+| GET | `https://x402.wtf/library/meta.json` | Counts, generated-at, version |
+| GET | `https://x402.wtf/library/.well-known/ai-plugin.json` | AI-plugin discovery document |
+
+### Use it
+
+```bash
+# Browse the catalog
+curl https://x402.wtf/library/index.json | jq ".agents | length"
+# → 82
+
+# Pull a single agent
+curl https://x402.wtf/library/solana-clawd-payment-gateway.json
+
+# Build + serve the catalog locally
+npm run library:build         # rebuilds public/library/
+npm run library:serve         # http://localhost:4173/
+
+# Validate the catalog
+npm run library:validate      # exits non-zero on broken refs
+
+# Diagnose the integration
+npm run library:doctor
+```
+
+The library is part of the pnpm workspace (see `library/`) and is automatically mirrored to `public/library/` so it ships with the Vite web app and is served at `x402.wtf/library/*`. A GitHub Action ([`.github/workflows/library-deploy.yml`](.github/workflows/library-deploy.yml)) keeps the catalog in sync on every push to `library/`.
+
 ## ⚡ Install
 
 ```
@@ -185,11 +235,21 @@ export PATH="$(npm config get prefix)/bin:$PATH"
 **Step 3 — Configure your API key:**
 
 ```bash
-# ~/.clawd/.env is created automatically on first run.
-# Open it and add your OpenRouter key (free at openrouter.ai):
+# Fast path: bake the key + free models straight into Clawd
+clawd openrouter setup-free --api-key sk-or-v1-...
+
+# Manual path still works too:
 nano ~/.clawd/.env
 # → OPENROUTER_API_KEY=sk-or-v1-...
 ```
+
+Want the polished web/GitHub-facing experience too? Build the landing page with:
+
+```bash
+pnpm build:web
+```
+
+To publish that page on GitHub Pages, push to `newnew` or `main`. The workflow at `.github/workflows/github-pages.yml` builds `dist-web/` and deploys it automatically.
 
 **Step 4 — Verify everything works:**
 
@@ -2208,7 +2268,7 @@ Canonical hosts:  https://x402.wtf              (primary — x402 gateway + agen
 | Group | Routes | What It Does |
 |---|---|---|
 | **LLM proxies** | `/api/clawd/*`, `/api/router/v1/chat/completions`, `/api/tide/v1/chat/completions` | Multi-provider AI chat (Claude, GPT, Gemini, Grok, DeepSeek) |
-| **Solana RPC** | `/api/rpc`, `/api/helius/*`, `/api/explorer/*` | RPC proxy, DAS, webhooks, wallet monitoring |
+| **Solana RPC** | `/api/rpc`, `/api/helius/*`, `/api/explorer/*`, `/agents/solana-board` | RPC proxy, DAS, hidden-mainnet explorer, wallet monitoring, full Solana agent board |
 | **Trading** | `/api/perps/*`, `/api/phoenix/*`, `/api/imperial/*`, `/api/dflow/*`, `/api/darkswap/*` | Perpetuals, spot, prediction markets, OTC |
 | **Token data** | `/api/birdeye/*`, `/api/dexscreener/*`, `/api/solana-tracker/*`, `/api/pyth/price` | Price feeds, analytics, trending, holder data |
 | **Agent infra** | `/api/agents/*`, `/api/kernel/*`, `/api/box/*`, `/api/backrooms/*` | Agent registry, browser automation, sandbox execution |
@@ -2226,6 +2286,22 @@ Canonical hosts:  https://x402.wtf              (primary — x402 gateway + agen
 
 Full 493-route map: [`convex/x402-api-routes.json`](convex/x402-api-routes.json)
 
+### Hidden-RPC Solana Board + Explorer
+
+These routes are designed to use one server-side mainnet RPC from `HELIUS_RPC_URL` or `HELIUS_API_KEY` without exposing the key to the browser:
+
+| Route | Purpose |
+|---|---|
+| `/agents/solana-board` | HTML board for all Solana/OpenClawd agents |
+| `/api/agents/solana-board` | JSON payload for the board |
+| `/explorer` | Shortcut to the board |
+| `/explorer/address/<PUBKEY>` | HTML mainnet address explorer |
+| `/api/explorer/address/<PUBKEY>` | JSON address/account + recent signatures |
+| `/explorer/asset/<ASSET_ID>` | HTML DAS asset explorer |
+| `/api/explorer/asset/<ASSET_ID>` | JSON DAS asset payload via Helius |
+
+The client only calls the gateway. The gateway is the only place that touches the mainnet RPC.
+
 ---
 
 ## 🔗 Links
@@ -2237,6 +2313,8 @@ Full 493-route map: [`convex/x402-api-routes.json`](convex/x402-api-routes.json)
 | 🌐 Website | [x402.wtf](https://x402.wtf) |
 | 🤖 Agents | [x402.wtf/agents](https://x402.wtf/agents) |
 | 🏛 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
+| 🧭 Solana Agent Board | [x402.wtf/agents/solana-board](https://x402.wtf/agents/solana-board) |
+| 🔎 Mainnet Explorer | [x402.wtf/explorer](https://x402.wtf/explorer) |
 | 🎯 Skills | [x402.wtf/skills](https://x402.wtf/skills) |
 | 💸 x402 Protocol | [x402.wtf](https://x402.wtf) |
 | 🤖 x402 Agents | [x402.wtf/agents](https://x402.wtf/agents) |

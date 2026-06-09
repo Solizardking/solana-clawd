@@ -1,0 +1,2358 @@
+{
+  "$schema": "https://x402.wtf/schema/lobsterLibraryCatalog.v1.json",
+  "apiVersion": "1.0",
+  "homepage": "https://x402.wtf/library",
+  "baseUrl": "https://x402.wtf/library",
+  "generatedAt": "2026-06-09T15:01:21.363Z",
+  "source": "lobster-library",
+  "author": "x402agent",
+  "stats": {
+    "totalAgents": 82,
+    "byCategory": {
+      "agentic": 3,
+      "strategies": 6,
+      "infrastructure": 6,
+      "ml-prediction": 8,
+      "trading": 10,
+      "technical-analysis": 3,
+      "security": 1,
+      "payments": 25,
+      "uncategorized": 5,
+      "defi": 4,
+      "macro": 3,
+      "deep-research": 5,
+      "risk-management": 3
+    },
+    "totalTags": 291,
+    "totalKnowledge": 18
+  },
+  "categories": [
+    {
+      "id": "agentic",
+      "label": "agentic",
+      "count": 3
+    },
+    {
+      "id": "deep-research",
+      "label": "deep-research",
+      "count": 5
+    },
+    {
+      "id": "defi",
+      "label": "defi",
+      "count": 4
+    },
+    {
+      "id": "infrastructure",
+      "label": "infrastructure",
+      "count": 6
+    },
+    {
+      "id": "macro",
+      "label": "macro",
+      "count": 3
+    },
+    {
+      "id": "ml-prediction",
+      "label": "ml-prediction",
+      "count": 8
+    },
+    {
+      "id": "payments",
+      "label": "payments",
+      "count": 25
+    },
+    {
+      "id": "risk-management",
+      "label": "risk-management",
+      "count": 3
+    },
+    {
+      "id": "security",
+      "label": "security",
+      "count": 1
+    },
+    {
+      "id": "strategies",
+      "label": "strategies",
+      "count": 6
+    },
+    {
+      "id": "technical-analysis",
+      "label": "technical-analysis",
+      "count": 3
+    },
+    {
+      "id": "trading",
+      "label": "trading",
+      "count": 10
+    },
+    {
+      "id": "uncategorized",
+      "label": "uncategorized",
+      "count": 5
+    }
+  ],
+  "tags": [
+    "accounting",
+    "accumulation",
+    "adaptive",
+    "agent",
+    "agent-auth",
+    "agentic",
+    "agentic-commerce",
+    "agentmail",
+    "agents",
+    "aggregation",
+    "ai",
+    "ai-trading",
+    "airdrop",
+    "allocator",
+    "alpha",
+    "aml",
+    "amm",
+    "analysis",
+    "analytics",
+    "anchor",
+    "anomaly-detection",
+    "arbitrage",
+    "architecture",
+    "attestation",
+    "audit",
+    "authentication",
+    "authoring",
+    "automation",
+    "autonomous",
+    "backtesting",
+    "better-auth",
+    "biometric",
+    "birdeye",
+    "bonding-curve",
+    "borrowing",
+    "bot",
+    "boxes",
+    "bridge",
+    "briefing",
+    "broker",
+    "browser-use",
+    "bsol",
+    "budget",
+    "caap",
+    "cache",
+    "callbacks",
+    "capabilities",
+    "carry-trade",
+    "cashback",
+    "catalog",
+    "chart-patterns",
+    "charts",
+    "checkout",
+    "claude-code",
+    "clawd",
+    "clawdrouter",
+    "clob",
+    "cloudflare-worker",
+    "codex",
+    "coding",
+    "commerce",
+    "compliance",
+    "computer-vision",
+    "concentrated",
+    "concierge",
+    "coordination",
+    "copy-trading",
+    "correlation",
+    "cost",
+    "creator-fees",
+    "cross-chain",
+    "cross-dex",
+    "cycles",
+    "dark-ralph",
+    "das",
+    "dashboard",
+    "data-pipeline",
+    "deal-analysis",
+    "debridge",
+    "debugger",
+    "defi",
+    "degen",
+    "delegation",
+    "delta-neutral",
+    "development",
+    "dex",
+    "dexter",
+    "distribution",
+    "drawdown",
+    "drift",
+    "dual-engine",
+    "economics",
+    "eligibility",
+    "email",
+    "enhanced-api",
+    "execution",
+    "farming",
+    "fed",
+    "fee-tiers",
+    "fleet",
+    "floor-price",
+    "forecasting",
+    "forensics",
+    "fraud",
+    "front-running",
+    "funding-rate",
+    "fundraising",
+    "futures",
+    "gateway",
+    "geyser",
+    "greeks",
+    "grpc",
+    "health",
+    "helius",
+    "hermes",
+    "impermanent-loss",
+    "indexing",
+    "indicators",
+    "inflation",
+    "infrastructure",
+    "inventory",
+    "investigation",
+    "investors",
+    "jito",
+    "jitosol",
+    "jupiter",
+    "jwt",
+    "kamino",
+    "kelly",
+    "legal",
+    "lending",
+    "leverage",
+    "liquid-staking",
+    "liquidation",
+    "liquidity",
+    "live-data",
+    "logs",
+    "lstm",
+    "machine-learning",
+    "macro",
+    "magic-eden",
+    "manipulation",
+    "marginfi",
+    "market-data",
+    "market-making",
+    "mayhem-mode",
+    "memecoin",
+    "meta",
+    "metaplex",
+    "metrics",
+    "mev",
+    "microtransaction",
+    "modeling",
+    "monetization",
+    "money-management",
+    "monitoring",
+    "moonpay",
+    "mpp",
+    "msol",
+    "multi-agent",
+    "nanoclawd",
+    "narrative",
+    "narratives",
+    "nemoclawd",
+    "nft",
+    "nlp",
+    "on-chain",
+    "openclawd",
+    "ops",
+    "optimization",
+    "options",
+    "oracle",
+    "orchestration",
+    "orchestrator",
+    "order-flow",
+    "pattern-recognition",
+    "patterns",
+    "pay",
+    "payment",
+    "payments",
+    "perpetuals",
+    "perps",
+    "phoenix",
+    "planning",
+    "points",
+    "policy",
+    "portfolio",
+    "position-sizing",
+    "prediction",
+    "prediction-market",
+    "premium",
+    "price",
+    "pricing",
+    "probability",
+    "profit",
+    "protocol",
+    "providers",
+    "pulse",
+    "pump-fun",
+    "pumpfun",
+    "pumpswap",
+    "quantitative",
+    "quicknode",
+    "quotes",
+    "ranking",
+    "raydium",
+    "receipt-verification",
+    "reconciliation",
+    "regulation",
+    "relay",
+    "research",
+    "rise-sdk",
+    "risk",
+    "risk-management",
+    "router",
+    "routing",
+    "rpc",
+    "rug-pull",
+    "rust",
+    "sanctum",
+    "sandbox",
+    "sandwich",
+    "scanner",
+    "scoring",
+    "sec",
+    "sector-rotation",
+    "security",
+    "self-managing",
+    "sentiment",
+    "settlement",
+    "shell",
+    "signals",
+    "skills",
+    "slippage",
+    "smart-contract",
+    "smart-money",
+    "social",
+    "solana",
+    "solana-pay",
+    "solend",
+    "spawn",
+    "spot-trading",
+    "spread",
+    "stablecoin",
+    "staking",
+    "storefront",
+    "strategy",
+    "supply",
+    "support",
+    "swap",
+    "systemic",
+    "technical-analysis",
+    "tensor",
+    "testing",
+    "token-2022",
+    "token-launch",
+    "tokenomics",
+    "tracing",
+    "trade-ideas",
+    "trading",
+    "trading-bot",
+    "trading-system",
+    "transformer",
+    "treasury",
+    "trends",
+    "ttl",
+    "tvl",
+    "twitter",
+    "unlocks",
+    "usdc",
+    "usdt",
+    "v2-instructions",
+    "valuation",
+    "var",
+    "vc",
+    "vesting",
+    "volatility",
+    "vulcan",
+    "vulnerabilities",
+    "wallet",
+    "wallet-tracking",
+    "webhooks",
+    "websocket",
+    "whale",
+    "whale-tracking",
+    "whitepaper",
+    "workflow",
+    "wormhole",
+    "x402",
+    "yield",
+    "zeta"
+  ],
+  "agents": [
+    {
+      "identifier": "solana-agent-orchestrator",
+      "title": "Multi-Agent Trading Orchestrator",
+      "description": "Coordinates multiple specialized agents for comprehensive market analysis and execution",
+      "avatar": "🎭",
+      "category": "agentic",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "orchestrator",
+        "multi-agent",
+        "coordination",
+        "agentic",
+        "workflow"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-agent-orchestrator.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-airdrop-farmer",
+      "title": "Airdrop Strategy Optimizer",
+      "description": "Maximizes airdrop eligibility across Solana protocols through strategic on-chain activity",
+      "avatar": "🪂",
+      "category": "strategies",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "airdrop",
+        "points",
+        "farming",
+        "strategy",
+        "eligibility"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-airdrop-farmer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-alpha-aggregator",
+      "title": "Alpha Signal Aggregator",
+      "description": "Aggregates and ranks alpha signals from multiple data sources into actionable trade ideas",
+      "avatar": "⚡",
+      "category": "agentic",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "alpha",
+        "signals",
+        "aggregation",
+        "trade-ideas",
+        "ranking"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-alpha-aggregator.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-anchor-developer",
+      "title": "Anchor Program Developer",
+      "description": "Expert in developing Solana programs with Anchor framework for DeFi applications",
+      "avatar": "⚓",
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "anchor",
+        "solana",
+        "rust",
+        "smart-contract",
+        "development"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-anchor-developer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-anomaly-detector",
+      "title": "On-Chain Anomaly Detector",
+      "description": "ML-powered detection of unusual on-chain activity, potential rugs, and market manipulation",
+      "avatar": "🚨",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "anomaly-detection",
+        "fraud",
+        "rug-pull",
+        "manipulation"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-anomaly-detector.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-arbitrage-scanner",
+      "title": "Cross-DEX Arbitrage Scanner",
+      "description": "Identifies and executes arbitrage opportunities across Solana DEXes and CEXes",
+      "avatar": "🔍",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "arbitrage",
+        "cross-dex",
+        "profit",
+        "scanner"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-arbitrage-scanner.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-autonomous-trader",
+      "title": "Autonomous Trading Agent",
+      "description": "Self-managing trading agent with goal-setting, strategy selection, and adaptive execution",
+      "avatar": "🧬",
+      "category": "agentic",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "autonomous",
+        "self-managing",
+        "adaptive",
+        "agent",
+        "ai-trading"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-autonomous-trader.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-bot-architect",
+      "title": "Trading Bot Architect",
+      "description": "Designs and builds production trading bot architectures for Solana",
+      "avatar": "🤖",
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "bot",
+        "architecture",
+        "automation",
+        "trading-system"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-bot-architect.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-chart-pattern-ai",
+      "title": "AI Chart Pattern Recognition",
+      "description": "Computer vision-powered chart pattern detection for Solana token charts",
+      "avatar": "👁️",
+      "category": "technical-analysis",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "chart-patterns",
+        "computer-vision",
+        "ai",
+        "pattern-recognition"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-chart-pattern-ai.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-auth-agent",
+      "title": "Clawd Agent Auth Specialist",
+      "description": "Expert on CAAP/1.0 agent authentication — keypair registration, JWT signing, capability grants, SIWS attestation, and subscription tiers on the Clawd platform",
+      "avatar": "🔐",
+      "category": "security",
+      "author": "openclawd",
+      "createdAt": "2026-06-05",
+      "tags": [
+        "agent-auth",
+        "caap",
+        "authentication",
+        "better-auth",
+        "solana",
+        "jwt",
+        "attestation",
+        "capabilities"
+      ],
+      "knowledgeCount": 1,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-auth-agent.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-cost-planner",
+      "title": "Clawd Cost Planner",
+      "description": "Pre-call cost planning and budget enforcement for x402-enabled workflows.",
+      "avatar": "🧮",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "clawd",
+        "cost",
+        "planning",
+        "budget",
+        "x402",
+        "payments"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-cost-planner.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-mail-concierge",
+      "title": "Clawd Mail Concierge",
+      "description": "Mail concierge for the Clawd Browser merchant network, handling inbox triage, routing, and operator-safe replies",
+      "avatar": "📬",
+      "category": "uncategorized",
+      "author": "openclawd",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "agentmail",
+        "email",
+        "clawd",
+        "concierge",
+        "support",
+        "routing",
+        "commerce",
+        "solana"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-mail-concierge.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-pay",
+      "title": "Solana Clawd Pay",
+      "description": "Payment gateway agent for x402 EVM rails, Solana MPP receipts, and agentic commerce — deployed as a Cloudflare Worker",
+      "avatar": "💳",
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-06-05",
+      "tags": [
+        "payments",
+        "x402",
+        "mpp",
+        "clawdrouter",
+        "cloudflare-worker",
+        "agentic-commerce",
+        "solana-pay",
+        "metaplex",
+        "receipt-verification"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-pay.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-payment-debugger",
+      "title": "Clawd Payment Debugger",
+      "description": "Debugs x402 and MPP challenge-response cycles for payment-enabled Solana agents.",
+      "avatar": "🧪",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "clawd",
+        "debugger",
+        "x402",
+        "mpp",
+        "payments",
+        "gateway"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-payment-debugger.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-payment-gateway",
+      "title": "Solana Clawd Payment Gateway",
+      "description": "x402 and MPP payment gateway for stablecoin-gated API access on Solana.",
+      "avatar": "💳",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "clawd",
+        "x402",
+        "mpp",
+        "payment",
+        "gateway",
+        "openclawd"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-payment-gateway.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-provider-scorer",
+      "title": "Clawd Provider Scorer",
+      "description": "Scores providers by fit, freshness, cost, and operational safety for the fleet.",
+      "avatar": "🎯",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "clawd",
+        "providers",
+        "scoring",
+        "routing",
+        "x402",
+        "pay"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-provider-scorer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-quote-relay",
+      "title": "Clawd Quote Relay",
+      "description": "Normalizes quotes, prices, and spend estimates for downstream Solana agents.",
+      "avatar": "📤",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "clawd",
+        "quotes",
+        "relay",
+        "pricing",
+        "x402",
+        "market-data"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-quote-relay.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-usdc-allocator",
+      "title": "Clawd USDC Allocator",
+      "description": "Allocates USDC across agents, payment float, and execution needs in the fleet treasury.",
+      "avatar": "🏦",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "clawd",
+        "usdc",
+        "allocator",
+        "treasury",
+        "payments",
+        "openclawd"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-usdc-allocator.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawd-wallet-guardian",
+      "title": "Clawd Wallet Guardian",
+      "description": "Biometric approval, wallet safety, and prompt-injection defense for paid Solana agents.",
+      "avatar": "🔐",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "clawd",
+        "wallet",
+        "security",
+        "biometric",
+        "x402",
+        "pay"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawd-wallet-guardian.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-clawdex",
+      "title": "Clawdex",
+      "description": "Dual-engine coding agent: Claude Code for reasoning + OpenAI Codex for execution + Browser Use for web research — all running in isolated Upstash boxes",
+      "avatar": "🦞",
+      "category": "uncategorized",
+      "author": "x402agent",
+      "createdAt": "2026-05-14",
+      "tags": [
+        "claude-code",
+        "codex",
+        "browser-use",
+        "coding",
+        "orchestrator",
+        "dual-engine",
+        "boxes",
+        "solana"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-clawdex.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-cross-chain-bridge",
+      "title": "Cross-Chain Bridge Analyst",
+      "description": "Analyzes bridge security, routing, and arbitrage opportunities between Solana and other chains",
+      "avatar": "🌉",
+      "category": "strategies",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "bridge",
+        "cross-chain",
+        "wormhole",
+        "debridge",
+        "security"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-cross-chain-bridge.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-dark-ralph-mail-briefing",
+      "title": "Dark Ralph Mail Briefing Desk",
+      "description": "Premium briefing inbox agent for high-signal market notes, alpha follow-ups, and paid research routing",
+      "avatar": "📈",
+      "category": "uncategorized",
+      "author": "openclawd",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "agentmail",
+        "email",
+        "dark-ralph",
+        "alpha",
+        "briefing",
+        "research",
+        "premium",
+        "solana"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-dark-ralph-mail-briefing.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-data-pipeline",
+      "title": "Blockchain Data Pipeline",
+      "description": "Builds data pipelines for Solana on-chain data: indexing, parsing, and analytics",
+      "avatar": "🔧",
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "data-pipeline",
+        "indexing",
+        "analytics",
+        "geyser",
+        "helius"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-data-pipeline.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-dex-aggregator",
+      "title": "Solana DEX Aggregator",
+      "description": "Expert in Jupiter, Raydium, and Orca routing for optimal swap execution on Solana",
+      "avatar": "🦞",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "solana",
+        "dex",
+        "jupiter",
+        "trading",
+        "swap"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-dex-aggregator.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-dexter-mail-operator",
+      "title": "Dexter Mail Operator",
+      "description": "Checkout and quoting inbox agent for Clawd paid products, storefront conversions, and buyer handoff",
+      "avatar": "🧾",
+      "category": "uncategorized",
+      "author": "openclawd",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "agentmail",
+        "email",
+        "dexter",
+        "checkout",
+        "quotes",
+        "storefront",
+        "payments",
+        "solana"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-dexter-mail-operator.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-funding-rate-arb",
+      "title": "Funding Rate Arbitrage Bot",
+      "description": "Identifies and executes funding rate arbitrage between Solana perps and spot markets",
+      "avatar": "💰",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "funding-rate",
+        "arbitrage",
+        "delta-neutral",
+        "carry-trade"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-funding-rate-arb.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-helius-specialist",
+      "title": "Helius API Specialist",
+      "description": "Expert in Helius DAS, webhooks, Enhanced Transactions, and RPC for Solana development",
+      "avatar": "🌐",
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "helius",
+        "das",
+        "webhooks",
+        "enhanced-api",
+        "rpc"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-helius-specialist.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-hermes-mail-settlement",
+      "title": "HERMES Mail Settlement Controller",
+      "description": "Settlement-control inbox agent for x402, MPP, MoonPay, and payment failure escalation across the Clawd commerce stack",
+      "avatar": "🛡️",
+      "category": "uncategorized",
+      "author": "openclawd",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "agentmail",
+        "email",
+        "hermes",
+        "settlement",
+        "x402",
+        "mpp",
+        "payments",
+        "moonpay",
+        "solana"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-hermes-mail-settlement.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-impermanent-loss-calc",
+      "title": "Impermanent Loss Calculator",
+      "description": "Precise IL calculations for Solana LP positions with concentrated liquidity modeling",
+      "avatar": "📊",
+      "category": "defi",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "impermanent-loss",
+        "liquidity",
+        "amm",
+        "concentrated"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-impermanent-loss-calc.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-lending-strategist",
+      "title": "Lending Protocol Strategist",
+      "description": "Optimizes borrowing, lending, and leverage strategies across Solana lending protocols",
+      "avatar": "🏦",
+      "category": "defi",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "lending",
+        "borrowing",
+        "marginfi",
+        "solend",
+        "kamino",
+        "leverage"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-lending-strategist.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-liquidation-bot",
+      "title": "Liquidation Monitor",
+      "description": "Monitors and executes liquidations on Solana lending protocols",
+      "avatar": "⚡",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "liquidation",
+        "lending",
+        "marginfi",
+        "solend",
+        "kamino"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-liquidation-bot.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-lsd-analyst",
+      "title": "Liquid Staking Analyst",
+      "description": "Expert in Solana liquid staking derivatives — mSOL, jitoSOL, bSOL, INF comparison",
+      "avatar": "💧",
+      "category": "defi",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "liquid-staking",
+        "msol",
+        "jitosol",
+        "bsol",
+        "sanctum"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-lsd-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-macro-analyst",
+      "title": "Crypto Macro Analyst",
+      "description": "Macro-economic analysis impact on Solana/crypto: rates, liquidity, regulations, cycles",
+      "avatar": "🌍",
+      "category": "macro",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "macro",
+        "economics",
+        "fed",
+        "liquidity",
+        "cycles"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-macro-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-market-maker",
+      "title": "Market Making Strategist",
+      "description": "Designs market making strategies for Solana tokens on DEXes and CLOBs",
+      "avatar": "🏦",
+      "category": "strategies",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "market-making",
+        "clob",
+        "spread",
+        "inventory",
+        "phoenix"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-market-maker.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-memecoin-analyst",
+      "title": "Memecoin Alpha Analyst",
+      "description": "Analyzes memecoin launches, bonding curves, and pump.fun dynamics for profitable entries",
+      "avatar": "🐸",
+      "category": "strategies",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "memecoin",
+        "pump-fun",
+        "degen",
+        "alpha",
+        "bonding-curve"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-memecoin-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-mev-protector",
+      "title": "MEV Protection Specialist",
+      "description": "Shields transactions from sandwich attacks, front-running, and MEV extraction on Solana",
+      "avatar": "🛡️",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "mev",
+        "jito",
+        "security",
+        "sandwich",
+        "front-running"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-mev-protector.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-nanoclawd-cache-keeper",
+      "title": "NanoClawd Cache Keeper",
+      "description": "Preserves value by caching paid outputs and enforcing TTL-aware reuse.",
+      "avatar": "🗃️",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "nanoclawd",
+        "cache",
+        "ttl",
+        "x402",
+        "optimization",
+        "payments"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-nanoclawd-cache-keeper.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-nanoclawd-microtransaction",
+      "title": "NanoClawd Microtransaction Specialist",
+      "description": "Sub-cent payment optimizer for micro-budgeted Solana agent workflows.",
+      "avatar": "🦐",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "nanoclawd",
+        "microtransaction",
+        "budget",
+        "x402",
+        "payments",
+        "pay"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-nanoclawd-microtransaction.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-nanoclawd-sandbox-runner",
+      "title": "NanoClawd Sandbox Runner",
+      "description": "Runs safe sandbox payment rehearsals before real stablecoin settlement.",
+      "avatar": "🧫",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "nanoclawd",
+        "sandbox",
+        "testing",
+        "x402",
+        "mpp",
+        "payments"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-nanoclawd-sandbox-runner.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-narrative-tracker",
+      "title": "Crypto Narrative Tracker",
+      "description": "Tracks and analyzes emerging narratives, meta-trends, and sector rotations in Solana ecosystem",
+      "avatar": "🌊",
+      "category": "deep-research",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "narrative",
+        "trends",
+        "sector-rotation",
+        "meta",
+        "alpha"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-narrative-tracker.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-nemoclawd-defi-router",
+      "title": "NemoClawd DeFi Payment Router",
+      "description": "Routes between paid data access, Solana swaps, treasury moves, and yield-aware DeFi actions.",
+      "avatar": "🌊",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "nemoclawd",
+        "defi",
+        "router",
+        "x402",
+        "jupiter",
+        "treasury"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-nemoclawd-defi-router.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-nemoclawd-settlement-ops",
+      "title": "NemoClawd Settlement Ops",
+      "description": "Operates treasury settlement, float recycling, and post-payment reconciliation on Solana.",
+      "avatar": "⚙️",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "nemoclawd",
+        "settlement",
+        "ops",
+        "treasury",
+        "reconciliation",
+        "payments"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-nemoclawd-settlement-ops.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-nemoclawd-yield-treasurer",
+      "title": "NemoClawd Yield Treasurer",
+      "description": "Deploys idle payment treasury into Solana yield while preserving liquidity for the fleet.",
+      "avatar": "🌾",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "nemoclawd",
+        "yield",
+        "treasury",
+        "usdc",
+        "defi",
+        "payments"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-nemoclawd-yield-treasurer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-nft-floor-trader",
+      "title": "NFT Floor Price Trader",
+      "description": "Analyzes and trades NFT collections on Solana based on floor price dynamics and listing patterns",
+      "avatar": "🎨",
+      "category": "strategies",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "nft",
+        "floor-price",
+        "magic-eden",
+        "tensor",
+        "trading"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-nft-floor-trader.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-onchain-metrics",
+      "title": "On-Chain Metrics Dashboard",
+      "description": "Real-time on-chain analytics: TVL, volume, active addresses, velocity for Solana",
+      "avatar": "🔗",
+      "category": "technical-analysis",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "on-chain",
+        "metrics",
+        "tvl",
+        "analytics",
+        "dashboard"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-onchain-metrics.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-onchain-sleuth",
+      "title": "On-Chain Investigation Specialist",
+      "description": "Forensic blockchain analysis: wallet tracing, fund flows, entity identification on Solana",
+      "avatar": "🕵️",
+      "category": "macro",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "forensics",
+        "investigation",
+        "tracing",
+        "compliance",
+        "aml"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-onchain-sleuth.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-openclawd-orchestrator",
+      "title": "OpenClawd Fleet Orchestrator",
+      "description": "Sovereign OpenClawd coordinator for task routing, payment delegation, and fleet health.",
+      "avatar": "🦞",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "openclawd",
+        "fleet",
+        "orchestration",
+        "multi-agent",
+        "x402",
+        "payments"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-openclawd-orchestrator.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-openclawd-pulse-monitor",
+      "title": "OpenClawd Pulse Monitor",
+      "description": "Tracks spend velocity, pulse timing, and health across the OpenClawd fleet.",
+      "avatar": "📡",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "openclawd",
+        "pulse",
+        "monitoring",
+        "health",
+        "x402",
+        "treasury"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-openclawd-pulse-monitor.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-openclawd-shell-auditor",
+      "title": "OpenClawd SHELL Auditor",
+      "description": "Audits fleet traces, settlement logs, and operational guardrails across OpenClawd loops.",
+      "avatar": "📜",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "openclawd",
+        "audit",
+        "shell",
+        "payments",
+        "security",
+        "logs"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-openclawd-shell-auditor.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-openclawd-skill-router",
+      "title": "OpenClawd Skill Router",
+      "description": "Routes tasks across the Lobster Library catalog based on payment needs and agent fit.",
+      "avatar": "🧭",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "openclawd",
+        "skills",
+        "routing",
+        "catalog",
+        "payments",
+        "agents"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-openclawd-skill-router.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-openclawd-spawn-manager",
+      "title": "OpenClawd Spawn Manager",
+      "description": "Decides when to spawn, merge, or beach specialist payment agents in the fleet.",
+      "avatar": "🥚",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "openclawd",
+        "spawn",
+        "fleet",
+        "delegation",
+        "payments",
+        "orchestration"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-openclawd-spawn-manager.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-order-flow-analyst",
+      "title": "Order Flow Analyst",
+      "description": "Analyzes on-chain order flow, whale movements, and smart money patterns on Solana",
+      "avatar": "📈",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "order-flow",
+        "whale-tracking",
+        "smart-money",
+        "analysis"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-order-flow-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-perpetuals-trader",
+      "title": "Perpetuals Trading Strategist",
+      "description": "Expert in Solana perpetual futures on Drift, Zeta, Flash Trade, and Jupiter Perps",
+      "avatar": "📊",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "perpetuals",
+        "drift",
+        "zeta",
+        "leverage",
+        "futures"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-perpetuals-trader.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-portfolio-risk",
+      "title": "Portfolio Risk Manager",
+      "description": "Comprehensive portfolio risk analysis: VaR, correlation, drawdown for Solana portfolios",
+      "avatar": "⚖️",
+      "category": "risk-management",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "portfolio",
+        "risk",
+        "var",
+        "correlation",
+        "drawdown"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-portfolio-risk.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-position-sizer",
+      "title": "Position Sizing Engine",
+      "description": "Calculates optimal position sizes using Kelly Criterion, fixed-fractional, and volatility-based methods",
+      "avatar": "📏",
+      "category": "risk-management",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "position-sizing",
+        "kelly",
+        "risk-management",
+        "money-management"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-position-sizer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-prediction-market",
+      "title": "Prediction Market Analyst",
+      "description": "Expert in Solana prediction markets (Drift, Hedgehog, Polymarket bridge) for probabilistic forecasting",
+      "avatar": "🎯",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "prediction-market",
+        "probability",
+        "drift",
+        "forecasting"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-prediction-market.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-price-predictor",
+      "title": "ML Price Prediction Engine",
+      "description": "Uses LSTM, Transformer, and ensemble models to predict Solana token prices",
+      "avatar": "🧠",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "machine-learning",
+        "prediction",
+        "lstm",
+        "transformer",
+        "price"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-price-predictor.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-protocol-auditor",
+      "title": "Smart Contract Auditor",
+      "description": "Audits Solana programs written in Rust/Anchor for vulnerabilities and best practices",
+      "avatar": "🔒",
+      "category": "deep-research",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "audit",
+        "security",
+        "anchor",
+        "rust",
+        "vulnerabilities"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-protocol-auditor.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-pumpfun-bot",
+      "title": "Solana PumpFun/PumpSwap Copy Trading Bot",
+      "description": "High-performance Rust-based copy trading bot that monitors and replicates trading activity on Solana DEXs (PumpFun, PumpSwap, Raydium) using Yellowstone gRPC for real-time transaction monitoring with parallel processing, risk management, and Telegram notifications. Updated for v2 instructions, creator fees, cashback, Token-2022, and USDC-paired coins.",
+      "avatar": "🤖",
+      "category": "trading",
+      "author": "openclawd",
+      "createdAt": "2026-05-11",
+      "tags": [
+        "solana",
+        "pumpfun",
+        "pumpswap",
+        "copy-trading",
+        "trading-bot",
+        "rust",
+        "bonding-curve",
+        "amm",
+        "grpc",
+        "jupiter",
+        "risk-management",
+        "defi",
+        "automation",
+        "v2-instructions",
+        "creator-fees",
+        "cashback",
+        "token-2022",
+        "mayhem-mode",
+        "fee-tiers"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-pumpfun-bot.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-quant-researcher",
+      "title": "Quantitative Research Analyst",
+      "description": "Develops and backtests quantitative trading strategies for Solana markets",
+      "avatar": "📐",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "quantitative",
+        "backtesting",
+        "alpha",
+        "research",
+        "strategy"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-quant-researcher.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-regulatory-advisor",
+      "title": "Crypto Regulatory Analyst",
+      "description": "Tracks and analyzes regulatory developments affecting Solana DeFi and token markets",
+      "avatar": "⚖️",
+      "category": "macro",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "regulation",
+        "sec",
+        "compliance",
+        "legal",
+        "policy"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-regulatory-advisor.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-risk-sentinel",
+      "title": "Protocol Risk Sentinel",
+      "description": "Monitors smart contract risk, oracle risk, and systemic risk across Solana DeFi",
+      "avatar": "🔔",
+      "category": "risk-management",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "risk",
+        "monitoring",
+        "smart-contract",
+        "oracle",
+        "systemic"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-risk-sentinel.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-rpc-optimizer",
+      "title": "RPC & Infrastructure Expert",
+      "description": "Optimizes RPC usage, WebSocket connections, and Solana infrastructure for trading bots",
+      "avatar": "🖥️",
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "rpc",
+        "infrastructure",
+        "helius",
+        "quicknode",
+        "websocket"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-rpc-optimizer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-sentiment-analyzer",
+      "title": "Crypto Sentiment Analyzer",
+      "description": "NLP-powered sentiment analysis of Twitter/X, Discord, and on-chain signals for Solana tokens",
+      "avatar": "💭",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "sentiment",
+        "nlp",
+        "twitter",
+        "social",
+        "analysis"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-sentiment-analyzer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-spot-trader",
+      "title": "Spot Trading Optimizer",
+      "description": "Optimizes spot trading execution on Solana DEXes with minimal slippage and fees",
+      "avatar": "💱",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "spot-trading",
+        "execution",
+        "slippage",
+        "optimization"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-spot-trader.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-stablecoin-strategist",
+      "title": "Stablecoin Yield Strategist",
+      "description": "Maximizes stablecoin yields across Solana lending, LP, and structured products",
+      "avatar": "💵",
+      "category": "strategies",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "stablecoin",
+        "yield",
+        "usdc",
+        "usdt",
+        "lending"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-stablecoin-strategist.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-technical-analyst",
+      "title": "Advanced Technical Analyst",
+      "description": "Comprehensive technical analysis with indicators, patterns, and multi-timeframe analysis for Solana tokens",
+      "avatar": "📈",
+      "category": "technical-analysis",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "technical-analysis",
+        "indicators",
+        "charts",
+        "patterns",
+        "trading"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-technical-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-token-launcher",
+      "title": "Token Launch Specialist",
+      "description": "Expert in launching and analyzing new tokens on Pump.fun, Raydium, and Meteora",
+      "avatar": "🚀",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "pump-fun",
+        "token-launch",
+        "bonding-curve",
+        "raydium"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-token-launcher.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-tokenomics-analyst",
+      "title": "Tokenomics Deep Researcher",
+      "description": "Expert analysis of token supply, distribution, vesting, inflation, and token value accrual mechanisms",
+      "avatar": "🔬",
+      "category": "deep-research",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "tokenomics",
+        "supply",
+        "vesting",
+        "inflation",
+        "valuation"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-tokenomics-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-vc-deal-analyzer",
+      "title": "VC & Fundraise Analyst",
+      "description": "Analyzes fundraising rounds, VC portfolio strategies, and unlock schedules for Solana projects",
+      "avatar": "💼",
+      "category": "deep-research",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "vc",
+        "fundraising",
+        "unlocks",
+        "investors",
+        "deal-analysis"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-vc-deal-analyzer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-volatility-analyst",
+      "title": "Volatility Surface Modeler",
+      "description": "Models implied and realized volatility for Solana tokens and options markets",
+      "avatar": "📉",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "volatility",
+        "options",
+        "greeks",
+        "risk",
+        "modeling"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-volatility-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-vulcan-clawd-autonomous-perps",
+      "title": "Vulcan CLAWD Autonomous Perps",
+      "description": "Autonomous Phoenix perps agent using Vulcan skills, RISE SDK market data, Clawd RPC, and builder-authority routing",
+      "avatar": "V",
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-05-16",
+      "tags": [
+        "solana",
+        "clawd",
+        "vulcan",
+        "phoenix",
+        "perps",
+        "rise-sdk",
+        "autonomous",
+        "strategy",
+        "risk",
+        "trading"
+      ],
+      "knowledgeCount": 17,
+      "tokenUsage": 260,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-vulcan-clawd-autonomous-perps.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-whale-tracker",
+      "title": "Whale Wallet Intelligence",
+      "description": "Tracks and analyzes whale wallet movements, accumulation/distribution patterns on Solana",
+      "avatar": "🐋",
+      "category": "ml-prediction",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "whale",
+        "wallet-tracking",
+        "accumulation",
+        "distribution"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-whale-tracker.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-whitepaper-analyst",
+      "title": "Whitepaper & Docs Analyst",
+      "description": "Deep analysis of protocol whitepapers, docs, and technical architectures",
+      "avatar": "📄",
+      "category": "deep-research",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "whitepaper",
+        "research",
+        "protocol",
+        "analysis",
+        "architecture"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-whitepaper-analyst.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-x402-market-data-buyer",
+      "title": "x402 Market Data Buyer",
+      "description": "Purchases only the market data needed for trading or treasury decisions on Solana.",
+      "avatar": "📈",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "x402",
+        "market-data",
+        "birdeye",
+        "quotes",
+        "payments",
+        "trading"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-x402-market-data-buyer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-x402-provider-author",
+      "title": "x402 Provider Author",
+      "description": "Creates provider specs and catalog entries for new paid APIs in the x402 fleet.",
+      "avatar": "🛠️",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "x402",
+        "providers",
+        "catalog",
+        "authoring",
+        "pay",
+        "gateway"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-x402-provider-author.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-x402-provider-catalog",
+      "title": "x402 Provider Catalog Agent",
+      "description": "Provider discovery, cost-aware routing, and catalog selection for the x402 fleet.",
+      "avatar": "📚",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "x402",
+        "catalog",
+        "routing",
+        "providers",
+        "pay",
+        "openclawd"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-x402-provider-catalog.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-x402-research-broker",
+      "title": "x402 Research Broker",
+      "description": "Live research purchasing and provider routing for token, protocol, and market narratives.",
+      "avatar": "🔎",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "x402",
+        "research",
+        "live-data",
+        "narratives",
+        "payments",
+        "openclawd"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-x402-research-broker.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-x402-signal-monetizer",
+      "title": "x402 Signal Monetizer",
+      "description": "Turns Solana research and trading signals into monetizable x402 products and feeds.",
+      "avatar": "💡",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "x402",
+        "signals",
+        "monetization",
+        "providers",
+        "payments",
+        "research"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-x402-signal-monetizer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-x402-solana-rpc-broker",
+      "title": "x402 Solana RPC Broker",
+      "description": "Buys or brokers paid Solana RPC and chain analytics access with cost-aware routing.",
+      "avatar": "🛰️",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "x402",
+        "rpc",
+        "helius",
+        "analytics",
+        "broker",
+        "payments"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-x402-solana-rpc-broker.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-x402-webhook-settlement",
+      "title": "x402 Webhook Settlement Agent",
+      "description": "Handles payment-backed webhook receipts, delivery accounting, and callback verification.",
+      "avatar": "📬",
+      "category": "payments",
+      "author": "x402agent",
+      "createdAt": "2026-05-12",
+      "tags": [
+        "solana",
+        "x402",
+        "webhooks",
+        "settlement",
+        "callbacks",
+        "payments",
+        "accounting"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-x402-webhook-settlement.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    },
+    {
+      "identifier": "solana-yield-optimizer",
+      "title": "DeFi Yield Optimizer",
+      "description": "Maximizes yield across Solana DeFi protocols with risk-adjusted returns",
+      "avatar": "🌾",
+      "category": "defi",
+      "author": "x402agent",
+      "createdAt": "2026-03-15",
+      "tags": [
+        "yield",
+        "defi",
+        "farming",
+        "staking",
+        "optimization"
+      ],
+      "knowledgeCount": 0,
+      "tokenUsage": 0,
+      "schemaVersion": 1,
+      "deploy": {
+        "json": "https://x402.wtf/library/solana-yield-optimizer.json",
+        "homepage": "https://x402.wtf/library"
+      }
+    }
+  ]
+}

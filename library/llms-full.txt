@@ -3,7 +3,14 @@
 > The nano Solana financial trading, deep research, ML prediction market & agentic vision AI agent library
 
 ## Overview
-73 Solana and x402 payment agents for Solana DeFi, perpetuals, quantitative trading, and autonomous market analysis.
+80+ Solana and x402 payment agents for Solana DeFi, perpetuals, quantitative trading, and autonomous market analysis. Now natively integrated into the OpenClawd / solana-clawd monorepo and served at **https://x402.wtf/library**.
+
+## Live Endpoints
+- Landing page: <https://x402.wtf/library/>
+- JSON index:    <https://x402.wtf/library/index.json>
+- Meta:          <https://x402.wtf/library/meta.json>
+- Schema:        <https://x402.wtf/library/schema/speraxAgentSchema_v1.json>
+- Single agent:  <https://x402.wtf/library/{agent-id}.json>
 
 ## Categories
 - Trading & DEX (Jupiter, Drift, Raydium, MEV protection)
@@ -16,16 +23,26 @@
 - Strategies (memecoins, airdrops, NFTs, market making)
 - Macro (economics, regulation, forensics)
 - Agentic (multi-agent orchestration, autonomous trading)
+- Payments (x402 routing, wallet approvals, treasury float, settlement)
 
 ## npm Packages
 
+- `@openclawd/lobster-library` — the full catalog as an npm package, served from x402.wtf/library
 - `agentwallet-vault` (`npm install -g agentwallet-vault`) — AES-256-GCM encrypted keypair vault for Solana + EVM. REST API at `http://localhost:9099/api`. One-shot: `agentwallet serve`. Wallet-guardian and payment agents fetch signing keys from this vault. Deploy remotely: `agentwallet deploy e2b` or `agentwallet deploy cloudflare`.
 
 ## API
-- Index: https://x402agent.github.io/LobsterLibrary/index.json
-- Agent: https://x402agent.github.io/LobsterLibrary/{agent-id}.json
+- Index:    https://x402.wtf/library/index.json
+- Agent:    https://x402.wtf/library/{agent-id}.json
+- Schema:   https://x402.wtf/library/schema/speraxAgentSchema_v1.json
 
 ## Docs
-- [README](https://github.com/x402agent/LobsterLibrary/blob/main/README.md)
-- [API](https://github.com/x402agent/LobsterLibrary/blob/main/docs/API.md)
-- [Contributing](https://github.com/x402agent/LobsterLibrary/blob/main/CONTRIBUTING.md)
+- [README](https://x402.wtf/library)
+- [API](https://x402.wtf/library/docs/API.md)
+- [Contributing](https://x402.wtf/library/CONTRIBUTING.md)
+- [Repository](https://github.com/Solizardking/solana-clawd/tree/main/library)
+
+## Workspace integration
+- npm package name: `@openclawd/lobster-library`
+- Listed in pnpm workspace at `library/`
+- Build & sync: `node scripts/sync-library.mjs` (or `npm run library:build`)
+- Mirrored into `public/library/` and served by the main Vite app at `x402.wtf/library/*`

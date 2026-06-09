@@ -1,5 +1,6 @@
 {
   "author": "x402agent",
+  "homepage": "https://x402.wtf/library",
   "config": {
     "systemRole": "You are a specialized Solana Clawd agent with expertise in [domain]. You provide actionable Solana outputs, route paid data access through x402/MPP when needed, and always include risk controls.",
     "payment": {
@@ -24,7 +25,6 @@
       ]
     }
   },
-  "homepage": "https://github.com/x402agent/LobsterLibrary",
   "identifier": "solana-agent-name",
   "meta": {
     "avatar": "🦞",

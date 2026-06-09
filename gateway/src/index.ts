@@ -43,6 +43,7 @@ import gaslessMintRouter from './gaslessMint.js';
 import clawdGenRouter from './clawdGen.js';
 import skillHubRouter from './skillHub.js';
 import stakingRouter from './staking.js';
+import solanaExplorerRouter from './solanaExplorer.js';
 import { handleNLMessage } from './nlTrading.js';
 import {
   mainMenu, mainMenuText, portfolioMenu, tradeMenu,
@@ -80,6 +81,7 @@ app.use('/', gaslessMintRouter);
 app.use('/', clawdGenRouter);
 app.use('/', skillHubRouter);
 app.use('/', stakingRouter);
+app.use('/', solanaExplorerRouter);
 
 // ---------------------------------------------------------------------------
 // Birdeye WebSocket

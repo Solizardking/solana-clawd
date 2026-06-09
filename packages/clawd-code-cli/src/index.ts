@@ -11,6 +11,8 @@ import { createMCPCommand } from "./commands/mcp.js";
 import { createExamplesCommand } from "./commands/examples.js";
 import { createAgentCommand } from "./commands/agent.js";
 import { createCharacterCommand } from "./commands/character.js";
+import { createOpenRouterCommand } from "./commands/openrouter.js";
+import { createPreviewCommand } from "./commands/preview.js";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 
 // Load environment variables
@@ -372,5 +374,11 @@ program.addCommand(createAgentCommand());
 
 // Character persona command
 program.addCommand(createCharacterCommand());
+
+// OpenRouter convenience command
+program.addCommand(createOpenRouterCommand());
+
+// Repo / GitHub preview command
+program.addCommand(createPreviewCommand());
 
 program.parse();

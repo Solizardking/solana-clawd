@@ -70,6 +70,9 @@ const DEFAULT_USER_SETTINGS: Partial<UserSettings> = {
     "ollama/kimi-k2.6:cloud",
     "ollama/mxbai-embed-large:latest",
     // OpenRouter models (use with baseURL: "https://openrouter.ai/api/v1")
+    "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+    "openrouter/nvidia/nemotron-3.5-content-safety:free",
+    "openrouter/openrouter/optimus-alpha:free",
     "openrouter/anthropic/claude-sonnet-4.6",
     "openrouter/deepseek/deepseek-v3.2",
     "openrouter/anthropic/claude-opus-4.7",

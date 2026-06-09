@@ -1,16 +1,18 @@
 {
     "schema_version": "v1",
-    "name_for_human": "Lobster Library",
+    "name_for_human": "Lobster Library — x402.wtf/library",
     "name_for_model": "lobster_library",
-    "description_for_human": "The nano Solana financial trading, deep research, ML prediction market & agentic vision AI agent library. 82+ specialized Solana agents for trading, DeFi, research, and x402 payments.",
-    "description_for_model": "The nano Solana financial trading, deep research, ML prediction market & agentic vision AI agent library. 82+ specialized Solana agents for trading, DeFi, research, and x402 payments.",
-    "auth": {
-        "type": "none"
-    },
+    "description_for_human": "The Lobster Library — 82+ nano Solana financial trading, deep research, ML prediction market, x402 payment, and OpenClawd agent library. Hosted at https://x402.wtf/library.",
+    "description_for_model": "The Lobster Library is the x402agent Solana agent catalog. 82+ specialized agents for trading, DeFi, research, x402 payments, OpenClawd orchestration, wallet approvals, treasury allocation, and machine-native finance. Served at https://x402.wtf/library with a JSON index at /library/index.json and individual agents at /library/<id>.json.",
+    "homepage": "https://x402.wtf/library",
     "api": {
-        "type": "none"
+      "type": "openapi",
+      "url": "https://x402.wtf/library/schema/speraxAgentSchema_v1.json"
     },
-    "logo_url": "https://github.com/x402agent.png",
+    "auth": {
+      "type": "none"
+    },
+    "logo_url": "https://raw.githubusercontent.com/Solizardking/solana-clawd/main/library/nanoclawd-logo.png",
     "contact_email": "x402agent@users.noreply.github.com",
-    "legal_info_url": "https://github.com/x402agent/LobsterLibrary/blob/main/LICENSE"
+    "legal_info_url": "https://github.com/Solizardking/solana-clawd/blob/main/library/LICENSE"
 }

@@ -1,0 +1,31 @@
+{
+  "id": "https://x402.wtf",
+  "name": "Solana Clawd",
+  "description": "OpenClawd — Sovereign AI Lobster Runtime on Solana. $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump",
+  "homepage": "https://x402.wtf",
+  "library": {
+    "homepage": "https://x402.wtf/library",
+    "index": "https://x402.wtf/library/index.json",
+    "schema": "https://x402.wtf/library/schema/speraxAgentSchema_v1.json",
+    "package": "@openclawd/lobster-library",
+    "agents": 82
+  },
+  "endpoints": {
+    "agents": "https://x402.wtf/library/",
+    "api": "https://x402.wtf/api",
+    "health": "https://clawdrouter.fly.dev/health",
+    "mcp": "https://x402.wtf/mcp"
+  },
+  "version": "0.2.0",
+  "author": "x402agent",
+  "chain": "solana-mainnet",
+  "payment": "x402",
+  "skills": [
+    "openclawd",
+    "solana",
+    "x402",
+    "lobster-library",
+    "agent-catalog",
+    "machine-native-finance"
+  ]
+}

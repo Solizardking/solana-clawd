@@ -1,7 +1,7 @@
 {
   "name": "@openclawdsolana/leviathan",
   "version": "0.2.0",
-  "description": "OpenClawd — Sovereign AI Lobster Runtime on Solana — $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump",
+  "description": "OpenClawd — Sovereign AI Lobster Runtime on Solana. Includes the Lobster Library (80+ agents) at x402.wtf/library. $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump",
   "packageManager": "pnpm@10.4.1",
   "type": "module",
   "main": "dist/index.js",
@@ -78,6 +78,10 @@
     "./identity/agentwallet.js": {
       "types": "./dist/identity/agentwallet.d.ts",
       "default": "./dist/identity/agentwallet.js"
+    },
+    "./lobster-library": {
+      "types": "./public/library/index.d.ts",
+      "default": "./public/library/index.js"
     }
   },
   "bin": {
@@ -108,14 +112,24 @@
     "ooda",
     "p-token",
     "metaplex",
-    "agent-runtime"
+    "agent-runtime",
+    "lobster-library",
+    "agent-catalog",
+    "agent-fleet",
+    "x402.wtf",
+    "nano-agent",
+    "machine-native-finance"
   ],
   "license": "MIT",
   "files": [
     "dist",
     "scripts",
     "three-laws.md",
-    "README.md"
+    "README.md",
+    "public/library",
+    "library/public",
+    "library/src",
+    "library/schema"
   ],
   "scripts": {
     "mint:clawd": "node scripts/mint-clawd-agent.mjs",
@@ -124,12 +138,12 @@
     "prepare": "git config core.hooksPath .husky || true",
     "build": "tsc -p tsconfig.runtime.json",
     "build:all": "npm run build && (cd packages/agentwallet && npm run build) && (cd packages/agent-registry && npm run build) && (cd packages/agent-hub && npm run build) && (cd packages/clawd-code-cli && npm run build) && (cd packages/cli-standalone && npm run build)",
-    "build:web": "vite build",
+    "build:web": "vite build && npm run library:build",
     "dev": "tsx watch src/index.ts",
     "dev:web": "vite",
     "test": "pnpm exec vitest run \"src/**/*.{test,spec}.ts\" --passWithNoTests",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build && npm run library:build",
     "check": "tsc -p tsconfig.runtime.json --noEmit",
     "hub": "clawd-hub start --open",
     "hub:start": "clawd-hub start",
@@ -179,10 +193,17 @@
     "agentwallet:serve": "cd packages/agentwallet && node dist/cli.js serve",
     "agentwallet:wallet:list": "cd packages/agentwallet && node dist/cli.js wallet list",
     "agentwallet:wallet:create": "cd packages/agentwallet && node dist/cli.js wallet create",
+    "library:sync": "node scripts/sync-library.mjs",
+    "library:build": "node scripts/sync-library.mjs",
+    "library:dev": "node scripts/sync-library.mjs --watch",
+    "library:validate": "node scripts/sync-library.mjs && node scripts/validate-library.mjs",
+    "library:publish": "cd library && npm run build && npm publish --access public",
+    "library:serve": "node scripts/serve-library.mjs",
+    "library:doctor": "node scripts/doctor-library.mjs",
     "wallet:build": "cd packages/clawd-wallet && npm run build",
     "pump:build": "cd clawd-pump && cargo build --release",
     "pump:start": "cd clawd-pump && cargo run --release",
-    "pump:autobuy": "cd clawd-pump && cargo run --release -- --autobuy",
+    "pump:autoboy": "cd clawd-pump && cargo run --release -- --autobuy",
     "pump:check": "cd clawd-pump && cargo check",
     "protocol:build": "cd packages/clawd-protocol && anchor build",
     "automation:build": "npm run build",
@@ -203,6 +224,7 @@
     "@metaplex-foundation/umi-bundle-defaults": "^1.5.1",
     "@noble/hashes": "~1.8.0",
     "@openclawd/agents-x402": "workspace:*",
+    "@openclawd/lobster-library": "workspace:*",
     "@openclawd/percolator": "workspace:*",
     "@openclawd/wallet": "workspace:*",
     "@openclawdsolana/agent-hub": "workspace:*",
@@ -244,6 +266,7 @@
     "mcp-server",
     "x402",
     "pay",
+    "library",
     "vendor/agent-auth/packages/*",
     "programs/programs/client"
   ],

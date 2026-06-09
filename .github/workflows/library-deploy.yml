@@ -1,0 +1,80 @@
+name: 🦞 Library Sync
+
+on:
+  push:
+    paths:
+      - 'library/**'
+      - 'scripts/sync-library.mjs'
+      - 'scripts/validate-library.mjs'
+  workflow_dispatch:
+    inputs:
+      clean:
+        description: 'Clean public/library/ before building'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: Validate library
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.4.1
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Build library
+        run: node scripts/sync-library.mjs
+
+      - name: Validate library
+        run: node scripts/validate-library.mjs
+
+      - name: Doctor library
+        run: node scripts/doctor-library.mjs
+
+  deploy:
+    name: Deploy to x402.wtf
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10.4.1
+
+      - name: Build library
+        run: node scripts/sync-library.mjs
+
+      - name: Build web app
+        run: pnpm run build:web
+        env:
+          VITE_BASE: ./
+
+      - name: Commit public/library/ changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/library/ || true
+          if git diff --cached --quiet; then
+            echo "No library changes to commit"
+          else
+            git commit -m "🦞 chore: sync lobster library to public/library"
+            git push
+          fi
