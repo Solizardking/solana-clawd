@@ -46,13 +46,17 @@ interface ClawdCodeConfig {
   model: string;
 }
 
+const DEFAULT_HELIUS_RPC = 'https://mainnet.helius-rpc.com/?api-key=';
+
 function loadConfig(): ClawdCodeConfig {
   const env = loadEnv();
   return {
     mode: (env.CLAWD_MODE as Mode) || 'CODE',
     liveTrading: env.LIVE_TRADING === 'true',
     operatorConfirmed: env.OPERATOR_CONFIRMED === 'true',
-    rpcUrl: env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
+    // Default to Helius RPC for both SOLANA_RPC_URL and HELIUS_RPC_URL
+    // Override via env vars; if env has Helius but no API key, use the default
+    rpcUrl: env.SOLANA_RPC_URL || env.HELIUS_RPC_URL || DEFAULT_HELIUS_RPC,
     xaiApiKey: env.XAI_API_KEY || '',
     heliusApiKey: env.HELIUS_API_KEY || '',
     phoenixRiseUrl: env.PHOENIX_RISE_URL || 'https://api.phoenix.gg/enclave',
