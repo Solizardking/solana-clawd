@@ -439,10 +439,11 @@ ${prompt}
 
     let parsedGoalText = "";
 
-    if (modelProvider === "redpill") {
-      const targetModel = redpillModelDefault;
+    if (modelProvider === "gemma" || modelProvider === "redpill") {
+      const targetModel = modelProvider === "gemma" ? "google/gemma-4-31b-it" : redpillModelDefault;
+      const apiKeyToUse = redpillKey || redpillApiKey; // Prefer REDPILL_KEY for Gemma
       const headersToSend: Record<string, string> = {
-        "Authorization": `Bearer ${redpillApiKey}`,
+        "Authorization": `Bearer ${apiKeyToUse}`,
         "Content-Type": "application/json",
       };
 
