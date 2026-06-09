@@ -56,8 +56,10 @@ export class TradeMode {
       '~/.vulcan/vulcan'
     ];
     
+    const home = process.env.HOME || '/';
     for (const p of vulcanPaths) {
-      if (existsSync(p.replace('~', process.env.HOME))) {
+      const expanded = p.replace('~', home);
+      if (existsSync(expanded)) {
         return p;
       }
     }

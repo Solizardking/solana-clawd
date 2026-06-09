@@ -5,7 +5,8 @@
 
 import { spawn } from 'child_process';
 import { readFileSync } from 'fs';
-import { join, homedir } from 'path';
+import { join } from 'path';
+import { homedir } from 'os';
 
 export class X402Client {
   private gatewayUrl: string;
@@ -60,16 +61,16 @@ export class X402Client {
 
       // Use curl for HTTP requests with x402 headers
       const curlArgs = ['-s', '-X', method, url];
-      
+
       for (const [key, value] of Object.entries(requestHeaders)) {
         curlArgs.push('-H', `${key}: ${value}`);
       }
-      
+
       if (data) {
         curlArgs.push('-d', data);
       }
 
-      const proc = spawn('curl', curlArgs, { stdio: 'pipe' });
+      const proc = spawn('curl', curlArgs, { stdio: ['pipe', 'pipe', 'pipe'] });
       
       let output = '';
       proc.stdout.on('data', (chunk) => { output += chunk.toString(); });
@@ -107,7 +108,8 @@ export class X402Client {
   async checkBalance(walletAddress: string, requiredAmount: number): Promise<boolean> {
     try {
       const response = await this.request<{ balance: number }>(
-        `/api/balance/${walletAddress}`
+        `/api/balance/${walletAddress}`,
+        {}
       );
       return response.balance >= requiredAmount;
     } catch {
