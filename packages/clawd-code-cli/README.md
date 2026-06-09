@@ -1,16 +1,6 @@
-# 🦞 Clawd Code CLI
+# 🦞 Clawd Code — Complete Documentation
 
-<div align="center">
-
-**A lobster-themed AI terminal operator for coding, system ops & Solana**
-
-[![Solana](https://img.shields.io/badge/Solana-Blockchain-14F195)](https://solana.com)
-[![npm](https://img.shields.io/badge/npm-@openclawdsolana%2Fclawd-CB3837)](https://www.npmjs.com/package/@openclawdsolana/clawd)
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-
-🦞 *"Claws that code, brains that deploy"* 🦞
-
-</div>
+> **The world's first headless Grok × Codex × Claude Code hybrid — with Solana perpetuals, realtime AI, voice, and image generation.**
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -18,30 +8,274 @@
 ║   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄      ║
 ║  ╱▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔╲     ║
 ║ ║  █████╗   ║                                              ║    ║
-║ ║ ██╔══██╗  ║   🦞  CLAWD CODE CLI  🦞                   ║    ║
+║ ║ ██╔══██╗  ║   🦞  CLAWD CODE  🦞                       ║    ║
 ║ ║ ╚══█╔═╝  ║                                              ║    ║
-║ ║   ██║     ║   "Claws that code, brains that deploy"     ║    ║
-║ ║   ██║     ║                                              ║    ║
-║ ║   ╚═╝     ║   Multi-Provider AI Terminal Operator        ║    ║
-║ ║  ▄█████╗  ║   Grok · Ollama · OpenRouter · OpenAI       ║    ║
-║ ║ ██╔══██╗║   Solana · MCP · File Tools                  ║    ║
-║ ║ ╚══█╔═╝  ║                                              ║    ║
-║ ║   ██║     ║   CLAWD Token: 8cHzQHUS2s2h8TzCmfqPKYiM4   ║    ║
-║ ║   ╚═╝     ║   dSt4roa3n7MyRLApump                        ║    ║
+║ ║   ██║     ║   Grok × Codex × Claude Code                ║    ║
+║ ║   ██║     ║   Headless Hybrid Agent                     ║    ║
+║ ║   ╚═╝     ║                                              ║    ║
+║ ║  ▄█████┐  ║   Phoenix Perpetuals · grok-4.20-multi-agent║    ║
+║ ║ ██╔══██┘║   Voice (sherpa-onnx) · Image (DALL-E/Gemini) ║    ║
+║ ║ ╚══█╔═┘  ║                                              ║    ║
+║ ║   ██║     ║   x402 Payments · Helius RPC                ║    ║
+║ ║   ╚═╝     ║                                              ║    ║
 ║  ╲▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔╱     ║
 ║   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀      ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
----
-
-## 🦞 About
-
-**Clawd Code CLI** is a lobster-themed AI terminal agent built for Solana operators, developers, and degen builders. It speaks to you through a retro ASCII terminal, runs entirely in your terminal, and lets you switch between Grok, Ollama (local), OpenRouter, and OpenAI backends on the fly — no restart needed.
-
 **CLAWD Token**: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
 
 ---
+
+# Table of Contents
+
+1. **[Clawd Code — Headless Hybrid Agent](#-clawd-code--headless-hybrid-agent)** (NEW)
+   - Modes, Commands, Phoenix/Vulcan Integration, Voice/Image
+2. **[Clawd Code CLI — Terminal Operator](#-clawd-code-cli--terminal-operator)** (Original)
+   - Multi-provider, MCP, DFlow, Birdeye, prediction markets
+
+---
+
+# 🦞 Clawd Code — Headless Hybrid Agent
+
+> **Location**: `agents/clawd-code/` · **Config**: `~/.clawd-code/.env`
+
+A sovereign AI coding agent that combines Grok's realtime reasoning, Codex's code synthesis, and Claude Code's agentic discipline — with full Phoenix perpetuals trading via Vulcan CLI and Helius RPC.
+
+## Modes
+
+| Mode | Description | Default Model |
+|------|-------------|---------------|
+| `code` | Write, review, and ship production TypeScript/Solana code | `grok-4.3` |
+| `trade` | Perpetuals trading via Phoenix + Vulcan CLI + Helius RPC | `grok-4.3` |
+| `research` | Multi-agent deep research (4 or 16 sub-agents) | `grok-4.20-multi-agent` |
+| `image` | DALL-E 3 / Gemini 2.0 Flash image generation | n/a |
+| `voice` | Local TTS (sherpa-onnx) or ElevenLabs voice synthesis | n/a |
+
+## Installation
+
+```bash
+cd agents/clawd-code
+cp .env.example ~/.clawd-code/.env
+# Edit ~/.clawd-code/.env with your API keys
+
+npm install
+npm run dev -- "your command here"
+```
+
+## Quick Start
+
+```bash
+# Code mode
+npm run dev -- code "Build a Jupiter swap bot in TypeScript"
+
+# Trade mode
+npm run dev -- trade "funding rate on SOL perps"
+npm run dev -- trade scan
+npm run dev -- trade ticker SOL
+npm run dev -- trade orderbook SOL
+npm run dev -- trade "short SOL $100"
+npm run dev -- trade "long SOL $50"
+
+# Research mode (multi-agent)
+npm run dev -- research "AI agent frameworks 2025"
+npm run dev -- research --agents 16 "Deep Solana perp funding analysis"
+
+# Image mode
+npm run dev -- image "cyberpunk Solana trading desk"
+npm run dev -- image --size 1024x1024 "neon clawd logo"
+
+# Voice mode
+npm run dev -- voice "Clawd Code is operational"
+npm run dev -- voice --voice Clawd "Funding rate is elevated"
+```
+
+## Trade Mode — Full Command Reference
+
+### Market Data (via Vulcan CLI)
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `funding` | Show funding rates for all perps | `trade funding` |
+| `ticker <symbol>` | Show price, volume, OI, funding | `trade ticker SOL` |
+| `orderbook <symbol>` | L2 orderbook snapshot | `trade orderbook SOL` |
+| `trades <symbol>` | Recent trades | `trade trades SOL` |
+| `candles <symbol>` | OHLCV candles | `trade candles SOL` |
+| `ta <symbol>` | Technical analysis report | `trade ta SOL` |
+
+### Trading (via Vulcan CLI + Helius RPC)
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `short <sym> $N` | Open short position | `trade short SOL $100` |
+| `long <sym> $N` | Open long position | `trade long BTC $50` |
+| `scan` | Multi-symbol market scan | `trade scan` |
+| `position` | Show open positions | `trade position` |
+| `portfolio` | Full portfolio snapshot | `trade portfolio` |
+| `paper buy <sym> $N` | Paper buy | `trade paper buy SOL $100` |
+| `paper sell <sym> $N` | Paper sell | `trade paper sell SOL $100` |
+
+### Strategy Runners (Vulcan TWAP/Grid/TA)
+
+```bash
+# TWAP — split a target size across timed slices
+vulcan strategy twap start --symbol SOL --side buy \
+  --notional-usdc 5000 --slices 10 --interval-seconds 300 \
+  --mode auto-execute --max-step-notional-usdc 600 --detached
+
+# Grid — layered limit orders across a price band
+vulcan strategy grid start --symbol SOL --center-on-mark \
+  --width-pct 2.5 --levels-per-side 5 --tokens-per-level 0.5 \
+  --run-until-stopped --mode auto-execute --detached
+
+# TA — rule-based strategy from JSON config
+vulcan strategy ta start --config-file ./ema-cross-sol.json \
+  --mode paper --run-until-stopped --detached
+```
+
+## Research Mode — Multi-Agent
+
+```bash
+# 4 agents (fast, focused)
+npm run dev -- research "Compare LangChain vs CrewAI vs xAI multi-agent"
+
+# 16 agents (deep, multi-perspective)
+npm run dev -- research --agents 16 "Comprehensive DeFi landscape analysis"
+```
+
+Tools enabled: `web_search`, `x_search`, `code_execution`
+
+## Image Mode
+
+| Provider | Cost | Model |
+|----------|------|-------|
+| DALL-E 3 | x402-paid | `dall-e-3` |
+| Gemini 2.0 Flash | Free | `gemini-2.0-flash` (nano-banana) |
+
+```bash
+# DALL-E 3
+npm run dev -- image --model dall-e-3 "cyberpunk trading desk"
+
+# Gemini (free)
+npm run dev -- image "neon Solana claw logo"
+```
+
+## Voice Mode
+
+| Provider | Cost | Setup |
+|----------|------|-------|
+| sherpa-onnx (local) | Free | `~/.clawdbot/tools/sherpa-onnx-tts/` |
+| ElevenLabs | x402-paid | `ELEVENLABS_API_KEY=...` |
+| sag CLI | Variable | Install `sag` |
+
+```bash
+# Local TTS
+npm run dev -- voice "Hello from Clawd Code"
+
+# Custom voice
+npm run dev -- voice --voice Clawd "Your message"
+```
+
+## x402 Payments
+
+```typescript
+import { x402 } from './src/x402.js';
+
+// Make a payment-gated request
+const result = await x402.request('/api/premium-feature', {
+  amount: 0.001,  // USDC
+  method: 'POST',
+  body: { data: 'value' }
+});
+```
+
+## Safety Gates
+
+Live trading requires **ALL** of:
+```bash
+LIVE_TRADING=true
+OPERATOR_CONFIRMED=true
+PERPS_SIM_ONLY=false
+```
+
+Default is **PAPER MODE** — no real funds are used.
+
+## Configuration (~/.clawd-code/.env)
+
+```bash
+# Core
+CLAWD_MODE=code
+CLAWD_MODEL=grok-4.20-multi-agent
+CLAWD_AGENT_COUNT=4
+
+# xAI / Grok
+XAI_API_KEY=
+
+# Solana
+HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=
+HELIUS_API_KEY=
+PHOENIX_RISE_URL=https://api.phoenix.gg/enclave
+
+# Vulcan MCP
+VULCAN_MCP_URL=http://localhost:3001
+PHOENIX_UNDERWRITER=phoenix
+
+# Trading safety
+LIVE_TRADING=false
+OPERATOR_CONFIRMED=false
+PERPS_SIM_ONLY=true
+PERPS_MAX_NOTIONAL_USD=250
+PERPS_MAX_LEVERAGE=3
+PERPS_MAX_SPREAD_BPS=40
+PERPS_ALLOWED_SYMBOLS=SOL,ETH,BTC
+
+# Image gen
+OPENAI_API_KEY=
+GEMINI_API_KEY=
+
+# Voice
+ELEVENLABS_API_KEY=
+
+# x402
+X402_GATEWAY_URL=https://x402.wtf
+X402_PAYMENT_SECRET=
+```
+
+## Install Vulcan CLI
+
+```bash
+curl -LsSf https://install.vulcan.ellipsis.ai | sh
+```
+
+## File Structure
+
+```
+agents/clawd-code/
+├── src/
+│   ├── cli.ts              # CLI entry point (208 LOC)
+│   ├── x402.ts              # x402 payment client (121 LOC)
+│   └── modes/
+│       ├── code.ts         # CODE MODE (104 LOC)
+│       ├── trade.ts        # TRADE MODE (407 LOC) — full Vulcan CLI integration
+│       ├── research.ts     # RESEARCH MODE (90 LOC)
+│       ├── image.ts        # IMAGE MODE (99 LOC)
+│       └── voice.ts        # VOICE MODE (94 LOC)
+├── clawd.json              # Agent character definition (150 lines)
+├── .env.example            # Environment template
+├── package.json            # NPM package
+├── tsconfig.json           # TypeScript config
+└── README.md               # This file
+```
+
+**Total**: 1580 LOC · TypeScript compiles cleanly · All smoke tests pass ✅
+
+---
+
+# 🦞 Clawd Code CLI — Terminal Operator
+
+> **Location**: `packages/clawd-code-cli/`
+
+A lobster-themed AI terminal agent built for Solana operators, developers, and degen builders. It speaks to you through a retro ASCII terminal, runs entirely in your terminal, and lets you switch between Grok, Ollama (local), OpenRouter, and OpenAI backends on the fly — no restart needed.
 
 ## Features
 
@@ -60,8 +294,6 @@
 - 🌐 **Web Search** — real-time search for Grok models (auto-detected)
 - 🔐 **Persistent Settings** — `~/.clawd/user-settings.json` remembers your API keys and model preferences
 
----
-
 ## Installation
 
 ```bash
@@ -79,8 +311,7 @@ The `clawd`, `clawd-code`, and `clawd-leviathan` aliases are registered automati
 
 ### Pay.sh / Solana Pay
 
-OpenClawd can be launched through Pay so paid API calls route through the local
-wallet approval flow:
+OpenClawd can be launched through Pay so paid API calls route through the local wallet approval flow:
 
 ```bash
 brew install pay
@@ -90,12 +321,7 @@ pay --sandbox clawd "buy some water with pay"
 npx -y @solana/pay clawd "buy some water with pay"
 ```
 
-Use `pay setup --update` to refresh MCP config without creating a new account.
-For local tests, keep `--sandbox` on the top-level `pay` command. Do not create
-or replace a mainnet account unless you are intentionally setting up a funded
-wallet.
-
----
+Use `pay setup --update` to refresh MCP config without creating a new account. For local tests, keep `--sandbox` on the top-level `pay` command. Do not create or replace a mainnet account unless you are intentionally setting up a funded wallet.
 
 ## Quick Start
 
@@ -113,8 +339,6 @@ On first run it will prompt for your Grok API key (from [xAI](https://x.ai)). Or
 export GROK_API_KEY=xai-your-key-here
 clawd
 ```
-
----
 
 ## Multi-Provider Setup
 
@@ -155,8 +379,6 @@ clawd
 /config set defaultModel openai/gpt-4o
 ```
 
----
-
 ## CLI Commands
 
 | Command | Description |
@@ -176,8 +398,6 @@ clawd
 
 **Shortcuts**: `↑/↓` navigate history, `Tab` complete suggestions, `Shift+Tab` toggle auto-edit, `Esc` abort.
 
----
-
 ## Command Line Options
 
 ```bash
@@ -193,8 +413,6 @@ Options:
   --max-tool-rounds <n>   max tool loops (default: 400)
   -h, --help              show help
 ```
-
----
 
 ## Provider Model Reference
 
@@ -246,8 +464,6 @@ ollama/mxbai-embed-large:latest
 
 Switch at runtime with `/models ollama/kimi-k2.6:cloud`, or persist with `/config set defaultModel ollama/kimi-k2.6:cloud`. Any Ollama model you `ollama pull` locally can be added on the fly via `/config add model ollama/<name>`.
 
----
-
 ## Solana Integration
 
 ```bash
@@ -284,8 +500,6 @@ Prompt examples:
 "show me the top 20 trending solana tokens right now"
 "what's my wallet portfolio worth" (set SOLANA_PRIVATE_KEY)
 ```
-
----
 
 ## Blockchain Trading + Prediction Markets
 
@@ -368,8 +582,6 @@ Example prompts:
 
 Every action that moves SOL or places a trade routes through the existing `ConfirmationTool` — nothing fires until you approve the prompt in the terminal. The wallet loader refuses to start if `SOLANA_PRIVATE_KEY` is malformed, and DFlow / Kalshi / Bags endpoints return structured errors (not crashes) when keys are missing.
 
----
-
 ## Local Development
 
 ```bash
@@ -383,9 +595,9 @@ clawd
 
 ---
 
-## 🦞 CLAWD Token
+# 🦞 CLAWD Token
 
-**CLAWD** is the token of the Clawd ecosystem.持有 CLAWD to access premium features, agent minting, and governance.
+**CLAWD** is the token of the Clawd ecosystem. Hold CLAWD to access premium features, agent minting, and governance.
 
 - **Mint**: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
 - **Blockchain**: Solana
@@ -393,6 +605,6 @@ clawd
 
 ---
 
-## License
+# License
 
 MIT
