@@ -10,6 +10,7 @@ import { join } from 'path';
 import { MODELS, printModelsTable, normalizeModelId, DEFAULT_MODEL } from './grok-models.js';
 import { HeadlessWriter } from './headless.js';
 import { EnvironmentVerifier } from './verify.js';
+import { createOpenRouterClient, OpenRouterClient, DEFAULT_FREE_MODEL } from './openrouter.js';
 
 const CONFIG_DIR = join(homedir(), '.clawd-code');
 const ENV_FILE = join(CONFIG_DIR, '.env');
@@ -54,8 +55,6 @@ function loadConfig(): ClawdCodeConfig {
     mode: (env.CLAWD_MODE as Mode) || 'CODE',
     liveTrading: env.LIVE_TRADING === 'true',
     operatorConfirmed: env.OPERATOR_CONFIRMED === 'true',
-    // Default to Helius RPC for both SOLANA_RPC_URL and HELIUS_RPC_URL
-    // Override via env vars; if env has Helius but no API key, use the default
     rpcUrl: env.SOLANA_RPC_URL || env.HELIUS_RPC_URL || DEFAULT_HELIUS_RPC,
     xaiApiKey: env.XAI_API_KEY || '',
     heliusApiKey: env.HELIUS_API_KEY || '',
@@ -119,6 +118,13 @@ MODES:
   image      Generate images via DALL-E or Gemini
   voice      Text-to-speech and voice synthesis
 
+GLOBAL COMMANDS:
+  /verify                 Run preflight checks
+  /models                 List all available Grok models
+  /models <id>           Switch to a specific model
+  /provider              Show current AI provider
+  /provider <name>       Switch to xai or openrouter
+
 COMMANDS:
   clawd-code code "Build a Jupiter swap bot"
   clawd-code trade "SOL funding rate?"
@@ -131,7 +137,8 @@ OPTIONS:
   --agents <n>           Number of agents for research (4|16)
   --live                 Enable live trading (requires ARM flags)
   --paper                Paper trading mode (default)
-  --model <model>        Grok model (default: grok-4.20-multi-agent)
+  --model <model>        Override model
+  --format <fmt>         Output format: text (default) | json (JSONL)
 
 EXAMPLES:
   clawd-code trade "short SOL $100"
@@ -141,8 +148,11 @@ EXAMPLES:
   clawd-code voice "Clawd Code is operational"
 
 ENVIRONMENT:
-  SOLANA_RPC_URL         Solana RPC endpoint
+  SOLANA_RPC_URL         Solana RPC endpoint (default: Helius)
   XAI_API_KEY            xAI API key for Grok
+  OPENROUTER_API_KEY     OpenRouter API key (free models supported)
+  OPENROUTER_FREE_MODEL  Default: nex-agi/nex-n2-pro:free
+  CLAWD_PROVIDER         xai (default) | openrouter
   HELIUS_API_KEY         Helius API key for DAS
   PHOENIX_RISE_URL       Phoenix Rise endpoint
   VULCAN_MCP_URL         Vulcan MCP server URL
@@ -164,7 +174,7 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  // Special commands: /models, /verify
+  // /models command
   if (args[0] === '/models' || args[0] === 'models') {
     if (args[1]) {
       const normalized = normalizeModelId(args[1]);
@@ -176,12 +186,42 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
+  // /verify command
   if (args[0] === '/verify' || args[0] === 'verify') {
     EnvironmentVerifier.loadEnvFile();
     const verifier = new EnvironmentVerifier();
     const results = verifier.verifyAll();
     const report = verifier.printReport(results);
     process.exit(report.ok ? 0 : 1);
+  }
+
+  // /provider command — switch between xai and openrouter
+  if (args[0] === '/provider' || args[0] === 'provider') {
+    const env = loadEnv();
+    const current = env.CLAWD_PROVIDER || 'xai';
+    if (args[1]) {
+      const target = args[1].toLowerCase();
+      if (target === 'xai' || target === 'openrouter' || target === 'or') {
+        const normalized = target === 'or' ? 'openrouter' : target;
+        console.log(`\n[CLAWD CODE] Switched provider: ${current} -> ${normalized}`);
+        console.log(`Set CLAWD_PROVIDER=${normalized} in ~/.clawd-code/.env to persist.`);
+      } else {
+        console.log(`\n[CLAWD CODE] Unknown provider: ${target}`);
+        console.log('Available: xai, openrouter (or: or)');
+      }
+    } else {
+      console.log('\n╔════════════════════════════════════════════════════════╗');
+      console.log('║  CLAWD CODE — AI PROVIDERS                              ║');
+      console.log('╠════════════════════════════════════════════════════════╣');
+      console.log(`║  Current: ${current.padEnd(45)}║`);
+      console.log('╠════════════════════════════════════════════════════════╣');
+      console.log('║  xai         (default)  xAI Grok models                 ║');
+      console.log('║  openrouter  (alt)      Free models via OpenRouter      ║');
+      console.log('╚════════════════════════════════════════════════════════╝');
+      console.log(`\n  Default OpenRouter free model: ${DEFAULT_FREE_MODEL}`);
+      console.log('  Switch: clawd-code /provider openrouter');
+    }
+    process.exit(0);
   }
 
   // Headless output format
@@ -231,7 +271,6 @@ async function main(): Promise<void> {
         await runVoiceMode(args.slice(1), config);
         break;
       default:
-        // Treat as code command
         await runCodeMode(args, config);
     }
   } catch (error) {
