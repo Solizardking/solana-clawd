@@ -147,19 +147,23 @@ export class GrokClient {
   ): Promise<GrokResponse> {
     try {
       const activeModel = model || this.currentModel;
+      // Use Agent Tools API (web_search + x_search) for Grok models when search is enabled.
+      // The old `search_parameters` is deprecated (returns 410).
+      const useSearch = searchOptions?.search_parameters?.mode !== "off";
+      const allTools = [...(tools || [])];
+      if (useSearch && !this.isOpenRouterModel(activeModel) && activeModel.startsWith("grok")) {
+        allTools.push({ type: "web_search" } as any);
+        allTools.push({ type: "x_search" } as any);
+      }
+
       const requestPayload: any = {
         model: this.resolveApiModel(activeModel),
         messages,
-        tools: tools || [],
-        tool_choice: tools && tools.length > 0 ? "auto" : undefined,
+        tools: allTools,
+        tool_choice: allTools.length > 0 ? "auto" : undefined,
         temperature: 0.7,
         max_tokens: this.defaultMaxTokens,
       };
-
-      // Add search parameters if specified
-      if (searchOptions?.search_parameters) {
-        requestPayload.search_parameters = searchOptions.search_parameters;
-      }
 
       // OpenRouter reasoning passthrough — no-op for non-reasoning models.
       // Disable by setting OPENROUTER_REASONING=false.
@@ -184,20 +188,23 @@ export class GrokClient {
   ): AsyncGenerator<any, void, unknown> {
     try {
       const activeModel = model || this.currentModel;
+      // Use Agent Tools API (web_search + x_search) for Grok models when search is enabled.
+      const useSearch = searchOptions?.search_parameters?.mode !== "off";
+      const allTools = [...(tools || [])];
+      if (useSearch && !this.isOpenRouterModel(activeModel) && activeModel.startsWith("grok")) {
+        allTools.push({ type: "web_search" } as any);
+        allTools.push({ type: "x_search" } as any);
+      }
+
       const requestPayload: any = {
         model: this.resolveApiModel(activeModel),
         messages,
-        tools: tools || [],
-        tool_choice: tools && tools.length > 0 ? "auto" : undefined,
+        tools: allTools,
+        tool_choice: allTools.length > 0 ? "auto" : undefined,
         temperature: 0.7,
         max_tokens: this.defaultMaxTokens,
         stream: true,
       };
-
-      // Add search parameters if specified
-      if (searchOptions?.search_parameters) {
-        requestPayload.search_parameters = searchOptions.search_parameters;
-      }
 
       if (this.isOpenRouterModel(activeModel) && process.env.OPENROUTER_REASONING !== "false") {
         requestPayload.reasoning = { enabled: true };
