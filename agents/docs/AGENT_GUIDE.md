@@ -12,6 +12,8 @@ Every agent you publish becomes:
 - 🗣️ **Addressable** through our A2A (agent-to-agent) endpoint at `/api/agents/a2a`
 - 📈 **Trackable** in the hosted registry at `/agents-registry`
 
+If you are building a paid agent, do not stop at the JSON definition in `agents/src/`. The runtime payment rail lives in [`../../solana-clawd-x402/`](../../solana-clawd-x402/README.md). Start with the repo bridge doc: [`X402_IMPLEMENTATION.md`](./X402_IMPLEMENTATION.md).
+
 ---
 
 ## Agent Anatomy
@@ -57,6 +59,15 @@ Every agent you publish becomes:
 **category**: One of `defi`, `trading`, `nft`, `analytics`, `security`, `dev-tools`, `education`, `governance`.
 
 **systemRole**: The core prompt that defines agent behavior.
+
+### Paid-agent anatomy
+
+For x402-backed agents, the JSON in `agents/src/` defines product behavior, routing policy, spend limits, and UX. The actual payment implementation should map back to the in-repo x402 runtime:
+
+- [`../../solana-clawd-x402/worker/`](../../solana-clawd-x402/worker/) for gateway, challenge, verify, and settlement
+- [`../../solana-clawd-x402/sdk/`](../../solana-clawd-x402/sdk/) for client auto-pay flows
+- [`../../solana-clawd-x402/programs/`](../../solana-clawd-x402/programs/) for on-chain vault and registry logic
+- [`./X402_IMPLEMENTATION.md`](./X402_IMPLEMENTATION.md) for the full mapping from paid agent JSONs to runtime code
 
 ---
 
@@ -105,6 +116,7 @@ EXAMPLES:
 ✅ Mention audit status (OtterSec, Neodyme, Sec3, Halborn) when relevant
 ✅ Include disclaimers about rug risks on pump.fun / new SPL tokens
 ✅ Use clear step-by-step workflows referencing real tool calls
+✅ For paid agents, reference the existing x402 runtime instead of inventing a second payment stack in the prompt or docs
 
 ### Don'ts
 
@@ -149,6 +161,12 @@ Before submitting to the [/agents](https://x402.wtf/agents) hub, test thoroughly
 3. **Error handling**: Does it gracefully decline out-of-scope tasks?
 4. **Response quality**: Accurate compute unit estimates? Correct program IDs?
 5. **Consistency**: Same tone and format across conversations?
+
+For paid agents, add these checks:
+
+6. **Payment vocabulary**: Uses `challenge`, `verify`, `settle`, `receipt`, `payer`, and `allowedAssets` consistently
+7. **Runtime alignment**: The JSON description matches the flow implemented under `solana-clawd-x402/`
+8. **Protocol fit**: The agent declares only the payment protocols actually supported by the gateway path you intend to use
 
 ### Test Prompts
 
@@ -208,6 +226,11 @@ Once merged, your agent appears at:
 - `https://x402.wtf/agents` (gallery)
 - `https://x402.wtf/{your-agent-name}.json` (API)
 - 18 localized variants auto-generated
+
+If the agent is payment-gated, update or confirm the matching implementation references in:
+
+- [`./X402_IMPLEMENTATION.md`](./X402_IMPLEMENTATION.md)
+- [`../../solana-clawd-x402/README.md`](../../solana-clawd-x402/README.md) when the runtime surface changes
 
 ### 2. Mint as on-chain MPL Core asset
 

@@ -6,6 +6,8 @@ The **Solana Clawd Agents API** is a RESTful JSON + MCP + A2A surface providing 
 
 This is the data layer behind the [/agents](https://x402.wtf/agents) hub — anything you see there (install buttons, agent cards, localized prompts, on-chain registration) is driven by these endpoints.
 
+For paid agents, this API layer is only one half of the system. The payment runtime behind x402-backed agents lives in [`../../solana-clawd-x402/`](../../solana-clawd-x402/README.md). Use [`X402_IMPLEMENTATION.md`](./X402_IMPLEMENTATION.md) to map API-facing agent IDs to the gateway, Worker, SDK, and vault implementation.
+
 ### Base URLs
 
 - Static JSON API (CDN): `https://x402.wtf`
@@ -15,6 +17,26 @@ This is the data layer behind the [/agents](https://x402.wtf/agents) hub — any
 ---
 
 ## Endpoints
+
+## x402-backed agent surfaces
+
+The `/agents` API publishes definitions for paid agents such as:
+
+- `solana-clawd-payment-gateway`
+- `solana-x402-provider-catalog`
+- `solana-x402-solana-rpc-broker`
+- `solana-x402-market-data-buyer`
+- `solana-x402-provider-author`
+- `solana-x402-research-broker`
+- `solana-x402-signal-monetizer`
+- `solana-x402-webhook-settlement`
+
+Those JSON documents are catalog and registry surfaces. Their payment execution path is implemented in:
+
+- [`../../solana-clawd-x402/worker/src/index.ts`](../../solana-clawd-x402/worker/src/index.ts)
+- [`../../solana-clawd-x402/worker/src/protocols/`](../../solana-clawd-x402/worker/src/protocols/)
+- [`../../solana-clawd-x402/worker/src/solana/`](../../solana-clawd-x402/worker/src/solana/)
+- [`../../solana-clawd-x402/sdk/src/index.ts`](../../solana-clawd-x402/sdk/src/index.ts)
 
 ### 1. Get All Agents (English)
 
@@ -124,6 +146,8 @@ Send a message to any hub agent. Supports JSON-RPC over HTTP.
 ```text
 POST https://x402.wtf/api/agents/a2a
 ```
+
+For payment-gated A2A flows, the request catalog lives here, while the challenge / verify / settle path is implemented in [`../../solana-clawd-x402/worker/src/protocols/a2a.ts`](../../solana-clawd-x402/worker/src/protocols/a2a.ts).
 
 ```bash
 curl -X POST https://x402.wtf/api/agents/a2a \

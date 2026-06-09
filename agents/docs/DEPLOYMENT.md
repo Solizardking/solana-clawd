@@ -2,6 +2,13 @@
 
 There are **four paths** to getting your agent live on the [Solana Clawd hub](https://x402.wtf/agents). Pick the one that matches how much control you want.
 
+For payment-gated agents, deployment spans two repo layers:
+
+- `agents/` publishes the catalog, registry, and GitHub-facing definition
+- [`../../solana-clawd-x402/`](../../solana-clawd-x402/README.md) provides the gateway, Worker, SDK, and vault runtime
+
+Use [`X402_IMPLEMENTATION.md`](./X402_IMPLEMENTATION.md) to connect the agent definition to the actual x402 execution path before shipping.
+
 | Path                         | Best for                                  | Result                                             |
 | ---------------------------- | ----------------------------------------- | -------------------------------------------------- |
 | **1. PR into the repo**      | Simple, static agent prompts              | Auto-hosted on CDN + hub + 18 locales              |
@@ -14,6 +21,8 @@ There are **four paths** to getting your agent live on the [Solana Clawd hub](ht
 ## Path 1 — Open a PR (easiest)
 
 Push your `agent.json` into the repo and everything else is automatic.
+
+For x402-backed agents, this path publishes the discoverability layer. It does not replace the runtime implementation under `solana-clawd-x402/`.
 
 ### Steps
 

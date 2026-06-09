@@ -70,6 +70,7 @@ These top-level files in `solana-clawd-x402/` are examples and design references
 | [`client-sdk.ts`](../../solana-clawd-x402/client-sdk.ts) | Client-side payment + retry usage |
 | [`confidential-agent.ts`](../../solana-clawd-x402/confidential-agent.ts) | Paid confidential or gated agent pattern |
 | [`dark-defi.ts`](../../solana-clawd-x402/dark-defi.ts) | Example DeFi-oriented paid-agent flow |
+| [`EXAMPLE.md`](../../solana-clawd-x402/EXAMPLE.md) | End-to-end usage example and walkthrough material |
 | [`gateway-index.ts`](../../solana-clawd-x402/gateway-index.ts) | Alternate gateway wiring sketch |
 | [`p-token.ts`](../../solana-clawd-x402/p-token.ts) | p-token flow reference |
 | [`p-token-launchpad.ts`](../../solana-clawd-x402/p-token-launchpad.ts) | Launchpad pattern |
