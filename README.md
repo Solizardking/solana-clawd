@@ -186,6 +186,18 @@ npm run library:doctor
 
 The library is part of the pnpm workspace (see `library/`) and is automatically mirrored to `public/library/` so it ships with the Vite web app and is served at `x402.wtf/library/*`. A GitHub Action ([`.github/workflows/library-deploy.yml`](.github/workflows/library-deploy.yml)) keeps the catalog in sync on every push to `library/`.
 
+## x402 implementation map
+
+This repo now documents the three x402 layers together:
+
+| Surface | Path | Purpose |
+| --- | --- | --- |
+| Full Solana x402 stack | [`solana-clawd-x402/`](./solana-clawd-x402/README.md) | Worker gateway, protocol negotiation, Solana verifier, facilitator, SDK, vault program, and example paid-agent flows |
+| Agent catalog bridge | [`agents/docs/X402_IMPLEMENTATION.md`](./agents/docs/X402_IMPLEMENTATION.md) | Maps paid agent JSONs in `agents/src/` to the runtime x402 implementation |
+| Embeddable helper package | [`packages/agents-x402-solana/`](./packages/agents-x402-solana/README.md) | Thin MCP/HTTP monetization wrapper for paid tools and handlers |
+
+Use `solana-clawd-x402/` when you need the full payment rail. Use `agents/` when you are wiring paid agent products into the catalog and registry.
+
 ## ⚡ Install
 
 ```
@@ -1119,13 +1131,13 @@ x402/                        💸 @pump-fun/x402 — HTTP 402 payment protocol
 └── package.json             x402.wtf/gateway · x402.wtf/gateway
 
 pay/                         💰 payment references + side-projects
-vendor/
-└── solana-clawd-x402/       vendored x402 implementation
-    ├── a2a-agent.ts         agent-to-agent x402 flow
-    ├── client-sdk.ts        payment client SDK
-    ├── confidential-agent.ts  TEE-style confidential agent
-    ├── clawd-vault-program.rs  Solana vault Rust program
-    └── dark-defi.ts         privacy DeFi integration reference
+solana-clawd-x402/          💸 full Solana x402 gateway + SDK + vault implementation
+├── a2a-agent.ts            agent-to-agent x402 flow
+├── client-sdk.ts           payment client SDK
+├── confidential-agent.ts   TEE-style confidential agent
+├── worker/                 Cloudflare Worker gateway + facilitator
+├── sdk/                    @solanaclawd/x402-client
+└── programs/               Anchor vault / registry program
 ```
 
 ### Zone 5 — Skills & Knowledge
