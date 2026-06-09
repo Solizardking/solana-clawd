@@ -30,6 +30,7 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 import { homedir } from "os";
 import { join, resolve } from "path";
 import { randomBytes } from "crypto";
+import { spawnSync } from "child_process";
 
 // ─── CLI args ────────────────────────────────────────────────────────────────
 const args = process.argv.slice(2);
@@ -410,6 +411,20 @@ async function main() {
   // Rewrite with final proof
   try {
     writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+  } catch {
+    /* non-fatal */
+  }
+
+  // Keep the README's minted scoreboard in sync with the latest local mints.
+  try {
+    const scoreboard = spawnSync(process.execPath, ["scripts/update-minted-scoreboard.mjs"], {
+      cwd: process.cwd(),
+      stdio: "pipe",
+      encoding: "utf8",
+    });
+    if (scoreboard.status === 0 && scoreboard.stdout.trim()) {
+      console.log(scoreboard.stdout.trim());
+    }
   } catch {
     /* non-fatal */
   }
