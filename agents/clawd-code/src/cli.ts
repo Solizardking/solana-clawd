@@ -7,6 +7,9 @@
 import { readFileSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
+import { MODELS, printModelsTable, normalizeModelId, DEFAULT_MODEL } from './grok-models.js';
+import { HeadlessWriter } from './headless.js';
+import { EnvironmentVerifier } from './verify.js';
 
 const CONFIG_DIR = join(homedir(), '.clawd-code');
 const ENV_FILE = join(CONFIG_DIR, '.env');
@@ -151,10 +154,37 @@ First run: cp .env.example ~/.clawd-code/.env
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
     printUsage();
     process.exit(0);
+  }
+
+  // Special commands: /models, /verify
+  if (args[0] === '/models' || args[0] === 'models') {
+    if (args[1]) {
+      const normalized = normalizeModelId(args[1]);
+      console.log(`\n[CLAWD CODE] Switched model to: ${normalized}`);
+      console.log(`Set CLAWD_MODEL=${normalized} in ~/.clawd-code/.env to persist.`);
+    } else {
+      printModelsTable();
+    }
+    process.exit(0);
+  }
+
+  if (args[0] === '/verify' || args[0] === 'verify') {
+    EnvironmentVerifier.loadEnvFile();
+    const verifier = new EnvironmentVerifier();
+    const results = verifier.verifyAll();
+    const report = verifier.printReport(results);
+    process.exit(report.ok ? 0 : 1);
+  }
+
+  // Headless output format
+  const formatFlag = args.indexOf('--format');
+  const format = formatFlag !== -1 ? args[formatFlag + 1] : 'text';
+  if (format === 'json' || format === 'text') {
+    process.env.CLAWD_OUTPUT_FORMAT = format;
   }
 
   const config = loadConfig();
