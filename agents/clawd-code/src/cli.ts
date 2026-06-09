@@ -11,6 +11,7 @@ import { MODELS, printModelsTable, normalizeModelId, DEFAULT_MODEL } from './gro
 import { HeadlessWriter } from './headless.js';
 import { EnvironmentVerifier } from './verify.js';
 import { createOpenRouterClient, OpenRouterClient, DEFAULT_FREE_MODEL } from './openrouter.js';
+import * as C from './commands.js';
 
 const CONFIG_DIR = join(homedir(), '.clawd-code');
 const ENV_FILE = join(CONFIG_DIR, '.env');
@@ -221,6 +222,27 @@ async function main(): Promise<void> {
       console.log(`\n  Default OpenRouter free model: ${DEFAULT_FREE_MODEL}`);
       console.log('  Switch: clawd-code /provider openrouter');
     }
+    process.exit(0);
+  }
+
+  // Solana-style slash commands
+  const slashCommands: Record<string, (a: string[]) => Promise<void>> = {
+    '/perps':      C.cmdPerps,
+    '/wallet':     C.cmdWallet,
+    '/send':       C.cmdSend,
+    '/price':      C.cmdPrice,
+    '/balance':    C.cmdBalance,
+    '/positions':  C.cmdPositions,
+    '/funding':    C.cmdFunding,
+    '/signals':    C.cmdSignals,
+    '/strategies': C.cmdStrategies,
+    '/agents':     C.cmdAgents,
+    '/goal':       C.cmdGoal,
+    '/help':       C.cmdHelp,
+  };
+
+  if (slashCommands[args[0]]) {
+    await slashCommands[args[0]](args.slice(1));
     process.exit(0);
   }
 
