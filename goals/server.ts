@@ -36,8 +36,14 @@ const geminiApiKey = process.env.GEMINI_API_KEY || "AQ.Ab8RN6JT3VEJfeHYX8-aTwmSm
 const isGeminiConfigured = !!geminiApiKey && geminiApiKey !== "MY_GEMINI_API_KEY";
 
 const redpillApiKey = process.env.REDPILL_API_KEY;
-const isRedpillConfigured = !!redpillApiKey && redpillApiKey !== "MY_REDPILL_API_KEY";
-const redpillModelDefault = process.env.REDPILL_MODEL || "phala/qwen3.6-35b-a3b-uncensored";
+const redpillKey = process.env.REDPILL_KEY;
+const isRedpillConfigured = !!(redpillApiKey || redpillKey);
+const redpillModelDefault = process.env.REDPILL_MODEL || "google/gemma-4-31b-it";
+
+// Initialize XAI (Grok) settings
+const xaiApiKey = process.env.XAI_API_KEY;
+const isXaiConfigured = !!xaiApiKey && !xaiApiKey.includes("MY_XAI_API_KEY") && xaiApiKey.length > 10;
+const xaiModel = process.env.XAI_MODEL || "grok-4.3";
 
 // Helper function to scrub markdown blocks from JSON responses
 function cleanJSONString(str: string): string {
@@ -60,6 +66,8 @@ app.get("/api/status", (req, res) => {
     minimaxConfigured: isMiniMaxConfigured,
     geminiConfigured: isGeminiConfigured,
     redpillConfigured: isRedpillConfigured,
+    xaiConfigured: isXaiConfigured,
+    xaiModel: xaiModel,
     redpillModel: redpillModelDefault,
     publicKey: publicKeyPem,
   });
@@ -337,6 +345,12 @@ app.post("/api/generate-goal", async (req, res) => {
       });
     }
 
+    if (modelProvider === "xai" && !isXaiConfigured) {
+      return res.status(500).json({
+        error: "XAI_API_KEY is not configured in your environment. Please add XAI_API_KEY to your environment.",
+      });
+    }
+
     // Generate verified requestId
     let requestId = `chatcmpl-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -469,6 +483,40 @@ ${prompt}
       parsedGoalText = data.choices?.[0]?.message?.content || "";
       if (data.id) {
         requestId = data.id;
+      }
+    } else if (modelProvider === "xai") {
+      // Build xAI Grok API request using OpenAI-compatible endpoint
+      const xaiResponse = await fetch("https://api.x.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${xaiApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: xaiModel,
+          messages: [
+            {
+              role: "system",
+              content: systemInstruction,
+            },
+            {
+              role: "user",
+              content: formattedPrompt,
+            }
+          ],
+          max_tokens: 4000,
+        }),
+      });
+
+      if (!xaiResponse.ok) {
+        const errorText = await xaiResponse.text();
+        throw new Error(`xAI API request failed with status ${xaiResponse.status}: ${errorText}`);
+      }
+
+      const xaiData = await xaiResponse.json();
+      parsedGoalText = xaiData.choices?.[0]?.message?.content || "";
+      if (xaiData.id) {
+        requestId = xaiData.id;
       }
     } else if (modelProvider === "gemini") {
       // Build Google Gemini-compliant request payload structure matching user's curl suggestion

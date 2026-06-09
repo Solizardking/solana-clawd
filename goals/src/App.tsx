@@ -98,10 +98,11 @@ export default function App() {
   const [goalsHistory, setGoalsHistory] = useState<Goal[]>([]);
   const [activeGoal, setActiveGoal] = useState<Goal | null>(null);
   const [isApiKeyHealthy, setIsApiKeyHealthy] = useState<boolean>(true);
-  const [modelProvider, setModelProvider] = useState<"gemini" | "minimax" | "redpill">("gemini");
+  const [modelProvider, setModelProvider] = useState<"gemini" | "minimax" | "redpill" | "xai" | "gemma">("gemma");
   const [minimaxAvailable, setMinimaxAvailable] = useState<boolean>(true);
   const [geminiAvailable, setGeminiAvailable] = useState<boolean>(true);
   const [redpillAvailable, setRedpillAvailable] = useState<boolean>(true);
+  const [xaiAvailable, setXaiAvailable] = useState<boolean>(true);
   const [serverPublicKeyPem, setServerPublicKeyPem] = useState<string | null>(null);
 
   // Real-time TEE attestation report status
@@ -178,21 +179,25 @@ export default function App() {
           setMinimaxAvailable(!!data.minimaxConfigured);
           setGeminiAvailable(!!data.geminiConfigured);
           setRedpillAvailable(!!data.redpillConfigured);
+          setXaiAvailable(!!data.xaiConfigured);
           
           if (data.publicKey) {
             setServerPublicKeyPem(data.publicKey);
           }
 
-          // If Gemini isn't configured, check alternative defaults
-          if (!data.geminiConfigured) {
-            if (data.minimaxConfigured) {
-              setModelProvider("minimax");
-            } else if (data.redpillConfigured) {
-              setModelProvider("redpill");
-            }
+          // Check which providers are available and set default
+          if (data.xaiConfigured) {
+            setModelProvider("xai"); // Default to xAI/Grok
+          } else if (data.geminiConfigured) {
+            setModelProvider("gemini");
+          } else if (data.minimaxConfigured) {
+            setModelProvider("minimax");
+          } else if (data.redpillConfigured) {
+            setModelProvider("redpill");
           }
           
-          if (!data.geminiConfigured && !data.minimaxConfigured && !data.redpillConfigured) {
+          // Check if no providers are configured
+          if (!data.geminiConfigured && !data.minimaxConfigured && !data.redpillConfigured && !data.xaiConfigured) {
             setIsApiKeyHealthy(false);
           }
         }
@@ -690,6 +695,18 @@ export default function App() {
                     </button>
                     <button
                       type="button"
+                      onClick={() => setModelProvider("xai")}
+                      className={`flex-1 py-1.5 text-center rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                        modelProvider === "xai"
+                          ? "bg-[#14F195] text-black shadow"
+                          : "text-zinc-500 hover:text-zinc-300"
+                      }`}
+                      title="Powered by Grok via xAI API"
+                    >
+                      Grok
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setModelProvider("minimax")}
                       className={`flex-1 py-1.5 text-center rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                         modelProvider === "minimax"
@@ -710,6 +727,18 @@ export default function App() {
                       title="Run inside Phala TEE secure enclave privacy-first sandbox"
                     >
                       RedPill TEE
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setModelProvider("gemma")}
+                      className={`flex-1 py-1.5 text-center rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                        modelProvider === "gemma"
+                          ? "bg-[#14F195] text-black shadow"
+                          : "text-zinc-500 hover:text-zinc-300"
+                      }`}
+                      title="Google Gemma via RedPill API"
+                    >
+                      Gemma
                     </button>
                   </div>
                 </div>
