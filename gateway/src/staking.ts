@@ -31,6 +31,7 @@ const PROGRAM_ID = process.env.OPENCLAWD_AGENT_STAKING_PROGRAM_ID ??
   'D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP';
 const DEFAULT_COLLECTION = process.env.OPENCLAWD_AGENT_COLLECTION ?? '';
 const STAKING_RPC_URL = process.env.OPENCLAWD_AGENT_STAKING_RPC_URL ??
+  process.env.HELIUS_RPC_URL ??
   process.env.SOLANA_RPC_URL ??
   'https://api.devnet.solana.com';
 const STAKING_CLUSTER = process.env.OPENCLAWD_AGENT_STAKING_CLUSTER ??

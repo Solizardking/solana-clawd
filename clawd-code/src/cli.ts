@@ -48,7 +48,10 @@ interface ClawdCodeConfig {
   model: string;
 }
 
-const DEFAULT_HELIUS_RPC = 'https://mainnet.helius-rpc.com/?api-key=';
+const DEFAULT_HELIUS_RPC = process.env.HELIUS_RPC_URL ||
+  (process.env.HELIUS_API_KEY
+    ? `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`
+    : 'https://api.mainnet-beta.solana.com');
 
 function loadConfig(): ClawdCodeConfig {
   const env = loadEnv();
@@ -56,9 +59,9 @@ function loadConfig(): ClawdCodeConfig {
     mode: (env.CLAWD_MODE as Mode) || 'CODE',
     liveTrading: env.LIVE_TRADING === 'true',
     operatorConfirmed: env.OPERATOR_CONFIRMED === 'true',
-    rpcUrl: env.SOLANA_RPC_URL || env.HELIUS_RPC_URL || DEFAULT_HELIUS_RPC,
-    xaiApiKey: env.XAI_API_KEY || '',
-    heliusApiKey: env.HELIUS_API_KEY || '',
+    rpcUrl: env.SOLANA_RPC_URL || env.HELIUS_RPC_URL || process.env.SOLANA_RPC_URL || DEFAULT_HELIUS_RPC,
+    xaiApiKey: env.XAI_API_KEY || process.env.XAI_API_KEY || '',
+    heliusApiKey: env.HELIUS_API_KEY || process.env.HELIUS_API_KEY || '',
     phoenixRiseUrl: env.PHOENIX_RISE_URL || 'https://api.phoenix.gg/enclave',
     vulcanMcpUrl: env.VULCAN_MCP_URL || 'http://localhost:3001',
     agentCount: parseInt(env.CLAWD_AGENT_COUNT || '4') as 4 | 16,

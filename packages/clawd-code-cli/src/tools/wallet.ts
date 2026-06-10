@@ -13,6 +13,7 @@ export class WalletTool {
 
   constructor() {
     const rpc = process.env.SOLANA_RPC_URL ||
+      process.env.HELIUS_RPC_URL ||
       (process.env.HELIUS_API_KEY ? `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}` : "https://api.mainnet-beta.solana.com");
     this.connection = new Connection(rpc, "confirmed");
     this.loadKeypair();

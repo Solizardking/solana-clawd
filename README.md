@@ -138,6 +138,7 @@ The GitHub, install, and gateway paths are now wired to the canonical x402 surfa
 | Agents hub | [`x402.wtf/agents`](https://x402.wtf/agents) | `agents` catalog validates 130 agents and the explicit `agents/` workspace paths |
 | Skills hub | [`x402.wtf/skills`](https://x402.wtf/skills) | Gateway serves 136 catalog skills plus per-skill metadata fallback |
 | Gateway | [`x402.wtf/gateway`](https://x402.wtf/gateway) | `gateway/scripts/smoke-x402-routes.mjs` starts the built gateway and checks public routes |
+| Grok Studio | [`x402.wtf/grok`](https://x402.wtf/grok) | Terminal chat studio backed by server-side `XAI_API_KEY` for Grok chat, image, video, TTS, STT, downloads, and reusable assets |
 | Staking | [`x402.wtf/staking`](https://x402.wtf/staking) | Helius DAS reads agent assets, token assets, and batch asset metadata for staking flows |
 | Telegram | [`x402.wtf/telegram`](https://x402.wtf/telegram) | Smoke test verifies `POST /telegram/webhook` returns `200 OK` |
 | Discovery | [`/.well-known/ai-plugin.json`](https://x402.wtf/.well-known/ai-plugin.json) | Static and dynamic discovery docs expose agents, skills, gateway, staking, and Telegram URLs |
@@ -561,7 +562,8 @@ ls dist/
 cp .env.example .env
 nano .env
 # Required: OPENROUTER_API_KEY=sk-or-v1-...   (free at openrouter.ai)
-# Optional: XAI_API_KEY, ANTHROPIC_API_KEY, HELIUS_API_KEY, SOLANA_PRIVATE_KEY
+# Optional: XAI_API_KEY for /grok chat, image, video, speech, and transcription
+# Optional: ANTHROPIC_API_KEY, HELIUS_API_KEY, SOLANA_PRIVATE_KEY
 ```
 
 **Step 8 — Run:**
@@ -629,12 +631,14 @@ open https://x402.wtf/terminal
 ║  x402.wtf            ║  Main site · TUI · SDK · token             ║
 ║  x402.wtf/agents     ║  Browse + search all 130 agents            ║
 ║  x402.wtf/gateway    ║  x402 payment gateway · USDC routing       ║
+║  x402.wtf/grok       ║  Grok terminal studio · media · voice       ║
 ║  x402.wtf/skills     ║  Installable agent skills catalog          ║
 ║  x402.wtf/terminal   ║  Browser terminal (zero install)           ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
 ║  x402.wtf                   ║  HTTP 402 payment protocol                 ║
 ║  x402.wtf/agents            ║  x402-gated agent catalog + pricing        ║
 ║  x402.wtf/gateway           ║  Facilitator · routing · settlement        ║
+║  x402.wtf/grok              ║  XAI_API_KEY-backed chat + media studio    ║
 ║  x402.wtf/skills            ║  Premium skills marketplace                ║
 ║  x402.wtf/.well-known/      ║  CAAP/1.0 discovery · ACP registry        ║
 ╠═════════════════════════════╬════════════════════════════════════════════╣
@@ -2191,9 +2195,14 @@ ANTHROPIC_API_KEY=        # Anthropic direct — console.anthropic.com
 
 # ── Solana ──────────────────────────────────────────────────────
 CREATOR_PUBKEY=           # your Solana public key
-SOLANA_RPC_URL=           # default: api.mainnet-beta.solana.com
 SOLANA_PRIVATE_KEY=       # base58 keypair (optional, for on-chain ops)
 HELIUS_API_KEY=           # free at helius.dev — enhanced txs + WebSocket
+HELIUS_RPC_URL=           # mainnet Helius RPC URL with api-key
+HELIUS_WSS_URL=           # mainnet Helius WebSocket URL with api-key
+HELIUS_DEVNET_URL=        # devnet Helius RPC URL with api-key
+SOLANA_RPC_URL=           # alias to HELIUS_RPC_URL for Solana SDKs
+SOLANA_DEVNET_RPC_URL=    # alias to HELIUS_DEVNET_URL for devnet SDKs
+RPC_URL=                  # legacy alias to HELIUS_RPC_URL
 
 # ── x402 micropayments ──────────────────────────────────────────
 X402_SVM_PRIVATE_KEY=     # base58 keypair for USDC payments

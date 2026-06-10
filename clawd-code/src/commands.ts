@@ -3,7 +3,11 @@
  * /perps /wallet /send /price /balance /goal /positions /strategies /agents /funding /scan /signals
  */
 
-const HELIUS_RPC = 'https://mainnet.helius-rpc.com/?api-key=';
+const HELIUS_KEY = process.env.HELIUS_API_KEY ?? '';
+const HELIUS_RPC = process.env.HELIUS_RPC_URL ??
+  (HELIUS_KEY
+    ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
+    : 'https://api.mainnet-beta.solana.com');
 const PHOENIX_RISE = 'https://api.phoenix.gg/enclave';
 
 async function rpcCall(method: string, params: any[]): Promise<any> {

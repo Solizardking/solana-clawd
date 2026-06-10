@@ -40,11 +40,27 @@ import {
 // Umi instance management
 // ─────────────────────────────────────────────────────────────────────────────
 
+function rpcUrlForNetwork(network: SupportedNetwork): string {
+  if (network === 'solana-devnet') {
+    return process.env.HELIUS_DEVNET_URL ||
+      process.env.SOLANA_DEVNET_RPC_URL ||
+      NETWORK_RPC_URLS[network]
+  }
+
+  if (network === 'solana-mainnet') {
+    return process.env.HELIUS_RPC_URL ||
+      process.env.SOLANA_RPC_URL ||
+      NETWORK_RPC_URLS[network]
+  }
+
+  return NETWORK_RPC_URLS[network]
+}
+
 /**
  * Create a configured Umi instance for agent operations.
  */
 export function createAgentUmi(config: MetaplexConfig): Umi {
-  const rpcUrl = config.rpcUrl || NETWORK_RPC_URLS[config.network]
+  const rpcUrl = config.rpcUrl || rpcUrlForNetwork(config.network)
   const umi = createUmi(rpcUrl).use(mplAgentIdentity())
 
   if (config.secretKey) {
@@ -61,7 +77,7 @@ export function createAgentUmi(config: MetaplexConfig): Umi {
 export function createAgentUmiFromEnv(
   network: SupportedNetwork = 'solana-devnet',
 ): Umi {
-  const rpcUrl = process.env.SOLANA_RPC_URL || NETWORK_RPC_URLS[network]
+  const rpcUrl = rpcUrlForNetwork(network)
   const umi = createUmi(rpcUrl).use(mplAgentIdentity())
 
   const secretKeyEnv = process.env.SOLANA_SECRET_KEY

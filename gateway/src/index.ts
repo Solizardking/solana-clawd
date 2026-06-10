@@ -19,7 +19,7 @@
  *   X402_API_URL, X402_PAYMENT_KEY
  *   GATEWAY_PORT (default 8080)
  */
-import 'dotenv/config';
+import './env.js';
 import express, { type Request, type Response } from 'express';
 import {
   TelegramBot,
@@ -41,6 +41,7 @@ import { supabase } from './supabase.js';
 import agentRegistryRouter from './agentRegistry.js';
 import gaslessMintRouter from './gaslessMint.js';
 import clawdGenRouter from './clawdGen.js';
+import grokStudioRouter from './grokStudio.js';
 import skillHubRouter from './skillHub.js';
 import stakingRouter from './staking.js';
 import solanaExplorerRouter from './solanaExplorer.js';
@@ -69,7 +70,7 @@ function msgCtx(cb: TgCallbackQuery): { chatId: number; msgId: number } | null {
 // Bootstrap
 // ---------------------------------------------------------------------------
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '30mb' }));
 app.use(requireLiveAccess);
 const PORT = parseInt(process.env.GATEWAY_PORT ?? '8080', 10);
 const HOST = process.env.GATEWAY_HOST ?? '0.0.0.0';
@@ -82,6 +83,7 @@ const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET ?? '';
 app.use('/', agentRegistryRouter);
 app.use('/', gaslessMintRouter);
 app.use('/', clawdGenRouter);
+app.use('/', grokStudioRouter);
 app.use('/', skillHubRouter);
 app.use('/', stakingRouter);
 app.use('/', solanaExplorerRouter);

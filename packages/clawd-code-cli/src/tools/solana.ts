@@ -33,6 +33,13 @@ export class SolanaTool {
     });
   }
 
+  private heliusRpcEndpoint(): string {
+    if (this.heliusRpcUrl.includes("api-key=")) return this.heliusRpcUrl;
+    if (!this.heliusApiKey) return this.heliusRpcUrl;
+    const sep = this.heliusRpcUrl.includes("?") ? "&" : "?";
+    return `${this.heliusRpcUrl}${sep}api-key=${this.heliusApiKey}`;
+  }
+
   private requireBirdeye(): ToolResult | null {
     if (!this.birdeyeApiKey) return { success: false, error: "BIRDEYE_API_KEY environment variable is not set" };
     return null;
@@ -57,10 +64,12 @@ export class SolanaTool {
 
   async getAsset(assetId: string): Promise<ToolResult> {
     if (!assetId || !BASE58.test(assetId)) return { success: false, error: "Invalid Solana address" };
-    if (!this.heliusApiKey) return { success: false, error: "HELIUS_API_KEY environment variable is not set" };
+    if (!this.heliusApiKey && !this.heliusRpcUrl.includes("api-key=")) {
+      return { success: false, error: "HELIUS_API_KEY or HELIUS_RPC_URL with api-key is required" };
+    }
     try {
       const resp = await axios.post(
-        `${this.heliusRpcUrl}?api-key=${this.heliusApiKey}`,
+        this.heliusRpcEndpoint(),
         { jsonrpc: "2.0", id: "1", method: "getAsset", params: { id: assetId } },
         { timeout: 10000 }
       );
@@ -134,8 +143,10 @@ export class SolanaTool {
 
   async getWalletBalance(walletAddress: string): Promise<ToolResult> {
     if (!BASE58.test(walletAddress)) return { success: false, error: "Invalid wallet address" };
-    if (!this.heliusApiKey) return { success: false, error: "HELIUS_API_KEY environment variable is not set" };
-    const url = `${this.heliusRpcUrl}?api-key=${this.heliusApiKey}`;
+    if (!this.heliusApiKey && !this.heliusRpcUrl.includes("api-key=")) {
+      return { success: false, error: "HELIUS_API_KEY or HELIUS_RPC_URL with api-key is required" };
+    }
+    const url = this.heliusRpcEndpoint();
     try {
       const [balance, tokens] = await Promise.all([
         axios.post(url, { jsonrpc: "2.0", id: "1", method: "getBalance", params: [walletAddress] }, { timeout: 10000 }),

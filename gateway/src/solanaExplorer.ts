@@ -279,6 +279,10 @@ router.get('/agents/solana-board', (_req: Request, res: Response) => {
   res.send(renderBoardHtml());
 });
 
+router.get(['/agents', '/agent'], (_req: Request, res: Response) => {
+  res.redirect(302, '/agents/solana-board');
+});
+
 router.get('/api/explorer/address/:address', async (req: Request, res: Response) => {
   const address = String(req.params.address);
   if (!isValidPubkey(address)) {

@@ -41,6 +41,18 @@ const PRESET_AGENTS: Record<number, { name: string; uri: string; symbol: string 
   3: { name: 'Clawd', symbol: 'CLAWD', uri: `${BASE_URL}/metadata/agent3.json` },
 };
 
+function rpcUrlForNetwork(network: 'mainnet' | 'devnet'): string {
+  if (network === 'devnet') {
+    return process.env.HELIUS_DEVNET_URL ??
+      process.env.SOLANA_DEVNET_RPC_URL ??
+      'https://api.devnet.solana.com';
+  }
+
+  return process.env.HELIUS_RPC_URL ??
+    process.env.SOLANA_RPC_URL ??
+    'https://api.mainnet-beta.solana.com';
+}
+
 // ---------------------------------------------------------------------------
 // Validation helpers
 // ---------------------------------------------------------------------------
@@ -80,9 +92,7 @@ async function mintCoreAsset(opts: {
   } = await import('@metaplex-foundation/umi');
   const bs58 = await import('bs58');
 
-  const rpcUrl = opts.network === 'devnet'
-    ? (process.env.SOLANA_DEVNET_RPC_URL ?? 'https://api.devnet.solana.com')
-    : (process.env.HELIUS_RPC_URL ?? process.env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com');
+  const rpcUrl = rpcUrlForNetwork(opts.network);
 
   const umi = createUmi(rpcUrl).use(mplCore());
 
@@ -143,9 +153,7 @@ async function mintRegisteredAgent(opts: {
   } = await import('@metaplex-foundation/mpl-agent-registry');
   const bs58 = await import('bs58');
 
-  const rpcUrl = opts.network === 'devnet'
-    ? (process.env.SOLANA_DEVNET_RPC_URL ?? 'https://api.devnet.solana.com')
-    : (process.env.HELIUS_RPC_URL ?? process.env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com');
+  const rpcUrl = rpcUrlForNetwork(opts.network);
 
   const umi = createUmi(rpcUrl).use(mplCore()).use(mplAgentIdentity());
 
@@ -447,7 +455,7 @@ router.get('/api/mint/asset/:address', async (req: Request, res: Response) => {
     const { fetchAsset, mplCore } = await import('@metaplex-foundation/mpl-core');
     const { publicKey: umiPublicKey } = await import('@metaplex-foundation/umi');
 
-    const rpcUrl = process.env.HELIUS_RPC_URL ?? process.env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com';
+    const rpcUrl = rpcUrlForNetwork('mainnet');
     const umi = createUmi(rpcUrl).use(mplCore());
 
     const asset = await fetchAsset(umi, umiPublicKey(address));

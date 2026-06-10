@@ -127,6 +127,18 @@ async function main() {
     assert(stakingPage.includes('Helius DAS Token Assets'), 'staking page must expose DAS token assets');
     assert(stakingPage.includes('/api/staking/portfolio/'), 'staking page must use staking portfolio API');
 
+    const grokPage = await text(`${local}/grok`);
+    assert(grokPage.includes('CLAWD_GROK_STUDIO'), 'grok page must render the terminal studio');
+    assert(grokPage.includes('/api/grok/chat'), 'grok page must use the gateway chat API');
+    assert(grokPage.includes('/api/grok/image'), 'grok page must use the gateway image API');
+    assert(grokPage.includes('/api/grok/tts'), 'grok page must use the gateway voice API');
+
+    const grokStatus = await json(`${local}/api/grok/status`);
+    assert(grokStatus.chat_model, 'grok status must expose chat model config');
+    assert(grokStatus.image_model, 'grok status must expose image model config');
+    assert(grokStatus.video_model, 'grok status must expose video model config');
+    assert(typeof grokStatus.xai_available === 'boolean', 'grok status must report XAI_API_KEY availability');
+
     const blockedMutation = await fetch(`${local}/api/staking/transaction`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
