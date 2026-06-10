@@ -123,6 +123,34 @@ Read the lane overview in [dark/README.md](./dark/README.md).
 
 ---
 
+## Goals - Runtime Goal Orchestration
+
+The `goals/` workspace is now part of the build surface. It is a Vite/Express
+app for turning operator prompts, uploaded context, perps plans, and research
+notes into structured goals that humans and agents can review.
+
+What ships:
+- Root scripts expose `npm run goals:dev`, `npm run goals:build`,
+  `npm run goals:typecheck`, `npm run goals:start`, and `npm run goals:clean`.
+- `npm run build:all` includes the goals app.
+- The app is registered in both npm and pnpm workspaces as
+  `solana-clawd-goals`.
+- `goals/.env.example` documents provider keys with placeholders only.
+- `goals/.env.local`, `goals/node_modules`, and `goals/dist` remain local or
+  generated artifacts and should not be treated as source-of-truth inputs.
+
+Run it:
+
+```bash
+npm run goals:dev
+# or
+npm run goals:build && npm run goals:start
+```
+
+Read the app overview in [goals/README.md](./goals/README.md).
+
+---
+
 ## Box Agents - Ephemeral Sandboxes
 
 <div align="center">

@@ -511,11 +511,11 @@ export default function App() {
               </p>
               <div className="text-zinc-[450] leading-relaxed font-light">
                 {!geminiAvailable && !minimaxAvailable ? (
-                  <span>Both AI keys are using fallbacks. Put your <strong>GEMINI_API_KEY</strong> or <strong>MINIMAX_API_KEY</strong> in Settings secrets to connect your direct premium endpoints.</span>
+                  <span>No direct model provider is configured. Put <strong>GEMINI_API_KEY</strong>, <strong>MINIMAX_API_KEY</strong>, <strong>XAI_API_KEY</strong>, or <strong>REDPILL_API_KEY</strong> in local/deployment secrets to enable live generation.</span>
                 ) : !geminiAvailable ? (
-                  <span>Gemini is loaded with our customized public key registry. You can still input your own primary secret <strong>GEMINI_API_KEY</strong> to fully own your prompt throughput.</span>
+                  <span>Gemini is disabled until <strong>GEMINI_API_KEY</strong> is supplied through your local or deployment secret store.</span>
                 ) : (
-                  <span>MiniMax is currently operating in offline default patterns. Turn on <strong>MINIMAX_API_KEY</strong> under Applet Secrets to execute online compilation.</span>
+                  <span>MiniMax is disabled until <strong>MINIMAX_API_KEY</strong> is supplied through your local or deployment secret store.</span>
                 )}
               </div>
             </div>
