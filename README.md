@@ -1,9 +1,3 @@
-<!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
-<!-- ║   OpenClawd — Formally Verified On-Chain Solana Agent Runtime             ║ -->
-<!-- ║   SAS Attested · Metaplex MPL Core · CAAP/1.0 · AES-256-GCM at Birth     ║ -->
-<!-- ║   pay.sh: Installs Clawd FIRST. Providers plug in AFTER.                  ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
-
 <div align="center">
 
 ```
@@ -33,21 +27,12 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ║  x402.wtf  ·  $CLAWD: 8cHzQH...pump  ·  MIT            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
-
 **🦞 125 agents · 🎯 130+ skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
-
-<div style="position: relative; padding-top: 56.25%;">
-  <iframe
-    src="https://customer-oh7hxjdpro3mt496.cloudflarestream.com/0a91344b5b88044f760c52f7fee3d6b2/iframe"
-    style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
-    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-    allowfullscreen="true"
-  ></iframe>
-</div>
-
-**Watch the video:** https://customer-oh7hxjdpro3mt496.cloudflarestream.com/0a91344b5b88044f760c52f7fee3d6b2/iframe
-
----
+---<!-- ╔══════════════════════════════════════════════════════════════════════════╗ -->
+<!-- ║   OpenClawd — Formally Verified On-Chain Solana Agent Runtime             ║ -->
+<!-- ║   SAS Attested · Metaplex MPL Core · CAAP/1.0 · AES-256-GCM at Birth     ║ -->
+<!-- ║   pay.sh: Installs Clawd FIRST. Providers plug in AFTER.                  ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════════════╝ -->
 
 ### 🔥 WHAT'S NEW — June 2026
 
