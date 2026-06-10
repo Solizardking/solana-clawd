@@ -56,6 +56,23 @@ function categoriesFor(templates) {
   }, {});
 }
 
+function walletConfig() {
+  const rpcUrl = process.env.SOLANA_RPC_URL ?? process.env.RPC_URL ?? "https://api.mainnet-beta.solana.com";
+  const heliusDasUrl =
+    process.env.HELIUS_DAS_URL ??
+    (process.env.HELIUS_API_KEY
+      ? `https://mainnet.helius-rpc.com/?api-key=${process.env.HELIUS_API_KEY}`
+      : "https://mainnet.helius-rpc.com/?api-key=YOUR_HELIUS_API_KEY");
+
+  return {
+    defaultNetwork: "solana-mainnet",
+    rpcUrl,
+    heliusDasUrl,
+    supportsVaultMode: true,
+    supportsEphemeralMode: true,
+  };
+}
+
 function createJob(body, snapshot) {
   const template = snapshot.templates.find((entry) => entry.id === body.templateId);
   const character = snapshot.characters.find((entry) => entry.id === body.characterId);
@@ -82,8 +99,8 @@ function createJob(body, snapshot) {
     tags: [...new Set([...(template.tags ?? []), ...(character.topics ?? []).slice(0, 3)])],
     walletAddress: walletAddress(`${id}:${body.name}:${character.id}`),
     walletEndpoint: body.walletMode === "vault" ? character.walletEndpoint : undefined,
-    rpcUrl: typeof body.rpcUrl === "string" ? body.rpcUrl : undefined,
-    heliusDasUrl: typeof body.heliusDasUrl === "string" ? body.heliusDasUrl : undefined,
+    rpcUrl: typeof body.rpcUrl === "string" ? body.rpcUrl : walletConfig().rpcUrl,
+    heliusDasUrl: typeof body.heliusDasUrl === "string" ? body.heliusDasUrl : walletConfig().heliusDasUrl,
   };
 }
 
@@ -99,7 +116,7 @@ export default async function handler(req, res) {
       characters: snapshot.characters,
       spawns: jobs,
       playbooks: SPAWN_PLAYBOOKS,
-      modules: loadRepoModules(),
+      modules: Array.isArray(snapshot.modules) ? snapshot.modules : loadRepoModules(),
       stats: {
         templates: snapshot.templates.length,
         characters: snapshot.characters.length,
@@ -131,25 +148,12 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "GET" && path.endsWith("/v1/spawn/modules")) {
-    sendJson(res, 200, { ok: true, modules: loadRepoModules() });
+    sendJson(res, 200, { ok: true, modules: Array.isArray(snapshot.modules) ? snapshot.modules : loadRepoModules() });
     return;
   }
 
   if (req.method === "GET" && path.endsWith("/v1/spawn/wallet-config")) {
-    const rpcUrl = process.env.SOLANA_RPC_URL ?? process.env.RPC_URL ?? "https://api.mainnet-beta.solana.com";
-    const heliusApiKey = process.env.HELIUS_API_KEY ?? "";
-    sendJson(res, 200, {
-      ok: true,
-      wallet: {
-        defaultNetwork: "solana-mainnet",
-        rpcUrl,
-        heliusDasUrl: heliusApiKey
-          ? `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
-          : "https://mainnet.helius-rpc.com/?api-key=YOUR_HELIUS_API_KEY",
-        supportsVaultMode: true,
-        supportsEphemeralMode: true,
-      },
-    });
+    sendJson(res, 200, { ok: true, wallet: walletConfig() });
     return;
   }
 

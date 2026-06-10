@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-10T22:14:10.732Z",
+  "generatedAt": "2026-06-10T22:23:52.144Z",
   "templates": [
     {
       "id": "solana-technical-analyst",
@@ -3276,6 +3276,116 @@
       "lore": [],
       "style": {},
       "sourcePath": "snapshot:warrenbuffet.json"
+    }
+  ],
+  "modules": [
+    {
+      "id": "knowledge",
+      "name": "Knowledge",
+      "path": "knowledge",
+      "description": "Knowledge packs, source material, and indexed operator context.",
+      "kind": "knowledge",
+      "exists": true,
+      "entries": 17
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "path": "library",
+      "description": "OpenClawd library assets and runtime-facing packaged surfaces.",
+      "kind": "package",
+      "exists": true,
+      "entries": 49
+    },
+    {
+      "id": "hedge",
+      "name": "Hedge",
+      "path": "hedge",
+      "description": "Hedge strategy manifests and portfolio system assets.",
+      "kind": "runtime",
+      "exists": true,
+      "entries": 8
+    },
+    {
+      "id": "goals",
+      "name": "Goals",
+      "path": "goals",
+      "description": "Goal tracking UX and runtime goal surfaces.",
+      "kind": "runtime",
+      "exists": true,
+      "entries": 21
+    },
+    {
+      "id": "gateway",
+      "name": "Gateway",
+      "path": "gateway",
+      "description": "HTTP and Telegram gateway services for the agent stack.",
+      "kind": "runtime",
+      "exists": true,
+      "entries": 13
+    },
+    {
+      "id": "formal-verification",
+      "name": "Formal Verification",
+      "path": "formal_verification",
+      "description": "Formal methods and verification support for Solana agent safety.",
+      "kind": "protocol",
+      "exists": true,
+      "entries": 12
+    },
+    {
+      "id": "packages",
+      "name": "Packages",
+      "path": "packages",
+      "description": "Monorepo packages including hub, wallet, registry, SDK, and agent tooling.",
+      "kind": "package",
+      "exists": true,
+      "entries": 15
+    },
+    {
+      "id": "programs",
+      "name": "Programs",
+      "path": "programs",
+      "description": "On-chain Solana programs and clients.",
+      "kind": "protocol",
+      "exists": true,
+      "entries": 2
+    },
+    {
+      "id": "skills",
+      "name": "Skills",
+      "path": "skills",
+      "description": "Composable agent skills used across spawn templates and operator flows.",
+      "kind": "knowledge",
+      "exists": true,
+      "entries": 145
+    },
+    {
+      "id": "spinners",
+      "name": "Spinners",
+      "path": "spinners",
+      "description": "UX and launch animation surfaces for operator-facing flows.",
+      "kind": "runtime",
+      "exists": true,
+      "entries": 48
+    },
+    {
+      "id": "staking",
+      "name": "Staking",
+      "path": "staking",
+      "description": "Agent staking protocol, lock state, and lifecycle economics.",
+      "kind": "protocol",
+      "exists": true,
+      "entries": 17
+    },
+    {
+      "id": "src",
+      "name": "Core Src",
+      "path": "src",
+      "description": "Primary OpenClawd source tree for runtime and services.",
+      "kind": "runtime",
+      "exists": true,
+      "entries": 91
     }
   ]
 }
