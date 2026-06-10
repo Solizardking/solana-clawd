@@ -22,6 +22,7 @@ pub fn initialize_handler(ctx: Context<Initialize>) -> Result<()> {
 
     global_pool.admin = ctx.accounts.admin.key();
     global_pool.total_agents_staked = 0;
+    global_pool.total_rewards_distributed = 0;
     global_pool.reserved = 0;
 
     Ok(())

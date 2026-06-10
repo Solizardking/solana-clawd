@@ -13,7 +13,7 @@ pub struct UnstakeAgent<'info> {
     pub owner: UncheckedAccount<'info>,
 
     /// Tx fee payer. Either `owner` (normal flow) or the program admin
-    /// (emergency-recovery flow — see handler below).
+    /// (emergency-recovery flow).
     #[account(mut)]
     pub user: Signer<'info>,
 
@@ -23,6 +23,15 @@ pub struct UnstakeAgent<'info> {
         bump
     )]
     pub global_pool: Account<'info, GlobalPool>,
+
+    /// Closed on unstake — lamports returned to `user`.
+    #[account(
+        mut,
+        seeds = [USER_POOL_SEED, asset.key().as_ref()],
+        bump,
+        close = user
+    )]
+    pub user_pool: Account<'info, UserPool>,
 
     #[account(
         mut,
@@ -43,11 +52,11 @@ pub struct UnstakeAgent<'info> {
 
 pub fn unstake_agent_handler(ctx: Context<UnstakeAgent>) -> Result<()> {
     let global_pool = &mut ctx.accounts.global_pool;
+    let user_pool = &ctx.accounts.user_pool;
     let asset = BaseAssetV1::try_from(&ctx.accounts.asset.to_account_info())
         .map_err(|_| error!(StakingError::InvalidMetadata))?;
 
     // Authorization: tx-fee-payer (`user`) must be the asset owner OR the program admin.
-    // Admin-as-payer covers emergency unfreezing if the owner key is compromised/lost.
     if !ctx.accounts.user.key().eq(&ctx.accounts.owner.key()) {
         require!(
             global_pool.admin.eq(&ctx.accounts.user.key()),
@@ -63,6 +72,13 @@ pub fn unstake_agent_handler(ctx: Context<UnstakeAgent>) -> Result<()> {
         asset.update_authority == UpdateAuthority::Collection(ctx.accounts.collection.key()),
         StakingError::InvalidCollection
     );
+
+    let now = Clock::get()
+        .map_err(|_| error!(StakingError::ClockUnavailable))?
+        .unix_timestamp;
+
+    let pending = user_pool.pending_rewards(now, REWARD_RATE_PER_SECOND);
+    let total_accrued = user_pool.total_claimed.saturating_add(pending);
 
     // Step 1: flip FreezeDelegate.frozen to false so the asset can be moved.
     UpdatePluginV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
@@ -87,5 +103,22 @@ pub fn unstake_agent_handler(ctx: Context<UnstakeAgent>) -> Result<()> {
         .checked_sub(1)
         .ok_or(StakingError::CounterUnderflow)?;
 
+    emit!(AgentUnstaked {
+        owner: ctx.accounts.owner.key(),
+        asset: ctx.accounts.asset.key(),
+        unstake_time: now,
+        pending_rewards: pending,
+        total_accrued,
+    });
+
     Ok(())
+}
+
+#[event]
+pub struct AgentUnstaked {
+    pub owner: Pubkey,
+    pub asset: Pubkey,
+    pub unstake_time: i64,
+    pub pending_rewards: u64,
+    pub total_accrued: u64,
 }

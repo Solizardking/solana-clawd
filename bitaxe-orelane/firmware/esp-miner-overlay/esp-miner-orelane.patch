@@ -1,0 +1,54 @@
+diff --git a/main/CMakeLists.txt b/main/CMakeLists.txt
+index 89af2ed..0000000 100644
+--- a/main/CMakeLists.txt
++++ b/main/CMakeLists.txt
+@@ -15,5 +15,7 @@ SRCS
+     "system.c"
+     "work_queue.c"
++    "orelane.c"
++    "orelane_api.c"
+     "lv_font_portfolio-6x8.c"
+     "logo.c"
+     "./bap/bap.c"
+diff --git a/main/main.c b/main/main.c
+index 354b2af..0000000 100644
+--- a/main/main.c
++++ b/main/main.c
+@@ -22,6 +22,7 @@
+ #include "filesystem.h"
+ #include "input.h"
+ #include "log_buffer.h"
++#include "orelane.h"
+ 
+ static GlobalState GLOBAL_STATE;
+ 
+@@ -111,6 +112,8 @@ void app_main(void)
+     if (!GLOBAL_STATE.SELF_TEST_MODULE.is_active) {
+         // start the API for AxeOS
+         start_rest_server((void *) &GLOBAL_STATE);
++        orelane_init(&GLOBAL_STATE);
++        orelane_start();
+     }
+ 
+     // After mounting SPIFFS
+diff --git a/main/http_server/http_server.c b/main/http_server/http_server.c
+index 0000000..0000000 100644
+--- a/main/http_server/http_server.c
++++ b/main/http_server/http_server.c
+@@ -25,6 +25,7 @@
+ #include "system_api_json.h"
+ #include "log_buffer.h"
+ #include "cjson_utils.h"
++#include "orelane_api.h"
+ #include "utils.h"
+ 
+ static const char * TAG = "http_server";
+@@ -1240,6 +1241,8 @@ esp_err_t start_rest_server(void * pvParameters)
+     };
+     httpd_register_uri_handler(server, &ws_live);
+ 
++    orelane_register_http_routes(server);
++
+     if (!GLOBAL_STATE->filesystem_is_available) {
+         /* Make default route serve Recovery */
+         httpd_uri_t recovery_implicit_get_uri = {

@@ -22,4 +22,10 @@ pub enum StakingError {
     CounterOverflow,
     #[msg("Stake counter underflow")]
     CounterUnderflow,
+    #[msg("Arithmetic overflow computing rewards")]
+    RewardOverflow,
+    #[msg("No rewards have accrued yet")]
+    NoRewardsToClaim,
+    #[msg("Clock is unavailable")]
+    ClockUnavailable,
 }

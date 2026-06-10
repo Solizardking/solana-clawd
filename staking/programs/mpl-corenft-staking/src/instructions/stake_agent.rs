@@ -24,6 +24,16 @@ pub struct StakeAgent<'info> {
     )]
     pub global_pool: Account<'info, GlobalPool>,
 
+    /// Per-agent staking record — created on first stake, closed on unstake.
+    #[account(
+        init,
+        payer = user,
+        space = UserPool::DATA_SIZE,
+        seeds = [USER_POOL_SEED, asset.key().as_ref()],
+        bump
+    )]
+    pub user_pool: Account<'info, UserPool>,
+
     /// The Metaplex Core agent asset to stake.
     #[account(
         mut,
@@ -44,6 +54,7 @@ pub struct StakeAgent<'info> {
 
 pub fn stake_agent_handler(ctx: Context<StakeAgent>) -> Result<()> {
     let global_pool = &mut ctx.accounts.global_pool;
+    let user_pool = &mut ctx.accounts.user_pool;
     let asset = BaseAssetV1::try_from(&ctx.accounts.asset.to_account_info())
         .map_err(|_| error!(StakingError::InvalidMetadata))?;
 
@@ -62,6 +73,10 @@ pub fn stake_agent_handler(ctx: Context<StakeAgent>) -> Result<()> {
         StakingError::InvalidCollection
     );
 
+    let now = Clock::get()
+        .map_err(|_| error!(StakingError::ClockUnavailable))?
+        .unix_timestamp;
+
     // Add the FreezeDelegate plugin (frozen=true) so the asset is non-transferable
     // while staked. The asset itself never leaves the owner's wallet.
     AddPluginV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
@@ -72,10 +87,30 @@ pub fn stake_agent_handler(ctx: Context<StakeAgent>) -> Result<()> {
         .plugin(Plugin::FreezeDelegate(FreezeDelegate { frozen: true }))
         .invoke()?;
 
+    // Record staking metadata for reward accrual.
+    user_pool.owner = ctx.accounts.owner.key();
+    user_pool.asset = ctx.accounts.asset.key();
+    user_pool.stake_time = now;
+    user_pool.last_claim_time = now;
+    user_pool.total_claimed = 0;
+
     global_pool.total_agents_staked = global_pool
         .total_agents_staked
         .checked_add(1)
         .ok_or(StakingError::CounterOverflow)?;
 
+    emit!(AgentStaked {
+        owner: ctx.accounts.owner.key(),
+        asset: ctx.accounts.asset.key(),
+        stake_time: now,
+    });
+
     Ok(())
+}
+
+#[event]
+pub struct AgentStaked {
+    pub owner: Pubkey,
+    pub asset: Pubkey,
+    pub stake_time: i64,
 }

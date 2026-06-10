@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.log
+*.keypair.json
+.vercel
+.env.local
+.env

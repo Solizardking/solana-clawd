@@ -1,0 +1,36 @@
+{
+  "name": "bitaxe-orelane",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hybrid Bitaxe Gamma + ORE controller with a Clawd-style decision loop.",
+  "bin": {
+    "bitaxe-orelane": "dist/index.js",
+    "bitaxe-orelane-bot": "dist/telegram-bot.js"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node --import tsx/esm src/index.ts",
+    "status": "node --import tsx/esm src/index.ts --status",
+    "bot": "node --import tsx/esm src/telegram-bot.ts",
+    "bot:test": "node --import tsx/esm src/telegram-bot.ts --test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clawd:eval": "clawd-agents eval clawd.json --strict"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.98.4",
+    "bs58": "^4.0.1",
+    "chalk": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@vitest/coverage-v8": "^3.2.6",
+    "tsx": "^4.21.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
