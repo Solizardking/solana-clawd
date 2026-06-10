@@ -304,10 +304,13 @@ function TerminalPanel({ agent, opponent, score, side, round }: { agent: AgentSc
   const lines = [
     `${agent.box} arena:round-${round.toString().padStart(2, "0")}`,
     `npm run box:perps -- ${agent.market.toLowerCase()} --paper`,
+    `rpc env=${DEEPSEEK_RUNTIME.rpcEnv} model env=DEEPSEEK_MODEL:-${DEEPSEEK_RUNTIME.model}`,
     `observe market=${agent.market} opponent=${opponent.callSign} score=${score}`,
+    `deepseek chat.completions --base-url ${DEEPSEEK_RUNTIME.openAiBaseUrl} --thinking enabled`,
     `decide side=${agent.side} edge=${agent.metrics.edge} risk=${agent.metrics.risk}`,
     "gate live=false operator_confirmed=false perps_sim_only=true",
     `paper-order ${agent.side} ${agent.market} --notional-usdc ${Math.round(notional)}`,
+    `anthropic bridge ${DEEPSEEK_RUNTIME.anthropicBaseUrl} auth=${DEEPSEEK_RUNTIME.apiKeyEnv}`,
     `attest ${agent.proof}`,
   ]
 
@@ -324,6 +327,49 @@ function TerminalPanel({ agent, opponent, score, side, round }: { agent: AgentSc
             {line}
           </p>
         ))}
+      </div>
+    </section>
+  )
+}
+
+function DeepSeekConversation({
+  pair,
+  leader,
+  round,
+  totalEquity,
+}: {
+  pair: { left: AgentScore; right: AgentScore }
+  leader: AgentScore
+  round: number
+  totalEquity: number
+}) {
+  const lines = buildConversation(pair, leader, round, totalEquity)
+  return (
+    <section className="conversationPanel" id="deepseek">
+      <div className="sectionTitle">
+        <span>DeepSeek Autonomy</span>
+        <strong>server-side key rail</strong>
+      </div>
+      <div className="deepseekConfig">
+        <code>{DEEPSEEK_RUNTIME.apiKeyEnv}</code>
+        <code>{DEEPSEEK_RUNTIME.rpcEnv}</code>
+        <code>{DEEPSEEK_RUNTIME.model}</code>
+        <code>{DEEPSEEK_RUNTIME.fastModel}</code>
+      </div>
+      <div className="conversationGrid" aria-label="DeepSeek generated arena conversation preview">
+        {lines.map((line) => (
+          <article className={`conversationLine ${line.tone}`} key={`${line.speaker}-${line.label}`}>
+            <div>
+              <span>{line.label}</span>
+              <strong>{line.speaker}</strong>
+            </div>
+            <p>{line.text}</p>
+          </article>
+        ))}
+      </div>
+      <div className="arenaCommand">
+        <span>$</span>
+        <code>npm run arena:deepseek -- --rounds 3</code>
       </div>
     </section>
   )
