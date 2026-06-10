@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { agentRoutes } from "../routes/agents.js";
 import { hubRoutes } from "../routes/hub.js";
+import { spawnRoutes } from "../routes/spawn.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, "..", "..", "public");
@@ -17,6 +18,7 @@ export function createApp(): Express {
   // API routes
   app.use("/api/v1/agents", agentRoutes());
   app.use("/api/v1/hub", hubRoutes());
+  app.use("/api/v1/spawn", spawnRoutes());
 
   // Health check
   app.get("/health", (_req, res) => {

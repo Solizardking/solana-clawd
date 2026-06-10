@@ -1,0 +1,24 @@
+{
+  "name": "@openclawd/hedge",
+  "version": "1.0.0",
+  "description": "Hedge persona set for OpenClawd agents.",
+  "local_personas": [
+    "activistpinch.json",
+    "latticeclaw.json",
+    "moatmaw.json",
+    "soltoshi.json",
+    "valueclaw.json"
+  ],
+  "canonical_characters": [
+    "../agents/characters/alice-character-json.json",
+    "../agents/characters/bengraham.json",
+    "../agents/characters/billackman.json",
+    "../agents/characters/cathiewood.json",
+    "../agents/characters/charliemunger.json",
+    "../agents/characters/cheshire-character-json.json",
+    "../agents/characters/clawd.json",
+    "../agents/characters/hedgefund.json",
+    "../agents/characters/mad-hatter-character-json.json",
+    "../agents/characters/warrenbuffet.json"
+  ]
+}

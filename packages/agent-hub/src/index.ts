@@ -14,10 +14,11 @@ export async function startHub(port = DEFAULT_PORT): Promise<HubServer> {
   const app = createApp();
   const server = createServer(app);
   attachWebSocket(server);
+  const host = process.env.HUB_HOST ?? "0.0.0.0";
 
   await new Promise<void>((resolve, reject) => {
     server.on("error", reject);
-    server.listen(port, "127.0.0.1", resolve);
+    server.listen(port, host, resolve);
   });
 
   const url = `http://localhost:${port}`;

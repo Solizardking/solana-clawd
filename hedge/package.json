@@ -1,0 +1,12 @@
+{
+  "name": "@openclawd/hedge",
+  "version": "1.0.0",
+  "description": "Hedge character definitions and canonical investor persona pointers for Clawd agents.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "*.json",
+    "README.md"
+  ]
+}

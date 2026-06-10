@@ -10,6 +10,7 @@ export type DarkTransactionKind =
   | "shield"
   | "unshield"
   | "private-transfer"
+  | "private-payment"
   | "swap"
   | "agent"
   | "zk_proof"
@@ -18,6 +19,8 @@ export type DarkTransactionKind =
   | "privacy_mix";
 
 export type DarkTransactionStatus = "simulated" | "completed" | "queued" | "proving" | "attesting";
+export type PrivatePaymentRail = "x402" | "ap2" | "m2m";
+export type PrivatePaymentSettlement = "solana" | "evm";
 
 export interface DarkNote {
   id: string;
@@ -42,6 +45,10 @@ export interface DarkTransaction {
   createdAt: number;
   recipient?: string;
   route?: string;
+  rail?: PrivatePaymentRail;
+  settlement?: PrivatePaymentSettlement;
+  durable?: boolean;
+  proofLayer?: "solana" | "evm";
   proofSize?: number;     // bytes for ZK proofs
   teeProvider?: string;   // for TEE attestations
 }
@@ -312,6 +319,44 @@ export function stagePrivateTransfer(
     undefined,
     recipient,
   );
+
+  return { state: appendHistory(next, receipt), receipt };
+}
+
+export function stagePrivatePayment(
+  state: DarkVaultState,
+  amount: number,
+  recipient: string,
+  rail: PrivatePaymentRail,
+  settlement: PrivatePaymentSettlement,
+  durable: boolean,
+  proofLayer: "solana" | "evm",
+  memo: string,
+): DarkActionReceipt {
+  const safeAmount = ensureAmount(amount, "Private payment amount");
+  ensureCapacity(state, safeAmount, "private payment");
+  const memoSuffix = memo.trim() ? ` Memo: ${memo.trim()}` : "";
+  const privacyMode = durable ? "durable" : "ephemeral";
+
+  const next: DarkVaultState = {
+    ...state,
+    shieldedBalance: roundSol(Math.max(state.shieldedBalance - safeAmount, 0)),
+    committedBalance: roundSol(Math.max(state.committedBalance - safeAmount, 0)),
+    notes: spendFirstAvailableNote(state, recipient),
+  };
+  const receipt = createReceipt(
+    "private-payment",
+    `Staged ${formatSol(safeAmount)} via ${rail.toUpperCase()} on ${settlement.toUpperCase()} (${privacyMode}, proofed on ${proofLayer.toUpperCase()}).${memoSuffix}`,
+    safeAmount,
+    "queued",
+    `${rail.toUpperCase()} • ${settlement.toUpperCase()} • ${privacyMode} • ${proofLayer.toUpperCase()}`,
+    recipient,
+    undefined,
+  );
+  receipt.rail = rail;
+  receipt.settlement = settlement;
+  receipt.durable = durable;
+  receipt.proofLayer = proofLayer;
 
   return { state: appendHistory(next, receipt), receipt };
 }

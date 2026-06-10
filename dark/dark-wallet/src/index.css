@@ -493,6 +493,20 @@ button:disabled {
   border-color: rgba(90, 124, 255, 0.2);
 }
 
+.network-toggle {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.network-toggle .pill {
+  border: none;
+}
+
+.network-muted {
+  opacity: 0.72;
+}
+
 .field,
 .field-grid {
   display: flex;
@@ -556,6 +570,18 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
+}
+
+.paper-layout {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.paper-card {
+  min-height: 100%;
+}
+
+.paper-card-wide {
+  grid-column: 1 / -1;
 }
 
 .info-grid.compact {
@@ -623,6 +649,105 @@ button:disabled {
 
 .quote-row span {
   color: var(--muted);
+}
+
+.paper-sheet {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(8, 17, 28, 0.92), rgba(4, 10, 16, 0.82)),
+    rgba(255, 255, 255, 0.04);
+}
+
+.paper-sheet-empty {
+  min-height: 220px;
+  place-items: center;
+}
+
+.paper-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.paper-secret {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 10, 16, 0.62);
+}
+
+.paper-secret-text {
+  min-height: 210px;
+  resize: vertical;
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+}
+
+.paper-mono {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  word-break: break-all;
+}
+
+.paper-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.paper-meta strong {
+  display: block;
+  margin-top: 6px;
+  word-break: break-word;
+}
+
+.agent-response {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(4, 10, 16, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.agent-response p {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  color: var(--text);
+}
+
+.toggle-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.toggle-card input {
+  margin-top: 0.18rem;
+}
+
+.toggle-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.toggle-card small {
+  display: block;
+  color: var(--muted);
+}
+
+.paper-surface {
+  width: 100%;
 }
 
 .module-card {
@@ -708,6 +833,57 @@ button:disabled {
   border-color: rgba(255, 107, 121, 0.22);
 }
 
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  body::before,
+  .ambient,
+  .topbar,
+  .hero-grid,
+  .surface-tabs,
+  .workspace-grid > .sidebar-panel,
+  .footer-note {
+    display: none !important;
+  }
+
+  .app-shell {
+    padding: 0 !important;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .paper-surface > .paper-card:not(:first-child),
+  .paper-surface .surface-actions,
+  .paper-surface .paper-meta,
+  .paper-surface .agent-response {
+    display: none !important;
+  }
+
+  .paper-surface .surface-card,
+  .paper-surface .paper-sheet,
+  .paper-surface .paper-secret {
+    border-color: #000 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    color: #000 !important;
+  }
+
+  .paper-surface .paper-secret-text {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+    background: #ffffff !important;
+  }
+
+  .paper-surface .paper-mono {
+    word-break: break-all;
+  }
+}
+
 @media (max-width: 1180px) {
   .hero-grid,
   .workspace-grid {
@@ -719,6 +895,11 @@ button:disabled {
   .info-grid.compact,
   .metrics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .paper-layout,
+  .paper-meta {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -741,7 +922,9 @@ button:disabled {
   .info-grid.compact,
   .metrics-grid,
   .field-grid,
-  .metric-inline-grid {
+  .metric-inline-grid,
+  .paper-layout,
+  .paper-meta {
     grid-template-columns: 1fr;
   }
 
@@ -752,5 +935,12 @@ button:disabled {
   .console-row {
     grid-template-columns: 82px minmax(0, 1fr);
   }
-}
 
+  .network-toggle {
+    width: 100%;
+  }
+
+  .network-toggle .pill {
+    flex: 1 1 0;
+  }
+}

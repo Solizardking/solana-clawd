@@ -1,6 +1,5 @@
-import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
-
-export type DarkNetwork = "devnet" | "testnet" | "mainnet-beta";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { resolveSolanaRpcUrl, type DarkNetwork, type DarkRuntimeConfig } from "./runtime";
 
 export interface InjectedSolanaProvider {
   isPhantom?: boolean;
@@ -18,8 +17,11 @@ type ProviderWindow = Window & {
   solflare?: InjectedSolanaProvider;
 };
 
-export function createConnection(network: DarkNetwork = "devnet"): Connection {
-  return new Connection(clusterApiUrl(network), "confirmed");
+export function createConnection(
+  network: DarkNetwork = "devnet",
+  runtime?: Pick<DarkRuntimeConfig, "heliusApiKey" | "heliusRpcUrl" | "solanaRpcUrl">,
+): Connection {
+  return new Connection(resolveSolanaRpcUrl(network, runtime), "confirmed");
 }
 
 export function getInjectedSolanaProvider(): InjectedSolanaProvider | null {

@@ -60,6 +60,7 @@ export interface SolanaAgentCharacter {
 }
 
 export type AnyCharacter = ElizaCharacter | InvestorCharacter | SolanaAgentCharacter;
+type CharacterType = 'eliza' | 'investor' | 'solana-agent';
 
 // ── Character index entry ───────────────────────────────────────────────────
 
@@ -99,12 +100,54 @@ export function resolveCharactersDir(): string {
   return path.join(process.cwd(), 'characters');
 }
 
-function detectType(raw: unknown): 'eliza' | 'investor' | 'solana-agent' {
+function detectType(raw: unknown): CharacterType {
   if (!raw || typeof raw !== 'object') return 'eliza';
   const obj = raw as Record<string, unknown>;
+  if ('persona' in obj) return 'solana-agent';
   if ('bio' in obj || 'lore' in obj || 'messageExamples' in obj) return 'eliza';
   if ('investment_principles' in obj || 'valuation_framework' in obj || 'key_metrics' in obj) return 'investor';
   return 'solana-agent';
+}
+
+function normalizeCharacter(raw: unknown): { data: AnyCharacter; type: CharacterType } | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const obj = raw as Record<string, unknown>;
+
+  if ('persona' in obj && obj.persona && typeof obj.persona === 'object') {
+    const persona = obj.persona as Record<string, unknown>;
+    const traits = Array.isArray(persona.traits) ? persona.traits.map(String) : [];
+    const beliefs = Array.isArray(obj.beliefs) ? obj.beliefs.map(String) : [];
+    const signaturePhrases = Array.isArray(obj.signature_phrases)
+      ? obj.signature_phrases.map(String)
+      : [];
+    const normalized: SolanaAgentCharacter = {
+      name: String(persona.name ?? 'Unknown Character'),
+      role: typeof persona.role === 'string' ? persona.role : undefined,
+      description: Array.isArray(obj.bio)
+        ? obj.bio.map(String).join(' ')
+        : typeof persona.core_quote === 'string'
+          ? persona.core_quote
+          : undefined,
+      personality: {
+        greeting: typeof persona.greeting === 'string' ? persona.greeting : '',
+        core_quote: typeof persona.core_quote === 'string' ? persona.core_quote : '',
+        traits: traits.join(', '),
+        beliefs: beliefs.join(' | '),
+      },
+      communication_style:
+        obj.communication_style && typeof obj.communication_style === 'object'
+          ? (obj.communication_style as Record<string, string | string[]>)
+          : undefined,
+      capabilities: signaturePhrases,
+      avatar: persona.avatar,
+      beliefs,
+      lobster_lexicon: obj.lobster_lexicon,
+      signature_phrases: signaturePhrases,
+    };
+    return { data: normalized, type: 'solana-agent' };
+  }
+
+  return { data: raw as AnyCharacter, type: detectType(raw) };
 }
 
 function slugify(filename: string): string {
@@ -133,10 +176,11 @@ export function listCharacters(charactersDir?: string): CharacterEntry[] {
       const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
       const items: unknown[] = Array.isArray(raw) ? raw : [raw];
       for (const item of items) {
-        if (!item || typeof item !== 'object') continue;
-        const obj = item as Record<string, unknown>;
+        const normalized = normalizeCharacter(item);
+        if (!normalized) continue;
+        const obj = normalized.data as Record<string, unknown>;
         const name = (obj.name as string | undefined) ?? path.basename(file, '.json');
-        const type = detectType(item);
+        const type = normalized.type;
         const description =
           (obj.description as string | undefined) ??
           (Array.isArray(obj.bio) ? (obj.bio as string[])[0] : undefined);
@@ -162,7 +206,7 @@ export function listCharacters(charactersDir?: string): CharacterEntry[] {
 export function loadCharacter(
   nameOrSlug: string,
   charactersDir?: string
-): { data: AnyCharacter; type: 'eliza' | 'investor' | 'solana-agent' } | null {
+): { data: AnyCharacter; type: CharacterType } | null {
   const dir = charactersDir ?? resolveCharactersDir();
   const query = nameOrSlug.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
@@ -174,17 +218,22 @@ export function loadCharacter(
       const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
       const items: unknown[] = Array.isArray(raw) ? raw : [raw];
       for (const item of items) {
-        if (!item || typeof item !== 'object') continue;
-        const obj = item as Record<string, unknown>;
+        const normalized = normalizeCharacter(item);
+        if (!normalized) continue;
+        const obj = normalized.data as Record<string, unknown>;
         const nameField = (obj.name as string | undefined) ?? '';
         const nameSlug = nameField.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const slugMatches =
+          nameSlug.length > 0 && (
+            nameSlug === query ||
+            nameSlug.includes(query) ||
+            query.includes(nameSlug)
+          );
         if (
           fileSlug === query ||
-          nameSlug === query ||
-          nameSlug.includes(query) ||
-          query.includes(nameSlug)
+          slugMatches
         ) {
-          return { data: item as AnyCharacter, type: detectType(item) };
+          return normalized;
         }
       }
     } catch {

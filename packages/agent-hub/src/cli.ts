@@ -7,22 +7,22 @@ import { execSync, spawn } from "child_process";
 
 program
   .name("clawd-hub")
-  .description("Solana Clawd Agent Hub — local agent discovery server and dashboard")
+  .description("Spawn by Solana Clawd — agent discovery server and spawn dashboard")
   .version("0.1.0");
 
 program
   .command("start")
-  .description("Start the Clawd Agent Hub server")
+  .description("Start the Spawn by Solana Clawd server")
   .option("-p, --port <port>", "port to listen on", String(DEFAULT_PORT))
   .option("--open", "open dashboard in browser after start")
   .action(async (opts) => {
     const port = parseInt(opts.port);
-    const spinner = ora("Starting Clawd Agent Hub...").start();
+    const spinner = ora("Starting Spawn by Solana Clawd...").start();
 
     try {
       const hub = await startHub(port);
       spinner.succeed(
-        `Clawd Agent Hub running at ${chalk.cyan.bold(hub.url)}`
+        `Spawn by Solana Clawd running at ${chalk.cyan.bold(hub.url)}`
       );
       console.log();
       console.log(`  ${chalk.bold("Dashboard:")}  ${chalk.cyan(hub.url)}`);

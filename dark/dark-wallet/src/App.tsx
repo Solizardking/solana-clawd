@@ -26,6 +26,12 @@ import {
   shortenAddress,
 } from "./lib/wallet.js";
 import {
+  formatNetworkLabel,
+  getDarkRuntimeConfig,
+  type DarkNetwork,
+  type DarkRuntimeConfig,
+} from "./lib/runtime.js";
+import {
   createShieldedAddress,
   formatSol,
   loadVaultState,
@@ -42,8 +48,9 @@ import {
   type DarkTransaction,
   type DarkVaultState,
 } from "./lib/dark-protocol.js";
+import PaperWalletSurface from "./components/wallet/PaperWalletSurface.js";
 
-type Surface = "wallet" | "agent" | "defi" | "swap" | "zolana";
+type Surface = "wallet" | "paper" | "agent" | "defi" | "swap" | "zolana";
 type StatusTone = "neutral" | "success" | "warning" | "danger";
 
 const SURFACES: Array<{
@@ -55,6 +62,11 @@ const SURFACES: Array<{
     id: "wallet",
     title: "Wallet",
     subtitle: "Transparent balance, shielded staging, private transfer.",
+  },
+  {
+    id: "paper",
+    title: "Paper",
+    subtitle: "Offline Solana paper wallet and cold-storage print flow.",
   },
   {
     id: "agent",
@@ -98,7 +110,9 @@ function formatRelativeInput(value: number): string {
 }
 
 function App() {
-  const connection = useMemo(() => createConnection("devnet"), []);
+  const runtime: DarkRuntimeConfig = useMemo(() => getDarkRuntimeConfig(), []);
+  const [network, setNetwork] = useState<DarkNetwork>(runtime.defaultNetwork);
+  const connection = useMemo(() => createConnection(network, runtime), [network, runtime]);
 
   const [activeSurface, setActiveSurface] = useState<Surface>("wallet");
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
@@ -142,7 +156,7 @@ function App() {
       if (isDemo || !walletAddress) {
         setTransparentBalance(DEMO_BALANCE);
         setNetworkSlot(null);
-        setNetworkStatus("Local demo ledger ready");
+        setNetworkStatus(`Local demo ledger ready on ${formatNetworkLabel(network)}`);
         return;
       }
 
@@ -153,16 +167,18 @@ function App() {
         ]);
         setTransparentBalance(balance);
         setNetworkSlot(slot);
-        setNetworkStatus("Synced to devnet");
+        setNetworkStatus(
+          `Synced to ${formatNetworkLabel(network)}${runtime.heliusRpcUrl || runtime.heliusApiKey ? " via Helius RPC" : ""}`,
+        );
       } catch {
-        setNetworkStatus("Devnet RPC unavailable, keeping cached state");
+        setNetworkStatus(`${formatNetworkLabel(network)} RPC unavailable, keeping cached state`);
       }
     };
 
     void syncNetwork();
     const interval = window.setInterval(syncNetwork, 20_000);
     return () => window.clearInterval(interval);
-  }, [connection, isDemo, walletAddress]);
+  }, [connection, isDemo, network, runtime.heliusApiKey, runtime.heliusRpcUrl, walletAddress]);
 
   useEffect(() => {
     setTransferRecipient(createShieldedAddress(walletKey, 2));
@@ -374,14 +390,30 @@ function App() {
             <p className="eyebrow">Dark workspace</p>
             <h1>Dark Wallet</h1>
             <p className="brand-subtitle">
-              Private Solana wallet shell with agent, DeFi, and swap lanes.
+              Private Solana wallet shell with agent, paper wallet, DeFi, and swap lanes.
             </p>
           </div>
         </div>
 
         <div className="status-cluster">
           <span className="pill">{isDemo ? "Demo mode" : walletProviderName}</span>
-          <span className="pill pill-soft">devnet</span>
+          <div className="network-toggle" role="group" aria-label="Network selector">
+            <button
+              className={`pill${network === "devnet" ? "" : " pill-soft"}`}
+              onClick={() => setNetwork("devnet")}
+            >
+              Devnet
+            </button>
+            <button
+              className={`pill${network === "mainnet-beta" ? "" : " pill-soft"}`}
+              onClick={() => setNetwork("mainnet-beta")}
+            >
+              Mainnet
+            </button>
+          </div>
+          <span className={`pill pill-soft${runtime.xaiApiKey ? "" : " network-muted"}`}>
+            {runtime.xaiApiKey ? "xAI ready" : "xAI offline"}
+          </span>
           <button className="ghost-button" onClick={handleCopyAddress} disabled={!walletAddress}>
             Copy address
           </button>
@@ -412,7 +444,8 @@ function App() {
           <p className="hero-copy">
             The original dark-wallet concept is ported into a workspace that keeps the
             UI, the routing surface, and the policy lanes in separate modules.
-            Transparent balance comes from Solana devnet when a wallet is connected.
+            Transparent balance comes from the selected Solana cluster when a wallet is connected,
+            while the paper-wallet lane stays browser-local.
           </p>
 
           <div className="hero-actions">
@@ -429,7 +462,7 @@ function App() {
               <span className="metric-label">Transparent</span>
               <strong>{formatSol(transparentBalance)}</strong>
               <span className="metric-note">
-                {isDemo ? "Local demo balance" : "Read from devnet"}
+                {isDemo ? "Local demo balance" : `Read from ${formatNetworkLabel(network)}`}
               </span>
             </div>
             <div className="metric-card">
@@ -659,6 +692,17 @@ function App() {
                 </section>
               </div>
             </div>
+          )}
+
+          {activeSurface === "paper" && (
+            <PaperWalletSurface
+              network={network}
+              runtime={runtime}
+              vault={vault}
+              persistVault={persistVault}
+              onStatus={showStatus}
+              walletAddress={walletAddress}
+            />
           )}
 
           {activeSurface === "agent" && (
@@ -1262,6 +1306,11 @@ function App() {
                 <p className="info-eyebrow">dark-agent</p>
                 <h5>Policy and automation lane</h5>
                 <p>Guardrails for spend, route, and memo decisions.</p>
+              </article>
+              <article className="module-card">
+                <p className="info-eyebrow">dark-paper</p>
+                <h5>Paper wallet lane</h5>
+                <p>Offline Solana key generation, print flow, and cold storage export.</p>
               </article>
               <article className="module-card">
                 <p className="info-eyebrow">dark-defi</p>
