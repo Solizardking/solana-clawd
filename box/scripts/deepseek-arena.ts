@@ -75,7 +75,6 @@ const AGENTS: ArenaAgent[] = [
 loadEnvFiles([
   resolve(REPO_ROOT, ".env.local"),
   resolve(REPO_ROOT, ".env"),
-  resolve(REPO_ROOT, ".env.example"),
   resolve(process.cwd(), ".env.local"),
   resolve(process.cwd(), ".env"),
 ]);
@@ -145,7 +144,7 @@ function buildSystemMessages(config: DeepSeekConfig, rpcUrl: string, onchain: Re
         "You are the referee and shared reasoning core for a Solana agent arena.",
         "Agents compete using paper perpetuals, on-chain context, and terminal dialogue.",
         "Never request, infer, print, or use private keys, seed phrases, raw API keys, or wallet secrets.",
-        "Output punchy terminal-style dialogue plus one final referee line.",
+        "Output exactly four short terminal lines, with no markdown table and no extra prose.",
         "Mention risk gates when an agent overreaches.",
       ].join(" "),
     },
@@ -174,8 +173,11 @@ function buildRoundPrompt(
     `Left agent: ${left.name}; role=${left.role}; market=${left.market}; side=${left.side}; risk=${left.risk}; thesis=${left.thesis}.`,
     `Right agent: ${right.name}; role=${right.role}; market=${right.market}; side=${right.side}; risk=${right.risk}; thesis=${right.thesis}.`,
     `On-chain context: ${JSON.stringify(onchain)}`,
-    "Let the agents talk to each other in a concise, cool, terminal-native style.",
-    "End with: REFEREE winner=<agent> next_action=<paper action> reason=<short reason>.",
+    "Return exactly this shape:",
+    "LEFT <agent>: <one terminal-native sentence>",
+    "RIGHT <agent>: <one terminal-native sentence>",
+    "RISK: <one sentence with paper/live gate status>",
+    "REFEREE winner=<agent> next_action=<paper action> reason=<short reason>",
   ].join("\n");
 }
 
@@ -247,7 +249,7 @@ function loadEnvFiles(paths: string[]): void {
     if (!existsSync(path)) continue;
     const parsed = parseEnv(readFileSync(path, "utf-8"));
     for (const [key, value] of Object.entries(parsed)) {
-      if (!protectedKeys.has(key) && value) process.env[key] = value;
+      if (!protectedKeys.has(key) && value && !isPlaceholderValue(value)) process.env[key] = value;
     }
   }
 }
@@ -270,6 +272,11 @@ function parseEnv(raw: string): Record<string, string> {
     out[key] = value;
   }
   return out;
+}
+
+function isPlaceholderValue(value: string): boolean {
+  const lower = value.toLowerCase();
+  return lower.includes("your-") || lower.startsWith("<") || lower.includes("api-key=your");
 }
 
 function readFlag(name: string): string | undefined {
