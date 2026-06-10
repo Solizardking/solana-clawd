@@ -858,8 +858,11 @@ button:disabled {
   }
 
   .paper-surface .paper-layout > .paper-card:not(:first-child),
+  .paper-surface .field,
+  .paper-surface .field-grid,
+  .paper-surface .toggle-card,
   .paper-surface .surface-actions,
-  .paper-surface .paper-meta,
+  .paper-surface button,
   .paper-surface .agent-response {
     display: none !important;
   }

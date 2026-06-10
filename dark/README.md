@@ -1,168 +1,96 @@
-# 🔒⚡ ZOLana — Where Zcash Privacy Meets Solana Speed
+# Dark Workspace
 
-<div align="center">
-  <h1>
-    <span style="font-size: 3em;">🔒</span>
-    <span style="background: linear-gradient(90deg, #8B5CF6, #EC4899, #F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-      ZOLana
-    </span>
-    <span style="font-size: 3em;">⚡</span>
-  </h1>
-  <p><strong>The Dark Workspace — Experimental Zcash/Solana Fusion</strong></p>
-</div>
+The `dark/` workspace is the public-safe, local-first wallet stack for the
+ZOLana build. It keeps the wallet shell, paper-wallet flow, policy lane, DeFi
+lane, and swap lane separated so each surface stays understandable and easy to
+port forward.
 
-> **ZOLana** is the unholy child of **Zcash's battle-tested zero-knowledge cryptography** and **Solana's rocket-fueled execution** — wrapped in a sleek privacy-first DeFi layer with AI agents watching your back. 🔥
+## What Lives Here
 
-## 🧩 Workspace Modules
+| Module | Role |
+|---|---|
+| `dark-wallet` | Browser wallet shell, paper wallet generator, and staged vault UX |
+| `dark-agent` | Policy and automation modes, guardrails, TEE and ZK surface logic |
+| `dark-defi` | Vault, yield, risk, shielded pool, and privacy-mix views |
+| `dark-swap` | Route previews, quote estimation, and Jupiter V6 concepts |
+| `dark-zcash` | Zcash-style privacy primitives adapted for the Solana demo lane |
+| `dark-helius` | Helius RPC, DAS, webhooks, and smart-transaction helpers |
 
-Dark is the public-safe workspace for the modular wallet shell. It keeps the wallet UI, policy lane, DeFi lane, and swap lane split into separate modules so the code stays easy to reason about.
+## How The Zcash Paper Wallet Was Ported To Solana
 
-### 📦 Module Map
+In November 2025, the paper-wallet concept from the Zcash `paper/` repo was
+ported into the Solana-facing dark wallet instead of being copied verbatim.
+The UX stayed the same at a high level:
 
+1. Generate locally.
+2. Ask for extra human entropy.
+3. Print a cold-storage sheet.
+4. Keep the secret key offline.
+
+The cryptographic core changed:
+
+1. Zcash Sapling derivation was replaced with Solana `Keypair.fromSeed`.
+2. The printable sheet now shows the Solana public key, secret key JSON, and
+   fingerprints instead of Sapling note material.
+3. The output is browser-local, so the paper-wallet flow does not need RPC.
+4. The wallet shell adds devnet and mainnet-beta support through Helius-aware
+   RPC resolution.
+
+The surrounding wallet architecture changed too:
+
+1. The old single-surface wallet concept was split into `wallet`, `paper`,
+   `agent`, `defi`, `swap`, and `zolana` tabs.
+2. The paper wallet lives beside a Dark Clawd agent sidecar that can review
+   public metadata and print posture when `XAI_API_KEY` is configured.
+3. A private-payment primitive was added for `x402`, `AP2`, and `M2M` style
+   flows so private staging can be described explicitly instead of being hidden
+   behind a generic transfer label.
+
+## Runtime Inputs
+
+The Vite app exposes these env vars at build time:
+
+```bash
+HELIUS_RPC_URL=
+HELIUS_API_KEY=
+SOLANA_RPC_URL=
+SOLANA_CLUSTER=
+XAI_API_KEY=
+XAI_BASE_URL=
+XAI_MODEL=
 ```
-dark/
-├── dark-wallet/    🎨 Browser wallet shell and demo ledger
-├── dark-agent/     🤖 Guardrails, automation modes, TEE + ZK agent modes
-├── dark-defi/      🏗️ Vault, yield, risk, shielded pools, privacy mix
-├── dark-swap/      🔄 Route preview, Jupiter V6 quotes, JLP perpetuals
-├── dark-zcash/     🛡️ Zcash Sapling/Orchard ZK primitives (new!)
-└── dark-helius/    📡 Helius smart RPC, webhooks, DAS API (new!)
-```
 
-### 🔬 New Experimental Features
+Use `SOLANA_CLUSTER=devnet` or `SOLANA_CLUSTER=mainnet-beta` to pick the
+default cluster. If `HELIUS_API_KEY` is set, the wallet will build the proper
+Helius RPC URL automatically unless `HELIUS_RPC_URL` is provided directly.
 
-| Module | Feature | Status | Description |
-|--------|---------|--------|-------------|
-| `dark-zcash` | 🛡️ Sapling Addresses | ✅ | Full Zcash key derivation chain (sk→fvk→ivk→address) |
-| `dark-zcash` | 🧙 Groth16 Proofs | ✅ | 256-byte zero-knowledge proof system |
-| `dark-zcash` | 🌳 Merkle Trees | ✅ | Zcash-style incremental commitment trees |
-| `dark-zcash` | 🔐 Note Encryption | ✅ | ChaCha20-Poly1305 AEAD encrypted notes |
-| `dark-zcash` | 🚫 Nullifiers | ✅ | Double-spend prevention |
-| `dark-helius` | 📡 Smart RPC | ✅ | Optimized compute units + priority fees |
-| `dark-helius` | 🎨 DAS API | ✅ | Digital Asset Standard NFT queries |
-| `dark-helius` | 🔔 Webhooks | ✅ | Real-time transaction monitoring |
-| `dark-agent` | 🤖 ZK Prover mode | ✅ | Generate Groth16 proofs for shielded actions |
-| `dark-agent` | 🛡️ TEE Sandbox mode | ✅ | Intel SGX/AMD SEV secure enclave |
-| `dark-defi` | 🏊 Shielded Pool | ✅ | Deposit/withdraw with ZK proofs |
-| `dark-defi` | 🌀 Privacy Mix | ✅ | Multi-hop mixing for anonymity |
-| `dark-swap` | 🔄 Jupiter V6 Quotes | ✅ | Real quotes from quote-api.jup.ag |
-| `dark-swap` | 💱 JLP Perpetuals | ✅ | Leveraged long/short positions |
+## Quick Start
 
-### 🎯 Specs
-
-| Metric | Value |
-|--------|-------|
-| 🔄 Private TX throughput | ~1,500 TPS |
-| 🤖 AI Agent response time | <1 second |
-| 🔒 Private swap latency | ~800ms (2-3 blocks) |
-| 🧙 ZK Proof size | 256 bytes (Groth16) |
-| 📝 Note data size | ~700 bytes (Sapling) |
-| ⛽ Transaction fee | ~$0.00025 |
-| 🔐 ZK Prover mode | ~500ms browser proving |
-
-## 🚀 Quick Start
-
-### From repo root:
 ```bash
 npm run dark:dev
 ```
 
-### Or standalone:
+Or run the wallet app directly:
+
 ```bash
 cd dark/dark-wallet
 npm install
 npm run dev
 ```
 
-Then open [http://localhost:5173](http://localhost:5173) and look for the new **ZOLana experimental surfaces** — ZK Prover, TEE Sandbox, Shielded Pool, Privacy Mix, and Jupiter V6 quotes!
+Then open the wallet surface and switch to the `Paper` tab to generate a local
+Solana paper wallet, review it with Dark Clawd, stage a private payment
+primitive, and print or download the JSON backup.
 
-## 🔧 Available Scripts
+## Operational Notes
 
-| Script | Description |
-|--------|-------------|
-| `npm run dark:dev` | Start Vite dev server |
-| `npm run dark:build` | Full TypeScript + Vite build |
-| `npm run dark:typecheck` | TypeScript type checking |
-| `npm run dark:preview` | Preview production build |
+- The paper-wallet generator is browser-local.
+- Printing uses the browser print dialog, so `Save as PDF` works without a
+  separate PDF library.
+- The agent sidecar only sees public metadata and operator instructions.
+- The vault history is local-first until the live Solana surfaces are enabled.
 
-## 📡 ZOLana Architecture
+## Related Docs
 
-```
-┌────────────────────────────────────────────────────────────┐
-│                     Dark Wallet UI                          │
-│  ┌──────────┐  ┌───────────┐  ┌──────────┐  ┌──────────┐ │
-│  │  Wallet   │  │  Agent    │  │  DeFi    │  │  Swap    │ │
-│  │  Surface  │  │  Surface  │  │  Surface │  │  Surface │ │
-│  └─────┬────┘  └─────┬─────┘  └────┬─────┘  └────┬─────┘ │
-└────────┼──────────────┼────────────┼──────────────┼───────┘
-         │              │            │              │
-         ▼              ▼            ▼              ▼
-┌────────────────────────────────────────────────────────────┐
-│                    Module Interfaces                         │
-│  ┌──────────┐  ┌───────────┐  ┌──────────┐  ┌──────────┐  │
-│  │dark-zcash│  │dark-agent │  │dark-defi │  │dark-swap │  │
-│  │ ZK Prims │  │TEE+ZK Pol │  │Shld Pool │  │Jup V6    │  │
-│  └──────────┘  └───────────┘  └──────────┘  └────┬─────┘  │
-│  ┌──────────┐                                    │         │
-│  │dark-helius│◄───────────────────────────────────┘         │
-│  │Infra SDK │                                            │
-│  └──────────┘                                            │
-└────────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌────────────────────────────────────────────────────────────┐
-│                    Solana Blockchain                         │
-│  ┌────────────┐  ┌──────────┐  ┌────────────────────────┐  │
-│  │Dark Protocl│  │Jupiter V6│  │ Helius RPC / Webhooks  │  │
-│  │(Anchor)    │  │(Aggregat)│  │ DAS API                │  │
-│  └────────────┘  └──────────┘  └────────────────────────┘  │
-└────────────────────────────────────────────────────────────┘
-```
-
-## 📦 Module Imports (for dev)
-
-```typescript
-import { /* ... */ } from "@dark-zcash/index";
-import { /* ... */ } from "@dark-helius/index";
-import { /* ... */ } from "@dark-agent/index";
-import { /* ... */ } from "@dark-defi/index";
-import { /* ... */ } from "@dark-swap/index";
-```
-
-## ⚡ Performance
-
-| Operation | Time |
-|-----------|------|
-| ZK proof generation (browser) | ~500ms |
-| Jupiter V6 quote fetch | ~200ms |
-| Merkle tree insert (32 levels) | ~2ms |
-| Note encryption/decryption | <1ms |
-| TEE attestation verification | ~50ms |
-
-## 🛡️ Security
-
-- **ZK-SNARKs**: Groth16 proving system (256-byte proofs)
-- **Commitments**: Pedersen-style (blake2s-based)
-- **Encryption**: ChaCha20-Poly1305 AEAD
-- **Nullifiers**: Double-spend prevention
-- **TEE**: Intel SGX / AMD SEV attestation
-
-## 🤝 Contributing
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md)
-
-## 📜 License
-
-Apache 2.0
-
----
-
-<div align="center">
-  <h3>
-    <span>🔒</span>
-    Privacy is a right, not a privilege.
-    <span>⚡</span>
-  </h3>
-  <p><strong>Build the future with ZOLana.</strong></p>
-  <p><em>🧪 Experimental features — use at your own risk</em></p>
-</div>
+- [dark-wallet README](./dark-wallet/README.md)
+- [Root README](../README.md)

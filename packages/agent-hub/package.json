@@ -9,6 +9,7 @@
     "clawd-hub": "dist/cli.js"
   },
   "scripts": {
+    "prebuild": "node scripts/prepare-spawn-assets.mjs",
     "build": "tsc",
     "dev": "tsx src/cli.ts",
     "clean": "rm -rf dist",

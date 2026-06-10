@@ -35,18 +35,43 @@ function safeJsonParse<T>(raw: string): T | null {
   }
 }
 
+function loadSnapshot(): { templates: AgentTemplateSummary[]; characters: CharacterSummary[] } | null {
+  const root = resolveWorkspaceRoot();
+  const candidates = [
+    join(root, "packages", "agent-hub", "public", "data", "spawn-snapshot.json"),
+    join(root, "public", "data", "spawn-snapshot.json"),
+  ];
+
+  for (const file of candidates) {
+    if (!existsSync(file)) continue;
+    const snapshot = safeJsonParse<{
+      templates?: AgentTemplateSummary[];
+      characters?: CharacterSummary[];
+    }>(readFileSync(file, "utf8"));
+    if (snapshot?.templates && snapshot?.characters) {
+      return { templates: snapshot.templates, characters: snapshot.characters };
+    }
+  }
+
+  return null;
+}
+
 export function loadAgentTemplates(): AgentTemplateSummary[] {
   const root = resolveWorkspaceRoot();
   const dir = join(root, "agents", "src");
+  if (!existsSync(dir)) {
+    return loadSnapshot()?.templates ?? [];
+  }
   const files = readdirSync(dir).filter((file) => file.endsWith(".json"));
 
-  return files
-    .map((file) => {
+  const templates: AgentTemplateSummary[] = [];
+
+  for (const file of files) {
       const sourcePath = join(dir, file);
       const json = safeJsonParse<Record<string, any>>(readFileSync(sourcePath, "utf8"));
-      if (!json) return null;
+      if (!json) continue;
 
-      return {
+      templates.push({
         id: String(json.identifier ?? file.replace(/\.json$/, "")),
         name: String(json.meta?.title ?? json.identifier ?? file.replace(/\.json$/, "")),
         description: String(json.meta?.description ?? json.summary ?? "No description provided."),
@@ -59,10 +84,10 @@ export function loadAgentTemplates(): AgentTemplateSummary[] {
           : [],
         createdAt: typeof json.createdAt === "string" ? json.createdAt : undefined,
         sourcePath,
-      } satisfies AgentTemplateSummary;
-    })
-    .filter((entry): entry is AgentTemplateSummary => Boolean(entry))
-    .sort((a, b) => a.name.localeCompare(b.name));
+      });
+  }
+
+  return templates.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function loadCharacters(): CharacterSummary[] {
@@ -70,34 +95,37 @@ export function loadCharacters(): CharacterSummary[] {
   const dirs = [join(root, "agents", "characters"), join(root, "characters")].filter((dir) =>
     existsSync(dir)
   );
+  if (dirs.length === 0) {
+    return loadSnapshot()?.characters ?? [];
+  }
 
-  return dirs
-    .flatMap((dir) =>
-      readdirSync(dir)
-        .filter((file) => file.endsWith(".json"))
-        .map((file) => {
-          const sourcePath = join(dir, file);
-          const json = safeJsonParse<Record<string, any>>(readFileSync(sourcePath, "utf8"));
-          if (!json) return null;
+  const characters: CharacterSummary[] = [];
 
-          const vaultService = Array.isArray(json.services)
-            ? json.services.find((service) => service?.name === "vault")
-            : undefined;
+  for (const dir of dirs) {
+    for (const file of readdirSync(dir).filter((entry) => entry.endsWith(".json") && entry !== "package.json")) {
+      const sourcePath = join(dir, file);
+      const json = safeJsonParse<Record<string, any>>(readFileSync(sourcePath, "utf8"));
+      if (!json) continue;
 
-          return {
-            id: file.replace(/\.json$/, ""),
-            name: String(json.name ?? file.replace(/\.json$/, "")),
-            bio: Array.isArray(json.bio) ? json.bio.map(String) : [],
-            topics: Array.isArray(json.topics) ? json.topics.map(String) : [],
-            adjectives: Array.isArray(json.adjectives) ? json.adjectives.map(String) : [],
-            lore: Array.isArray(json.lore) ? json.lore.map(String) : [],
-            style: typeof json.style === "object" && json.style ? json.style : {},
-            walletEndpoint: typeof vaultService?.endpoint === "string" ? vaultService.endpoint : undefined,
-            sourcePath,
-          } satisfies CharacterSummary;
-        })
-    )
-    .filter((entry): entry is CharacterSummary => Boolean(entry))
+      const vaultService = Array.isArray(json.services)
+        ? json.services.find((service) => service?.name === "vault")
+        : undefined;
+
+      characters.push({
+        id: file.replace(/\.json$/, ""),
+        name: String(json.name ?? file.replace(/\.json$/, "")),
+        bio: Array.isArray(json.bio) ? json.bio.map(String) : [],
+        topics: Array.isArray(json.topics) ? json.topics.map(String) : [],
+        adjectives: Array.isArray(json.adjectives) ? json.adjectives.map(String) : [],
+        lore: Array.isArray(json.lore) ? json.lore.map(String) : [],
+        style: typeof json.style === "object" && json.style ? json.style : {},
+        walletEndpoint: typeof vaultService?.endpoint === "string" ? vaultService.endpoint : undefined,
+        sourcePath,
+      });
+    }
+  }
+
+  return characters
     .filter((entry, index, all) => all.findIndex((candidate) => candidate.id === entry.id) === index)
     .sort((a, b) => a.name.localeCompare(b.name));
 }

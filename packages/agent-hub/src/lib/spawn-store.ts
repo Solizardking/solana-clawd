@@ -21,6 +21,8 @@ export interface SpawnRecord {
   tags: string[];
   walletAddress: string;
   walletEndpoint?: string;
+  rpcUrl?: string;
+  heliusDasUrl?: string;
 }
 
 export interface CreateSpawnInput {
@@ -32,6 +34,8 @@ export interface CreateSpawnInput {
   runtime: SpawnRecord["runtime"];
   budgetUsd: number;
   mission: string;
+  rpcUrl?: string;
+  heliusDasUrl?: string;
 }
 
 const FILE_NAME = "spawn-records.json";
@@ -97,6 +101,8 @@ export function createSpawnRecord(input: CreateSpawnInput): SpawnRecord {
     tags: [...new Set([...input.template.tags, ...input.character.topics.slice(0, 3)])],
     walletAddress: generateWalletAddress(`${id}:${input.name}:${input.character.id}`),
     walletEndpoint: input.walletMode === "vault" ? input.character.walletEndpoint : undefined,
+    rpcUrl: input.rpcUrl,
+    heliusDasUrl: input.heliusDasUrl,
   };
 
   const records = listSpawnRecords();

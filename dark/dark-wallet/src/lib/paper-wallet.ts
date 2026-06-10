@@ -58,7 +58,8 @@ function fallbackDigest(bytes: Uint8Array): Uint8Array {
 
 async function sha256(bytes: Uint8Array): Promise<Uint8Array> {
   if (typeof crypto !== "undefined" && crypto.subtle) {
-    const digest = await crypto.subtle.digest("SHA-256", bytes);
+    const source = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+    const digest = await crypto.subtle.digest("SHA-256", source);
     return new Uint8Array(digest);
   }
 

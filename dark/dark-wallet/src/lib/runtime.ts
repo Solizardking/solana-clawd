@@ -34,7 +34,7 @@ export function getDarkRuntimeConfig(): DarkRuntimeConfig {
   const defaultNetwork = normalizeNetwork(
     readEnv("SOLANA_CLUSTER") ||
       readEnv("VITE_SOLANA_CLUSTER") ||
-      (heliusRpcUrl.includes("mainnet") ? "mainnet-beta" : "devnet"),
+      ((heliusRpcUrl || solanaRpcUrl).includes("mainnet") ? "mainnet-beta" : "devnet"),
   );
 
   return {

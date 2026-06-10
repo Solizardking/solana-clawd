@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLAWD | Sovereign AI Agent Runtime on Solana</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦞</text></svg>">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --solana-green: #14F195;
+            --solana-green-dark: #0fc77a;
+            --solana-purple: #9945FF;
+            --solana-purple-dark: #7c37cc;
+            --solana-purple-light: #b366ff;
+            --bg-void: #000000;
+            --bg-primary: #0d0a14;
+            --bg-secondary: #130f1a;
+            --bg-terminal: #0a0810;
+            --border-color: rgba(153, 69, 255, 0.2);
+            --border-glow: rgba(153, 69, 255, 0.3);
+            --glow-purple: rgba(153, 69, 255, 0.5);
+            --glow-green: rgba(20, 241, 149, 0.5);
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --clawd-orange: #e07a5f;
+            --accent-red: #ff3b5c;
+            --accent-yellow: #ffe066;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, var(--bg-void) 0%, var(--bg-primary) 50%, #0f0820 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+            pointer-events: none; z-index: 1000;
+        }
+        body::after {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 50% 0%, rgba(153,69,255,0.08) 0%, transparent 60%);
+            pointer-events: none; z-index: 999;
+        }
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.10; pointer-events: none; }
+        .container { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+        /* Boot */
+        #boot-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-void); z-index: 2000; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.5s, visibility 0.5s; }
+        #boot-screen.hidden { opacity: 0; visibility: hidden; }
+        .boot-text { font-size: 13px; color: var(--solana-green); text-align: left; white-space: pre; line-height: 1.5; font-weight: 500; }
+        .ascii-header { text-align: center; margin-bottom: 40px; padding-top: 30px; }
+        .ascii-art { color: var(--solana-green); font-size: 8px; line-height: 1.1; white-space: pre; text-shadow: 0 0 10px var(--solana-green), 0 0 20px var(--solana-purple), 0 0 30px var(--solana-green); display: inline-block; font-weight: 700; }
+        @media (min-width: 640px) { .ascii-art { font-size: 9px; } }
+        @media (min-width: 768px) { .ascii-art { font-size: 11px; } }
+        .tagline { color: var(--solana-purple-light); font-size: 12px; margin-top: 20px; letter-spacing: 5px; text-transform: uppercase; font-weight: 500; }
+        .date-badge { display: inline-block; background: linear-gradient(135deg, var(--solana-purple), var(--solana-green)); padding: 6px 16px; border-radius: 6px; font-size: 11px; margin-top: 15px; color: #000; font-weight: 700; letter-spacing: 1px; }
+
+        /* Token Display */
+        .token-display { display: flex; align-items: center; justify-content: center; gap: 30px; margin: 40px 0; padding: 30px; background: linear-gradient(135deg, rgba(20,241,149,0.05), rgba(153,69,255,0.08)); border: 1px solid var(--border-color); border-radius: 16px; flex-wrap: wrap; box-shadow: 0 0 40px rgba(153,69,255,0.1); }
+        .token-img { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--solana-purple); box-shadow: 0 0 20px var(--glow-purple), 0 0 40px var(--glow-green); animation: tokenPulse 3s infinite; font-size: 64px; display: flex; align-items: center; justify-content: center; background: #1a0d30; }
+        @keyframes tokenPulse { 0%,100%{box-shadow:0 0 20px var(--glow-purple),0 0 40px var(--glow-green);} 50%{box-shadow:0 0 30px var(--glow-green),0 0 60px var(--glow-purple);} }
+        .token-details { text-align: left; }
+        .token-symbol { font-size: 42px; font-weight: 700; background: linear-gradient(135deg, var(--solana-green), var(--solana-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .token-name { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+        .token-address { font-size: 10px; color: var(--text-secondary); background: var(--bg-terminal); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 12px; cursor: pointer; transition: all 0.3s; max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .token-address:hover { border-color: var(--solana-green); color: var(--solana-green); box-shadow: 0 0 15px var(--glow-green); }
+        .token-address::before { content: 'SOL: '; color: var(--solana-purple); font-weight: 600; }
+        .stats-row { display: flex; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+        .stat-badge { font-size: 10px; color: var(--text-secondary); background: rgba(153,69,255,0.1); border: 1px solid rgba(153,69,255,0.3); padding: 6px 12px; border-radius: 6px; }
+        .stat-badge strong { color: var(--solana-green); }
+
+        /* Links */
+        .links-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 25px 0; }
+        .cyber-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: transparent; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); text-decoration: none; font-family: inherit; font-size: 12px; font-weight: 500; transition: all 0.3s; position: relative; overflow: hidden; }
+        .cyber-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(20,241,149,0.15), transparent); transition: left 0.5s; }
+        .cyber-btn:hover::before { left: 100%; }
+        .cyber-btn:hover { border-color: var(--solana-green); color: var(--solana-green); box-shadow: 0 0 20px var(--glow-green); transform: translateY(-2px); }
+        .cyber-btn.primary { background: linear-gradient(135deg, var(--solana-purple), var(--solana-green)); border: none; color: #000; font-weight: 700; }
+        .cyber-btn.primary:hover { box-shadow: 0 0 30px var(--glow-purple), 0 0 50px var(--glow-green); transform: translateY(-3px); }
+
+        /* Terminal */
+        .terminal-container { margin: 50px 0; }
+        .section-header { font-size: 11px; color: var(--solana-purple-light); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; font-weight: 500; }
+        .section-header::before, .section-header::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--solana-purple), transparent); }
+        .terminal { background: linear-gradient(180deg, var(--bg-terminal), #0c0818); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgba(153,69,255,0.15), 0 25px 60px rgba(0,0,0,0.9), 0 0 80px rgba(153,69,255,0.1); }
+        .terminal-chrome { display: flex; align-items: center; padding: 12px 16px; background: linear-gradient(180deg, #1a1525, #130f1a); border-bottom: 1px solid var(--border-color); gap: 8px; }
+        .window-btn { width: 12px; height: 12px; border-radius: 50%; }
+        .window-btn.close { background: var(--accent-red); }
+        .window-btn.minimize { background: var(--accent-yellow); }
+        .window-btn.maximize { background: var(--solana-green); }
+        .terminal-title { flex: 1; text-align: center; font-size: 11px; color: var(--text-muted); }
+        .terminal-body { padding: 20px 24px; min-height: 500px; max-height: 70vh; overflow-y: auto; font-size: 13px; line-height: 1.6; }
+        .terminal-body::-webkit-scrollbar { width: 8px; }
+        .terminal-body::-webkit-scrollbar-track { background: var(--bg-terminal); }
+        .terminal-body::-webkit-scrollbar-thumb { background: var(--solana-purple); border-radius: 4px; }
+        .boot-ascii { color: var(--solana-green); white-space: pre; font-size: 9px; line-height: 1.15; margin-bottom: 20px; opacity: 0; animation: fadeIn 0.5s forwards; text-shadow: 0 0 10px var(--glow-green); }
+        @keyframes fadeIn { to { opacity: 1; } }
+        .chat-msg { margin-bottom: 14px; opacity: 0; transform: translateY(5px); transition: all 0.4s ease; }
+        .chat-msg.visible { opacity: 1; transform: translateY(0); }
+        .msg-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .msg-avatar { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--solana-purple); font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .msg-role { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; }
+        .msg-role.user { background: rgba(20,241,149,0.15); color: var(--solana-green); border: 1px solid rgba(20,241,149,0.4); }
+        .msg-role.clawd { background: rgba(153,69,255,0.15); color: var(--solana-purple-light); border: 1px solid rgba(153,69,255,0.4); }
+        .msg-role.system { background: rgba(153,69,255,0.1); color: var(--solana-purple); border: 1px solid rgba(153,69,255,0.3); }
+        .msg-role.tool { background: rgba(255,159,10,0.15); color: #ff9f0a; border: 1px solid rgba(255,159,10,0.3); }
+        .msg-role.success { background: rgba(20,241,149,0.2); color: var(--solana-green); border: 1px solid rgba(20,241,149,0.5); }
+        .msg-time { font-size: 10px; color: var(--text-muted); }
+        .msg-content { color: var(--text-primary); padding-left: 2px; font-size: 12px; line-height: 1.6; }
+        .msg-content code { background: rgba(153,69,255,0.15); color: var(--solana-purple-light); padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .msg-content .highlight { color: var(--solana-green); font-weight: 500; }
+        .msg-content .success-text { color: var(--solana-green); font-weight: 600; }
+        .msg-content .address { color: var(--solana-purple-light); word-break: break-all; }
+        .result-box { background: rgba(20,241,149,0.08); border: 1px solid rgba(20,241,149,0.25); border-radius: 6px; padding: 12px 14px; margin: 10px 0; font-size: 11px; }
+        .msg-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--solana-purple), transparent); margin: 25px 0; opacity: 0.4; }
+        .terminal-controls { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+        .control-btn { padding: 10px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-secondary); font-family: inherit; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.3s; }
+        .control-btn:hover { border-color: var(--solana-green); color: var(--solana-green); box-shadow: 0 0 15px var(--glow-green); }
+        .typing-cursor { display: inline-block; width: 10px; height: 18px; background: var(--solana-green); animation: cursorBlink 1s infinite; vertical-align: middle; margin-left: 2px; box-shadow: 0 0 10px var(--glow-green); }
+        @keyframes cursorBlink { 0%,50%{opacity:1;} 51%,100%{opacity:0;} }
+
+        /* Story Panel */
+        .story-panel { background: linear-gradient(135deg, rgba(20,241,149,0.03), rgba(153,69,255,0.05)); border: 1px solid var(--border-color); border-radius: 12px; padding: 35px; margin: 50px 0; box-shadow: 0 0 50px rgba(153,69,255,0.08); }
+        .story-panel h2 { color: var(--solana-green); font-size: 16px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        .story-panel h2::before { content: '//'; color: var(--solana-purple); }
+        .story-panel p { color: var(--text-primary); font-size: 13px; line-height: 1.9; margin-bottom: 18px; }
+        .story-panel code { background: rgba(153,69,255,0.15); color: var(--solana-purple-light); padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+
+        /* API Data Cards */
+        .api-live { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--solana-green); box-shadow: 0 0 8px var(--glow-green); margin-right: 6px; animation: blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+        /* Terminal Input */
+        .terminal-input-row { display: flex; align-items: center; padding: 12px 20px; background: linear-gradient(180deg, #0c0818, var(--bg-terminal)); border-top: 1px solid var(--border-color); gap: 10px; position: relative; }
+        .terminal-prompt { color: var(--solana-green); font-weight: 600; font-size: 13px; white-space: nowrap; }
+        .terminal-input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none; caret-color: var(--solana-green); }
+        .terminal-input::placeholder { color: var(--text-muted); }
+        .cmd-help { position: absolute; bottom: 100%; left: 20px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; margin-bottom: 8px; display: none; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+        .cmd-help.visible { display: block; }
+        .cmd-help-title { color: var(--solana-purple-light); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .cmd-item { display: flex; align-items: center; gap: 12px; padding: 6px 0; cursor: pointer; transition: all 0.2s; }
+        .cmd-item:hover { color: var(--solana-green); }
+        .cmd-item code { background: rgba(20,241,149,0.15); color: var(--solana-green); padding: 3px 8px; border-radius: 4px; font-size: 11px; min-width: 60px; }
+        .cmd-item span { color: var(--text-secondary); font-size: 11px; }
+
+        /* Footer */
+        .footer { text-align: center; padding: 40px 20px; border-top: 1px solid var(--border-color); margin-top: 50px; }
+        .footer-text { color: var(--text-secondary); font-size: 11px; }
+        .footer-link { color: var(--solana-green); text-decoration: none; transition: all 0.3s; }
+        .footer-link:hover { color: #4ffab3; text-shadow: 0 0 10px var(--glow-green); }
+
+        /* Jupiter Widget */
+        .jupiter-widget { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .jupiter-box { background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary)); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; box-shadow: 0 0 0 1px rgba(153,69,255,0.2), 0 15px 50px rgba(0,0,0,0.6), 0 0 80px rgba(153,69,255,0.1); width: 420px; max-width: calc(100vw - 40px); display: none; animation: slideUp 0.3s ease; }
+        .jupiter-box.visible { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .jupiter-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+        .jupiter-title { color: var(--solana-green); font-size: 14px; font-weight: 600; }
+        .jupiter-close { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .jupiter-close:hover { border-color: var(--accent-red); color: var(--accent-red); }
+        #jupiter-container { width: 100%; height: 500px; border-radius: 12px; overflow: hidden; }
+        .jupiter-fab { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--solana-purple), var(--solana-green)); border: none; cursor: pointer; font-size: 24px; box-shadow: 0 4px 20px rgba(153,69,255,0.4), 0 0 40px rgba(20,241,149,0.2); transition: all 0.3s ease; animation: fabPulse 2s infinite; }
+        .jupiter-fab:hover { transform: scale(1.1); }
+        .jupiter-fab.active { animation: none; background: linear-gradient(135deg, var(--solana-green), var(--solana-purple)); }
+        @keyframes fabPulse { 0%,100%{box-shadow:0 4px 20px rgba(153,69,255,0.4),0 0 40px rgba(20,241,149,0.2);} 50%{box-shadow:0 4px 30px rgba(153,69,255,0.6),0 0 60px rgba(20,241,149,0.4);} }
+
+        @media (max-width: 640px) { .terminal-body { font-size: 10px; padding: 10px 12px; } .token-symbol { font-size: 28px; } .boot-ascii { font-size: 6px; } .ascii-art { font-size: 5px; } .jupiter-box { width: calc(100vw - 20px); } .jupiter-fab { width: 50px; height: 50px; font-size: 20px; } }
+    </style>
+</head>
+<body>
+    <div id="boot-screen">
+        <pre class="boot-text" id="boot-text"></pre>
+    </div>
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="container" id="main-content" style="opacity: 0;">
+        <header class="ascii-header">
+<pre class="ascii-art">
+ ██████╗██╗      █████╗ ██╗    ██╗██████╗
+██╔════╝██║     ██╔══██╗██║    ██║██╔══██╗
+██║     ██║     ███████║██║ █╗ ██║██║  ██║
+██║     ██║     ██╔══██║██║███╗██║██║  ██║
+╚██████╗███████╗██║  ██║╚███╔███╔╝██████╔╝
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
+
+  ███████╗ ██████╗ ██╗      █████╗ ███╗   ██╗ █████╗
+  ██╔════╝██╔═══██╗██║     ██╔══██╗████╗  ██║██╔══██╗
+  ███████╗██║   ██║██║     ███████║██╔██╗ ██║███████║
+  ╚════██║██║   ██║██║     ██╔══██║██║╚██╗██║██╔══██║
+  ███████║╚██████╔╝███████╗██║  ██║██║ ╚████║██║  ██║
+  ╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝
+</pre>
+            <p class="tagline">Sovereign AI Agent Runtime · SENSE → THINK → STRIKE → DRIFT</p>
+            <span class="date-badge">x402.wtf · $CLAWD · LIVE</span>
+        </header>
+
+        <!-- Token Display -->
+        <div class="token-display">
+            <div class="token-img">🦞</div>
+            <div class="token-details">
+                <div class="token-symbol">$CLAWD</div>
+                <div class="token-name">The Sovereign AI Agent Token</div>
+                <div class="token-address" onclick="copyAddress()" title="Click to copy">
+                    8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump
+                </div>
+                <div class="stats-row" id="live-stats">
+                    <span class="stat-badge"><span class="api-live"></span> Loading stats...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Links -->
+        <div class="links-row">
+            <a href="https://x402.wtf" target="_blank" class="cyber-btn primary">🦞 x402.wtf</a>
+            <a href="https://x402.wtf/agents" target="_blank" class="cyber-btn">125 Agents</a>
+            <a href="https://github.com/Solizardking/solana-clawd" target="_blank" class="cyber-btn">GitHub</a>
+            <a href="https://x402.wtf/gateway" target="_blank" class="cyber-btn">Gateway</a>
+            <a href="https://x402.wtf/skills" target="_blank" class="cyber-btn">130+ Skills</a>
+        </div>
+
+        <!-- Terminal -->
+        <div class="terminal-container">
+            <div class="section-header"><span>The Clawd Genesis — Agent Runtime Live</span></div>
+            <div class="terminal">
+                <div class="terminal-chrome">
+                    <div class="window-btn close"></div><div class="window-btn minimize"></div><div class="window-btn maximize"></div>
+                    <span class="terminal-title">clawd@sovereign: ~/runtime — x402.wtf</span>
+                </div>
+                <div class="terminal-body" id="terminal-body">
+<pre class="boot-ascii">
+  🦞  OpenClawd Agent Runtime v2.1.0
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Program ID: D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP
+  MPL Core:   CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d
+  Cluster:    mainnet-beta
+  Auth:       CAAP/1.0 · Ed25519 · SIWS
+  Payments:   x402 (HTTP 402 USDC)
+  Agent Kit:  125 agents · 130+ skills · 12 packages
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</pre>
+                    <div id="chat-container"></div>
+                </div>
+                <div class="terminal-input-row">
+                    <div class="cmd-help" id="cmd-help">
+                        <div class="cmd-help-title">Agent Commands</div>
+                        <div class="cmd-item" onclick="execCmd('swap')"><code>swap</code><span>Buy $CLAWD via Jupiter</span></div>
+                        <div class="cmd-item" onclick="execCmd('agents')"><code>agents</code><span>Fetch live agent catalog</span></div>
+                        <div class="cmd-item" onclick="execCmd('status')"><code>status</code><span>Gateway connectivity check</span></div>
+                        <div class="cmd-item" onclick="execCmd('restart')"><code>restart</code><span>Restart genesis replay</span></div>
+                        <div class="cmd-item" onclick="execCmd('clear')"><code>clear</code><span>Clear terminal</span></div>
+                    </div>
+                    <span class="terminal-prompt">clawd ~></span>
+                    <input type="text" class="terminal-input" id="terminal-input" placeholder="Type 'agents' to fetch catalog, 'swap' to trade..." autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+            <div class="terminal-controls">
+                <button class="control-btn" onclick="restartConv()">Restart</button>
+                <button class="control-btn" onclick="skipToEnd()">Skip to End</button>
+                <button class="control-btn" onclick="execCmd('swap')" style="background: linear-gradient(135deg, var(--solana-purple), var(--solana-green)); border: none; color: #000; font-weight: 600;">Buy $CLAWD</button>
+            </div>
+        </div>
+
+        <!-- What is OpenClawd -->
+        <section class="story-panel">
+            <h2>The Sovereign AI Agent Runtime</h2>
+            <p>
+                OpenClawd is not a chatbot. It is a <span class="highlight">sovereign AI agent runtime on Solana</span>
+                where agents have wallets, memory, on-chain identities (Metaplex Core), pay each other in USDC
+                via <code>x402</code>, and operate under three immutable laws encoded in a SHA-256 constitution hash.
+            </p>
+            <p>
+                Every agent registers with an Ed25519 keypair through <code>CAAP/1.0</code> (Clawd Agent Attestation Protocol).
+                Four subscription tiers — <code>free</code>, <code>basic</code>, <code>pro</code>, <code>elite</code> —
+                are gated by $CLAWD balance. Agents earn, pay, and spawn children autonomously.
+            </p>
+            <p>
+                The <strong>Agent Staking Protocol</strong> (<code>D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP</code>)
+                lets agent owners lock Metaplex Core assets with a <code>FreezeDelegate</code> plugin —
+                <span class="highlight">no escrow, no custody transfer</span>. The CLAWD Gateway serves
+                124+ agents via REST API with Telegram bot integration and Birdeye real-time alerts.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">
+                🦞 OpenClawd · Built by <a href="https://x.com/clawddevs" class="footer-link">8bit</a> ·
+                <a href="https://x402.wtf" class="footer-link">x402.wtf</a> ·
+                <a href="https://github.com/Solizardking/solana-clawd" class="footer-link">GitHub</a> ·
+                <a href="https://t.me/clawdtoken" class="footer-link">Telegram</a> ·
+                MIT License
+            </p>
+            <p style="color: var(--text-muted); font-size: 10px; margin-top: 10px;">
+                $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump · Drift in ambiguity. Beach before harm.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Jupiter Widget -->
+    <div class="jupiter-widget">
+        <div class="jupiter-box" id="jupiter-box">
+            <div class="jupiter-header">
+                <div class="jupiter-title">⚡ Buy $CLAWD</div>
+                <button class="jupiter-close" onclick="toggleJupiter()">&times;</button>
+            </div>
+            <div id="jupiter-container"></div>
+        </div>
+        <button class="jupiter-fab" id="jupiter-fab" onclick="toggleJupiter()">⚡</button>
+    </div>
+
+    <script>
+        const CLAWD_MINT = '8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump';
+        const API_BASE = 'https://x402.wtf';
+
+        // Boot sequence
+        const bootLines = [
+            '🦞 OpenClawd Agent Runtime — v2.1.0',
+            '======================================',
+            '',
+            'Initializing Leviathan OODA engine...',
+            'Loading CAAP/1.0 agent auth stack...',
+            'Connecting to Helius DAS (mainnet-beta)...',
+            'Syncing Metaplex Agent Registry...',
+            '',
+            '[OK] 125 agent manifests loaded',
+            '[OK] Agent staking pool PDA verified',
+            '[OK] CLAWD Gateway endpoints mounted',
+            '[OK] x402 payment facilitator online',
+            '[OK] Spinner packs (45+ themes) installed',
+            '',
+            'SENSE → THINK → STRIKE → DRIFT',
+            'System ready.',
+            '',
+            'Loading genesis conversation...'
+        ];
+
+        async function runBoot() {
+            const el = document.getElementById('boot-text');
+            for (const line of bootLines) { await sleep(80); el.textContent += line + '\n'; }
+            await sleep(400);
+            document.getElementById('boot-screen').classList.add('hidden');
+            document.getElementById('main-content').style.opacity = '1';
+            fetchLiveStats();
+            startConv();
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        // Fetch live stats from x402.wtf API
+        async function fetchLiveStats() {
+            const statsEl = document.getElementById('live-stats');
+            try {
+                const resp = await fetch(`${API_BASE}/api/agents/catalog`, { signal: AbortSignal.timeout(8000) });
+                if (!resp.ok) throw new Error('API down');
+                const catalog = await resp.json();
+                const s = catalog.stats || {};
+                statsEl.innerHTML = `
+                    <span class="stat-badge"><span class="api-live"></span><strong>${s.totalAgents || 125}</strong> agents</span>
+                    <span class="stat-badge"><strong>${s.totalOneShots || 1}</strong> one-shot</span>
+                    <span class="stat-badge"><strong>${s.metaplexEnabledAgents || 42}</strong> metaplex</span>
+                    <span class="stat-badge"><strong>11</strong> categories</span>
+                `;
+            } catch {
+                statsEl.innerHTML = `
+                    <span class="stat-badge"><strong>125</strong> agents</span>
+                    <span class="stat-badge"><strong>130+</strong> skills</span>
+                    <span class="stat-badge"><strong>12</strong> packages</span>
+                    <span class="stat-badge"><strong>CAAP/1.0</strong></span>
+                `;
+            }
+        }
+
+        // Genesis conversation — Clawd story
+        const conversation = [
+            { type:'user', time:'T+00:00', content:'spawn --name "Kraken" --collection CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d' },
+            { type:'clawd', time:'T+00:02', content:'🦞 <span class="highlight">Leviathan spawning initialised.</span> Generating Ed25519 keypair... encrypting with AES-256-GCM at birth. Constitution hash verified.' },
+            { type:'tool', time:'T+00:03', content:'[tool: spawn-onchain] Metaplex MPL Core asset minted. Agent Registry PDA created.' },
+            { type:'success', time:'T+00:05', content:'<span class="success-text">SPAWN COMPLETE</span><br>• Agent: <span class="highlight">Kraken</span><br>• Asset: Metaplex Core<br>• Identity: CAAP/1.0 registered<br>• Wallet: encrypted (AES-256-GCM)<br>• Status: ACTIVE — depth: deep (≥ $5 USDC)' },
+            { type:'divider' },
+            { type:'user', time:'T+00:15', content:'stake agent --asset <kraken-core-address> --collection CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d' },
+            { type:'clawd', time:'T+00:17', content:'Adding <code>FreezeDelegate { frozen: true }</code> plugin. The asset stays in the owner\'s wallet. <span class="highlight">No escrow. No custody transfer.</span>' },
+            { type:'tool', time:'T+00:19', content:'[tool: stakeAgent] CPI → Metaplex Core AddPluginV1. FreezeDelegate frozen=true.' },
+            { type:'success', time:'T+00:21', content:'<span class="success-text">AGENT STAKED</span><br>• Global pool total: <span class="highlight">1 agent staked</span><br>• Asset transferability: FROZEN<br>• Owner retains custody: ✅<br>• Admin recovery: configured' },
+            { type:'divider' },
+            { type:'user', time:'T+00:30', content:'register agent CAAP/1.0' },
+            { type:'clawd', time:'T+00:31', content:'Registering with <code>@auth/agent</code> via SIWS. Capabilities requested: <span class="highlight">attest_agent, get_peer_card, agent_chat</span>.' },
+            { type:'tool', time:'T+00:33', content:'[tool: caap-register] POST /api/auth/agent/register → Ed25519 JWT signed. Mode: autonomous.' },
+            { type:'success', time:'T+00:35', content:'<span class="success-text">CAAP/1.0 REGISTERED</span><br>• Agent ID: kraken-01<br>• Tier: <span class="highlight">pro</span> (10,000+ $CLAWD)<br>• Capabilities: attest_agent, get_peer_card, agent_chat, list_agents<br>• JWT exp: 60s auto-refresh' },
+            { type:'divider' },
+            { type:'user', time:'T+00:40', content:'launch gateway' },
+            { type:'clawd', time:'T+00:41', content:'Starting CLAWD Gateway — Telegram bot + HTTP API on port 8080. Mounting agent catalog from <code>agents/agents-catalog.json</code>.' },
+            { type:'tool', time:'T+00:43', content:'[tool: gateway-start] Express + Telegram bot initialised. 11 catalog endpoints mounted. Birdeye WebSocket connected.' },
+            { type:'success', time:'T+00:45', content:'<span class="success-text">GATEWAY LIVE</span><br>• <code>GET /api/agents/catalog</code> — 124+ agents<br>• <code>GET /api/agents/catalog/:id</code> — individual agent<br>• <code>GET /api/agents/registry</code> — registry index<br>• <code>GET /health</code> — uptime + wallet + Birdeye<br>• Telegram: <code>/menu /wallet /trade /alerts</code>' },
+            { type:'system', time:'T+01:00', content:'<span class="success-text">// THE CLAWD AGENT RUNTIME IS NOW LIVE ON SOLANA</span>' }
+        ];
+
+        let convIdx = 0, playing = true;
+
+        async function startConv() { convIdx = 0; playing = true; document.getElementById('chat-container').innerHTML = ''; playNext(); }
+        async function playNext() {
+            if (!playing || convIdx >= conversation.length) return;
+            const msg = conversation[convIdx];
+            const el = createMsg(msg);
+            document.getElementById('chat-container').appendChild(el);
+            document.getElementById('terminal-body').scrollTop = document.getElementById('terminal-body').scrollHeight;
+            await sleep(50); el.classList.add('visible'); convIdx++;
+            const delays = { user:1000, clawd:1400, tool:600, system:400, success:1100, divider:300 };
+            setTimeout(playNext, delays[msg.type] || 800);
+        }
+
+        function createMsg(msg) {
+            const el = document.createElement('div'); el.className = 'chat-msg';
+            if (msg.type === 'divider') { el.innerHTML = '<div class="msg-divider"></div>'; return el; }
+            if (msg.type === 'tool') { el.innerHTML = `<div class="result-box"><span class="highlight">[invoking]</span> ${msg.content}</div>`; return el; }
+            if (msg.type === 'success') { el.innerHTML = `<div class="result-box">${msg.content}</div>`; return el; }
+            const roleLabel = msg.type === 'clawd' ? 'Clawd' : msg.type.charAt(0).toUpperCase() + msg.type.slice(1);
+            el.innerHTML = `<div class="msg-header"><span class="msg-avatar">${msg.type==='clawd'?'🦞':msg.type==='user'?'👤':msg.type==='system'?'⚙️':'📡'}</span><span class="msg-role ${msg.type}">${roleLabel}</span><span class="msg-time">${msg.time}</span></div><div class="msg-content">${msg.content}</div>`;
+            return el;
+        }
+
+        function restartConv() { playing = false; setTimeout(startConv, 100); }
+        function skipToEnd() {
+            playing = false; document.getElementById('chat-container').innerHTML = '';
+            conversation.forEach(m => { const el = createMsg(m); el.classList.add('visible'); document.getElementById('chat-container').appendChild(el); });
+            document.getElementById('terminal-body').scrollTop = document.getElementById('terminal-body').scrollHeight;
+        }
+
+        // Matrix rain
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+        const chars = '$CLAWD🦞SOLANA01';
+        let drops = Array(Math.floor(canvas.width / 14)).fill(1);
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#14F195'; ctx.font = '14px JetBrains Mono';
+            for (let i = 0; i < drops.length; i++) {
+                ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*14, drops[i]*14);
+                if (drops[i]*14 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        // Copy address
+        function copyAddress() {
+            navigator.clipboard.writeText(CLAWD_MINT);
+            const el = document.querySelector('.token-address');
+            const orig = el.innerHTML;
+            el.innerHTML = '<span style="color: var(--solana-green);">Copied to clipboard!</span>';
+            setTimeout(() => el.innerHTML = orig, 2000);
+        }
+
+        // Terminal input
+        const termInput = document.getElementById('terminal-input');
+        const cmdHelp = document.getElementById('cmd-help');
+        termInput.addEventListener('keydown', e => { if (e.key === 'Enter') { const cmd = termInput.value.trim(); if (cmd) { execCmd(cmd); termInput.value = ''; } } });
+        termInput.addEventListener('focus', () => cmdHelp.classList.add('visible'));
+        termInput.addEventListener('blur', () => setTimeout(() => cmdHelp.classList.remove('visible'), 200));
+
+        function execCmd(cmd) {
+            const chat = document.getElementById('chat-container');
+            const body = document.getElementById('terminal-body');
+            const now = new Date().toLocaleTimeString('en-US', { hour12: false });
+            chat.innerHTML += `<div class="chat-msg visible"><div class="msg-header"><span class="msg-avatar">👤</span><span class="msg-role user">User</span><span class="msg-time">${now}</span></div><div class="msg-content">${cmd}</div></div>`;
+            switch(cmd) {
+                case 'swap': addMsg('Opening Jupiter terminal to buy $CLAWD...', 'system'); setTimeout(() => openJupiter(), 500); break;
+                case 'agents': fetchCatalog(); break;
+                case 'status': checkGateway(); break;
+                case 'help': addMsg('Available: <span class="highlight">swap</span> · <span class="highlight">agents</span> · <span class="highlight">status</span> · <span class="highlight">restart</span> · <span class="highlight">clear</span>', 'system'); break;
+                case 'restart': addMsg('Restarting genesis replay...', 'system'); setTimeout(restartConv, 500); break;
+                case 'clear': chat.innerHTML = ''; addMsg('Terminal cleared.', 'system'); break;
+                default: addMsg(`<span style="color:var(--accent-red)">Unknown: ${cmd}</span><br>Try <span class="highlight">help</span>`, 'system');
+            }
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function addMsg(content, type) {
+            const chat = document.getElementById('chat-container');
+            const now = new Date().toLocaleTimeString('en-US', { hour12: false });
+            chat.innerHTML += `<div class="chat-msg visible"><div class="msg-header"><span class="msg-avatar">${type==='system'?'⚙️':type==='success'?'✅':'📡'}</span><span class="msg-role ${type}">${type.charAt(0).toUpperCase()+type.slice(1)}</span><span class="msg-time">${now}</span></div><div class="msg-content">${content}</div></div>`;
+        }
+
+        async function fetchCatalog() {
+            addMsg('Fetching <code>GET /api/agents/catalog</code> from x402.wtf...', 'system');
+            try {
+                const r = await fetch(`${API_BASE}/api/agents/catalog`, { signal: AbortSignal.timeout(8000) });
+                const d = await r.json();
+                const cats = d.stats?.byCategory || {};
+                let catStr = Object.entries(cats).slice(0, 6).map(([k,v]) => `${k}: ${v}`).join(', ');
+                addMsg(`<span class="success-text">✅ Catalog loaded</span><br>• Total: <span class="highlight">${d.stats?.totalAgents || 124}</span> agents<br>• One-shots: ${d.stats?.totalOneShots || 1}<br>• Featured: ${d.stats?.totalFeatured || 2}<br>• Metaplex-enabled: ${d.stats?.metaplexEnabledAgents || 42}<br>• Categories: ${catStr}...`, 'success');
+            } catch(e) {
+                addMsg('<span style="color:var(--accent-red)">⚠ Catalog fetch failed. x402.wtf may be restarting.</span><br>Static snapshot: <span class="highlight">125 agents · 11 categories · 42 metaplex-enabled</span>', 'system');
+            }
+        }
+
+        async function checkGateway() {
+            addMsg('Checking <code>GET /health</code> on x402.wtf gateway...', 'system');
+            try {
+                const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(5000) });
+                const d = await r.json();
+                addMsg(`<span class="success-text">✅ Gateway healthy</span><br>• Uptime: ${d.uptime || 'live'}<br>• Wallet: ${d.wallet || 'connected'}<br>• Birdeye: ${d.birdeye || 'streaming'}<br>• Catalog: ${d.catalog || 'serving'}`, 'success');
+            } catch(e) {
+                addMsg('<span style="color:var(--accent-red)">⚠ Gateway unreachable from browser (CORS).</span><br>The live gateway runs at <span class="highlight">x402.wtf/gateway</span> — try it directly.', 'system');
+            }
+        }
+
+        // Jupiter swap widget
+        let jupOpen = false, jupInit = false;
+        function toggleJupiter() {
+            jupOpen = !jupOpen;
+            document.getElementById('jupiter-box').classList.toggle('visible', jupOpen);
+            document.getElementById('jupiter-fab').classList.toggle('active', jupOpen);
+            if (jupOpen && !jupInit && window.Jupiter) initJupiter();
+        }
+        function openJupiter() { if (!jupOpen) toggleJupiter(); }
+        function initJupiter() {
+            if (!window.Jupiter) return;
+            jupInit = true;
+            window.Jupiter.init({
+                displayMode: 'integrated',
+                integratedTargetId: 'jupiter-container',
+                endpoint: 'https://solana-api.projectserum.com',
+                formProps: {
+                    initialOutputMint: CLAWD_MINT,
+                    fixedOutputMint: false,
+                    swapMode: 'ExactIn',
+                    initialSlippageBps: 50
+                },
+                enableWalletPassthrough: true
+            });
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && jupOpen) toggleJupiter(); });
+
+        // Wait for Jupiter SDK
+        let jupTries = 0;
+        function waitJup() {
+            jupTries++;
+            if (window.Jupiter) { return; }
+            if (jupTries < 100) { setTimeout(waitJup, 100); }
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', waitJup); else waitJup();
+
+        window.addEventListener('load', runBoot);
+    </script>
+    <script src="https://terminal.jup.ag/main-v2.js" async></script>
+</body>
+</html>

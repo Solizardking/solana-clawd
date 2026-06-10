@@ -96,19 +96,22 @@ Environment note: this checkout declares Node `>=20 <25`. The smoke run was exec
 </div>
 
 The `dark/` workspace is wired into the repo as a public-safe, local-first
-wallet stack. It keeps the wallet shell, policy lane, DeFi lane, and swap lane
-separate so the docs stay clean and the code stays easy to follow.
+wallet stack. It keeps the wallet shell, paper-wallet lane, policy lane, DeFi
+lane, and swap lane separate so the docs stay clean and the code stays easy to
+follow.
 
 | Module | Role |
 |---|---|
-| `dark-wallet` | Browser wallet shell with demo ledger, injected wallet flow, and local state |
+| `dark-wallet` | Browser wallet shell, Solana paper wallet flow, and local state |
 | `dark-agent` | Spend policy, automation modes, and guardrails |
 | `dark-defi` | Vault, yield, and risk surfaces |
 | `dark-swap` | Route preview and quote estimation |
 
 What ships:
 - Demo mode runs locally without private keys, secret env values, or box internals.
-- Connected mode only reads the injected wallet address and devnet balance when a wallet is present.
+- Connected mode reads the injected wallet address and the selected Solana cluster when a wallet is present.
+- The paper-wallet tab generates Solana keypairs locally, supports extra entropy, and prints through the browser dialog.
+- The Dark Clawd sidecar uses `XAI_API_KEY` when present, but never touches secret key material.
 - Root-level scripts expose `npm run dark:dev`, `npm run dark:build`, `npm run dark:typecheck`, and `npm run dark:preview`.
 
 Run it:

@@ -2,6 +2,7 @@ import { Router, type Router as ExpressRouter } from "express";
 import { loadAgentTemplates, loadCharacters } from "../lib/catalog.js";
 import { createSpawnRecord, listSpawnRecords } from "../lib/spawn-store.js";
 import { SPAWN_PLAYBOOKS } from "../lib/playbooks.js";
+import { loadRepoModules } from "../lib/modules.js";
 
 export function spawnRoutes(): ExpressRouter {
   const router = Router();
@@ -22,6 +23,7 @@ export function spawnRoutes(): ExpressRouter {
       characters,
       spawns,
       playbooks: SPAWN_PLAYBOOKS,
+      modules: loadRepoModules(),
       stats: {
         templates: templates.length,
         characters: characters.length,
@@ -47,6 +49,29 @@ export function spawnRoutes(): ExpressRouter {
     res.json({ ok: true, playbooks: SPAWN_PLAYBOOKS });
   });
 
+  router.get("/modules", (_req, res) => {
+    res.json({ ok: true, modules: loadRepoModules() });
+  });
+
+  router.get("/wallet-config", (_req, res) => {
+    const rpcUrl = process.env.SOLANA_RPC_URL ?? process.env.RPC_URL ?? "https://api.mainnet-beta.solana.com";
+    const heliusApiKey = process.env.HELIUS_API_KEY ?? "";
+    const heliusDasUrl = heliusApiKey
+      ? `https://mainnet.helius-rpc.com/?api-key=${heliusApiKey}`
+      : "https://mainnet.helius-rpc.com/?api-key=YOUR_HELIUS_API_KEY";
+
+    res.json({
+      ok: true,
+      wallet: {
+        defaultNetwork: "solana-mainnet",
+        rpcUrl,
+        heliusDasUrl,
+        supportsVaultMode: true,
+        supportsEphemeralMode: true,
+      },
+    });
+  });
+
   router.post("/jobs", (req, res) => {
     const {
       name,
@@ -57,6 +82,8 @@ export function spawnRoutes(): ExpressRouter {
       runtime,
       budgetUsd,
       mission,
+      rpcUrl,
+      heliusDasUrl,
     } = req.body as Record<string, unknown>;
 
     if (!name || !templateId || !characterId || !mission) {
@@ -84,6 +111,8 @@ export function spawnRoutes(): ExpressRouter {
       runtime: runtime === "box" || runtime === "cloudflare" ? runtime : "agentwallet",
       budgetUsd: typeof budgetUsd === "number" ? budgetUsd : Number(budgetUsd ?? 250),
       mission: String(mission),
+      rpcUrl: typeof rpcUrl === "string" ? rpcUrl : undefined,
+      heliusDasUrl: typeof heliusDasUrl === "string" ? heliusDasUrl : undefined,
     });
 
     return res.status(201).json({ ok: true, job: record });

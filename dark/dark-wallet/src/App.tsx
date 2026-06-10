@@ -399,12 +399,14 @@ function App() {
           <span className="pill">{isDemo ? "Demo mode" : walletProviderName}</span>
           <div className="network-toggle" role="group" aria-label="Network selector">
             <button
+              type="button"
               className={`pill${network === "devnet" ? "" : " pill-soft"}`}
               onClick={() => setNetwork("devnet")}
             >
               Devnet
             </button>
             <button
+              type="button"
               className={`pill${network === "mainnet-beta" ? "" : " pill-soft"}`}
               onClick={() => setNetwork("mainnet-beta")}
             >

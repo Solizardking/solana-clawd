@@ -5,10 +5,11 @@ import { dirname, join } from "path";
 import { agentRoutes } from "../routes/agents.js";
 import { hubRoutes } from "../routes/hub.js";
 import { spawnRoutes } from "../routes/spawn.js";
+import { resolveWorkspaceRoot } from "../lib/workspace.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, "..", "..", "public");
-const RUNTIME_WEB_DIR = join(process.cwd(), "dist-web");
+const RUNTIME_WEB_DIR = join(resolveWorkspaceRoot(), "dist-web");
 
 export function createApp(): Express {
   const app = express();
@@ -23,12 +24,10 @@ export function createApp(): Express {
 
   // Health check
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok", version: "0.1.0", name: "clawd-hub" });
+    res.json({ status: "ok", version: "0.1.0", name: "spawn-by-solana-clawd" });
   });
 
-  if (PUBLIC_DIR) {
-    app.use("/runtime", express.static(RUNTIME_WEB_DIR));
-  }
+  app.use("/runtime", express.static(RUNTIME_WEB_DIR));
 
   // Dashboard
   app.use(express.static(PUBLIC_DIR));

@@ -73,8 +73,10 @@ function downloadJson(filename: string, content: string): void {
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = filename;
+  document.body.appendChild(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(anchor);
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 export default function PaperWalletSurface({
@@ -209,6 +211,13 @@ export default function PaperWalletSurface({
 
     setIsAskingAgent(true);
     try {
+      const systemPrompt = [
+        "You are Dark Clawd, a Solana cold-storage assistant.",
+        "Never request or repeat secret key material.",
+        "Review only public metadata, operator intent, print safety, and the payment primitive.",
+        "Keep the answer concise and actionable.",
+      ].join(" ");
+
       const review = wallet
         ? await agent.reviewWallet(wallet, {
             paymentRail,
@@ -225,6 +234,7 @@ export default function PaperWalletSurface({
               `Proof layer preference: ${proofLayer}.`,
               agentPrompt,
             ].join("\n"),
+            systemPrompt,
           );
 
       setAgentResponse(review || "No agent response returned.");
