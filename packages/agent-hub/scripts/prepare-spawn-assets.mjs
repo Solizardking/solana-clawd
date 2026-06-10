@@ -21,7 +21,7 @@ function readJsonFiles(dir) {
   }
 
   return readdirSync(dir)
-    .filter((file) => file.endsWith(".json"))
+    .filter((file) => file.endsWith(".json") && file !== "package.json")
     .flatMap((file) => {
       try {
         return [{ file, data: JSON.parse(readFileSync(join(dir, file), "utf8")) }];

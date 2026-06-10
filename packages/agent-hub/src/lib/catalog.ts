@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync } from "fs";
-import { join } from "path";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import { resolveWorkspaceRoot } from "./workspace.js";
 
 export interface AgentTemplateSummary {
@@ -37,7 +38,9 @@ function safeJsonParse<T>(raw: string): T | null {
 
 function loadSnapshot(): { templates: AgentTemplateSummary[]; characters: CharacterSummary[] } | null {
   const root = resolveWorkspaceRoot();
+  const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
   const candidates = [
+    join(packageRoot, "public", "data", "spawn-snapshot.json"),
     join(root, "packages", "agent-hub", "public", "data", "spawn-snapshot.json"),
     join(root, "public", "data", "spawn-snapshot.json"),
   ];
@@ -62,7 +65,7 @@ export function loadAgentTemplates(): AgentTemplateSummary[] {
   if (!existsSync(dir)) {
     return loadSnapshot()?.templates ?? [];
   }
-  const files = readdirSync(dir).filter((file) => file.endsWith(".json"));
+  const files = readdirSync(dir).filter((file) => file.endsWith(".json") && file !== "package.json");
 
   const templates: AgentTemplateSummary[] = [];
 

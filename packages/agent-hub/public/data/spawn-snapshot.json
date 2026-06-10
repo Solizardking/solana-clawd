@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-10T22:02:25.769Z",
+  "generatedAt": "2026-06-10T22:14:10.732Z",
   "templates": [
     {
       "id": "solana-technical-analyst",
@@ -1188,17 +1188,6 @@
       "sourcePath": "snapshot:solana-order-flow-analyst.json"
     },
     {
-      "id": "package",
-      "name": "package",
-      "description": "No description provided.",
-      "category": "uncategorized",
-      "tags": [],
-      "avatar": "CLAWD",
-      "paymentEnabled": false,
-      "protocols": [],
-      "sourcePath": "snapshot:package.json"
-    },
-    {
       "id": "solana-perpetuals-trader",
       "name": "Perpetuals Trading Strategist",
       "description": "Expert in Solana perpetual futures on Drift, Zeta, Flash Trade, and Jupiter Perps",
@@ -1758,16 +1747,6 @@
     }
   ],
   "characters": [
-    {
-      "id": "package",
-      "name": "@openclawd/agent-characters",
-      "bio": [],
-      "topics": [],
-      "adjectives": [],
-      "lore": [],
-      "style": {},
-      "sourcePath": "snapshot:package.json"
-    },
     {
       "id": "activistpinch",
       "name": "activistpinch",
