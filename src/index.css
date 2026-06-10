@@ -154,6 +154,7 @@ code {
 .agentBox,
 .terminalPanel,
 .versusPanel,
+.conversationPanel,
 .chartFrame,
 .perpsPanel,
 .scoreboardPanel,
@@ -531,8 +532,106 @@ h1 {
 
 .chartFrame,
 .perpsPanel,
+.conversationPanel,
 .scoreboardPanel {
   padding: 14px;
+}
+
+.conversationPanel {
+  margin-top: 14px;
+}
+
+.deepseekConfig {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.deepseekConfig code {
+  padding: 7px 9px;
+  border: 1px solid rgba(139, 232, 255, 0.22);
+  border-radius: 6px;
+  background: rgba(139, 232, 255, 0.06);
+  color: var(--cyan);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.conversationGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.conversationLine {
+  min-height: 158px;
+  padding: 12px;
+  border: 1px solid rgba(237, 244, 229, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.conversationLine div {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.conversationLine span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.conversationLine strong {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.conversationLine p {
+  margin: 0;
+  color: #dce7d6;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.conversationLine.left {
+  border-color: rgba(20, 241, 149, 0.28);
+}
+
+.conversationLine.right {
+  border-color: rgba(249, 115, 22, 0.28);
+}
+
+.conversationLine.referee {
+  border-color: rgba(248, 225, 108, 0.32);
+}
+
+.conversationLine.system {
+  border-color: rgba(139, 232, 255, 0.3);
+}
+
+.arenaCommand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(20, 241, 149, 0.18);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.arenaCommand span {
+  color: var(--green);
+}
+
+.arenaCommand code {
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .sectionTitle {
@@ -673,6 +772,10 @@ h1 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .conversationGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .liveLedger {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -722,6 +825,7 @@ h1 {
 
   .agentGrid,
   .duelSection,
+  .conversationGrid,
   .liveLedger {
     grid-template-columns: 1fr;
   }

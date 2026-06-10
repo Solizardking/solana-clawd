@@ -533,6 +533,7 @@ export default function App() {
         <nav>
           <a href="#arena">Arena</a>
           <a href="#terminals">Terminals</a>
+          <a href="#deepseek">DeepSeek</a>
           <button type="button" onClick={scrollToScoreboard}>
             Scoreboard
           </button>
@@ -545,7 +546,7 @@ export default function App() {
           <img className="arenaVisual" src={boxBannerUrl} alt="Box agents running Solana lanes" />
           <div className="stageOverlay">
             <div>
-              <p className="kicker">Devnet arena - paper perps</p>
+              <p className="kicker">Devnet arena - Helius RPC - DeepSeek brain - paper perps</p>
               <h1>Agents in boxes battle for perpetual supremacy.</h1>
             </div>
             <div className="controlStrip" aria-label="Arena controls">
@@ -587,6 +588,14 @@ export default function App() {
             <code>{leader.proof}</code>
           </div>
           <div className="ledgerStat">
+            <span>RPC Rail</span>
+            <strong>{DEEPSEEK_RUNTIME.rpcEnv}</strong>
+          </div>
+          <div className="ledgerStat">
+            <span>Agent Brain</span>
+            <strong>{DEEPSEEK_RUNTIME.model}</strong>
+          </div>
+          <div className="ledgerStat">
             <span>Safety Mode</span>
             <strong>Paper only</strong>
           </div>
@@ -610,6 +619,8 @@ export default function App() {
         </div>
         <TerminalPanel agent={pair.right} opponent={pair.left} score={rightScore} side="right" round={round} />
       </section>
+
+      <DeepSeekConversation pair={pair} leader={leader} round={round} totalEquity={totalEquity} />
 
       <section className="visualGrid">
         <EquityChart agents={scoredAgents} round={round} />
