@@ -11,6 +11,10 @@ primary_region = "iad"
   GATEWAY_PORT = "8080"
   GATEWAY_BASE_URL = "https://clawd-gateway.fly.dev"
 
+[mounts]
+  source = "clawd_data"
+  destination = "/data"
+
 [http_service]
   internal_port = 8080
   force_https = true
