@@ -31,7 +31,7 @@ const minimaxApiKey = process.env.MINIMAX_API_KEY;
 const isMiniMaxConfigured = !!minimaxApiKey && minimaxApiKey !== "MY_MINIMAX_API_KEY";
 const miniModel = process.env.MINIMODEL || "MiniMax-M3";
 
-const geminiApiKey = process.env.GEMINI_API_KEY || "AQ.Ab8RN6JT3VEJfeHYX8-aTwmSm_hwsipp07S3k1YAthXQ4n80bw";
+const geminiApiKey = process.env.GEMINI_API_KEY;
 const isGeminiConfigured = !!geminiApiKey && geminiApiKey !== "MY_GEMINI_API_KEY";
 
 const redpillApiKey = process.env.REDPILL_API_KEY;
