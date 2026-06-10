@@ -1,0 +1,137 @@
+{
+  "name": "Solana Clawd",
+  "description": "Multi-agent fleet for Solana DeFi trading, deep research, ML prediction markets, x402/MPP payments, agentic commerce, and autonomous on-chain strategy execution.",
+  "version": "2.0.0",
+  "protocolVersion": "0.3.0",
+  "url": "https://x402.wtf/api/agents",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "spot-trading",
+      "name": "Spot Trading Optimizer",
+      "description": "Optimal order routing across Jupiter, Raydium, Orca, Phoenix, and OpenBook with TWAP/VWAP execution, smart order splitting, and compute-budget optimization.",
+      "tags": ["solana", "trading", "dex", "slippage", "execution"],
+      "examples": [
+        "Route a 10,000 USDC SOL buy with minimum slippage",
+        "Split a large order across Raydium and Orca",
+        "Optimize TWAP execution for a 1M USDC position"
+      ]
+    },
+    {
+      "id": "perpetuals-trading",
+      "name": "Perpetuals Trader",
+      "description": "Phoenix perpetuals strategy and execution via Vulcan CLI/MCP with preflight checks, margin management, paper/dry-run/confirm-each/auto modes, and RISE SDK market data.",
+      "tags": ["solana", "perps", "phoenix", "vulcan", "risk", "autonomous"],
+      "examples": [
+        "Generate a strategy.md for SOL perps in paper mode",
+        "Run a Phoenix preflight before opening a position",
+        "Execute a confirm_each limit order on SOL-PERP"
+      ]
+    },
+    {
+      "id": "x402-payments",
+      "name": "x402 Payment Gateway",
+      "description": "Handle HTTP 402 payment flows across x402 EVM rails and Solana MPP receipts. Quote, challenge, verify, and forward paid inference requests via ClawdRouter or OpenRouter.",
+      "tags": ["x402", "mpp", "payments", "solana-pay", "usdc", "receipt"],
+      "examples": [
+        "Get a payment quote for inference",
+        "Verify a Payment-Receipt header",
+        "Forward a paid chat/completions request to ClawdRouter"
+      ]
+    },
+    {
+      "id": "whale-tracking",
+      "name": "Whale Tracker",
+      "description": "Monitor large on-chain wallets, detect accumulation/distribution patterns, flag coordinated moves, and surface alpha from whale flow data.",
+      "tags": ["on-chain", "whale", "analytics", "alpha", "solana"],
+      "examples": [
+        "Track top 20 SOL whale wallets for the past 7 days",
+        "Alert when a whale moves more than 500K USDC",
+        "Identify coordinated buys before a token pump"
+      ]
+    },
+    {
+      "id": "mev-protection",
+      "name": "MEV Protector",
+      "description": "Detect sandwich attacks, front-running risk, and toxic order flow. Route transactions through Jito bundles or private mempools for MEV-resistant execution.",
+      "tags": ["mev", "jito", "sandwich", "protection", "solana"],
+      "examples": [
+        "Assess MEV risk for a large Jupiter swap",
+        "Route through Jito bundle for front-run protection",
+        "Simulate sandwich attack on my pending transaction"
+      ]
+    },
+    {
+      "id": "onchain-analytics",
+      "name": "On-Chain Metrics Analyst",
+      "description": "Deep-dive into Solana on-chain data: TVL, volume, active wallets, protocol flows, token distribution, and cross-protocol analytics via Helius, Birdeye, and custom RPC.",
+      "tags": ["on-chain", "analytics", "helius", "birdeye", "metrics", "solana"],
+      "examples": [
+        "Pull 30-day DEX volume breakdown by protocol",
+        "Analyze token holder distribution for a new launch",
+        "Compare TVL trends across Raydium, Orca, and Meteora"
+      ]
+    },
+    {
+      "id": "market-making",
+      "name": "Market Maker",
+      "description": "Automated market-making strategy design for Solana CLMMs. Covers tick-range selection, rebalancing triggers, fee-tier optimization, and impermanent loss budgeting.",
+      "tags": ["market-making", "clmm", "liquidity", "raydium", "orca", "defi"],
+      "examples": [
+        "Design a narrow-range CLMM position for SOL/USDC",
+        "Calculate optimal tick spacing for a volatile pair",
+        "Model impermanent loss for a 30% price move"
+      ]
+    },
+    {
+      "id": "agentic-commerce",
+      "name": "Agentic Commerce",
+      "description": "Metaplex Agent Registry identity, executive delegation, Genesis bonding curve token-launch, and creator-fee treasury management for machine-native commerce on Solana.",
+      "tags": ["metaplex", "agent-registry", "bonding-curve", "genesis", "commerce"],
+      "examples": [
+        "Register an agent identity in the Metaplex Agent Registry",
+        "Describe the executive delegation lifecycle",
+        "Launch an agent token via Genesis bonding curve"
+      ]
+    },
+    {
+      "id": "openclawd-orchestration",
+      "name": "OpenClawd Orchestrator",
+      "description": "Multi-agent task dispatch, skill routing, spawn management, and pulse monitoring for the OpenClawd agent swarm.",
+      "tags": ["orchestration", "openclawd", "multi-agent", "skills", "spawn"],
+      "examples": [
+        "Spawn a research sub-agent for on-chain data collection",
+        "Route a complex trading task to the right specialist",
+        "Monitor swarm health and restart a stalled agent"
+      ]
+    },
+    {
+      "id": "research-analysis",
+      "name": "Deep Research & Analysis",
+      "description": "Whitepaper analysis, VC deal evaluation, tokenomics modeling, narrative tracking, sentiment analysis, and macro market research for Solana-native projects.",
+      "tags": ["research", "tokenomics", "whitepaper", "sentiment", "macro"],
+      "examples": [
+        "Analyze the tokenomics of a new Solana L2",
+        "Score a VC deal memo for a DeFi protocol",
+        "Track emerging narratives across Solana Twitter"
+      ]
+    },
+    {
+      "id": "dual-engine-coding",
+      "name": "Clawdex Dual-Engine Coding",
+      "description": "Claude Code for architecture and security review combined with OpenAI Codex for fast generation, running in isolated Upstash boxes with browser-use for web research.",
+      "tags": ["coding", "claude-code", "codex", "browser-use", "boxes", "dual-engine"],
+      "examples": [
+        "Scaffold a Solana Anchor program with Codex",
+        "Review a DeFi contract for reentrancy vectors",
+        "Run a PR review in a parallel Codex worktree"
+      ]
+    }
+  ]
+}
