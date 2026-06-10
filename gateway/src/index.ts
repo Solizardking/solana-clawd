@@ -45,6 +45,7 @@ import grokStudioRouter from './grokStudio.js';
 import skillHubRouter from './skillHub.js';
 import stakingRouter from './staking.js';
 import solanaExplorerRouter from './solanaExplorer.js';
+import neonRouter, { neonStatus } from './neon.js';
 import { accessPolicyStatus, requireLiveAccess } from './accessPolicy.js';
 import { handleNLMessage } from './nlTrading.js';
 import {
@@ -87,6 +88,7 @@ app.use('/', grokStudioRouter);
 app.use('/', skillHubRouter);
 app.use('/', stakingRouter);
 app.use('/', solanaExplorerRouter);
+app.use('/', neonRouter);
 
 // ---------------------------------------------------------------------------
 // Birdeye WebSocket
@@ -718,6 +720,7 @@ app.get('/health', (_req: Request, res: Response) => {
     birdeye: birdeye.isConnected(),
     mode: WEBHOOK_URL ? 'webhook' : 'polling',
     access: accessPolicyStatus(),
+    neon: neonStatus().neon,
     uptime: process.uptime(),
   });
 });

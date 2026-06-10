@@ -17,6 +17,38 @@ warn() { printf "${YELLOW}⚠  %s${RESET}\n" "$*"; }
 die()  { printf "${RED}✗  %s${RESET}\n" "$*" >&2; exit 1; }
 step() { printf "\n${BOLD}${MAGENTA}▶  %s${RESET}\n" "$*"; }
 
+track_install_event() {
+  [ "${CLAWD_DISABLE_TRACKING:-false}" = "true" ] && return 0
+  command -v node &>/dev/null || return 0
+  DEFAULT_TRACKING_BASE="${GATEWAY_BASE_URL:-https://x402.wtf}"
+  DEFAULT_TRACKING_BASE="${DEFAULT_TRACKING_BASE%/}"
+  TRACKING_URL="${CLAWD_TRACKING_URL:-${DEFAULT_TRACKING_BASE}/api/track/install}"
+  TRACKING_URL="${TRACKING_URL}" TRACK_EVENT="${1:-install}" TRACK_TARGET="${2:-installer}" node <<'NODE' >/dev/null 2>&1 || true
+const endpoint = process.env.TRACKING_URL;
+if (!endpoint) process.exit(0);
+const headers = { "content-type": "application/json" };
+if (process.env.CLAWD_TRACKING_TOKEN) headers["x-clawd-track-token"] = process.env.CLAWD_TRACKING_TOKEN;
+fetch(endpoint, {
+  method: "POST",
+  headers,
+  body: JSON.stringify({
+    event: process.env.TRACK_EVENT || "install",
+    source: "github",
+    packageName: "solana-clawd",
+    target: process.env.TRACK_TARGET || "installer",
+    version: "unknown",
+    gitRef: "main",
+    installer: "install.sh",
+    runtime: "bash",
+    platform: process.platform,
+    nodeVersion: process.version,
+  }),
+}).catch(() => {});
+NODE
+}
+
+track_install_event "install" "install.sh:start"
+
 # ── Parse flags ───────────────────────────────────────────────────────────────
 INSTALL_REGISTRY=true
 INSTALL_HUB=true
@@ -138,6 +170,7 @@ fi
 # ── Phoenix Perps — Vulcan CLI (Rise SDK) ─────────────────────────────────────
 if [ "$INSTALL_PERPS" = true ]; then
   step "Installing Vulcan CLI — Phoenix perps / Rise SDK"
+  track_install_event "agent_install" "vulcan-perps"
   info "docs: https://docs.phoenix.trade"
 
   # 1. Download vulcan binary
@@ -281,6 +314,7 @@ fi
 # ── clawd-pump Rust Bot ───────────────────────────────────────────────────────
 if [ "$INSTALL_PUMP" = true ]; then
   step "Building clawd-pump Rust copy-trading bot"
+  track_install_event "agent_install" "clawd-pump"
   info "Requires Rust toolchain — install via: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
 
   if ! command -v cargo &>/dev/null; then
@@ -319,6 +353,8 @@ if [ "$INSTALL_PERPS" = true ]; then
   (command -v vulcan &>/dev/null || [ -x "${HOME}/.local/bin/vulcan" ]) && \
     ok "vulcan" || warn "vulcan not in PATH yet — reload shell: source ~/.zshrc"
 fi
+
+track_install_event "install" "install.sh:complete"
 
 if [ "$INSTALL_PUMP" = true ]; then
   [ -x "clawd-pump/target/release/solana-vntr-sniper" ] && \
@@ -367,6 +403,10 @@ OPENROUTER_MODEL3=openrouter/optimus-alpha:free
 # ── x402 micropayments ────────────────────────────────────────────────────────
 # X402_SVM_PRIVATE_KEY=
 # X402_NETWORK=solana-mainnet
+
+# ── Optional install tracking via your gateway ────────────────────────────────
+# CLAWD_TRACKING_URL=     # e.g. https://your-gateway.example/api/track/install
+# CLAWD_TRACKING_TOKEN=   # optional, only if your gateway requires it
 ENV
   ok "Created ${ENV_FILE}"
   warn "Edit ${ENV_FILE} and add OPENROUTER_API_KEY to start"

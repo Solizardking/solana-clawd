@@ -66,6 +66,8 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 | 🎨 **Skill Hub** | Formally verified skill registry with Ed25519 signature-gated registration |
 | 🐹 **clawd-go — Solana Go SDK** | Full solana-go v1.16.0 wrapper — zero-config RPC + free AI via x402.wtf, no keys needed |
 | 🦞 **Agent Staking Protocol** | Metaplex Core lock/unlock primitive — no escrow, no custody transfer, live on devnet |
+| 🌑 **Dark Workspace** | Public-safe integration of the modular wallet shell, policy lane, DeFi lane, and swap lane |
+| 📦 **Box Agents** | Public-safe summary of ephemeral sandboxed Solana agents with isolated runs and cost tracking |
 
 ---
 
@@ -84,6 +86,106 @@ This README now reflects the repo as smoke-tested from source, not just the inte
 | Local registry | Registry stats use `~/.clawd/agent-index.db`; sandboxed runners may need permission to access it | `node packages/agent-registry/dist/cli/index.js stats` |
 
 Environment note: this checkout declares Node `>=20 <25`. The smoke run was executed on Node `v25.6.1`, so pnpm prints an unsupported-engine warning even though the verified checks above pass.
+
+---
+
+## Dark Workspace - Local-First Modular Wallet
+
+<div align="center">
+  <img src="./assets/dark-workspace-banner.svg" alt="Dark Workspace animated banner" width="100%" />
+</div>
+
+The `dark/` workspace is wired into the repo as a public-safe, local-first
+wallet stack. It keeps the wallet shell, policy lane, DeFi lane, and swap lane
+separate so the docs stay clean and the code stays easy to follow.
+
+| Module | Role |
+|---|---|
+| `dark-wallet` | Browser wallet shell with demo ledger, injected wallet flow, and local state |
+| `dark-agent` | Spend policy, automation modes, and guardrails |
+| `dark-defi` | Vault, yield, and risk surfaces |
+| `dark-swap` | Route preview and quote estimation |
+
+What ships:
+- Demo mode runs locally without private keys, secret env values, or box internals.
+- Connected mode only reads the injected wallet address and devnet balance when a wallet is present.
+- Root-level scripts expose `npm run dark:dev`, `npm run dark:build`, `npm run dark:typecheck`, and `npm run dark:preview`.
+
+Run it:
+
+```bash
+npm run dark:dev
+# or
+cd dark/dark-wallet && npm install && npm run dev
+```
+
+Read the lane overview in [dark/README.md](./dark/README.md).
+
+---
+
+## Box Agents - Ephemeral Sandboxes
+
+<div align="center">
+  <img src="./assets/box-agents-banner.svg" alt="Box Agents animated banner" width="100%" />
+</div>
+
+The `box/` workspace captures the sandbox pattern from the manifesto in a
+public-safe form. Each run is isolated, cost-tracked, and torn down after use
+so agent work stays separate from local state.
+
+| Lane | What it does |
+|---|---|
+| Trading Agent | Token analysis and swap signal generation |
+| Perps Trading Agent | Paper-first perps planning with agent wallet, RPC, Jupiter, Helius, and Phoenix reads |
+| Memecoin Screener | New listing, liquidity, and risk screening |
+| Swarm Agent | Sub-agent coordination and result fusion |
+| Portfolio Manager | Wallet analysis and diversification scoring |
+| On-Chain Analyst | Wallet and contract forensics |
+| Arbitrage Scanner | Cross-DEX price comparison and net-profit checks |
+| NFT Flipper | Floor analysis and collection scoring |
+
+What ships:
+- Agents run in disposable sandboxes.
+- Perps planning is policy-gated and does not place private keys inside Box.
+- The perps Box creates an ephemeral agent wallet inside the sandbox for
+  simulation identity; live signing remains external.
+- Solana reads are wired through configured RPC, Jupiter quotes, optional
+  Helius owner lookups, and Phoenix market/trader-state endpoints. Credentialed
+  URLs are redacted before logs or agent prompts.
+- Runs are cost-tracked and snapshot-friendly.
+- No private provider credentials or local secrets are printed in this README.
+- The full landing page is [box/README.md](./box/README.md).
+
+Latest Box perps integration:
+- `box/lib/perps-policy.ts` defines paper-first limits, live-preview gates,
+  Vulcan command planning, and data-source metadata.
+- `box/lib/agent-wallet.ts` creates an ephemeral in-sandbox agent wallet
+  manifest for simulation identity and zeroes generated secret bytes
+  best-effort after deriving the public key.
+- `box/lib/solana-calls.ts` builds safe call plans for Solana RPC health and
+  blockhash, Jupiter SOL/USDC quotes, optional Helius assets-by-owner, and
+  Phoenix market/trader-state reads.
+- `box/agents/solana-perps-trading-agent.ts` writes the sandbox worker, runs the
+  data checks, then asks the Box agent to review the plan without requesting or
+  handling signing authority.
+- `box/scripts/perps-preflight.ts` and `box/scripts/solana-call-plan.ts` provide
+  local verification without needing live trading credentials.
+
+Neon Auth + install tracking:
+- Gateway can use Neon Auth JWKS and Neon Data API through server-side env vars
+  only: `NEON_AUTH_URL`, `NEON_AUTH_JWKS`, `NEON_DATA_API_URL`,
+  `NEON_DATA_API_KEY`, and `NEON_ID`.
+- Install/agent/box tracking writes to `agent_install_events` through
+  `/api/track/install`; protected reads use Bearer JWT verification against the
+  configured JWKS.
+- Public installers and Box agents emit minimal install metadata to
+  `CLAWD_TRACKING_URL`, defaulting to `/api/track/install` on the public
+  gateway. Set `CLAWD_DISABLE_TRACKING=true` to opt out. No Neon connection
+  string, database password, or raw API key is committed.
+- Schema starter: `gateway/scripts/neon-install-events.schema.sql`.
+- Standalone agent installers can call
+  `node agents/scripts/track-install.mjs <agent-id> <version>` to emit the same
+  `agent_install` event.
 
 ---
 

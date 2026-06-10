@@ -1,0 +1,99 @@
+BOX22 AGENT HANDOFF - BOX PERPS + SOLANA CALLS
+
+Repository:
+- /Users/8bit/Downloads/solana-clawd
+
+Purpose:
+- The Box workspace now has an eighth lane: a paper-first Solana perps planner.
+- It runs inside Upstash Box sandboxes and is designed for agent review, not unattended live trading.
+- The integration adds an ephemeral in-sandbox agent wallet, Solana RPC reads, Jupiter quote reads, optional Helius reads, and Phoenix market/trader-state reads.
+
+Primary files:
+- README.md
+- box/README.md
+- box/package.json
+- package.json
+- pnpm-lock.yaml
+- box/lib/perps-policy.ts
+- box/lib/agent-wallet.ts
+- box/lib/solana-calls.ts
+- box/scripts/perps-preflight.ts
+- box/scripts/solana-call-plan.ts
+- box/agents/solana-perps-trading-agent.ts
+- assets/box-agents-banner.svg
+
+What each new/updated Box file does:
+- box/lib/perps-policy.ts
+  Defines allowed symbols, max notional, max leverage, max spread, paper/live-preview mode checks, Vulcan paper command planning, and data-source metadata.
+- box/lib/agent-wallet.ts
+  Generates an ephemeral Solana Keypair for sandbox identity, returns only the public key manifest, and zeroes generated secret bytes best-effort after deriving the public key.
+- box/lib/solana-calls.ts
+  Builds call plans for Solana RPC getHealth/getLatestBlockhash, Jupiter SOL/USDC quote, optional Helius getAssetsByOwner, Phoenix market, and Phoenix trader state. Helius api-key URLs are redacted in output.
+- box/scripts/perps-preflight.ts
+  Local CLI that validates perps intent against the Box perps policy and prints the planned Vulcan paper command.
+- box/scripts/solana-call-plan.ts
+  Local CLI that creates an ephemeral wallet manifest and prints the RPC/Jupiter/Helius/Phoenix call plan without making live trading calls.
+- box/agents/solana-perps-trading-agent.ts
+  Upstash Box agent that writes the sandbox worker, installs @solana/web3.js in the Box, generates an in-box ephemeral wallet, fetches Solana/Phoenix read context, and asks the model to review the perps plan.
+
+Safety rules:
+- Do not put private keys, seed phrases, or wallet JSON keypairs into Box.
+- The in-box wallet is for simulation identity only.
+- Live signing remains external and must be operator-approved.
+- Perps defaults to paper/simulation.
+- live-preview is blocked unless all are set:
+  LIVE_TRADING=true
+  OPERATOR_CONFIRMED=true
+  PERPS_SIM_ONLY=false
+- Helius credential URLs are redacted before local call-plan output.
+- The agent prompt explicitly tells the model not to request, print, infer, or use private keys or seed phrases.
+
+Runtime data sources:
+- Solana RPC:
+  Uses SOLANA_RPC_URL, RPC_URL, or Helius RPC fallback when HELIUS_API_KEY exists.
+- Jupiter:
+  Uses JUPITER_QUOTE_URL or https://quote-api.jup.ag/v6/quote.
+- Helius:
+  Optional. Uses HELIUS_API_KEY for getAssetsByOwner on the ephemeral agent wallet.
+- Phoenix:
+  Uses PHOENIX_API_URL or https://api.phoenix.trade for market and trader-state reads.
+- Vulcan/Phoenix:
+  Planned execution route is a Vulcan paper command. Live Phoenix/Vulcan execution remains outside the Box signing boundary.
+
+Useful commands:
+- Typecheck Box:
+  npm run box:typecheck
+- Run perps preflight:
+  npm run box:perps:preflight -- --symbol SOL --side long --notional 100 --execution paper
+- Print Solana call plan:
+  npm run box:solana:call-plan -- SOL
+- Run the Box perps agent:
+  npm run box:perps -- --symbol SOL --side long --notional 100 --execution paper
+
+Expected local verification:
+- npm run box:typecheck
+- npm run box:perps:preflight -- --symbol SOL --side long --notional 100 --execution paper
+- env HELIUS_API_KEY=<redaction-test-value> npm run box:solana:call-plan -- SOL
+- git diff --check
+
+Last verification status:
+- Box typecheck passed.
+- Perps preflight passed for SOL long, 100 USD notional, paper execution.
+- Helius fake-key redaction passed. Output shows api-key=redacted, not the fake key.
+- git diff --check passed.
+
+Phoenix docs context from attached index:
+- CLI: https://docs.phoenix.trade/cli/index.md
+- Command reference: https://docs.phoenix.trade/cli/commands.md
+- Strategies: https://docs.phoenix.trade/cli/strategies.md
+- Get market: https://docs.phoenix.trade/api/exchange/get-market.md
+- Get trader state: https://docs.phoenix.trade/api/trader/get-trader-state.md
+- Build isolated market order transaction: https://docs.phoenix.trade/api/trader/build-isolated-market-order-transaction.md
+- Build isolated limit order transaction: https://docs.phoenix.trade/api/trader/build-isolated-limit-order-transaction.md
+
+Agent notes:
+- If extending this, keep reads and planning inside Box.
+- Keep signing, wallet custody, and live transaction submission outside Box unless a separate user-approved signing system is explicitly designed.
+- Prefer JSON output for Vulcan/Phoenix CLI/API integrations.
+- Before opening exposure, inspect market, account health, margin, current positions, and the planned order route.
+- Never guess lot sizes; add a proper lot-size calculator integration before moving beyond paper/live-preview planning.

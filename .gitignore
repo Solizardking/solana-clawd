@@ -419,6 +419,9 @@ huggingface_token*
 hf_token*
 # Never commit raw HF user access tokens (hf_xxxx...)
 **/stored_tokens
+
+# Local-only nested repo / state tree
+.solana/
 clawd-grok
 !agents/clawd-grok
 clawd-grok

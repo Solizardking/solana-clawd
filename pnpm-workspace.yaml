@@ -4,5 +4,7 @@ packages:
   - "x402"
   - "pay"
   - "library"
+  - "dark/dark-wallet"
   - "vendor/agent-auth/packages/*"
   - "programs/programs/client"
+  - "box"
