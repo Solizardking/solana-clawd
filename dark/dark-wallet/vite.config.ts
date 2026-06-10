@@ -10,6 +10,8 @@ export default defineConfig({
       "@dark-agent": path.resolve(__dirname, "../dark-agent"),
       "@dark-defi": path.resolve(__dirname, "../dark-defi"),
       "@dark-swap": path.resolve(__dirname, "../dark-swap"),
+      "@dark-zcash": path.resolve(__dirname, "../dark-zcash"),
+      "@dark-helius": path.resolve(__dirname, "../dark-helius"),
     },
   },
   server: {
@@ -24,4 +26,3 @@ export default defineConfig({
     sourcemap: true,
   },
 });
-

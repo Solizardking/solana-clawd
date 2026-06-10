@@ -20,10 +20,18 @@
       "@/*": ["./src/*"],
       "@dark-agent/*": ["../dark-agent/*"],
       "@dark-defi/*": ["../dark-defi/*"],
-      "@dark-swap/*": ["../dark-swap/*"]
+      "@dark-swap/*": ["../dark-swap/*"],
+      "@dark-zcash/*": ["../dark-zcash/*"],
+      "@dark-helius/*": ["../dark-helius/*"]
     }
   },
-  "include": ["src", "../dark-agent/**/*.ts", "../dark-defi/**/*.ts", "../dark-swap/**/*.ts"],
+  "include": [
+    "src",
+    "../dark-agent/**/*.ts",
+    "../dark-defi/**/*.ts",
+    "../dark-swap/**/*.ts",
+    "../dark-zcash/**/*.ts",
+    "../dark-helius/**/*.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
-

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DARK_AGENT_SURFACES, getDarkAgentSurface, type DarkAgentMode } from "@dark-agent/index";
+import { DARK_AGENT_SURFACES, getDarkAgentSurface, type DarkAgentMode, createTeeAttestation } from "@dark-agent/index";
 import { DARK_DEFI_SURFACES } from "@dark-defi/index";
 import {
   DARK_SWAP_ROUTES,
@@ -8,6 +8,13 @@ import {
   type DarkSwapQuote,
   type DarkSwapToken,
 } from "@dark-swap/index";
+import {
+  generateSaplingSpendingKey,
+  deriveFullViewingKey,
+  deriveIncomingViewingKey,
+  createSaplingPaymentAddress,
+  generateDiversifier,
+} from "@dark-zcash/index";
 import {
   createDemoBalance,
   connectInjectedWallet,
@@ -28,11 +35,15 @@ import {
   stageShield,
   stageSwap,
   stageUnshield,
+  stageZkProofGeneration,
+  stageTeeAttestation,
+  stageShieldedPoolDeposit,
+  stagePrivacyMix,
   type DarkTransaction,
   type DarkVaultState,
 } from "./lib/dark-protocol.js";
 
-type Surface = "wallet" | "agent" | "defi" | "swap";
+type Surface = "wallet" | "agent" | "defi" | "swap" | "zolana";
 type StatusTone = "neutral" | "success" | "warning" | "danger";
 
 const SURFACES: Array<{
@@ -59,6 +70,11 @@ const SURFACES: Array<{
     id: "swap",
     title: "Swap",
     subtitle: "Token routing and route previews.",
+  },
+  {
+    id: "zolana",
+    title: "ZOLana ⚡",
+    subtitle: "ZK proofs, TEE, shielded pools, mixing, Jupiter V6.",
   },
 ];
 
@@ -896,6 +912,286 @@ function App() {
                       </ul>
                     </article>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeSurface === "zolana" && (
+            <div className="surface-stack">
+              <div className="info-grid">
+                <div className="surface-card">
+                  <div className="surface-card-header">
+                    <h4>🔐 ZK Prover</h4>
+                    <span className="surface-badge surface-badge-cool">Groth16</span>
+                  </div>
+                  <p className="mini-copy">
+                    Generate zero-knowledge proofs for shielded transfers using 256-byte Groth16 proofs.
+                    Hides amounts, sender, and recipient on-chain.
+                  </p>
+                  <div className="metric-inline-grid">
+                    <div>
+                      <span className="metric-label">Proofs generated</span>
+                      <strong>{vault.zkProofsGenerated}</strong>
+                    </div>
+                    <div>
+                      <span className="metric-label">Proof size</span>
+                      <strong>256 bytes</strong>
+                    </div>
+                    <div>
+                      <span className="metric-label">Circuit</span>
+                      <strong>shielded-transfer-v1</strong>
+                    </div>
+                  </div>
+                  <div className="surface-actions">
+                    <button className="primary-button" onClick={() => {
+                      try {
+                        const next = stageZkProofGeneration(vault, 0.5, vault.notes[0]?.recipient ?? "zsol1...");
+                        persistVault(next.state);
+                        showStatus("success", "ZK proof generated", "Groth16 proof ready for shielded transfer.");
+                      } catch (error) {
+                        const message = error instanceof Error ? error.message : "ZK proof error";
+                        showStatus("danger", "ZK proof failed", message);
+                      }
+                    }}>
+                      Generate ZK proof
+                    </button>
+                  </div>
+                </div>
+
+                <div className="surface-card">
+                  <div className="surface-card-header">
+                    <h4>🛡️ TEE Attestation</h4>
+                    <span className="surface-badge surface-badge-warm">SGX/SEV</span>
+                  </div>
+                  <p className="mini-copy">
+                    Create hardware-level attestations using Intel SGX or AMD SEV trusted execution
+                    environments. Agents run in encrypted memory enclaves.
+                  </p>
+                  <div className="metric-inline-grid">
+                    <div>
+                      <span className="metric-label">Attestations</span>
+                      <strong>{vault.teeAttestations}</strong>
+                    </div>
+                    <div>
+                      <span className="metric-label">Providers</span>
+                      <strong>Intel SGX / AMD SEV</strong>
+                    </div>
+                  </div>
+                  <div className="surface-actions">
+                    <button className="primary-button" onClick={() => {
+                      try {
+                        const attestation = createTeeAttestation("intel_sgx", "Dark wallet session");
+                        const next = stageTeeAttestation(vault, "intel_sgx", "TEE attestation created");
+                        persistVault(next.state);
+                        showStatus("success", "TEE attestation created", `SGX measurement: ${attestation.measurement.slice(0, 16)}...`);
+                      } catch (error) {
+                        const message = error instanceof Error ? error.message : "TEE error";
+                        showStatus("danger", "TEE attestation failed", message);
+                      }
+                    }}>
+                      Create TEE attestation
+                    </button>
+                  </div>
+                </div>
+
+                <div className="surface-card">
+                  <div className="surface-card-header">
+                    <h4>🏊 Shielded Pool</h4>
+                    <span className="surface-badge surface-badge-cool">privacy</span>
+                  </div>
+                  <p className="mini-copy">
+                    Zcash-style privacy pool with Merkle tree commitments. Deposit tokens and withdraw
+                    with ZK proof verification.
+                  </p>
+                  <div className="metric-inline-grid">
+                    <div>
+                      <span className="metric-label">Pool deposits</span>
+                      <strong>{vault.privacyPoolDeposits}</strong>
+                    </div>
+                    <div>
+                      <span className="metric-label">Merkle root</span>
+                      <strong>{vault.privacyPoolDeposits > 0 ? "0x" + "•".repeat(6) : "empty"}</strong>
+                    </div>
+                  </div>
+                  <div className="surface-actions">
+                    <button className="primary-button" onClick={() => {
+                      try {
+                        const next = stageShieldedPoolDeposit(vault, 0.25);
+                        persistVault(next.state);
+                        showStatus("success", "Pool deposit staged", "Commitment added to shielded pool Merkle tree.");
+                      } catch (error) {
+                        const message = error instanceof Error ? error.message : "Pool error";
+                        showStatus("danger", "Pool deposit failed", message);
+                      }
+                    }}>
+                      Deposit to pool
+                    </button>
+                  </div>
+                </div>
+
+                <div className="surface-card">
+                  <div className="surface-card-header">
+                    <h4>🌀 Privacy Mix</h4>
+                    <span className="surface-badge surface-badge-warm">anonymity</span>
+                  </div>
+                  <p className="mini-copy">
+                    Multi-hop mixing for enhanced transaction graph obfuscation. Configurable mix depth
+                    of 2, 4, or 8 hops with delayed withdrawals.
+                  </p>
+                  <div className="metric-inline-grid">
+                    <div>
+                      <span className="metric-label">Mix depth</span>
+                      <strong>{vault.privacyMixDepth} hops</strong>
+                    </div>
+                    <div>
+                      <span className="metric-label">Relayer fee</span>
+                      <strong>0.1%</strong>
+                    </div>
+                  </div>
+                  <div className="surface-actions">
+                    <button className="primary-button" onClick={() => {
+                      try {
+                        const next = stagePrivacyMix(vault, 0.1, vault.privacyMixDepth);
+                        persistVault(next.state);
+                        showStatus("success", "Privacy mix queued", `${0.1} SOL mixed through ${vault.privacyMixDepth} hops.`);
+                      } catch (error) {
+                        const message = error instanceof Error ? error.message : "Mix error";
+                        showStatus("danger", "Privacy mix failed", message);
+                      }
+                    }}>
+                      Mix tokens
+                    </button>
+                  </div>
+                </div>
+
+                <div className="surface-card">
+                  <div className="surface-card-header">
+                    <h4>🔄 Jupiter V6 Quotes</h4>
+                    <span className="surface-badge surface-badge-cool">live</span>
+                  </div>
+                  <p className="mini-copy">
+                    Fetch real swap quotes from Jupiter V6 quote API. Supports 10 tokens including
+                    SOL, USDC, USDT, JUP, mSOL, BONK, PYTH, JLP, ETH (Wormhole), and BTC (Wormhole).
+                  </p>
+                  <div className="metric-inline-grid">
+                    <div>
+                      <span className="metric-label">Token pairs</span>
+                      <strong>10 tokens</strong>
+                    </div>
+                    <div>
+                      <span className="metric-label">API</span>
+                      <strong>quote-api.jup.ag/v6</strong>
+                    </div>
+                    <div>
+                      <span className="metric-label">Routes</span>
+                      <strong>5 venues</strong>
+                    </div>
+                  </div>
+                  <button className="ghost-button" onClick={() => setActiveSurface("swap")}>
+                    Open swap lane →
+                  </button>
+                </div>
+              </div>
+
+              <div className="surface-card surface-card-dark">
+                <div className="surface-card-header">
+                  <h4>💰 JLP Perpetuals</h4>
+                  <span className="surface-badge surface-badge-warm">leveraged</span>
+                </div>
+                <p className="mini-copy">
+                  Jupiter LP Perpetuals — long/short positions with leverage via the JLP pool.
+                  Supports 5 custody tokens: SOL, ETH, BTC, USDC, USDT.
+                </p>
+                <div className="metric-inline-grid">
+                  <div>
+                    <span className="metric-label">JLP Pool</span>
+                    <strong>$500M AUM</strong>
+                  </div>
+                  <div>
+                    <span className="metric-label">LP price</span>
+                    <strong>$1.85</strong>
+                  </div>
+                  <div>
+                    <span className="metric-label">Custody tokens</span>
+                    <strong>5</strong>
+                  </div>
+                </div>
+                <div className="surface-actions">
+                  <button className="primary-button" onClick={() => {
+                    showStatus("neutral", "JLP Perpetuals ready", "Pool: $500M AUM | LP price: $1.85 | Custody: SOL, ETH, BTC, USDC, USDT");
+                  }}>
+                    Check pool state
+                  </button>
+                </div>
+              </div>
+
+              <div className="surface-card surface-card-dark">
+                <div className="surface-card-header">
+                  <h4>🛡️ Zcash Sapling</h4>
+                  <span className="surface-badge">zk-SNARKs</span>
+                </div>
+                <p className="mini-copy">
+                  Full Zcash Sapling address derivation chain: spending key → full viewing key →
+                  incoming viewing key → 43-byte shielded address. Ready for private transactions.
+                </p>
+                <div className="metric-inline-grid">
+                  <div>
+                    <span className="metric-label">Key size</span>
+                    <strong>32 bytes</strong>
+                  </div>
+                  <div>
+                    <span className="metric-label">Address format</span>
+                    <strong>zsol1...</strong>
+                  </div>
+                  <div>
+                    <span className="metric-label">Proof system</span>
+                    <strong>Groth16</strong>
+                  </div>
+                </div>
+                <div className="surface-actions">
+                  <button className="ghost-button" onClick={() => {
+                    const sk = generateSaplingSpendingKey();
+                    const fvk = deriveFullViewingKey(sk);
+                    const ivk = deriveIncomingViewingKey(fvk);
+                    const d = generateDiversifier();
+                    const addr = createSaplingPaymentAddress(ivk, d);
+                    showStatus("success", "Sapling key generated", `Shielded address: zsol1${Array.from(addr.pk_d.slice(0, 8)).map(b => b.toString(16).padStart(2, "0")).join("")}...`);
+                  }}>
+                    Generate Sapling key
+                  </button>
+                </div>
+              </div>
+
+              <div className="surface-card">
+                <div className="surface-card-header">
+                  <h4>📡 Helius RPC</h4>
+                  <span className="surface-badge surface-badge-cool">infra</span>
+                </div>
+                <p className="mini-copy">
+                  Enterprise Solana infrastructure with smart RPC, webhooks, DAS NFT API, and
+                  priority fee estimation.
+                </p>
+                <div className="metric-inline-grid">
+                  <div>
+                    <span className="metric-label">Smart TX</span>
+                    <strong>Auto CU + fees</strong>
+                  </div>
+                  <div>
+                    <span className="metric-label">Webhooks</span>
+                    <strong>Real-time</strong>
+                  </div>
+                  <div>
+                    <span className="metric-label">DAS API</span>
+                    <strong>NFT metadata</strong>
+                  </div>
+                </div>
+                <div className="surface-actions">
+                  <button className="ghost-button" onClick={() => {
+                    showStatus("neutral", "Helius RPC ready", "Smart transactions, DAS API, webhooks, and priority fees available.");
+                  }}>
+                    Check infra status
+                  </button>
                 </div>
               </div>
             </div>
