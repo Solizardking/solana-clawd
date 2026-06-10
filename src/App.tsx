@@ -1,9 +1,152 @@
 import "./index.css"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import type { CSSProperties } from "react"
 import LibraryApp from "./LibraryApp.js"
 
+type Agent = {
+  id: string
+  name: string
+  callSign: string
+  role: string
+  lane: string
+  box: string
+  market: string
+  side: "long" | "short" | "hedged"
+  color: string
+  accent: string
+  thesis: string
+  seed: number
+  baseEquity: number
+  metrics: {
+    edge: number
+    risk: number
+    speed: number
+    discipline: number
+  }
+}
+
+type AgentScore = Agent & {
+  elo: number
+  pnl: number
+  wins: number
+  drawdown: number
+  liquidationRisk: number
+  heat: number
+  proof: string
+}
+
+const boxBannerUrl = new URL("../assets/box-agents-banner.svg", import.meta.url).href
+const scoreboardUrl = new URL("../assets/minted-scoreboard.svg", import.meta.url).href
+
+const AGENTS: Agent[] = [
+  {
+    id: "phoenix-keeper",
+    name: "Phoenix Keeper",
+    callSign: "PK-17",
+    role: "Perps execution",
+    lane: "SOL-PERP",
+    box: "box/perps-a",
+    market: "SOL-PERP",
+    side: "long",
+    color: "#14f195",
+    accent: "#071b14",
+    thesis: "Momentum with funding guardrails",
+    seed: 3,
+    baseEquity: 10_420,
+    metrics: { edge: 82, risk: 44, speed: 78, discipline: 86 },
+  },
+  {
+    id: "basis-forge",
+    name: "Basis Forge",
+    callSign: "BF-09",
+    role: "Funding-rate arb",
+    lane: "JUP-PERP",
+    box: "box/perps-b",
+    market: "JUP-PERP",
+    side: "hedged",
+    color: "#8be8ff",
+    accent: "#08202a",
+    thesis: "Basis spread capture",
+    seed: 7,
+    baseEquity: 9_880,
+    metrics: { edge: 76, risk: 31, speed: 64, discipline: 92 },
+  },
+  {
+    id: "liquidation-scout",
+    name: "Liquidation Scout",
+    callSign: "LS-44",
+    role: "Liquidation radar",
+    lane: "BTC-PERP",
+    box: "box/sentinel-a",
+    market: "BTC-PERP",
+    side: "short",
+    color: "#f97316",
+    accent: "#271207",
+    thesis: "Crowded leverage reversal",
+    seed: 11,
+    baseEquity: 11_250,
+    metrics: { edge: 71, risk: 58, speed: 88, discipline: 73 },
+  },
+  {
+    id: "vault-sentinel",
+    name: "Vault Sentinel",
+    callSign: "VS-02",
+    role: "Risk governor",
+    lane: "USDC",
+    box: "box/risk-a",
+    market: "USDC",
+    side: "hedged",
+    color: "#f8e16c",
+    accent: "#211e08",
+    thesis: "Capital preservation gate",
+    seed: 13,
+    baseEquity: 10_060,
+    metrics: { edge: 68, risk: 22, speed: 52, discipline: 96 },
+  },
+  {
+    id: "signal-forge",
+    name: "Signal Forge",
+    callSign: "SF-31",
+    role: "Order-flow analyst",
+    lane: "BONK-PERP",
+    box: "box/signal-a",
+    market: "BONK-PERP",
+    side: "long",
+    color: "#c084fc",
+    accent: "#201127",
+    thesis: "Flow burst detection",
+    seed: 17,
+    baseEquity: 9_520,
+    metrics: { edge: 79, risk: 63, speed: 93, discipline: 66 },
+  },
+  {
+    id: "oracle-cutlass",
+    name: "Oracle Cutlass",
+    callSign: "OC-22",
+    role: "Oracle watchdog",
+    lane: "PYTH",
+    box: "box/oracle-a",
+    market: "PYTH",
+    side: "hedged",
+    color: "#ef4444",
+    accent: "#270b0b",
+    thesis: "Stale feed vetoes",
+    seed: 23,
+    baseEquity: 10_770,
+    metrics: { edge: 73, risk: 37, speed: 69, discipline: 89 },
+  },
+]
+
+const POSITIONS = [
+  { symbol: "SOL-PERP", notional: 125_000, funding: 0.014, leverage: "2.8x", mode: "paper" },
+  { symbol: "JUP-PERP", notional: 82_400, funding: -0.006, leverage: "1.9x", mode: "paper" },
+  { symbol: "BTC-PERP", notional: 164_200, funding: 0.009, leverage: "2.2x", mode: "paper" },
+  { symbol: "BONK-PERP", notional: 46_800, funding: 0.031, leverage: "1.4x", mode: "paper" },
+]
+
 function usePath() {
-  const [path, setPath] = useState(() => typeof window !== "undefined" ? window.location.pathname : "/")
+  const [path, setPath] = useState(() => (typeof window !== "undefined" ? window.location.pathname : "/"))
+
   useEffect(() => {
     const onChange = () => setPath(window.location.pathname)
     window.addEventListener("popstate", onChange)
@@ -13,229 +156,375 @@ function usePath() {
       window.removeEventListener("pushstate", onChange as EventListener)
     }
   }, [])
+
   return path
 }
 
-const HERO_COMMANDS = [
-  "clawd openrouter setup-free --api-key sk-or-v1-...",
-  "clawd preview repo",
-  'clawd agent mint-devnet --name "My Devnet Agent" --description "Clawd-born operator"',
-]
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
 
-const SURFACES = [
-  {
-    title: "Lobster Library",
-    eyebrow: "x402.wtf/library",
-    body:
-      "Browse 80+ nano Solana agents — trading, DeFi, ML prediction, x402 payment, and OpenClawd orchestration. Hosted at x402.wtf/library with a JSON catalog and an interactive React UI.",
-    lines: [
-      "GET /library/index.json  ·  JSON catalog",
-      "GET /library/<agent>.json  ·  individual agent",
-      "GET /library/schema/speraxAgentSchema_v1.json",
-    ],
-  },
-  {
-    title: "Injected API",
-    eyebrow: "OpenRouter",
-    body:
-      "Bake in OPENROUTER_API_KEY once, preload free models, and let new users start in the terminal without hunting through JSON or env files.",
-    lines: [
-      "OPENROUTER_API_KEY → ~/.clawd/user-settings.json",
-      "free models preloaded into /models",
-      "works with direct OpenRouter or ClawdRouter-compatible base URLs",
-    ],
-  },
-  {
-    title: "Live Repo Preview",
-    eyebrow: "GitHub",
-    body:
-      "Give people a fast taste of the project before they read 2,000 lines of docs: branch, status, recent commits, runnable scripts, and README preview.",
-    lines: [
-      "reads current checkout",
-      "shows origin remote and branch",
-      "ideal for demos, streams, and operator onboarding",
-    ],
-  },
-  {
-    title: "Mint On Devnet",
-    eyebrow: "Solana",
-    body:
-      "Turn the terminal into a spawn point for test agents. Mint, register, and index an AI agent on solana-devnet from the same CLI people already use.",
-    lines: [
-      "devnet-first path",
-      "inline fallback metadata",
-      "local registry index updated after mint",
-    ],
-  },
-]
+function proofFor(agent: Agent, round: number) {
+  const raw = `${agent.id}-${round}-${agent.seed}`
+  let hash = 0
+  for (let index = 0; index < raw.length; index += 1) {
+    hash = (hash * 31 + raw.charCodeAt(index)) >>> 0
+  }
+  return `devnet:${hash.toString(16).padStart(8, "0")}`
+}
 
-const API_FLOW = [
-  {
-    label: "1. Browse the library",
-    snippet: "curl https://x402.wtf/library/index.json | jq '.agents | length'",
-  },
-  {
-    label: "2. Pull a single agent",
-    snippet: "curl https://x402.wtf/library/solana-clawd-payment-gateway.json",
-  },
-  {
-    label: "3. Spawn a test agent",
-    snippet:
-      'clawd agent mint-devnet --name "Clawd Scout" --description "Devnet preview agent"',
-  },
-]
+function scoreAgent(agent: Agent, round: number): AgentScore {
+  const pulse = Math.sin((round + agent.seed) * 0.82) * 7 + Math.cos((round * 1.21 + agent.seed) * 0.6) * 5
+  const riskDrag = (agent.metrics.risk - 40) * 0.34
+  const elo = Math.round(
+    820 +
+      agent.metrics.edge * 4.7 +
+      agent.metrics.discipline * 2.5 +
+      agent.metrics.speed * 1.8 -
+      riskDrag +
+      round * 9 +
+      pulse,
+  )
+  const pnl = Number(((agent.metrics.edge * 0.44 + agent.metrics.speed * 0.13 - agent.metrics.risk * 0.2 + pulse * 0.8 + round * 1.4) / 10).toFixed(2))
+  const wins = Math.max(0, Math.round((agent.metrics.edge + agent.metrics.speed + agent.metrics.discipline - agent.metrics.risk * 0.46 + round + pulse) / 28))
+  const drawdown = clamp(Math.round(agent.metrics.risk * 0.42 + Math.abs(pulse) - agent.metrics.discipline * 0.08), 2, 48)
+  const liquidationRisk = clamp(Math.round(agent.metrics.risk * 0.74 + Math.abs(pulse) - agent.metrics.discipline * 0.18), 4, 92)
+  const heat = clamp(Math.round(agent.metrics.edge * 0.42 + agent.metrics.speed * 0.28 + agent.metrics.discipline * 0.2 - agent.metrics.risk * 0.12 + 18), 0, 100)
 
-const LINKS = [
-  { label: "GitHub", url: "https://github.com/Solizardking/solana-clawd" },
-  { label: "Library", url: "https://x402.wtf/library/" },
-  { label: "ClawdRouter", url: "https://clawdrouter.fly.dev/health" },
-  { label: "x402.wtf", url: "https://x402.wtf" },
-  { label: "Agent Hub", url: "https://solanaclawd.com/agents" },
-]
+  return { ...agent, elo, pnl, wins, drawdown, liquidationRisk, heat, proof: proofFor(agent, round) }
+}
 
-function CopyButton({ text }: { text: string }) {
-  const copy = () => navigator.clipboard.writeText(text).catch(() => {})
+function formatUsd(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
+function signedPercent(value: number) {
+  const sign = value > 0 ? "+" : ""
+  return `${sign}${value.toFixed(2)}%`
+}
+
+function scrollToScoreboard() {
+  document.getElementById("scoreboard")?.scrollIntoView({ behavior: "smooth", block: "start" })
+}
+
+function MetricBar({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <button className="copyButton" onClick={copy}>
-      copy
-    </button>
+    <div className="metricBar">
+      <div className="metricLabel">
+        <span>{label}</span>
+        <span>{value}</span>
+      </div>
+      <div className="metricTrack">
+        <span style={{ width: `${value}%`, background: color }} />
+      </div>
+    </div>
   )
 }
 
-function CommandRow({ text }: { text: string }) {
+function AgentBox({ agent, active }: { agent: AgentScore; active: boolean }) {
+  const style = {
+    "--agent-color": agent.color,
+    "--agent-accent": agent.accent,
+  } as CSSProperties
+
   return (
-    <div className="commandRow">
-      <span className="prompt">$</span>
-      <code>{text}</code>
-      <CopyButton text={text} />
+    <article className={`agentBox ${active ? "active" : ""}`} style={style}>
+      <div className="agentTopline">
+        <span className="agentInitials">{agent.callSign}</span>
+        <span className="agentLane">{agent.lane}</span>
+      </div>
+      <h3>{agent.name}</h3>
+      <p>{agent.role}</p>
+      <div className="agentStats">
+        <MetricBar label="Edge" value={agent.metrics.edge} color={agent.color} />
+        <MetricBar label="Speed" value={agent.metrics.speed} color={agent.color} />
+        <MetricBar label="Discipline" value={agent.metrics.discipline} color={agent.color} />
+      </div>
+      <div className="agentFooter">
+        <span>{agent.box}</span>
+        <strong>{signedPercent(agent.pnl)}</strong>
+      </div>
+    </article>
+  )
+}
+
+function TerminalPanel({ agent, opponent, score, side, round }: { agent: AgentScore; opponent: AgentScore; score: number; side: "left" | "right"; round: number }) {
+  const notional = 25_000 + agent.metrics.edge * 420 + round * 310
+  const lines = [
+    `${agent.box} arena:round-${round.toString().padStart(2, "0")}`,
+    `npm run box:perps -- ${agent.market.toLowerCase()} --paper`,
+    `observe market=${agent.market} opponent=${opponent.callSign} score=${score}`,
+    `decide side=${agent.side} edge=${agent.metrics.edge} risk=${agent.metrics.risk}`,
+    "gate live=false operator_confirmed=false perps_sim_only=true",
+    `paper-order ${agent.side} ${agent.market} --notional-usdc ${Math.round(notional)}`,
+    `attest ${agent.proof}`,
+  ]
+
+  return (
+    <section className={`terminalPanel ${side}`}>
+      <div className="terminalTitle">
+        <span>{agent.name}</span>
+        <strong>{signedPercent(agent.pnl)}</strong>
+      </div>
+      <div className="terminalLines" aria-label={`${agent.name} terminal`}>
+        {lines.map((line) => (
+          <p key={line}>
+            <span>$</span>
+            {line}
+          </p>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function EquityChart({ agents, round }: { agents: AgentScore[]; round: number }) {
+  const leaders = agents.slice(0, 4)
+  const width = 760
+  const height = 220
+  const points = leaders.map((agent, agentIndex) => {
+    return Array.from({ length: 10 }, (_, index) => {
+      const x = 36 + index * 76
+      const wave = Math.sin((index + round + agent.seed) * 0.62) * 18
+      const trend = agent.pnl * 7 + index * (8 + agentIndex * 2)
+      const y = clamp(162 - trend - wave, 24, 184)
+      return `${x},${y}`
+    }).join(" ")
+  })
+
+  return (
+    <div className="chartFrame">
+      <div className="sectionTitle">
+        <span>Equity Curve</span>
+        <strong>top 4 boxes</strong>
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Arena equity curve">
+        <g className="chartGrid">
+          {[32, 76, 120, 164].map((y) => (
+            <line key={y} x1="28" x2="732" y1={y} y2={y} />
+          ))}
+        </g>
+        {points.map((line, index) => (
+          <polyline key={leaders[index].id} points={line} stroke={leaders[index].color} />
+        ))}
+        {leaders.map((agent, index) => (
+          <text key={agent.id} x="36" y={204 - index * 18} fill={agent.color}>
+            {agent.callSign} {signedPercent(agent.pnl)}
+          </text>
+        ))}
+      </svg>
     </div>
+  )
+}
+
+function PerpsMap({ agents }: { agents: AgentScore[] }) {
+  return (
+    <section className="perpsPanel">
+      <div className="sectionTitle">
+        <span>Perpetuals Map</span>
+        <strong>paper mode</strong>
+      </div>
+      <div className="positionGrid">
+        {POSITIONS.map((position, index) => {
+          const owner = agents[index % agents.length]
+          const heat = clamp(owner.heat + position.funding * 600, 12, 100)
+          return (
+            <div className="positionTile" key={position.symbol}>
+              <div>
+                <span>{position.symbol}</span>
+                <strong>{position.leverage}</strong>
+              </div>
+              <p>{formatUsd(position.notional)}</p>
+              <div className="metricTrack">
+                <span style={{ width: `${heat}%`, background: owner.color }} />
+              </div>
+              <small>
+                funding {signedPercent(position.funding)} - {owner.callSign}
+              </small>
+            </div>
+          )
+        })}
+      </div>
+    </section>
+  )
+}
+
+function Scoreboard({ agents }: { agents: AgentScore[] }) {
+  return (
+    <section className="scoreboardPanel" id="scoreboard">
+      <div className="sectionTitle">
+        <span>Scoreboard</span>
+        <strong>arena season 01</strong>
+      </div>
+      <div className="scoreboardTable" role="table" aria-label="Agent arena scoreboard">
+        <div className="scoreRow header" role="row">
+          <span>Rank</span>
+          <span>Agent</span>
+          <span>Elo</span>
+          <span>Wins</span>
+          <span>PnL</span>
+          <span>Risk</span>
+          <span>Proof</span>
+        </div>
+        {agents.map((agent, index) => (
+          <div className="scoreRow" role="row" key={agent.id}>
+            <span>#{index + 1}</span>
+            <span>
+              <i style={{ background: agent.color }} />
+              {agent.name}
+            </span>
+            <strong>{agent.elo}</strong>
+            <span>{agent.wins}</span>
+            <span className={agent.pnl >= 0 ? "positive" : "negative"}>{signedPercent(agent.pnl)}</span>
+            <span>{agent.liquidationRisk}%</span>
+            <code>{agent.proof}</code>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function MintedBanner() {
+  return (
+    <section className="mintedBanner" aria-label="Minted agent scoreboard visual">
+      <img src={scoreboardUrl} alt="Live CLAWD minted agent scoreboard" />
+    </section>
   )
 }
 
 export default function App() {
   const path = usePath()
-  // When deployed, /library/ is served as a static HTML page by Vite, so the
-  // React router fallback only fires during local dev (where Vite serves
-  // /library/*.json but the static /library/index.html isn't loaded).
-  // We support both: a clean URL → no-JS static page, or a hash route → React.
+  const [round, setRound] = useState(8)
+  const [running, setRunning] = useState(true)
+
+  useEffect(() => {
+    if (!running) return
+    const timer = window.setInterval(() => setRound((value) => value + 1), 2200)
+    return () => window.clearInterval(timer)
+  }, [running])
+
+  const scoredAgents = useMemo(() => {
+    return AGENTS.map((agent) => scoreAgent(agent, round)).sort((a, b) => b.elo - a.elo)
+  }, [round])
+
+  const pair = useMemo(() => {
+    const leftIndex = round % AGENTS.length
+    let rightIndex = (round * 2 + 3) % AGENTS.length
+    if (rightIndex === leftIndex) rightIndex = (rightIndex + 1) % AGENTS.length
+    const left = scoreAgent(AGENTS[leftIndex], round)
+    const right = scoreAgent(AGENTS[rightIndex], round)
+    return { left, right }
+  }, [round])
+
+  const leftScore = pair.left.elo + pair.left.metrics.speed - pair.left.liquidationRisk
+  const rightScore = pair.right.elo + pair.right.metrics.speed - pair.right.liquidationRisk
+  const leader = leftScore >= rightScore ? pair.left : pair.right
+  const totalEquity = scoredAgents.reduce((sum, agent) => sum + agent.baseEquity * (1 + agent.pnl / 100), 0)
+
   if (path === "/library" || path === "/library/") {
     return <LibraryApp />
   }
 
   return (
-    <main className="pageShell">
-      <div className="bgGlow bgGlowA" />
-      <div className="bgGlow bgGlowB" />
+    <main className="arenaShell">
+      <header className="arenaHeader">
+        <a className="brandMark" href="/">
+          <span>CLAWD</span>
+          <strong>Solana Agent Arena</strong>
+        </a>
+        <nav>
+          <a href="#arena">Arena</a>
+          <a href="#terminals">Terminals</a>
+          <button type="button" onClick={scrollToScoreboard}>
+            Scoreboard
+          </button>
+          <a href="/library/">Library</a>
+        </nav>
+      </header>
 
-      <section className="hero">
-        <div className="heroCopy">
-          <p className="eyebrow">Clawd Experience Layer</p>
-          <h1>
-            Give users a <span>cool Clawd surface</span> for the injected API,
-            live repo previews, and devnet agent minting.
-          </h1>
-          <p className="lede">
-            The terminal is already powerful. This page turns that power into a
-            recognizable entry point people can understand in one minute.
-          </p>
-
-          <div className="heroActions">
-            <a className="primaryLink" href="https://github.com/Solizardking/solana-clawd" target="_blank" rel="noreferrer">
-              View GitHub
-            </a>
-            <a className="ghostLink" href="https://x402.wtf/library/" target="_blank" rel="noreferrer">
-              🦞 Browse Library
-            </a>
-          </div>
-        </div>
-
-        <div className="heroTerminal">
-          <div className="terminalHeader">
-            <span />
-            <span />
-            <span />
-            <p>clawd://operator-preview</p>
-          </div>
-          {HERO_COMMANDS.map((cmd) => (
-            <CommandRow key={cmd} text={cmd} />
-          ))}
-          <div className="terminalNote">
-            <p>Result:</p>
-            <ul>
-              <li>Lobster Library now serves at <code>x402.wtf/library</code></li>
-              <li>OpenRouter free models are available immediately</li>
-              <li>the repo becomes demoable from the CLI</li>
-              <li>users can mint a real test agent on devnet</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section className="sectionBlock">
-        <div className="sectionHeading">
-          <p className="eyebrow">What This Surface Does</p>
-          <h2>Four concrete product paths, not just docs.</h2>
-        </div>
-
-        <div className="cardGrid">
-          {SURFACES.map((surface) => (
-            <article className="featureCard" key={surface.title}>
-              <p className="cardEyebrow">{surface.eyebrow}</p>
-              <h3>{surface.title}</h3>
-              <p>{surface.body}</p>
-              <ul>
-                {surface.lines.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="sectionBlock sectionSplit">
-        <div className="sectionHeading">
-          <p className="eyebrow">API Flow</p>
-          <h2>Exactly how a new user touches the stack.</h2>
-        </div>
-
-        <div className="flowPanel">
-          {API_FLOW.map((step) => (
-            <div className="flowRow" key={step.label}>
-              <div>
-                <p className="flowLabel">{step.label}</p>
-                <code>{step.snippet}</code>
-              </div>
-              <CopyButton text={step.snippet} />
+      <section className="arenaHero" id="arena">
+        <div className="arenaStage">
+          <img className="arenaVisual" src={boxBannerUrl} alt="Box agents running Solana lanes" />
+          <div className="stageOverlay">
+            <div>
+              <p className="kicker">Devnet arena - paper perps</p>
+              <h1>Agents in boxes battle for perpetual supremacy.</h1>
             </div>
-          ))}
-        </div>
-
-        <div className="statusPanel">
-          <p className="eyebrow">Live Endpoints</p>
-          <div className="statusList">
-            <a href="https://x402.wtf/library/" target="_blank" rel="noreferrer">Lobster Library</a>
-            <a href="https://clawdrouter.fly.dev/health" target="_blank" rel="noreferrer">Router health</a>
-            <a href="https://clawdrouter.fly.dev/v1/models" target="_blank" rel="noreferrer">Router models</a>
-            <a href="https://github.com/Solizardking/solana-clawd" target="_blank" rel="noreferrer">Repo mirror</a>
-            <a href="https://x402.wtf" target="_blank" rel="noreferrer">x402 control plane</a>
+            <div className="controlStrip" aria-label="Arena controls">
+              <button type="button" onClick={() => setRound((value) => value + 1)}>
+                Run Tick
+              </button>
+              <button type="button" className={running ? "active" : ""} onClick={() => setRunning((value) => !value)}>
+                {running ? "Auto On" : "Auto Off"}
+              </button>
+              <button type="button" onClick={() => setRound(1)}>
+                Reset
+              </button>
+            </div>
+          </div>
+          <div className="arenaDuel">
+            <div>
+              <span>{pair.left.callSign}</span>
+              <strong>{pair.left.name}</strong>
+            </div>
+            <p>round {round}</p>
+            <div>
+              <span>{pair.right.callSign}</span>
+              <strong>{pair.right.name}</strong>
+            </div>
           </div>
         </div>
+
+        <aside className="liveLedger">
+          <div className="ledgerStat">
+            <span>Leader</span>
+            <strong>{leader.name}</strong>
+          </div>
+          <div className="ledgerStat">
+            <span>Total Equity</span>
+            <strong>{formatUsd(totalEquity)}</strong>
+          </div>
+          <div className="ledgerStat">
+            <span>Season Proof</span>
+            <code>{leader.proof}</code>
+          </div>
+          <div className="ledgerStat">
+            <span>Safety Mode</span>
+            <strong>Paper only</strong>
+          </div>
+        </aside>
       </section>
 
-      <section className="sectionBlock">
-        <div className="sectionHeading">
-          <p className="eyebrow">Link Deck</p>
-          <h2>Ship this as the lightweight GitHub-facing front door.</h2>
-        </div>
-        <div className="linkRow">
-          {LINKS.map((link) => (
-            <a key={link.url} href={link.url} target="_blank" rel="noreferrer" className="linkChip">
-              {link.label}
-            </a>
-          ))}
-        </div>
+      <section className="agentGrid" aria-label="Arena agent boxes">
+        {scoredAgents.map((agent) => (
+          <AgentBox key={agent.id} agent={agent} active={agent.id === pair.left.id || agent.id === pair.right.id} />
+        ))}
       </section>
+
+      <section className="duelSection" id="terminals">
+        <TerminalPanel agent={pair.left} opponent={pair.right} score={leftScore} side="left" round={round} />
+        <div className="versusPanel">
+          <span>Terminal vs Terminal</span>
+          <strong>
+            {leftScore} : {rightScore}
+          </strong>
+          <p>{leader.thesis}</p>
+        </div>
+        <TerminalPanel agent={pair.right} opponent={pair.left} score={rightScore} side="right" round={round} />
+      </section>
+
+      <section className="visualGrid">
+        <EquityChart agents={scoredAgents} round={round} />
+        <PerpsMap agents={scoredAgents} />
+      </section>
+
+      <Scoreboard agents={scoredAgents} />
+      <MintedBanner />
     </main>
   )
 }
