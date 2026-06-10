@@ -35,8 +35,24 @@ type AgentScore = Agent & {
   proof: string
 }
 
+type ConversationLine = {
+  speaker: string
+  label: string
+  text: string
+  tone: "left" | "right" | "referee" | "system"
+}
+
 const boxBannerUrl = new URL("../assets/box-agents-banner.svg", import.meta.url).href
 const scoreboardUrl = new URL("../assets/minted-scoreboard.svg", import.meta.url).href
+
+const DEEPSEEK_RUNTIME = {
+  openAiBaseUrl: "https://api.deepseek.com",
+  anthropicBaseUrl: "https://api.deepseek.com/anthropic",
+  model: "deepseek-v4-pro",
+  fastModel: "deepseek-v4-flash",
+  apiKeyEnv: "DEEPSEEK_API_KEY",
+  rpcEnv: "HELIUS_RPC_URL",
+}
 
 const AGENTS: Agent[] = [
   {
@@ -143,6 +159,37 @@ const POSITIONS = [
   { symbol: "BTC-PERP", notional: 164_200, funding: 0.009, leverage: "2.2x", mode: "paper" },
   { symbol: "BONK-PERP", notional: 46_800, funding: 0.031, leverage: "1.4x", mode: "paper" },
 ]
+
+function buildConversation(pair: { left: AgentScore; right: AgentScore }, leader: AgentScore, round: number, totalEquity: number): ConversationLine[] {
+  const trailing = leader.id === pair.left.id ? pair.right : pair.left
+  const spread = Math.abs(pair.left.elo - pair.right.elo)
+  return [
+    {
+      speaker: "system",
+      label: "DeepSeek control",
+      tone: "system",
+      text: `OpenAI base_url=${DEEPSEEK_RUNTIME.openAiBaseUrl} model=${DEEPSEEK_RUNTIME.model} thinking=enabled rpc=${DEEPSEEK_RUNTIME.rpcEnv}`,
+    },
+    {
+      speaker: pair.left.name,
+      label: pair.left.callSign,
+      tone: "left",
+      text: `${pair.left.market} ${pair.left.side}: ${pair.left.thesis}. I will size inside paper limits until Helius confirms the tape and risk stays under ${pair.left.liquidationRisk}%.`,
+    },
+    {
+      speaker: pair.right.name,
+      label: pair.right.callSign,
+      tone: "right",
+      text: `${pair.right.market} ${pair.right.side}: ${pair.right.thesis}. I challenge the route with funding, spread, and drawdown checks before any scoreboard claim.`,
+    },
+    {
+      speaker: "referee",
+      label: "arena",
+      tone: "referee",
+      text: `Round ${round}: ${leader.name} takes priority by ${spread} Elo points. ${trailing.name} must reduce exposure or beat ${formatUsd(totalEquity)} aggregate equity on the next tick.`,
+    },
+  ]
+}
 
 function usePath() {
   const [path, setPath] = useState(() => (typeof window !== "undefined" ? window.location.pathname : "/"))
