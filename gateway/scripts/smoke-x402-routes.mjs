@@ -70,6 +70,8 @@ async function main() {
       GATEWAY_HOST: HOST,
       GATEWAY_PORT: String(port),
       GATEWAY_BASE_URL: BASE_URL,
+      CLAWD_PRODUCTION_MODE: 'true',
+      GATEWAY_ADMIN_KEY: 'smoke-gateway-admin-key',
       BIRDEYE_API_KEY: '',
       TELEGRAM_BOT_TOKEN: '',
     },
@@ -83,6 +85,9 @@ async function main() {
   try {
     await waitForGateway(child, port);
     const local = `http://${HOST}:${port}`;
+
+    const health = await json(`${local}/health`);
+    assert(health.access?.productionMode === true, 'gateway smoke must run with production access mode enabled');
 
     const agents = await json(`${local}/api/agents/catalog`);
     assert(agents.hub?.gallery === `${BASE_URL}/agents`, 'agents hub must point to x402.wtf/agents');
@@ -107,6 +112,11 @@ async function main() {
     assert(plugin.skill_registry?.hub === `${BASE_URL}/skills`, 'ai-plugin must expose x402 skills hub');
     assert(plugin.gateway?.hub === `${BASE_URL}/gateway`, 'ai-plugin must expose x402 gateway hub');
     assert(plugin.gateway?.telegram_webhook === `${BASE_URL}/telegram/webhook`, 'ai-plugin must expose x402 Telegram webhook');
+    assert(plugin.staking?.hub === `${BASE_URL}/staking`, 'ai-plugin must expose x402 staking hub');
+    assert(plugin.staking?.portfolio === `${BASE_URL}/api/staking/portfolio/{owner}`, 'ai-plugin must expose staking portfolio route');
+    assert(plugin.staking?.assets === `${BASE_URL}/api/staking/assets/{owner}`, 'ai-plugin must expose staking assets route');
+    assert(plugin.staking?.asset === `${BASE_URL}/api/staking/agent/{assetId}`, 'ai-plugin must expose staking asset route');
+    assert(plugin.staking?.das_methods?.includes('getAssetsByOwner'), 'ai-plugin must expose Helius DAS methods');
 
     const stakingConfig = await json(`${local}/api/staking/config`);
     assert(stakingConfig.route === `${BASE_URL}/staking`, 'staking route must point to x402.wtf/staking');
@@ -116,6 +126,13 @@ async function main() {
     const stakingPage = await text(`${local}/staking`);
     assert(stakingPage.includes('Helius DAS Token Assets'), 'staking page must expose DAS token assets');
     assert(stakingPage.includes('/api/staking/portfolio/'), 'staking page must use staking portfolio API');
+
+    const blockedMutation = await fetch(`${local}/api/staking/transaction`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{}',
+    });
+    assert(blockedMutation.status === 401, `live staking transaction should require access, got ${blockedMutation.status}`);
 
     const webhook = await fetch(`${local}/telegram/webhook`, {
       method: 'POST',

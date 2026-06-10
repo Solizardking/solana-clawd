@@ -120,8 +120,9 @@ The GitHub, install, and gateway paths are now wired to the canonical x402 surfa
 | Agents hub | [`x402.wtf/agents`](https://x402.wtf/agents) | `agents` catalog validates 130 agents and the explicit `agents/` workspace paths |
 | Skills hub | [`x402.wtf/skills`](https://x402.wtf/skills) | Gateway serves 136 catalog skills plus per-skill metadata fallback |
 | Gateway | [`x402.wtf/gateway`](https://x402.wtf/gateway) | `gateway/scripts/smoke-x402-routes.mjs` starts the built gateway and checks public routes |
+| Staking | [`x402.wtf/staking`](https://x402.wtf/staking) | Helius DAS reads agent assets, token assets, and batch asset metadata for staking flows |
 | Telegram | [`x402.wtf/telegram`](https://x402.wtf/telegram) | Smoke test verifies `POST /telegram/webhook` returns `200 OK` |
-| Discovery | [`/.well-known/ai-plugin.json`](https://x402.wtf/.well-known/ai-plugin.json) | Static and dynamic discovery docs expose agents, skills, gateway, and Telegram URLs |
+| Discovery | [`/.well-known/ai-plugin.json`](https://x402.wtf/.well-known/ai-plugin.json) | Static and dynamic discovery docs expose agents, skills, gateway, staking, and Telegram URLs |
 
 Repeatable checks:
 
@@ -134,6 +135,16 @@ What these cover:
 - `agents/scripts/validate-x402-setup.cjs` checks `CNAME`, `.well-known`, catalog counts, skills catalog URLs, installer wiring, GitHub Actions, gateway route source, and every explicitly listed `agents/` path.
 - `.github/workflows/x402-setup.yml` runs the same agents verifier and gateway smoke test on PRs/pushes touching `agents/`, `gateway/`, `formal_verification/`, `skills/`, or `install.sh`.
 - `install.sh --gateway` now builds the gateway and runs `npm run smoke:x402` before reporting the gateway as ready.
+
+Production access policy:
+
+```bash
+CLAWD_PRODUCTION_MODE=true
+CLAWD_MIN_LIVE_TIER=SHORELINE
+GATEWAY_ADMIN_KEY=<server-side-admin-key>
+```
+
+Public read-only routes stay open for browsing agents, skills, staking status, explorer data, and discovery docs. Live mutation routes such as trading, minting, skill registration, and staking transactions require either `X-Clawd-Wallet` with the configured holder tier or `X-Gateway-API-Key` for server-side operations.
 
 ---
 
@@ -451,7 +462,7 @@ pnpm install
 # Expected: "Done in ~4s" with no errors
 ```
 
-**Step 3 — Build the public runtime first:**
+**Step 3 — Build the production runtime first:**
 
 ```bash
 pnpm run build

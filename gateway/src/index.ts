@@ -44,6 +44,7 @@ import clawdGenRouter from './clawdGen.js';
 import skillHubRouter from './skillHub.js';
 import stakingRouter from './staking.js';
 import solanaExplorerRouter from './solanaExplorer.js';
+import { accessPolicyStatus, requireLiveAccess } from './accessPolicy.js';
 import { handleNLMessage } from './nlTrading.js';
 import {
   mainMenu, mainMenuText, portfolioMenu, tradeMenu,
@@ -69,6 +70,7 @@ function msgCtx(cb: TgCallbackQuery): { chatId: number; msgId: number } | null {
 // ---------------------------------------------------------------------------
 const app = express();
 app.use(express.json());
+app.use(requireLiveAccess);
 const PORT = parseInt(process.env.GATEWAY_PORT ?? '8080', 10);
 const HOST = process.env.GATEWAY_HOST ?? '0.0.0.0';
 const WEBHOOK_URL = process.env.TELEGRAM_WEBHOOK_URL ?? '';
@@ -713,6 +715,7 @@ app.get('/health', (_req: Request, res: Response) => {
     wallet: getPublicKey()?.toBase58() ?? null,
     birdeye: birdeye.isConnected(),
     mode: WEBHOOK_URL ? 'webhook' : 'polling',
+    access: accessPolicyStatus(),
     uptime: process.uptime(),
   });
 });
