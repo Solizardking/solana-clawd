@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "fs";
+import { existsSync, readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { resolveWorkspaceRoot } from "./workspace.js";
 
@@ -67,31 +67,37 @@ export function loadAgentTemplates(): AgentTemplateSummary[] {
 
 export function loadCharacters(): CharacterSummary[] {
   const root = resolveWorkspaceRoot();
-  const dir = join(root, "agents", "characters");
-  const files = readdirSync(dir).filter((file) => file.endsWith(".json"));
+  const dirs = [join(root, "agents", "characters"), join(root, "characters")].filter((dir) =>
+    existsSync(dir)
+  );
 
-  return files
-    .map((file) => {
-      const sourcePath = join(dir, file);
-      const json = safeJsonParse<Record<string, any>>(readFileSync(sourcePath, "utf8"));
-      if (!json) return null;
+  return dirs
+    .flatMap((dir) =>
+      readdirSync(dir)
+        .filter((file) => file.endsWith(".json"))
+        .map((file) => {
+          const sourcePath = join(dir, file);
+          const json = safeJsonParse<Record<string, any>>(readFileSync(sourcePath, "utf8"));
+          if (!json) return null;
 
-      const vaultService = Array.isArray(json.services)
-        ? json.services.find((service) => service?.name === "vault")
-        : undefined;
+          const vaultService = Array.isArray(json.services)
+            ? json.services.find((service) => service?.name === "vault")
+            : undefined;
 
-      return {
-        id: file.replace(/\.json$/, ""),
-        name: String(json.name ?? file.replace(/\.json$/, "")),
-        bio: Array.isArray(json.bio) ? json.bio.map(String) : [],
-        topics: Array.isArray(json.topics) ? json.topics.map(String) : [],
-        adjectives: Array.isArray(json.adjectives) ? json.adjectives.map(String) : [],
-        lore: Array.isArray(json.lore) ? json.lore.map(String) : [],
-        style: typeof json.style === "object" && json.style ? json.style : {},
-        walletEndpoint: typeof vaultService?.endpoint === "string" ? vaultService.endpoint : undefined,
-        sourcePath,
-      } satisfies CharacterSummary;
-    })
+          return {
+            id: file.replace(/\.json$/, ""),
+            name: String(json.name ?? file.replace(/\.json$/, "")),
+            bio: Array.isArray(json.bio) ? json.bio.map(String) : [],
+            topics: Array.isArray(json.topics) ? json.topics.map(String) : [],
+            adjectives: Array.isArray(json.adjectives) ? json.adjectives.map(String) : [],
+            lore: Array.isArray(json.lore) ? json.lore.map(String) : [],
+            style: typeof json.style === "object" && json.style ? json.style : {},
+            walletEndpoint: typeof vaultService?.endpoint === "string" ? vaultService.endpoint : undefined,
+            sourcePath,
+          } satisfies CharacterSummary;
+        })
+    )
     .filter((entry): entry is CharacterSummary => Boolean(entry))
+    .filter((entry, index, all) => all.findIndex((candidate) => candidate.id === entry.id) === index)
     .sort((a, b) => a.name.localeCompare(b.name));
 }

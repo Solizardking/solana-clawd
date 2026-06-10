@@ -8,6 +8,7 @@ import { spawnRoutes } from "../routes/spawn.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, "..", "..", "public");
+const RUNTIME_WEB_DIR = join(process.cwd(), "dist-web");
 
 export function createApp(): Express {
   const app = express();
@@ -24,6 +25,10 @@ export function createApp(): Express {
   app.get("/health", (_req, res) => {
     res.json({ status: "ok", version: "0.1.0", name: "clawd-hub" });
   });
+
+  if (PUBLIC_DIR) {
+    app.use("/runtime", express.static(RUNTIME_WEB_DIR));
+  }
 
   // Dashboard
   app.use(express.static(PUBLIC_DIR));

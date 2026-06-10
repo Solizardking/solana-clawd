@@ -1,6 +1,7 @@
 import { Router, type Router as ExpressRouter } from "express";
 import { loadAgentTemplates, loadCharacters } from "../lib/catalog.js";
 import { createSpawnRecord, listSpawnRecords } from "../lib/spawn-store.js";
+import { SPAWN_PLAYBOOKS } from "../lib/playbooks.js";
 
 export function spawnRoutes(): ExpressRouter {
   const router = Router();
@@ -20,6 +21,7 @@ export function spawnRoutes(): ExpressRouter {
       templates,
       characters,
       spawns,
+      playbooks: SPAWN_PLAYBOOKS,
       stats: {
         templates: templates.length,
         characters: characters.length,
@@ -39,6 +41,10 @@ export function spawnRoutes(): ExpressRouter {
 
   router.get("/jobs", (_req, res) => {
     res.json({ ok: true, jobs: listSpawnRecords() });
+  });
+
+  router.get("/playbooks", (_req, res) => {
+    res.json({ ok: true, playbooks: SPAWN_PLAYBOOKS });
   });
 
   router.post("/jobs", (req, res) => {

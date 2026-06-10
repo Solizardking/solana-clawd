@@ -16,7 +16,6 @@ import {
   generateSolanaPaperWallet,
   paperWalletFileName,
   serializeSolanaPaperWallet,
-  summarisePaperWallet,
   type SolanaPaperWallet,
 } from "../../lib/paper-wallet";
 

@@ -857,7 +857,7 @@ button:disabled {
     grid-template-columns: 1fr !important;
   }
 
-  .paper-surface > .paper-card:not(:first-child),
+  .paper-surface .paper-layout > .paper-card:not(:first-child),
   .paper-surface .surface-actions,
   .paper-surface .paper-meta,
   .paper-surface .agent-response {
