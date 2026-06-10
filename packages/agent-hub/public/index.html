@@ -6,478 +6,406 @@
   <title>spawn.x402.wtf | Solana Clawd</title>
   <style>
     :root {
-      --bg: #07111f;
-      --bg2: #0d1f33;
-      --card: rgba(10, 25, 42, 0.82);
-      --card-strong: rgba(12, 30, 51, 0.95);
-      --line: rgba(134, 180, 255, 0.18);
-      --text: #eff6ff;
-      --muted: #90a8c7;
-      --accent: #5ef2c6;
-      --accent-2: #ffb84d;
-      --danger: #ff7a7a;
-      --shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
-      --radius: 22px;
-      --font: "IBM Plex Sans", "Avenir Next", "Segoe UI", sans-serif;
-      --mono: "JetBrains Mono", "SFMono-Regular", monospace;
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-2: #eef2f6;
+      --ink: #17202a;
+      --muted: #667485;
+      --line: #dbe2ea;
+      --teal: #047d77;
+      --teal-soft: #dff4f1;
+      --coral: #c84a31;
+      --gold: #a87218;
+      --violet: #6750c8;
+      --ok: #16825d;
+      --bad: #b42318;
+      --radius: 8px;
+      --font: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+      --mono: "SFMono-Regular", "JetBrains Mono", Consolas, monospace;
     }
 
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
     body {
-      background:
-        radial-gradient(circle at top left, rgba(94, 242, 198, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(255, 184, 77, 0.16), transparent 24%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-      color: var(--text);
+      background: var(--bg);
+      color: var(--ink);
       font-family: var(--font);
+      font-size: 14px;
     }
-
     a { color: inherit; text-decoration: none; }
-    button, input, select, textarea {
-      font: inherit;
-    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
 
-    .shell {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 28px;
-    }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(145deg, rgba(10, 27, 45, 0.94), rgba(15, 34, 56, 0.72));
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      padding: 28px;
-      box-shadow: var(--shadow);
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto -10% -35% 40%;
-      height: 320px;
-      background: radial-gradient(circle, rgba(94, 242, 198, 0.18), transparent 55%);
-      pointer-events: none;
-    }
-
-    .topbar, .hero-grid, .section-grid, .panel-grid, .spawn-grid, .modules-grid, .jobs-grid {
+    .app {
+      min-height: 100vh;
       display: grid;
-      gap: 18px;
+      grid-template-rows: auto 1fr;
     }
 
     .topbar {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) auto;
       align-items: center;
-      margin-bottom: 24px;
+      gap: 16px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     .brand {
-      grid-column: span 5;
-      font-size: 14px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .brand strong {
-      display: block;
-      margin-top: 8px;
-      font-size: 28px;
-      letter-spacing: -0.04em;
-      color: var(--text);
-      text-transform: none;
-    }
-
-    .top-actions {
-      grid-column: span 7;
       display: flex;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: 10px;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
     }
 
-    .btn, .pill {
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text);
-      padding: 10px 16px;
-      cursor: pointer;
-      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
-    }
-
-    .btn:hover, .pill:hover {
-      transform: translateY(-1px);
-      border-color: rgba(94, 242, 198, 0.48);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #7dd8ff);
-      border-color: transparent;
-      color: #04111f;
-      font-weight: 700;
-    }
-
-    .hero-grid {
-      grid-template-columns: 1.25fr 0.95fr;
-      align-items: start;
-    }
-
-    .hero-copy h1 {
-      margin: 0;
-      font-size: clamp(42px, 6vw, 78px);
-      letter-spacing: -0.06em;
-      line-height: 0.94;
-      max-width: 760px;
-    }
-
-    .hero-copy p {
-      max-width: 760px;
-      font-size: 18px;
-      line-height: 1.65;
-      color: #c8d7ea;
-      margin: 18px 0 24px;
-    }
-
-    .stat-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 24px;
-    }
-
-    .stat-card, .card, .panel, .job-card, .module-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      backdrop-filter: blur(18px);
-    }
-
-    .stat-card {
-      min-width: 160px;
-      padding: 16px 18px;
-    }
-
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.04em;
-    }
-
-    .stat-label {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .hero-aside {
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: white;
       display: grid;
-      gap: 16px;
+      place-items: center;
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 12px;
+      flex: 0 0 auto;
     }
 
-    .stack-card {
-      padding: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border-radius: var(--radius);
-      border: 1px solid var(--line);
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.2;
     }
 
-    .eyebrow {
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--accent);
-      font-size: 11px;
-      margin-bottom: 10px;
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .stack-list, .inline-list {
+    .actions {
       display: flex;
+      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 9px 12px;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
       gap: 8px;
     }
 
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 11px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.05);
-      color: #d2e3f8;
-      font-size: 12px;
+    .btn:hover { border-color: #aeb8c4; }
+    .btn-primary {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: white;
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      min-height: 0;
+    }
+
+    .side {
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .main {
+      padding: 16px;
+      overflow: auto;
+      display: grid;
+      gap: 16px;
+      align-content: start;
     }
 
     .section {
-      margin-top: 22px;
+      display: grid;
+      gap: 10px;
     }
 
     .section-head {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
       align-items: end;
-      margin: 30px 0 16px;
+      gap: 12px;
     }
 
-    .section-head h2 {
+    .section-head h2, .panel h2 {
       margin: 0;
-      font-size: 28px;
-      letter-spacing: -0.04em;
+      font-size: 15px;
+      line-height: 1.2;
     }
 
-    .section-head p {
-      margin: 8px 0 0;
+    .section-head p, .panel-note {
+      margin: 4px 0 0;
       color: var(--muted);
-      max-width: 760px;
-      line-height: 1.6;
-    }
-
-    .spawn-grid {
-      grid-template-columns: minmax(360px, 460px) 1fr;
-      align-items: start;
+      line-height: 1.45;
+      font-size: 12px;
     }
 
     .panel {
-      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 14px;
     }
 
-    .panel h3 {
-      margin: 0 0 10px;
-      font-size: 22px;
-      letter-spacing: -0.04em;
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
     }
 
-    .field {
-      margin-bottom: 12px;
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px;
     }
 
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .field { margin-top: 12px; }
     .field label {
       display: block;
-      font-size: 12px;
-      color: var(--muted);
       margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .field input, .field select, .field textarea {
-      width: 100%;
-      padding: 13px 14px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: rgba(3, 11, 22, 0.55);
-      color: var(--text);
-    }
-
-    .field textarea {
-      min-height: 118px;
-      resize: vertical;
-    }
-
-    .hint {
-      font-size: 12px;
       color: var(--muted);
-      line-height: 1.5;
+      font-size: 12px;
+      font-weight: 700;
     }
 
-    .panel-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--ink);
+      padding: 10px 11px;
+      min-height: 38px;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--teal-soft);
+      border-color: var(--teal);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
     }
 
     .card {
-      padding: 18px;
-      min-height: 180px;
-      position: relative;
-      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px;
+      min-height: 140px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
     }
 
     .card.active {
-      border-color: rgba(94, 242, 198, 0.55);
-      box-shadow: inset 0 0 0 1px rgba(94, 242, 198, 0.22);
+      border-color: var(--teal);
+      box-shadow: inset 0 0 0 1px var(--teal);
     }
 
-    .card h4, .module-card h4, .job-card h4 {
-      margin: 0 0 8px;
-      font-size: 18px;
+    .card h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
     }
 
-    .card p, .module-card p, .job-card p {
+    .card p {
+      margin: 0;
       color: var(--muted);
-      line-height: 1.55;
-      margin: 0 0 12px;
+      line-height: 1.45;
+      font-size: 13px;
     }
 
-    .card small, .job-meta, .module-meta {
-      color: #bad0ea;
+    .meta, .tag {
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 11px;
+      color: var(--muted);
     }
 
-    .modules-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .module-card {
-      padding: 18px;
-    }
-
-    .jobs-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .job-card {
-      padding: 18px;
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: rgba(94, 242, 198, 0.12);
-      color: var(--accent);
-      margin-bottom: 10px;
-    }
-
-    .runtime-frame {
+    .tags {
       display: flex;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
-      margin-top: 14px;
     }
 
-    .notice {
-      margin-top: 16px;
-      padding: 16px 18px;
-      border: 1px dashed rgba(255, 184, 77, 0.4);
-      border-radius: 18px;
-      color: #ffe0b0;
-      background: rgba(255, 184, 77, 0.08);
-      line-height: 1.6;
+    .tag {
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: var(--surface-2);
+      color: #3e4b5a;
     }
 
-    .success, .error {
+    .tag.teal { background: var(--teal-soft); color: var(--teal); }
+    .tag.coral { background: #fde7e1; color: var(--coral); }
+    .tag.gold { background: #f8edd6; color: var(--gold); }
+    .tag.violet { background: #ece8ff; color: var(--violet); }
+
+    .tabs {
+      display: flex;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface);
+      width: fit-content;
+    }
+
+    .tab {
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: transparent;
+      padding: 8px 12px;
+      min-height: 36px;
+      color: var(--muted);
+    }
+
+    .tab:last-child { border-right: 0; }
+    .tab.active {
+      background: var(--ink);
+      color: white;
+    }
+
+    .message {
       margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      font-size: 14px;
+      padding: 10px 11px;
+      border-radius: 8px;
+      line-height: 1.45;
+      display: none;
     }
 
-    .success {
-      color: #dffcf2;
-      background: rgba(94, 242, 198, 0.12);
-      border: 1px solid rgba(94, 242, 198, 0.22);
+    .message.ok {
+      display: block;
+      border: 1px solid #a4d9c7;
+      background: #e8f7f1;
+      color: var(--ok);
     }
 
-    .error {
-      color: #ffd4d4;
-      background: rgba(255, 122, 122, 0.12);
-      border: 1px solid rgba(255, 122, 122, 0.22);
+    .message.bad {
+      display: block;
+      border: 1px solid #f2b8b5;
+      background: #fff0ef;
+      color: var(--bad);
     }
 
-    @media (max-width: 1080px) {
-      .hero-grid, .spawn-grid, .modules-grid, .jobs-grid, .panel-grid {
-        grid-template-columns: 1fr;
-      }
-      .topbar {
-        grid-template-columns: 1fr;
-      }
-      .brand, .top-actions {
-        grid-column: auto;
-      }
-      .top-actions {
-        justify-content: flex-start;
-      }
+    .empty {
+      border: 1px dashed #b9c4d0;
+      border-radius: 8px;
+      padding: 18px;
+      color: var(--muted);
+      background: #fbfcfd;
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { border-right: 0; border-bottom: 1px solid var(--line); }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .topbar { grid-template-columns: 1fr; align-items: start; }
+      .actions { justify-content: flex-start; }
+      .split, .metrics { grid-template-columns: 1fr; }
+      .side, .main { padding: 12px; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <section class="hero">
-      <div class="topbar">
-        <div class="brand">
-          Spawn by Solana Clawd
-          <strong>Front end and back end for spawning Solana-native agents on one surface.</strong>
-        </div>
-        <div class="top-actions">
-          <a class="btn" href="/runtime/" target="_blank" rel="noreferrer">Open dist-web runtime</a>
-          <a class="btn" href="/api/v1/spawn/catalog" target="_blank" rel="noreferrer">View spawn API</a>
-          <button class="btn btn-primary" onclick="document.getElementById('spawn-form').scrollIntoView({behavior:'smooth'})">Spawn agent</button>
-        </div>
-      </div>
-
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <div class="eyebrow">x402 • Buddies • Research • Staking • Wallets</div>
-          <h1>spawn.x402.wtf for the entire Solana Clawd stack.</h1>
-          <p>
-            This surface pulls from the existing agent catalog, character packs, box runtimes, x402 flows,
-            staking infrastructure, `dist-web` assets, and the repo’s major systems. It is built to launch
-            wallet-aware, RPC-aware Solana agents instead of just listing demos.
-          </p>
-          <div class="stat-row" id="hero-stats"></div>
-        </div>
-
-        <div class="hero-aside">
-          <div class="stack-card">
-            <div class="eyebrow">Included playbooks</div>
-            <div class="stack-list" id="hero-playbooks"></div>
-          </div>
-          <div class="stack-card">
-            <div class="eyebrow">Core rails</div>
-            <div class="inline-list">
-              <span class="tag">Agentwallet vault</span>
-              <span class="tag">Upstash Box</span>
-              <span class="tag">Cloudflare x402</span>
-              <span class="tag">Helius DAS</span>
-              <span class="tag">Custom RPC</span>
-              <span class="tag">Staking lifecycle</span>
-            </div>
-          </div>
-          <div class="stack-card">
-            <div class="eyebrow">Runtime bridge</div>
-            <p class="hint">
-              `dist-web` is mounted at <code>/runtime</code> so the new spawn platform can coexist with
-              the existing built web runtime and reuse its assets without deleting them.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="spawn-form">
-      <div class="section-head">
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">S4</div>
         <div>
-          <h2>Spawn Control</h2>
-          <p>Provision a new Solana Clawd agent with a template, character, runtime, Helius DAS endpoint, and operator RPC.</p>
+          <h1>spawn.x402.wtf</h1>
+          <p>Solana Clawd spawn console for agents, buddies, x402, wallets, and research workflows.</p>
         </div>
       </div>
+      <nav class="actions" aria-label="Runtime links">
+        <a class="btn" href="/runtime/" target="_blank" rel="noreferrer">Runtime</a>
+        <a class="btn" href="/runtime/clawd-mcp/" target="_blank" rel="noreferrer">MCP</a>
+        <a class="btn" href="/api/v1/spawn/catalog" target="_blank" rel="noreferrer">API</a>
+        <button class="btn btn-primary" id="spawn-button-top">Spawn</button>
+      </nav>
+    </header>
 
-      <div class="spawn-grid">
-        <div class="panel">
-          <h3>New Agent</h3>
+    <div class="layout">
+      <aside class="side">
+        <section class="panel" id="spawn-form">
+          <h2>New Spawn Job</h2>
+          <p class="panel-note">Choose a playbook, template, character, runtime, and wallet policy.</p>
+
           <div class="field">
             <label for="agent-name">Agent name</label>
             <input id="agent-name" placeholder="spawn-alpha-broker" />
           </div>
+
           <div class="field">
             <label for="playbook">Playbook</label>
             <select id="playbook"></select>
           </div>
+
           <div class="field">
             <label for="template">Template</label>
             <select id="template"></select>
           </div>
+
           <div class="field">
             <label for="character">Character</label>
             <select id="character"></select>
           </div>
-          <div class="panel-grid">
+
+          <div class="split">
             <div class="field">
               <label for="runtime">Runtime</label>
               <select id="runtime">
@@ -494,7 +422,8 @@
               </select>
             </div>
           </div>
-          <div class="panel-grid">
+
+          <div class="split">
             <div class="field">
               <label for="wallet-mode">Wallet mode</label>
               <select id="wallet-mode">
@@ -503,63 +432,61 @@
               </select>
             </div>
             <div class="field">
-              <label for="budget">Budget (USD)</label>
+              <label for="budget">Budget USD</label>
               <input id="budget" type="number" min="1" value="250" />
             </div>
           </div>
+
           <div class="field">
             <label for="rpc-url">RPC URL</label>
             <input id="rpc-url" placeholder="https://api.mainnet-beta.solana.com" />
           </div>
+
           <div class="field">
-            <label for="helius-url">Helius DAS / RPC URL</label>
+            <label for="helius-url">Helius DAS URL</label>
             <input id="helius-url" placeholder="https://mainnet.helius-rpc.com/?api-key=..." />
           </div>
+
           <div class="field">
             <label for="mission">Mission</label>
-            <textarea id="mission" placeholder="Run an x402-gated research broker for premium Solana market intelligence."></textarea>
+            <textarea id="mission" placeholder="Run an x402-gated research broker for Solana market intelligence."></textarea>
           </div>
-          <button class="btn btn-primary" onclick="createSpawn()">Create spawn job</button>
-          <div class="hint" style="margin-top:12px">
-            This persists spawn jobs in the repo-local `.spawn` directory and captures runtime, RPC, Helius DAS, and wallet mode metadata.
-          </div>
-          <div id="spawn-message"></div>
-        </div>
 
-        <div class="panel">
-          <h3>Launch Rails</h3>
-          <div id="playbook-cards" class="panel-grid"></div>
-          <div class="notice">
-            Staking is included as a first-class lifecycle concern. Use spawn jobs for mint → register → stake → route flows, especially for x402 and orchestrator agents.
-          </div>
-          <div class="runtime-frame">
-            <a class="pill" href="/runtime/" target="_blank" rel="noreferrer">dist-web home</a>
-            <a class="pill" href="/runtime/clawd-mcp/" target="_blank" rel="noreferrer">dist-web MCP</a>
-            <a class="pill" href="/api/v1/spawn/modules" target="_blank" rel="noreferrer">module inventory</a>
-          </div>
-        </div>
-      </div>
-    </section>
+          <button class="btn btn-primary" id="create-spawn">Create spawn job</button>
+          <div id="spawn-message" class="message"></div>
+        </section>
+      </aside>
 
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>Repo Systems</h2>
-          <p>The site inventories the repo systems you called out so they are visible as platform surfaces instead of hidden folders.</p>
-        </div>
-      </div>
-      <div class="modules-grid" id="modules"></div>
-    </section>
+      <main class="main">
+        <section class="metrics" id="metrics"></section>
 
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <h2>Active Spawn Jobs</h2>
-          <p>Recent jobs are stored locally and show runtime, wallet, Helius, and RPC details for each spawned agent.</p>
-        </div>
-      </div>
-      <div class="jobs-grid" id="jobs"></div>
-    </section>
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>Playbooks</h2>
+              <p>Preset launch modes wired to the example flows in this repo.</p>
+            </div>
+          </div>
+          <div class="cards" id="playbook-cards"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>Library</h2>
+              <p>Templates, characters, repo modules, and spawned jobs from the Solana Clawd workspace.</p>
+            </div>
+            <div class="tabs" role="tablist">
+              <button class="tab active" data-tab="templates">Templates</button>
+              <button class="tab" data-tab="characters">Characters</button>
+              <button class="tab" data-tab="modules">Modules</button>
+              <button class="tab" data-tab="jobs">Jobs</button>
+            </div>
+          </div>
+          <div class="cards" id="library-cards"></div>
+        </section>
+      </main>
+    </div>
   </div>
 
   <script>
@@ -571,6 +498,7 @@
       modules: [],
       jobs: [],
       wallet: null,
+      tab: "templates",
     };
 
     async function fetchJson(url, options) {
@@ -581,23 +509,28 @@
       return res.json();
     }
 
-    function optionList(items, valueKey, labelKey) {
-      return items.map((item) => `<option value="${item[valueKey]}">${item[labelKey]}</option>`).join("");
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
     }
 
-    function renderHero() {
-      const statsEl = document.getElementById("hero-stats");
-      statsEl.innerHTML = `
-        <div class="stat-card"><div class="stat-value">${state.templates.length}</div><div class="stat-label">templates from agents/src</div></div>
-        <div class="stat-card"><div class="stat-value">${state.characters.length}</div><div class="stat-label">characters merged from agents + root</div></div>
-        <div class="stat-card"><div class="stat-value">${state.playbooks.length}</div><div class="stat-label">playbooks including buddies, x402, and research</div></div>
-        <div class="stat-card"><div class="stat-value">${state.jobs.length}</div><div class="stat-label">spawn jobs persisted locally</div></div>
-      `;
+    function optionList(items, valueKey, labelKey) {
+      return items.map((item) => `<option value="${escapeHtml(item[valueKey])}">${escapeHtml(item[labelKey])}</option>`).join("");
+    }
 
-      document.getElementById("hero-playbooks").innerHTML = state.playbooks
-        .slice(0, 8)
-        .map((playbook) => `<span class="tag">${playbook.name}</span>`)
-        .join("");
+    function renderMetrics() {
+      const items = [
+        ["Templates", state.templates.length, "agents/src snapshot"],
+        ["Characters", state.characters.length, "agents + root characters"],
+        ["Playbooks", state.playbooks.length, "buddies, x402, research"],
+        ["Jobs", state.jobs.length, "current API memory"],
+      ];
+      document.getElementById("metrics").innerHTML = items.map(([label, value, note]) => `
+        <div class="metric"><strong>${value}</strong><span>${label} · ${note}</span></div>
+      `).join("");
     }
 
     function renderSelectors() {
@@ -613,45 +546,89 @@
     function renderPlaybooks() {
       const selected = document.getElementById("playbook").value;
       document.getElementById("playbook-cards").innerHTML = state.playbooks.map((playbook) => `
-        <div class="card ${selected === playbook.id ? "active" : ""}" onclick="applyPlaybook('${playbook.id}')">
-          <div class="eyebrow">${playbook.category} · ${playbook.runtime}${playbook.x402 ? " · x402" : ""}</div>
-          <h4>${playbook.name}</h4>
-          <p>${playbook.summary}</p>
-          <small>${playbook.exampleFile}</small>
-        </div>
+        <article class="card ${selected === playbook.id ? "active" : ""}" data-playbook="${escapeHtml(playbook.id)}">
+          <div class="tags">
+            <span class="tag teal">${escapeHtml(playbook.runtime)}</span>
+            <span class="tag ${playbook.x402 ? "gold" : ""}">${playbook.x402 ? "x402" : playbook.category}</span>
+          </div>
+          <h3>${escapeHtml(playbook.name)}</h3>
+          <p>${escapeHtml(playbook.summary)}</p>
+          <div class="meta">${escapeHtml(playbook.exampleFile)}</div>
+        </article>
       `).join("");
+
+      document.querySelectorAll("[data-playbook]").forEach((card) => {
+        card.addEventListener("click", () => applyPlaybook(card.dataset.playbook));
+      });
     }
 
-    function renderModules() {
-      document.getElementById("modules").innerHTML = state.modules.map((module) => `
-        <div class="module-card">
-          <div class="eyebrow">${module.kind}</div>
-          <h4>${module.name}</h4>
-          <p>${module.description}</p>
-          <div class="module-meta">${module.path} · ${module.entries} entries · ${module.exists ? "available" : "missing"}</div>
-        </div>
-      `).join("");
-    }
-
-    function renderJobs() {
-      const jobsEl = document.getElementById("jobs");
-      if (!state.jobs.length) {
-        jobsEl.innerHTML = `<div class="job-card"><h4>No jobs yet</h4><p>Create the first spawn job from the control panel.</p></div>`;
+    function renderLibrary() {
+      const el = document.getElementById("library-cards");
+      if (state.tab === "templates") {
+        el.innerHTML = state.templates.slice(0, 48).map((item) => `
+          <article class="card">
+            <div class="tags">
+              <span class="tag teal">${escapeHtml(item.category)}</span>
+              ${item.paymentEnabled ? '<span class="tag gold">x402</span>' : ""}
+            </div>
+            <h3>${escapeHtml(item.name)}</h3>
+            <p>${escapeHtml(item.description)}</p>
+            <div class="meta">${escapeHtml(item.id)}</div>
+          </article>
+        `).join("");
         return;
       }
 
-      jobsEl.innerHTML = state.jobs.map((job) => `
-        <div class="job-card">
-          <div class="status">${job.status}</div>
-          <h4>${job.name}</h4>
-          <p>${job.mission}</p>
-          <div class="job-meta">${job.templateId} · ${job.characterId}</div>
-          <div class="job-meta">${job.runtime} · ${job.walletMode} · ${job.network}</div>
-          <div class="job-meta">wallet: ${job.walletAddress}</div>
-          <div class="job-meta">rpc: ${job.rpcUrl || "default"} </div>
-          <div class="job-meta">helius: ${job.heliusDasUrl || "not set"} </div>
-        </div>
+      if (state.tab === "characters") {
+        el.innerHTML = state.characters.slice(0, 48).map((item) => `
+          <article class="card">
+            <div class="tags"><span class="tag violet">${escapeHtml(item.id)}</span></div>
+            <h3>${escapeHtml(item.name)}</h3>
+            <p>${escapeHtml((item.bio && item.bio[0]) || (item.topics || []).slice(0, 4).join(", ") || "Character profile available.")}</p>
+            <div class="meta">${escapeHtml(item.walletEndpoint || item.sourcePath)}</div>
+          </article>
+        `).join("");
+        return;
+      }
+
+      if (state.tab === "modules") {
+        el.innerHTML = state.modules.map((item) => `
+          <article class="card">
+            <div class="tags"><span class="tag ${item.exists ? "teal" : "coral"}">${item.exists ? "available" : "missing"}</span></div>
+            <h3>${escapeHtml(item.name)}</h3>
+            <p>${escapeHtml(item.description)}</p>
+            <div class="meta">${escapeHtml(item.path)} · ${item.entries} entries</div>
+          </article>
+        `).join("");
+        return;
+      }
+
+      if (!state.jobs.length) {
+        el.innerHTML = '<div class="empty">No spawn jobs yet.</div>';
+        return;
+      }
+
+      el.innerHTML = state.jobs.map((job) => `
+        <article class="card">
+          <div class="tags">
+            <span class="tag teal">${escapeHtml(job.status)}</span>
+            <span class="tag">${escapeHtml(job.runtime)}</span>
+            <span class="tag gold">${escapeHtml(job.walletMode)}</span>
+          </div>
+          <h3>${escapeHtml(job.name)}</h3>
+          <p>${escapeHtml(job.mission)}</p>
+          <div class="meta">${escapeHtml(job.templateId)} · ${escapeHtml(job.characterId)}</div>
+          <div class="meta">${escapeHtml(job.walletAddress)}</div>
+        </article>
       `).join("");
+    }
+
+    function setTab(tab) {
+      state.tab = tab;
+      document.querySelectorAll(".tab").forEach((button) => {
+        button.classList.toggle("active", button.dataset.tab === tab);
+      });
+      renderLibrary();
     }
 
     function applyPlaybook(id) {
@@ -661,28 +638,25 @@
       document.getElementById("playbook").value = playbook.id;
       document.getElementById("runtime").value = playbook.runtime;
       document.getElementById("mission").value = playbook.mission;
+      document.getElementById("wallet-mode").value = playbook.x402 ? "vault" : "ephemeral";
 
       const template = state.templates.find((entry) => entry.id === playbook.templateHint);
-      if (template) {
-        document.getElementById("template").value = template.id;
-      }
+      if (template) document.getElementById("template").value = template.id;
 
       const character = state.characters.find((entry) => entry.id === playbook.characterHint);
-      if (character) {
-        document.getElementById("character").value = character.id;
-      }
+      if (character) document.getElementById("character").value = character.id;
 
       renderPlaybooks();
     }
 
     async function createSpawn() {
       const message = document.getElementById("spawn-message");
-      message.innerHTML = "";
+      message.className = "message";
+      message.textContent = "";
 
       try {
         const payload = {
           name: document.getElementById("agent-name").value || `spawn-${Date.now()}`,
-          playbookId: document.getElementById("playbook").value,
           templateId: document.getElementById("template").value,
           characterId: document.getElementById("character").value,
           runtime: document.getElementById("runtime").value,
@@ -700,18 +674,15 @@
           body: JSON.stringify(payload),
         });
 
-        message.innerHTML = `<div class="success">Spawn job created for <strong>${result.job.name}</strong> with wallet <code>${result.job.walletAddress}</code>.</div>`;
-        await loadJobs();
+        state.jobs.unshift(result.job);
+        message.className = "message ok";
+        message.textContent = `Spawned ${result.job.name} with ${result.job.walletAddress}`;
+        setTab("jobs");
+        renderMetrics();
       } catch (error) {
-        message.innerHTML = `<div class="error">${error.message}</div>`;
+        message.className = "message bad";
+        message.textContent = error.message;
       }
-    }
-
-    async function loadJobs() {
-      const data = await fetchJson(`${API}/jobs`);
-      state.jobs = data.jobs || [];
-      renderJobs();
-      renderHero();
     }
 
     async function boot() {
@@ -727,24 +698,26 @@
       state.jobs = catalog.spawns || [];
       state.wallet = wallet.wallet || null;
 
-      renderHero();
+      renderMetrics();
       renderSelectors();
       renderPlaybooks();
-      renderModules();
-      renderJobs();
+      renderLibrary();
 
       const preferred = state.playbooks.find((playbook) => playbook.id === "auto-research") || state.playbooks[0];
-      if (preferred) {
-        applyPlaybook(preferred.id);
-      }
+      if (preferred) applyPlaybook(preferred.id);
     }
 
-    document.getElementById("playbook").addEventListener("change", (event) => {
-      applyPlaybook(event.target.value);
+    document.getElementById("create-spawn").addEventListener("click", createSpawn);
+    document.getElementById("spawn-button-top").addEventListener("click", () => {
+      document.getElementById("spawn-form").scrollIntoView({ behavior: "smooth" });
+    });
+    document.getElementById("playbook").addEventListener("change", (event) => applyPlaybook(event.target.value));
+    document.querySelectorAll(".tab").forEach((button) => {
+      button.addEventListener("click", () => setTab(button.dataset.tab));
     });
 
     boot().catch((error) => {
-      document.body.innerHTML = `<div style="padding:40px;font-family:sans-serif;color:white">Failed to load spawn platform: ${error.message}</div>`;
+      document.querySelector(".main").innerHTML = `<div class="message bad" style="display:block">${escapeHtml(error.message)}</div>`;
     });
   </script>
 </body>
