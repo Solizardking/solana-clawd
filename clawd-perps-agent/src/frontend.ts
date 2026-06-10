@@ -79,6 +79,14 @@ export function buildPerpsFrontendCards(runtime: ClawdPerpsRuntime): PerpsFronte
       tone: "infra",
     },
     {
+      title: "DeepSeek Brain",
+      value: runtime.config.deepseek.configured ? runtime.config.deepseek.model : "DeepSeek Missing",
+      hint: runtime.config.deepseek.configured
+        ? `OpenAI-compatible ${runtime.config.deepseek.baseUrl}; Anthropic-compatible ${runtime.config.deepseek.anthropicBaseUrl}`
+        : "Set DEEPSEEK_API_KEY server-side to let agents converse and reason autonomously",
+      tone: "infra",
+    },
+    {
       title: "Operator Posture",
       value: runtime.config.wallet ? "Wallet Wired" : "Wallet Missing",
       hint: runtime.config.wallet

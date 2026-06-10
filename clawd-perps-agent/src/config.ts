@@ -8,6 +8,16 @@ export interface PerpsRiskLimits {
   requireWallet: boolean;
 }
 
+export interface DeepSeekRuntimeConfig {
+  configured: boolean;
+  baseUrl: string;
+  anthropicBaseUrl: string;
+  model: string;
+  fastModel: string;
+  thinking: "enabled" | "disabled";
+  reasoningEffort: "high" | "max";
+}
+
 export interface PerpsRuntimeConfig {
   rpcUrl: string;
   apiUrl: string;
@@ -20,6 +30,7 @@ export interface PerpsRuntimeConfig {
   simOnly: boolean;
   telegramBotToken?: string;
   telegramAllowedChats: string[];
+  deepseek: DeepSeekRuntimeConfig;
   risk: PerpsRiskLimits;
 }
 
@@ -56,9 +67,29 @@ function firstNonEmpty(...values: Array<string | undefined>): string | undefined
   return values.find((value) => value !== undefined && value.trim().length > 0);
 }
 
+function buildHeliusRpcUrl(apiKey?: string): string | undefined {
+  if (!apiKey) {
+    return undefined;
+  }
+  return `https://mainnet.helius-rpc.com/?api-key=${apiKey}`;
+}
+
+function normalizeThinking(value: string | undefined): "enabled" | "disabled" {
+  return value === "disabled" ? "disabled" : "enabled";
+}
+
+function normalizeReasoningEffort(value: string | undefined): "high" | "max" {
+  return value === "max" ? "max" : "high";
+}
+
 export function loadPerpsRuntimeConfig(env: NodeJS.ProcessEnv = process.env): PerpsRuntimeConfig {
   return {
-    rpcUrl: firstNonEmpty(env.SOLANA_RPC_URL) ?? "",
+    rpcUrl: firstNonEmpty(
+      env.HELIUS_RPC_URL,
+      env.SOLANA_RPC_URL,
+      env.RPC_URL,
+      buildHeliusRpcUrl(env.HELIUS_API_KEY),
+    ) ?? "",
     apiUrl: firstNonEmpty(env.CLAWD_PERPS_API_URL) ?? "https://perp-api.phoenix.trade",
     heliusApiKey: env.HELIUS_API_KEY || undefined,
     wallet: firstNonEmpty(
@@ -73,6 +104,15 @@ export function loadPerpsRuntimeConfig(env: NodeJS.ProcessEnv = process.env): Pe
     simOnly: env.PERPS_SIM_ONLY !== "false",
     telegramBotToken: env.TELEGRAM_BOT_TOKEN || undefined,
     telegramAllowedChats: parseCsv(env.TELEGRAM_ALLOWED_CHATS),
+    deepseek: {
+      configured: Boolean(env.DEEPSEEK_API_KEY),
+      baseUrl: firstNonEmpty(env.DEEPSEEK_BASE_URL) ?? "https://api.deepseek.com",
+      anthropicBaseUrl: firstNonEmpty(env.DEEPSEEK_ANTHROPIC_BASE_URL) ?? "https://api.deepseek.com/anthropic",
+      model: firstNonEmpty(env.DEEPSEEK_MODEL) ?? "deepseek-v4-pro",
+      fastModel: firstNonEmpty(env.DEEPSEEK_FAST_MODEL) ?? "deepseek-v4-flash",
+      thinking: normalizeThinking(env.DEEPSEEK_THINKING),
+      reasoningEffort: normalizeReasoningEffort(env.DEEPSEEK_REASONING_EFFORT),
+    },
     risk: {
       allowedSymbols: normalizeSymbols(parseCsv(env.PERPS_ALLOWED_SYMBOLS ?? "SOL,ETH,BTC")),
       maxNotionalUsd: Number(env.PERPS_MAX_NOTIONAL_USD ?? 250),
@@ -103,7 +143,10 @@ export function buildPreflightReport(
   const symbol = request.symbol.trim().toUpperCase();
 
   if (!config.rpcUrl) {
-    blocking.push("Missing SOLANA_RPC_URL.");
+    blocking.push("Missing HELIUS_RPC_URL, SOLANA_RPC_URL, RPC_URL, or HELIUS_API_KEY.");
+  }
+  if (!config.deepseek.configured) {
+    warnings.push("Missing DEEPSEEK_API_KEY; autonomous arena conversations should fall back to scripted simulation.");
   }
   if (config.risk.requireWallet && !config.wallet) {
     blocking.push("Missing CLAWD_PERPS_WALLET or LOCK_WALLET_ADDRESS.");

@@ -43,6 +43,10 @@ npx tsx scripts/perps-preflight.ts --symbol SOL --side long --notional 100 --exe
 npx tsx scripts/solana-call-plan.ts SOL
 npx tsx agents/solana-perps-trading-agent.ts --symbol SOL --side long --notional 100 --execution paper
 
+# DeepSeek autonomous arena dialogue (server-side API key only)
+DEEPSEEK_API_KEY=... HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=... \
+  npm run arena:deepseek -- --rounds 3
+
 # Memecoin screener (scan for opportunities)
 npx tsx agents/solana-memecoin-screener.ts
 
@@ -91,6 +95,19 @@ Each agent uses the same sandbox primitives:
 
 Every run returns cost data so you can meter token burn, compute time, and
 provider spend without guessing.
+
+## DeepSeek Autonomy
+
+Set `DEEPSEEK_API_KEY` to let arena agents use DeepSeek through the
+OpenAI-compatible endpoint at `https://api.deepseek.com`. The preferred model is
+`deepseek-v4-pro`; use `DEEPSEEK_FAST_MODEL=deepseek-v4-flash` for cheaper
+sub-agent turns. Claude Code-style integrations can point
+`ANTHROPIC_BASE_URL` at `https://api.deepseek.com/anthropic` and use
+`ANTHROPIC_AUTH_TOKEN` with the same DeepSeek key.
+
+Use `HELIUS_RPC_URL` as the first-choice Solana read plane. `SOLANA_RPC_URL` and
+`RPC_URL` remain fallbacks, but Box preflight and the DeepSeek arena script now
+prefer Helius when configured.
 
 ## Install Tracking
 

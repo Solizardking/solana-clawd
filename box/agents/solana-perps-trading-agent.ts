@@ -100,6 +100,118 @@ try {
 }
 `;
 
+const DEEPSEEK_AGENT_SOURCE = String.raw`
+import { randomUUID } from "crypto";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
+
+const WORK_DIR = "/workspace/home";
+const SESSIONS_DIR = "/workspace/home/.deepseek-sessions";
+const args = process.argv.slice(2);
+const rawWrite = process.stdout.write.bind(process.stdout);
+process.stdout.write = process.stderr.write.bind(process.stderr);
+
+function readArg(name, fallback = "") {
+  const idx = args.indexOf(name);
+  return idx >= 0 ? args[idx + 1] ?? fallback : fallback;
+}
+
+function emit(event, data) {
+  rawWrite("event: " + event + "\n");
+  rawWrite("data: " + JSON.stringify(data) + "\n\n");
+}
+
+function loadHistory(file) {
+  try { return JSON.parse(readFileSync(file, "utf-8")); } catch { return []; }
+}
+
+function saveHistory(file, history) {
+  mkdirSync(SESSIONS_DIR, { recursive: true });
+  writeFileSync(file, JSON.stringify(history));
+}
+
+function trimSlash(value) {
+  return value.replace(/\/+$/, "");
+}
+
+const prompt = readArg("-p");
+const model = readArg("--model", process.env.DEEPSEEK_MODEL || "deepseek-v4-pro");
+const sessionId = readArg("--session") || randomUUID();
+const sessionFile = SESSIONS_DIR + "/" + sessionId + ".json";
+const baseUrl = trimSlash(process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com");
+const thinking = process.env.DEEPSEEK_THINKING === "disabled" ? "disabled" : "enabled";
+const reasoningEffort = process.env.DEEPSEEK_REASONING_EFFORT === "max" ? "max" : "high";
+
+if (!prompt) { emit("error", { error: "no prompt provided", session_id: sessionId }); process.exit(1); }
+if (!process.env.DEEPSEEK_API_KEY) { emit("error", { error: "DEEPSEEK_API_KEY is required", session_id: sessionId }); process.exit(1); }
+
+process.chdir(WORK_DIR);
+
+try {
+  const history = loadHistory(sessionFile);
+  const messages = [
+    {
+      role: "system",
+      content: [
+        "You are the reasoning core for a Solana agent arena.",
+        "Agents compete in paper perpetuals only unless operator gates explicitly arm live mode.",
+        "Never request or print private keys, seed phrases, or raw API keys.",
+        "Speak in compact terminal-style dialogue and include concrete risk, RPC, and market observations.",
+      ].join(" "),
+    },
+    ...history,
+    { role: "user", content: prompt },
+  ];
+
+  emit("tool", {
+    name: "deepseek_chat_completions",
+    toolCallId: sessionId,
+    input: { model, base_url: baseUrl, thinking, reasoning_effort: reasoningEffort },
+  });
+
+  const response = await fetch(baseUrl + "/chat/completions", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: "Bearer " + process.env.DEEPSEEK_API_KEY,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      thinking: { type: thinking },
+      reasoning_effort: reasoningEffort,
+      stream: false,
+      max_tokens: 900,
+    }),
+  });
+
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(body.error?.message || "DeepSeek request failed: " + response.status);
+  }
+
+  const message = body.choices?.[0]?.message || {};
+  const output = message.content || "";
+  if (output) emit("text", { text: output });
+
+  saveHistory(sessionFile, [
+    ...history,
+    { role: "user", content: prompt },
+    { role: "assistant", content: output },
+  ]);
+
+  emit("done", {
+    output,
+    input_tokens: body.usage?.prompt_tokens ?? 0,
+    output_tokens: body.usage?.completion_tokens ?? 0,
+    cached_input_tokens: body.usage?.prompt_cache_hit_tokens ?? 0,
+    session_id: sessionId,
+  });
+} catch (error) {
+  emit("error", { error: error instanceof Error ? error.message : String(error), session_id: sessionId });
+  process.exit(1);
+}
+`;
+
 const PERPS_PLAN_SOURCE = String.raw`
 import { Keypair } from "@solana/web3.js";
 
@@ -140,11 +252,15 @@ const config = {
   liveTrading: process.env.LIVE_TRADING === "true",
   operatorConfirmed: process.env.OPERATOR_CONFIRMED === "true",
   simOnly: process.env.PERPS_SIM_ONLY !== "false",
-  rpcConfigured: Boolean(process.env.SOLANA_RPC_URL || process.env.RPC_URL),
+  rpcConfigured: Boolean(process.env.HELIUS_RPC_URL || process.env.SOLANA_RPC_URL || process.env.RPC_URL || process.env.HELIUS_API_KEY),
+  deepseekConfigured: Boolean(process.env.DEEPSEEK_API_KEY),
+  deepseekModel: process.env.DEEPSEEK_MODEL || "deepseek-v4-pro",
+  deepseekBaseUrl: process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com",
+  deepseekAnthropicBaseUrl: process.env.DEEPSEEK_ANTHROPIC_BASE_URL || "https://api.deepseek.com/anthropic",
   walletReferenceConfigured: Boolean(process.env.PERPS_WALLET_ADDRESS || process.env.WALLET_PUBLIC_KEY),
   phoenixApiUrl: process.env.PHOENIX_API_URL || "https://api.phoenix.trade",
   jupiterQuoteUrl: process.env.JUPITER_QUOTE_URL || "https://quote-api.jup.ag/v6/quote",
-  rpcUrl: process.env.SOLANA_RPC_URL || process.env.RPC_URL || (process.env.HELIUS_API_KEY ? "https://rpc.helius.xyz/?api-key=" + process.env.HELIUS_API_KEY : "https://api.mainnet-beta.solana.com"),
+  rpcUrl: process.env.HELIUS_RPC_URL || process.env.SOLANA_RPC_URL || process.env.RPC_URL || (process.env.HELIUS_API_KEY ? "https://mainnet.helius-rpc.com/?api-key=" + process.env.HELIUS_API_KEY : "https://api.mainnet-beta.solana.com"),
 };
 
 const blocking = [];
@@ -154,7 +270,8 @@ if (!config.allowedSymbols.includes(intent.symbol)) blocking.push(intent.symbol 
 if (intent.notionalUsd > config.maxNotionalUsd) blocking.push("notional exceeds max");
 if (intent.leverage > config.maxLeverage) blocking.push("leverage exceeds max");
 if (intent.expectedSpreadBps > config.maxSpreadBps) blocking.push("spread exceeds max");
-if (!config.rpcConfigured) warnings.push("No RPC configured; public endpoints may be used.");
+if (!config.rpcConfigured) warnings.push("No HELIUS_RPC_URL/SOLANA_RPC_URL/RPC_URL configured; public endpoints may be used.");
+if (!config.deepseekConfigured) warnings.push("No DEEPSEEK_API_KEY configured; DeepSeek autonomy falls back to scripted simulation.");
 if (!config.walletReferenceConfigured) warnings.push("No public wallet reference configured; using ephemeral in-box agent wallet for simulation identity.");
 if (intent.execution === "live-preview") {
   if (!config.liveTrading) blocking.push("LIVE_TRADING must be true");
@@ -175,6 +292,10 @@ console.log(JSON.stringify({
     simOnly: config.simOnly,
     rpcConfigured: config.rpcConfigured,
     heliusConfigured: Boolean(process.env.HELIUS_API_KEY),
+    deepseekConfigured: config.deepseekConfigured,
+    deepseekModel: config.deepseekModel,
+    deepseekBaseUrl: config.deepseekBaseUrl,
+    deepseekAnthropicBaseUrl: config.deepseekAnthropicBaseUrl,
     phoenixApiUrl: config.phoenixApiUrl,
     jupiterQuoteUrl: config.jupiterQuoteUrl
   },
@@ -200,6 +321,7 @@ console.log(JSON.stringify({
   },
   notes: [
     "Box perps is paper-first and policy-gated.",
+    "DeepSeek API is the preferred autonomous conversation and strategy reasoning rail when DEEPSEEK_API_KEY is configured.",
     "Do not copy private keys or seed phrases into this sandbox.",
     "Use live-preview only for human-inspected handoff to a separate signer."
   ]
@@ -244,8 +366,9 @@ function redactUrl(url) {
 
 async function main() {
   if (!process.env.UPSTASH_BOX_API_KEY) throw new Error("UPSTASH_BOX_API_KEY required");
-  if (!process.env.GEMINI_API_KEY && !process.env.CLAUDE_KEY) {
-    throw new Error("GEMINI_API_KEY or CLAUDE_KEY required");
+  const provider = selectAgentProvider();
+  if (!provider) {
+    throw new Error("DEEPSEEK_API_KEY, GEMINI_API_KEY, or CLAUDE_KEY required");
   }
 
   const intent = parsePerpsCliArgs(process.argv.slice(2));
@@ -261,15 +384,18 @@ async function main() {
   console.log(JSON.stringify(localPlan.preflight, null, 2));
   console.log(JSON.stringify(solanaCallPlan, null, 2));
 
-  const useGemini = Boolean(process.env.GEMINI_API_KEY);
-  const box = await createPerpsBox(useGemini);
+  const box = await createPerpsBox(provider);
   console.log(`Box created: ${box.id}`);
 
   try {
     await box.files.write({ path: "perps-plan.mjs", content: PERPS_PLAN_SOURCE });
     await box.exec.command("cd /workspace/home && npm install @solana/web3.js --silent");
 
-    if (useGemini) {
+    if (provider === "deepseek") {
+      await box.files.write({ path: "custom-deepseek-agent.mjs", content: DEEPSEEK_AGENT_SOURCE });
+    }
+
+    if (provider === "gemini") {
       await box.exec.command("cd /workspace/home && npm install @google/genai --silent");
       await box.files.write({ path: "custom-gemini-agent.mjs", content: GEMINI_AGENT_SOURCE });
     }
@@ -295,7 +421,16 @@ async function main() {
   }
 }
 
-async function createPerpsBox(useGemini: boolean) {
+type AgentProvider = "deepseek" | "gemini" | "claude";
+
+function selectAgentProvider(): AgentProvider | undefined {
+  if (process.env.DEEPSEEK_API_KEY) return "deepseek";
+  if (process.env.GEMINI_API_KEY) return "gemini";
+  if (process.env.CLAUDE_KEY) return "claude";
+  return undefined;
+}
+
+async function createPerpsBox(provider: AgentProvider) {
   await trackInstallEvent({
     event: "box_install",
     source: "github",
@@ -312,7 +447,17 @@ async function createPerpsBox(useGemini: boolean) {
   return Box.create({
     apiKey: process.env.UPSTASH_BOX_API_KEY!,
     runtime: "node",
-    agent: useGemini
+    agent: provider === "deepseek"
+      ? {
+          harness: Agent.Custom,
+          model: process.env.DEEPSEEK_MODEL ?? "deepseek-v4-pro",
+          customHarness: {
+            command: "node",
+            args: ["/workspace/home/custom-deepseek-agent.mjs"],
+            protocol: "box-sse-v1",
+          },
+        }
+      : provider === "gemini"
       ? {
           harness: Agent.Custom,
           model: "gemini-2.5-flash",
@@ -355,7 +500,15 @@ async function runSandboxPreflight(box: Box, intent: PerpsIntent): Promise<strin
 
 function pickPerpsEnv(): Record<string, string> {
   const allowed = [
+    "DEEPSEEK_API_KEY",
+    "DEEPSEEK_BASE_URL",
+    "DEEPSEEK_ANTHROPIC_BASE_URL",
+    "DEEPSEEK_MODEL",
+    "DEEPSEEK_FAST_MODEL",
+    "DEEPSEEK_THINKING",
+    "DEEPSEEK_REASONING_EFFORT",
     "GEMINI_API_KEY",
+    "HELIUS_RPC_URL",
     "SOLANA_RPC_URL",
     "RPC_URL",
     "HELIUS_API_KEY",

@@ -15,6 +15,7 @@
     "agent:perps": "npx tsx agents/solana-perps-trading-agent.ts",
     "perps:preflight": "npx tsx scripts/perps-preflight.ts",
     "solana:call-plan": "npx tsx scripts/solana-call-plan.ts",
+    "arena:deepseek": "npx tsx scripts/deepseek-arena.ts",
     "batch:process": "npx tsx scripts/batch-processor.ts",
     "box:list": "npx tsx scripts/list-boxes.ts",
     "box:cleanup": "npx tsx scripts/cleanup-boxes.ts",

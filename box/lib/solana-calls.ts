@@ -38,7 +38,7 @@ const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
 export function loadSolanaCallConfig(env: NodeJS.ProcessEnv = process.env): SolanaCallConfig {
   return {
-    rpcUrl: env.SOLANA_RPC_URL ?? env.RPC_URL ?? buildHeliusRpcUrl(env.HELIUS_API_KEY) ?? "https://api.mainnet-beta.solana.com",
+    rpcUrl: env.HELIUS_RPC_URL ?? env.SOLANA_RPC_URL ?? env.RPC_URL ?? buildHeliusRpcUrl(env.HELIUS_API_KEY) ?? "https://api.mainnet-beta.solana.com",
     heliusApiKey: env.HELIUS_API_KEY,
     jupiterQuoteUrl: env.JUPITER_QUOTE_URL ?? "https://quote-api.jup.ag/v6/quote",
     phoenixApiUrl: env.PHOENIX_API_URL ?? "https://api.phoenix.trade",

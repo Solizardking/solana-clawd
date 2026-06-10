@@ -18,6 +18,9 @@ export interface BoxPerpsConfig {
   operatorConfirmed: boolean;
   simOnly: boolean;
   rpcConfigured: boolean;
+  deepseekConfigured: boolean;
+  deepseekModel: string;
+  deepseekBaseUrl: string;
   walletReferenceConfigured: boolean;
 }
 
@@ -51,6 +54,7 @@ export interface PerpsPlan {
     jupiter: boolean;
     helius: boolean;
     phoenix: boolean;
+    deepseek: boolean;
   };
   route: {
     adapter: "vulcan";
@@ -69,7 +73,10 @@ export function loadBoxPerpsConfig(env: NodeJS.ProcessEnv = process.env): BoxPer
     liveTrading: env.LIVE_TRADING === "true",
     operatorConfirmed: env.OPERATOR_CONFIRMED === "true",
     simOnly: env.PERPS_SIM_ONLY !== "false",
-    rpcConfigured: Boolean(env.SOLANA_RPC_URL ?? env.RPC_URL),
+    rpcConfigured: Boolean(env.HELIUS_RPC_URL ?? env.SOLANA_RPC_URL ?? env.RPC_URL ?? env.HELIUS_API_KEY),
+    deepseekConfigured: Boolean(env.DEEPSEEK_API_KEY),
+    deepseekModel: env.DEEPSEEK_MODEL ?? "deepseek-v4-pro",
+    deepseekBaseUrl: env.DEEPSEEK_BASE_URL ?? "https://api.deepseek.com",
     walletReferenceConfigured: Boolean(env.PERPS_WALLET_ADDRESS ?? env.WALLET_PUBLIC_KEY),
   };
 }
@@ -129,7 +136,11 @@ export function buildBoxPerpsPreflight(config: BoxPerpsConfig, intent: PerpsInte
   }
 
   if (!config.rpcConfigured) {
-    warnings.push("No SOLANA_RPC_URL/RPC_URL configured; market data may fall back to public endpoints.");
+    warnings.push("No HELIUS_RPC_URL/SOLANA_RPC_URL/RPC_URL configured; market data may fall back to public endpoints.");
+  }
+
+  if (!config.deepseekConfigured) {
+    warnings.push("No DEEPSEEK_API_KEY configured; autonomous arena conversation should use scripted fallback.");
   }
 
   if (!config.walletReferenceConfigured) {
@@ -167,8 +178,9 @@ export function buildBoxPerpsPlan(intent: PerpsIntent, config = loadBoxPerpsConf
     dataSources: {
       rpc: config.rpcConfigured,
       jupiter: true,
-      helius: Boolean(process.env.HELIUS_API_KEY),
+      helius: Boolean(process.env.HELIUS_RPC_URL ?? process.env.HELIUS_API_KEY),
       phoenix: true,
+      deepseek: config.deepseekConfigured,
     },
     route: {
       adapter: "vulcan",
@@ -189,6 +201,7 @@ export function buildBoxPerpsPlan(intent: PerpsIntent, config = loadBoxPerpsConf
     },
     notes: [
       "Box perps is paper-first and policy-gated.",
+      `DeepSeek model rail: ${config.deepseekConfigured ? config.deepseekModel : "not configured"} via ${config.deepseekBaseUrl}.`,
       "Private keys, seed phrases, and signing authority must never be copied into a Box.",
       "Use live-preview only to inspect an execution plan before handoff to a separate signer.",
     ],

@@ -172,6 +172,7 @@
     "box:perps": "npm --prefix box run agent:perps --",
     "box:perps:preflight": "npm --prefix box run perps:preflight --",
     "box:solana:call-plan": "npm --prefix box run solana:call-plan --",
+    "arena:deepseek": "npm --prefix box run arena:deepseek --",
     "box:typecheck": "npm --prefix box run typecheck",
     "demo:orch": "npx tsx examples/orchestrator-client.ts",
     "demo:research": "npx tsx examples/auto-research-client.ts",
