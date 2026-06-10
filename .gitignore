@@ -421,3 +421,4 @@ hf_token*
 **/stored_tokens
 clawd-grok
 !agents/clawd-grok
+clawd-grok
