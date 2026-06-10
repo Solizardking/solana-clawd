@@ -1,7 +1,7 @@
 {
   "schemaVersion": "openclawd.acp.registry.v1",
   "protocol": "Agent Commerce Protocol",
-  "generatedAt": "2026-06-08T20:32:27.165Z",
+  "generatedAt": "2026-06-10T02:06:27.541Z",
   "host": "https://x402.wtf",
   "discover": {
     "catalog": "https://x402.wtf/api/agents/catalog",
@@ -67,8 +67,8 @@
       }
     ],
     "coverage": {
-      "agent-registry": 42,
-      "core": 4,
+      "agent-registry": 48,
+      "core": 5,
       "genesis": 1,
       "token-metadata": 4,
       "bubblegum": 3,
@@ -112,29 +112,221 @@
     ]
   },
   "stats": {
-    "totalAgents": 124,
+    "totalAgents": 130,
     "totalOneShots": 1,
     "totalFeatured": 2,
     "totalTemplates": 0,
     "byCategory": {
+      "security": 9,
+      "infrastructure": 3,
+      "trading": 10,
+      "dev-tools": 3,
       "defi": 60,
       "payments": 25,
       "nft": 3,
-      "trading": 8,
-      "security": 8,
       "research": 1,
       "governance": 2,
       "education": 3,
-      "analytics": 11,
-      "infrastructure": 1,
-      "dev-tools": 2
+      "analytics": 11
     },
-    "metaplexEnabledAgents": 42,
-    "tradingCapableAgents": 10,
+    "metaplexEnabledAgents": 48,
+    "tradingCapableAgents": 12,
     "launchCapableAgents": 1,
     "mintCapableAgents": 3
   },
   "agents": [
+    {
+      "id": "clawd-formal-verification",
+      "title": "Clawd Formal Verification",
+      "category": "security",
+      "capabilities": [
+        "formal-verification",
+        "invariant-checking",
+        "risk-gate",
+        "metaplex-register-identity",
+        "metaplex-delegate-execution",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry",
+        "core"
+      ],
+      "oneShot": false,
+      "featured": false,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/clawd-formal-verification.json",
+        "registration": "https://x402.wtf/api/agents/registry/clawd-formal-verification.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=clawd-formal-verification"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:clawd-formal-verification",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/clawd-formal-verification.json"
+        }
+      ]
+    },
+    {
+      "id": "clawd-gateway-runtime",
+      "title": "Clawd Gateway Runtime",
+      "category": "infrastructure",
+      "capabilities": [
+        "x402-gateway-routing",
+        "agent-registry",
+        "skill-registry",
+        "telegram-webhook",
+        "solana-rpc",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "oneShot": false,
+      "featured": false,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/clawd-gateway-runtime.json",
+        "registration": "https://x402.wtf/api/agents/registry/clawd-gateway-runtime.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=clawd-gateway-runtime"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:clawd-gateway-runtime",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/clawd-gateway-runtime.json"
+        }
+      ]
+    },
+    {
+      "id": "clawd-grok-runtime",
+      "title": "Clawd Grok Runtime",
+      "category": "trading",
+      "capabilities": [
+        "grok-reasoning",
+        "perps-analysis",
+        "paper-trading",
+        "swap-execution",
+        "x402-gateway-routing",
+        "a2a-message"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "oneShot": false,
+      "featured": false,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/clawd-grok-runtime.json",
+        "registration": "https://x402.wtf/api/agents/registry/clawd-grok-runtime.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=clawd-grok-runtime"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:clawd-grok-runtime",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/clawd-grok-runtime.json"
+        }
+      ]
+    },
+    {
+      "id": "clawd-operator-runtime",
+      "title": "Clawd Operator Runtime",
+      "category": "dev-tools",
+      "capabilities": [
+        "agent-orchestration",
+        "acp-client",
+        "checkpointing",
+        "task-loop",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "oneShot": false,
+      "featured": false,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/clawd-operator-runtime.json",
+        "registration": "https://x402.wtf/api/agents/registry/clawd-operator-runtime.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=clawd-operator-runtime"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:clawd-operator-runtime",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/clawd-operator-runtime.json"
+        }
+      ]
+    },
+    {
+      "id": "clawd-pump-runtime",
+      "title": "Clawd Pump Runtime",
+      "category": "trading",
+      "capabilities": [
+        "swap-execution",
+        "wallet-monitoring",
+        "copy-trading",
+        "risk-gate",
+        "telegram-alerts",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "oneShot": false,
+      "featured": false,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/clawd-pump-runtime.json",
+        "registration": "https://x402.wtf/api/agents/registry/clawd-pump-runtime.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=clawd-pump-runtime"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:clawd-pump-runtime",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/clawd-pump-runtime.json"
+        }
+      ]
+    },
+    {
+      "id": "clawd-router-runtime",
+      "title": "Clawd Router Runtime",
+      "category": "infrastructure",
+      "capabilities": [
+        "llm-routing",
+        "model-scoring",
+        "x402-payment-verification",
+        "clawd-holder-gating",
+        "openai-compatible-api",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "oneShot": false,
+      "featured": false,
+      "endpoints": {
+        "catalog": "https://x402.wtf/api/agents/catalog/clawd-router-runtime.json",
+        "registration": "https://x402.wtf/api/agents/registry/clawd-router-runtime.json",
+        "a2a": "https://x402.wtf/api/agents/a2a",
+        "mint": "https://x402.wtf/agents/mint?template=clawd-router-runtime"
+      },
+      "registrations": [
+        {
+          "agentId": "openclawd:clawd-router-runtime",
+          "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+          "status": "pending-onchain-registration",
+          "registrationUri": "https://x402.wtf/api/agents/registry/clawd-router-runtime.json"
+        }
+      ]
+    },
     {
       "id": "clawdex",
       "title": "Clawdex",

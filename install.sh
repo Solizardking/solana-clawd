@@ -448,7 +448,7 @@ fi
 if [ "$INSTALL_GATEWAY" = true ]; then
   step "Building CLAWD Gateway"
   if [ -d "gateway" ]; then
-    cd gateway && npm install --no-audit --no-fund 2>&1 | tail -3 && npm run build 2>&1 | tail -3 && cd ..
+    cd gateway && npm install --no-audit --no-fund 2>&1 | tail -3 && npm run build 2>&1 | tail -3 && npm run smoke:x402 && cd ..
     ok "CLAWD Gateway built → dist/gateway/src/index.js"
     info "Start with: cd gateway && npm start"
     info "Or deploy to Fly.io: cd gateway && fly deploy"
@@ -461,8 +461,11 @@ fi
 
 printf "\n  ${BOLD}Links:${RESET}\n"
 printf "  Website:      ${CYAN}https://x402.wtf${RESET}\n"
+printf "  Agents:       ${CYAN}https://x402.wtf/agents${RESET}\n"
 printf "  Library:      ${CYAN}https://x402.wtf/library${RESET}\n"
 printf "  Skills:       ${CYAN}https://x402.wtf/skills${RESET}\n"
+printf "  Gateway:      ${CYAN}https://x402.wtf/gateway${RESET}\n"
+printf "  Telegram:     ${CYAN}https://x402.wtf/telegram${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"
 printf "  Phoenix docs: ${CYAN}https://docs.phoenix.trade${RESET}\n"
 printf "  Vulcan repo:  ${CYAN}https://github.com/Ellipsis-Labs/vulcan-cli${RESET}\n"

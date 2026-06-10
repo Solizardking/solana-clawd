@@ -9,6 +9,8 @@ export type BotIntentAction =
   | 'bitaxe_freq_set'
   | 'bitaxe_hashrate'
   | 'bitaxe_efficiency'
+  | 'bitaxe_led_set'
+  | 'bitaxe_led_cycle'
   | 'ore_decision'
   | 'ore_checkpoint'
   | 'ore_claim'
@@ -35,6 +37,7 @@ export interface BotIntent {
   amountSol?: number;
   squares?: number[];
   frequencyMhz?: number;
+  ledColor?: string;
   timeframe?: string;
   rawText?: string;
 }

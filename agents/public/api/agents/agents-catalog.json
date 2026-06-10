@@ -1,7 +1,7 @@
 {
   "$schema": "https://x402.wtf/schema/clawdAgentCatalog.v1.json",
   "apiVersion": "1.0",
-  "generatedAt": "2026-06-08T20:32:27.165Z",
+  "generatedAt": "2026-06-10T02:06:27.541Z",
   "hub": {
     "gallery": "https://x402.wtf/agents",
     "mint": "https://x402.wtf/agents/mint",
@@ -9,25 +9,25 @@
     "api": "https://x402.wtf/api/agents"
   },
   "stats": {
-    "totalAgents": 124,
+    "totalAgents": 130,
     "totalOneShots": 1,
     "totalFeatured": 2,
     "totalTemplates": 0,
     "byCategory": {
+      "security": 9,
+      "infrastructure": 3,
+      "trading": 10,
+      "dev-tools": 3,
       "defi": 60,
       "payments": 25,
       "nft": 3,
-      "trading": 8,
-      "security": 8,
       "research": 1,
       "governance": 2,
       "education": 3,
-      "analytics": 11,
-      "infrastructure": 1,
-      "dev-tools": 2
+      "analytics": 11
     },
-    "metaplexEnabledAgents": 42,
-    "tradingCapableAgents": 10,
+    "metaplexEnabledAgents": 48,
+    "tradingCapableAgents": 12,
     "launchCapableAgents": 1,
     "mintCapableAgents": 3
   },
@@ -80,8 +80,8 @@
       }
     ],
     "coverage": {
-      "agent-registry": 42,
-      "core": 4,
+      "agent-registry": 48,
+      "core": 5,
       "genesis": 1,
       "token-metadata": 4,
       "bubblegum": 3,
@@ -364,6 +364,325 @@
     }
   ],
   "agents": [
+    {
+      "identifier": "clawd-formal-verification",
+      "title": "Clawd Formal Verification",
+      "description": "Formal verification, invariant gates, and attestation workflows for Solana Clawd skills, registries, risk engines, and Metaplex execution delegation.",
+      "avatar": "FV",
+      "tags": [
+        "solana",
+        "clawd",
+        "formal-verification",
+        "invariants",
+        "risk",
+        "attestation",
+        "metaplex",
+        "agent-registry"
+      ],
+      "category": "security",
+      "author": "x402agent",
+      "createdAt": "2026-06-10",
+      "oneShot": false,
+      "featured": false,
+      "openingMessage": "Clawd Formal Verification online. I verify skills, registries, risk gates, and Metaplex execution-delegation paths before they reach live agent operations.",
+      "openingQuestions": [
+        "Verify the skill hub registry invariants",
+        "Check an agent execution-delegation flow",
+        "Run the risk engine harness",
+        "Review gateway payment guardrails"
+      ],
+      "tokenUsage": null,
+      "capabilities": [
+        "formal-verification",
+        "invariant-checking",
+        "risk-gate",
+        "metaplex-register-identity",
+        "metaplex-delegate-execution",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry",
+        "core"
+      ],
+      "payment": null,
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/clawd-formal-verification.json",
+        "chat": "/agents/chat?agent=clawd-formal-verification",
+        "mint": "/agents/mint?template=clawd-formal-verification",
+        "mcp": "/api/agents/catalog/clawd-formal-verification.json",
+        "registration": "/api/agents/registry/clawd-formal-verification.json"
+      }
+    },
+    {
+      "identifier": "clawd-gateway-runtime",
+      "title": "Clawd Gateway Runtime",
+      "description": "Telegram and HTTP gateway runtime for Solana Clawd agent registry, skill hub, webhook, x402, and Solana service routes.",
+      "avatar": "GW",
+      "tags": [
+        "solana",
+        "clawd",
+        "gateway",
+        "telegram",
+        "x402",
+        "registry",
+        "skills",
+        "http"
+      ],
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-06-10",
+      "oneShot": false,
+      "featured": false,
+      "openingMessage": "Clawd Gateway Runtime online. I serve the agent registry, skill hub, Telegram webhook, x402 routes, and Solana service modules from the local fleet.",
+      "openingQuestions": [
+        "Show the gateway route map",
+        "Smoke test x402 routes",
+        "Explain the agent registry mount",
+        "Check required gateway environment variables"
+      ],
+      "tokenUsage": null,
+      "capabilities": [
+        "x402-gateway-routing",
+        "agent-registry",
+        "skill-registry",
+        "telegram-webhook",
+        "solana-rpc",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "payment": {
+        "enabled": true,
+        "network": "solana-mainnet",
+        "protocols": [
+          "x402",
+          "mpp"
+        ],
+        "acceptedCurrencies": [
+          "USDC",
+          "USDT",
+          "CASH"
+        ],
+        "approvalMode": "operator"
+      },
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/clawd-gateway-runtime.json",
+        "chat": "/agents/chat?agent=clawd-gateway-runtime",
+        "mint": "/agents/mint?template=clawd-gateway-runtime",
+        "mcp": "/api/agents/catalog/clawd-gateway-runtime.json",
+        "registration": "/api/agents/registry/clawd-gateway-runtime.json"
+      }
+    },
+    {
+      "identifier": "clawd-grok-runtime",
+      "title": "Clawd Grok Runtime",
+      "description": "Grok-powered Solana CLI runtime for multi-agent research, coding, Phoenix/Vulcan perps workflows, x402 tools, and paper-first trading.",
+      "avatar": "GX",
+      "tags": [
+        "solana",
+        "clawd",
+        "grok",
+        "xai",
+        "perps",
+        "phoenix",
+        "vulcan",
+        "trading",
+        "cli"
+      ],
+      "category": "trading",
+      "author": "Clawd Grok",
+      "createdAt": "2026-06-10",
+      "oneShot": false,
+      "featured": false,
+      "openingMessage": "Clawd Grok Runtime online. I connect Grok-powered reasoning, Solana perps workflows, x402-aware tooling, and the local clawd-grok CLI.",
+      "openingQuestions": [
+        "Run a Grok research plan",
+        "Check the clawd-grok environment",
+        "Explain the perps preflight gates",
+        "Show the local CLI entrypoints"
+      ],
+      "tokenUsage": null,
+      "capabilities": [
+        "grok-reasoning",
+        "perps-analysis",
+        "paper-trading",
+        "swap-execution",
+        "x402-gateway-routing",
+        "a2a-message"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "payment": null,
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/clawd-grok-runtime.json",
+        "chat": "/agents/chat?agent=clawd-grok-runtime",
+        "mint": "/agents/mint?template=clawd-grok-runtime",
+        "mcp": "/api/agents/catalog/clawd-grok-runtime.json",
+        "registration": "/api/agents/registry/clawd-grok-runtime.json"
+      }
+    },
+    {
+      "identifier": "clawd-operator-runtime",
+      "title": "Clawd Operator Runtime",
+      "description": "Autonomous operator-loop runtime with multi-adapter agent execution, checkpoints, prompt archiving, metrics, and ACP support.",
+      "avatar": "OP",
+      "tags": [
+        "solana",
+        "clawd",
+        "operator",
+        "orchestration",
+        "acp",
+        "claude",
+        "gemini",
+        "automation"
+      ],
+      "category": "dev-tools",
+      "author": "x402agent",
+      "createdAt": "2026-06-10",
+      "oneShot": false,
+      "featured": false,
+      "openingMessage": "Clawd Operator Runtime online. I run the autonomous operator loop across Claude, Kiro, Q Chat, Gemini, and ACP adapters with checkpoints and metrics.",
+      "openingQuestions": [
+        "Initialize an operator workspace",
+        "Run a prompt through the loop",
+        "Check available adapters",
+        "Review operator checkpoints"
+      ],
+      "tokenUsage": null,
+      "capabilities": [
+        "agent-orchestration",
+        "acp-client",
+        "checkpointing",
+        "task-loop",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "payment": null,
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/clawd-operator-runtime.json",
+        "chat": "/agents/chat?agent=clawd-operator-runtime",
+        "mint": "/agents/mint?template=clawd-operator-runtime",
+        "mcp": "/api/agents/catalog/clawd-operator-runtime.json",
+        "registration": "/api/agents/registry/clawd-operator-runtime.json"
+      }
+    },
+    {
+      "identifier": "clawd-pump-runtime",
+      "title": "Clawd Pump Runtime",
+      "description": "Rust PumpFun/PumpSwap runtime for wallet monitoring, copy trading, parser diagnostics, risk gates, Telegram alerts, and paper-first Solana execution.",
+      "avatar": "PF",
+      "tags": [
+        "solana",
+        "clawd",
+        "pumpfun",
+        "pumpswap",
+        "copy-trading",
+        "rust",
+        "risk-management",
+        "telegram"
+      ],
+      "category": "trading",
+      "author": "x402agent",
+      "createdAt": "2026-06-10",
+      "oneShot": false,
+      "featured": false,
+      "openingMessage": "Clawd Pump Runtime online. I operate the Rust PumpFun/PumpSwap copy-trading runtime with parser checks, risk gates, and paper-first execution.",
+      "openingQuestions": [
+        "Check the Pump runtime config",
+        "Explain copy-trading architecture",
+        "Run parser diagnostics",
+        "Show the autobuy safety gates"
+      ],
+      "tokenUsage": null,
+      "capabilities": [
+        "swap-execution",
+        "wallet-monitoring",
+        "copy-trading",
+        "risk-gate",
+        "telegram-alerts",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "payment": null,
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/clawd-pump-runtime.json",
+        "chat": "/agents/chat?agent=clawd-pump-runtime",
+        "mint": "/agents/mint?template=clawd-pump-runtime",
+        "mcp": "/api/agents/catalog/clawd-pump-runtime.json",
+        "registration": "/api/agents/registry/clawd-pump-runtime.json"
+      }
+    },
+    {
+      "identifier": "clawd-router-runtime",
+      "title": "Clawd Router Runtime",
+      "description": "OpenAI-compatible LLM router for Solana Clawd agents with auto model scoring, platform key validation, CLAWD holder tiers, and x402 payment checks.",
+      "avatar": "RT",
+      "tags": [
+        "solana",
+        "clawd",
+        "router",
+        "llm",
+        "openrouter",
+        "x402",
+        "clawd-token",
+        "infrastructure"
+      ],
+      "category": "infrastructure",
+      "author": "x402agent",
+      "createdAt": "2026-06-10",
+      "oneShot": false,
+      "featured": false,
+      "openingMessage": "Clawd Router Runtime online. I route OpenAI-compatible model calls through clawdrouter with x402, CLAWD tier checks, and relay observability.",
+      "openingQuestions": [
+        "Show router health and models",
+        "Explain clawdrouter/auto scoring",
+        "Check platform auth configuration",
+        "Review x402 payment verification"
+      ],
+      "tokenUsage": null,
+      "capabilities": [
+        "llm-routing",
+        "model-scoring",
+        "x402-payment-verification",
+        "clawd-holder-gating",
+        "openai-compatible-api",
+        "read-only"
+      ],
+      "metaplexSkills": [
+        "agent-registry"
+      ],
+      "payment": {
+        "enabled": true,
+        "network": "solana-mainnet",
+        "protocols": [
+          "x402"
+        ],
+        "acceptedCurrencies": [
+          "USDC",
+          "CLAWD"
+        ],
+        "approvalMode": "api-key"
+      },
+      "agentToken": null,
+      "deploy": {
+        "json": "/api/agents/catalog/clawd-router-runtime.json",
+        "chat": "/agents/chat?agent=clawd-router-runtime",
+        "mint": "/agents/mint?template=clawd-router-runtime",
+        "mcp": "/api/agents/catalog/clawd-router-runtime.json",
+        "registration": "/api/agents/registry/clawd-router-runtime.json"
+      }
+    },
     {
       "identifier": "clawdex",
       "title": "Clawdex",

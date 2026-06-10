@@ -8,7 +8,7 @@
   },
   "agents": {
     "clawd": {
-      "count": 24,
+      "count": 30,
       "description": "CLAWD ecosystem agents for portfolio management, trading, analytics, and DeFi",
       "agents": [
         {
@@ -178,6 +178,48 @@
           "description": "Cross-chain bridge assistance and guidance",
           "category": "defi",
           "tags": ["bridge", "crosschain", "assistance"]
+        },
+        {
+          "id": "clawd-grok-runtime",
+          "name": "Clawd Grok Runtime",
+          "description": "Grok-powered Solana CLI runtime for multi-agent research, coding, Phoenix/Vulcan perps workflows, x402 tools, and paper-first trading",
+          "category": "trading",
+          "tags": ["solana", "grok", "xai", "perps", "phoenix", "vulcan", "cli"]
+        },
+        {
+          "id": "clawd-pump-runtime",
+          "name": "Clawd Pump Runtime",
+          "description": "Rust PumpFun/PumpSwap runtime for wallet monitoring, copy trading, parser diagnostics, risk gates, Telegram alerts, and paper-first Solana execution",
+          "category": "trading",
+          "tags": ["solana", "pumpfun", "pumpswap", "copy-trading", "rust", "risk-management"]
+        },
+        {
+          "id": "clawd-operator-runtime",
+          "name": "Clawd Operator Runtime",
+          "description": "Autonomous operator-loop runtime with multi-adapter agent execution, checkpoints, prompt archiving, metrics, and ACP support",
+          "category": "dev-tools",
+          "tags": ["solana", "operator", "orchestration", "acp", "automation"]
+        },
+        {
+          "id": "clawd-router-runtime",
+          "name": "Clawd Router Runtime",
+          "description": "OpenAI-compatible LLM router for Solana Clawd agents with auto model scoring, platform key validation, CLAWD holder tiers, and x402 payment checks",
+          "category": "infrastructure",
+          "tags": ["solana", "router", "llm", "openrouter", "x402", "clawd-token"]
+        },
+        {
+          "id": "clawd-formal-verification",
+          "name": "Clawd Formal Verification",
+          "description": "Formal verification, invariant gates, and attestation workflows for Solana Clawd skills, registries, risk engines, and Metaplex execution delegation",
+          "category": "security",
+          "tags": ["solana", "formal-verification", "invariants", "risk", "metaplex", "agent-registry"]
+        },
+        {
+          "id": "clawd-gateway-runtime",
+          "name": "Clawd Gateway Runtime",
+          "description": "Telegram and HTTP gateway runtime for Solana Clawd agent registry, skill hub, webhook, x402, and Solana service routes",
+          "category": "infrastructure",
+          "tags": ["solana", "gateway", "telegram", "x402", "registry", "skills"]
         }
       ]
     },
@@ -253,8 +295,8 @@
     }
   },
   "apiVersion": "1.0",
-  "categories": ["trading", "defi", "portfolio", "security", "education"],
-  "description": "Production-ready AI agent definitions API - 59 specialized agents for DeFi, portfolio management, trading, and Web3 workflows",
+  "categories": ["trading", "defi", "portfolio", "security", "education", "dev-tools", "infrastructure"],
+  "description": "Production-ready AI agent definitions API - 66 specialized agents for DeFi, portfolio management, trading, infrastructure, security, and Web3 workflows",
   "documentation": "https://x402.wtf/docs/API.md",
   "endpoints": {
     "allAgentsEnglish": "https://x402.wtf/index.json",
@@ -265,7 +307,7 @@
     "schema": "https://x402.wtf/schema/clawdAgentSchema_v1.json"
   },
   "features": [
-    "59 specialized AI agents",
+    "66 specialized AI agents",
     "18 language translations",
     "RESTful JSON API",
     "No rate limiting",
@@ -285,10 +327,10 @@
   },
   "schemaVersion": 1,
   "stats": {
-    "totalAgents": 60,
+    "totalAgents": 66,
     "supportedLanguages": 18,
-    "categories": 5,
-    "clawdAgents": 24,
+    "categories": 7,
+    "clawdAgents": 30,
     "defiAgents": 36
   },
   "supportedLanguages": [
@@ -320,5 +362,3 @@
   },
   "version": "1.0.0"
 }
-
-

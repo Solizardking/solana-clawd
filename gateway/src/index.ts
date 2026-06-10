@@ -70,6 +70,7 @@ function msgCtx(cb: TgCallbackQuery): { chatId: number; msgId: number } | null {
 const app = express();
 app.use(express.json());
 const PORT = parseInt(process.env.GATEWAY_PORT ?? '8080', 10);
+const HOST = process.env.GATEWAY_HOST ?? '0.0.0.0';
 const WEBHOOK_URL = process.env.TELEGRAM_WEBHOOK_URL ?? '';
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET ?? '';
 
@@ -795,7 +796,7 @@ process.on('SIGTERM', () => { flushNow(); });
 // Boot
 // ---------------------------------------------------------------------------
 async function main(): Promise<void> {
-  app.listen(PORT, () => console.log(`[Gateway] HTTP on :${PORT}`));
+  app.listen(PORT, HOST, () => console.log(`[Gateway] HTTP on ${HOST}:${PORT}`));
   birdeye.connect();
 
   if (process.env.TELEGRAM_BOT_TOKEN) {

@@ -17,9 +17,11 @@ import {
   CLAWD_MINT,
   assetIsFrozen,
   getClawdTokenHolding,
-  getOwnerDasAssets,
+  getOwnerDasPortfolio,
+  heliusGetAssetBatch,
   heliusGetAsset,
   type DasAsset,
+  type DasTokenHolding,
 } from './solana.js';
 
 const router = Router();
@@ -64,15 +66,39 @@ function assetCollection(asset: DasAsset | null): string | null {
 }
 
 function assetSummary(asset: DasAsset): Record<string, unknown> {
+  const metadata = asset.content?.metadata;
+  const image = asset.content?.links?.image ?? asset.content?.files?.find((file) =>
+    file.mime?.startsWith('image/')
+  )?.uri ?? null;
   return {
     id: asset.id,
-    name: asset.content?.metadata?.name ?? asset.id,
-    symbol: asset.content?.metadata?.symbol ?? null,
+    name: metadata?.name ?? asset.id,
+    symbol: metadata?.symbol ?? null,
+    description: metadata?.description ?? null,
+    image,
     interface: asset.interface ?? null,
     owner: asset.ownership?.owner ?? null,
     collection: assetCollection(asset),
     frozen: assetIsFrozen(asset),
     compressed: asset.compression?.compressed ?? false,
+    attributes: metadata?.attributes ?? [],
+    externalUrl: asset.content?.links?.external_url ?? null,
+  };
+}
+
+function tokenSummary(token: DasTokenHolding): Record<string, unknown> {
+  return {
+    mint: token.mint,
+    name: token.name,
+    symbol: token.symbol,
+    amount: token.amount,
+    decimals: token.decimals,
+    uiAmount: token.uiAmount,
+    priceUsd: token.priceUsd,
+    valueUsd: token.valueUsd,
+    interface: token.interface,
+    tokenProgram: token.tokenProgram,
+    isClawd: token.mint === CLAWD_MINT,
   };
 }
 
@@ -173,12 +199,13 @@ router.get('/api/staking/portfolio/:owner', async (req: Request, res: Response) 
     const collection = typeof req.query.collection === 'string'
       ? req.query.collection
       : DEFAULT_COLLECTION || undefined;
-    const [clawd, agentAssets] = await Promise.all([
+    const [clawd, portfolio] = await Promise.all([
       getClawdTokenHolding(owner),
-      getOwnerDasAssets(owner, collection),
+      getOwnerDasPortfolio(owner, collection),
     ]);
 
-    const assets = agentAssets.assets.map(assetSummary);
+    const assets = portfolio.agentAssets.map(assetSummary);
+    const tokens = portfolio.tokenAssets.map(tokenSummary);
     res.json({
       owner,
       clawd,
@@ -186,9 +213,69 @@ router.get('/api/staking/portfolio/:owner', async (req: Request, res: Response) 
       holdsClawd: clawd.uiAmount > 0,
       holdsAgent: assets.length > 0,
       eligibleForRewards: clawd.uiAmount > 0 && assets.length > 0,
-      totalDasAssets: agentAssets.total,
+      totalDasAssets: portfolio.total,
+      scannedDasAssets: portfolio.allAssets.length,
       agents: assets,
+      tokens,
+      tokenCount: tokens.length,
       config: stakingConfig(),
+    });
+  } catch (e) {
+    jsonError(res, 400, (e as Error).message);
+  }
+});
+
+router.get('/api/staking/assets/:owner', async (req: Request, res: Response) => {
+  try {
+    const owner = publicKey(req.params.owner, 'owner').toBase58();
+    const collection = typeof req.query.collection === 'string'
+      ? req.query.collection
+      : DEFAULT_COLLECTION || undefined;
+    const portfolio = await getOwnerDasPortfolio(owner, collection);
+    res.json({
+      owner,
+      collection: collection ?? null,
+      totalDasAssets: portfolio.total,
+      scannedDasAssets: portfolio.allAssets.length,
+      agents: portfolio.agentAssets.map(assetSummary),
+      tokens: portfolio.tokenAssets.map(tokenSummary),
+    });
+  } catch (e) {
+    jsonError(res, 400, (e as Error).message);
+  }
+});
+
+router.get('/api/staking/agent/:assetId', async (req: Request, res: Response) => {
+  try {
+    const assetId = publicKey(req.params.assetId, 'asset id').toBase58();
+    const asset = await heliusGetAsset(assetId);
+    if (!asset) {
+      jsonError(res, 404, 'Agent asset not found by Helius DAS');
+      return;
+    }
+    res.json({
+      asset: assetSummary(asset),
+      raw: asset,
+      config: stakingConfig(),
+    });
+  } catch (e) {
+    jsonError(res, 400, (e as Error).message);
+  }
+});
+
+router.post('/api/staking/agents/batch', async (req: Request, res: Response) => {
+  try {
+    const body = req.body as { ids?: unknown };
+    const ids = Array.isArray(body.ids) ? body.ids.map(String) : [];
+    if (ids.length === 0) {
+      jsonError(res, 400, 'Required ids array');
+      return;
+    }
+    const assets = await heliusGetAssetBatch(ids);
+    res.json({
+      count: assets.length,
+      agents: assets.map(assetSummary),
+      raw: assets,
     });
   } catch (e) {
     jsonError(res, 400, (e as Error).message);
@@ -275,22 +362,26 @@ function stakingPageHtml(): string {
     .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; margin-top: 18px; }
     .panel, .asset { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
-    .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     .metric { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px; min-height: 82px; }
     .metric b { display: block; font-size: 22px; margin-top: 5px; }
-    .asset { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; margin-top: 10px; }
+    .asset { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; margin-top: 10px; }
+    .token { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px; margin-top: 10px; }
+    .media { width: 52px; height: 52px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); object-fit: cover; display: grid; place-items: center; color: var(--muted); font-weight: 700; overflow: hidden; }
+    .media img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .asset h3 { margin: 0; font-size: 16px; letter-spacing: 0; }
-    .asset small, .metric span { color: var(--muted); }
+    .asset small, .token small, .metric span { color: var(--muted); overflow-wrap: anywhere; }
     .status { margin-top: 14px; padding: 12px; border-radius: 6px; background: #0d2116; border: 1px solid #1e6f43; color: #d9ffe5; min-height: 44px; }
     .status.error { background: #261113; border-color: #6f2a2f; color: #ffd7dc; }
     .pill { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; color: var(--muted); font-size: 12px; margin-right: 6px; }
     .warn { color: var(--warn); }
     .bad { color: var(--bad); }
     @media (max-width: 820px) {
-      header, .asset { display: block; }
+      header, .asset, .token { display: block; }
       .grid, .metrics { grid-template-columns: 1fr; }
       .toolbar { margin-top: 12px; }
       .asset .toolbar { margin-top: 12px; }
+      .media { margin-bottom: 10px; }
     }
   </style>
 </head>
@@ -326,9 +417,16 @@ function stakingPageHtml(): string {
           <div class="metrics">
             <div class="metric"><span>CLAWD balance</span><b id="clawdBalance">-</b></div>
             <div class="metric"><span>Agent assets</span><b id="agentCount">-</b></div>
+            <div class="metric"><span>DAS tokens</span><b id="tokenCount">-</b></div>
             <div class="metric"><span>Reward eligibility</span><b id="eligible">-</b></div>
           </div>
           <div id="assets"></div>
+        </div>
+
+        <div class="panel" style="margin-top:18px">
+          <h2>Helius DAS Token Assets</h2>
+          <p>Fungible SPL and Token-2022 assets are read through <code>getAssetsByOwner</code> with fungibles enabled.</p>
+          <div id="tokens"></div>
         </div>
       </div>
 
@@ -345,7 +443,7 @@ function stakingPageHtml(): string {
   <script src="https://unpkg.com/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
   <script>
     const config = ${cfg};
-    const state = { wallet: null, provider: null, assets: [] };
+    const state = { wallet: null, provider: null, assets: [], tokens: [] };
     const el = (id) => document.getElementById(id);
     el('cluster').textContent = config.cluster;
     el('program').textContent = config.programId;
@@ -392,14 +490,17 @@ function stakingPageHtml(): string {
         return;
       }
       state.assets = data.agents || [];
+      state.tokens = data.tokens || [];
       el('clawdBalance').textContent = Number(data.clawd.uiAmount || 0).toLocaleString();
       el('agentCount').textContent = String(state.assets.length);
+      el('tokenCount').textContent = String(state.tokens.length);
       el('eligible').textContent = data.eligibleForRewards ? 'Yes' : 'No';
       renderAssets();
+      renderTokens();
       if (data.holdsClawd && data.holdsAgent) setStatus('Wallet holds CLAWD and agent assets.');
       else if (data.holdsClawd) setStatus('Wallet holds CLAWD, but no matching agent assets were found.');
       else if (data.holdsAgent) setStatus('Wallet holds matching agent assets, but no CLAWD balance was found.');
-      else setStatus('No CLAWD or matching agent assets found for this wallet.', true);
+      else setStatus('No CLAWD or matching agent assets found. Helius scanned ' + Number(data.scannedDasAssets || 0).toLocaleString() + ' indexed assets.', true);
     }
 
     function renderAssets() {
@@ -413,12 +514,18 @@ function stakingPageHtml(): string {
         const node = document.createElement('div');
         node.className = 'asset';
         const action = asset.frozen ? 'unstake' : 'stake';
+        const media = asset.image
+          ? '<div class="media"><img src="' + escapeHtml(asset.image) + '" alt=""></div>'
+          : '<div class="media">AI</div>';
+        const desc = asset.description ? '<p>' + escapeHtml(asset.description).slice(0, 180) + '</p>' : '';
         node.innerHTML =
+          media +
           '<div><h3>' + escapeHtml(asset.name || asset.id) + '</h3>' +
           '<small>' + escapeHtml(asset.id) + '</small><p>' +
           '<span class="pill">' + escapeHtml(asset.interface || 'asset') + '</span>' +
           '<span class="pill">' + (asset.frozen ? 'staked' : 'unstaked') + '</span>' +
-          '</p></div>' +
+          (asset.collection ? '<span class="pill">collection ' + escapeHtml(shortKey(asset.collection)) + '</span>' : '') +
+          '</p>' + desc + '</div>' +
           '<div class="toolbar"><button class="primary" data-action="' + action + '" data-asset="' + escapeHtml(asset.id) + '">' +
           (asset.frozen ? 'Unstake' : 'Stake') + '</button></div>';
         root.appendChild(node);
@@ -426,6 +533,36 @@ function stakingPageHtml(): string {
       root.querySelectorAll('button[data-action]').forEach((button) => {
         button.addEventListener('click', () => submitAction(button.dataset.action, button.dataset.asset));
       });
+    }
+
+    function renderTokens() {
+      const root = el('tokens');
+      root.innerHTML = '';
+      if (!state.tokens.length) {
+        root.innerHTML = '<p>No fungible DAS token assets found.</p>';
+        return;
+      }
+      for (const token of state.tokens.slice(0, 24)) {
+        const node = document.createElement('div');
+        node.className = 'token';
+        const amount = Number(token.uiAmount || 0).toLocaleString(undefined, { maximumFractionDigits: 6 });
+        const value = token.valueUsd == null ? '' : '<span class="pill">$' + Number(token.valueUsd).toLocaleString(undefined, { maximumFractionDigits: 2 }) + '</span>';
+        node.innerHTML =
+          '<div><h3>' + escapeHtml(token.name || token.symbol || token.mint) + '</h3>' +
+          '<small>' + escapeHtml(token.mint) + '</small><p>' +
+          '<span class="pill">' + escapeHtml(token.symbol || 'token') + '</span>' +
+          '<span class="pill">' + amount + '</span>' +
+          (token.isClawd ? '<span class="pill">CLAWD</span>' : '') +
+          value +
+          '</p></div>' +
+          '<a href="/explorer/asset/' + encodeURIComponent(token.mint) + '">DAS</a>';
+        root.appendChild(node);
+      }
+      if (state.tokens.length > 24) {
+        const note = document.createElement('p');
+        note.textContent = 'Showing 24 of ' + state.tokens.length + ' token assets.';
+        root.appendChild(note);
+      }
     }
 
     async function submitAction(action, asset) {
@@ -465,6 +602,11 @@ function stakingPageHtml(): string {
       return String(value).replace(/[&<>"']/g, (char) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       })[char]);
+    }
+
+    function shortKey(value) {
+      const text = String(value || '');
+      return text.length > 16 ? text.slice(0, 8) + '...' + text.slice(-6) : text;
     }
 
     el('connect').addEventListener('click', connect);

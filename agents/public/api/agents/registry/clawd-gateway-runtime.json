@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "erc-8004-agent-registration-v1",
+  "protocol": "metaplex-agent-registry",
+  "name": "Clawd Gateway Runtime",
+  "description": "Telegram and HTTP gateway runtime for Solana Clawd agent registry, skill hub, webhook, x402, and Solana service routes.",
+  "image": "https://x402.wtf/nich.jpg",
+  "external_url": "https://x402.wtf/agents/clawd-gateway-runtime",
+  "active": true,
+  "createdAt": "2026-06-10",
+  "updatedAt": "2026-06-10T02:06:27.541Z",
+  "tags": [
+    "solana",
+    "clawd",
+    "gateway",
+    "telegram",
+    "x402",
+    "registry",
+    "skills",
+    "http"
+  ],
+  "categories": [
+    "infrastructure"
+  ],
+  "owner": {
+    "organization": "OpenClawd",
+    "website": "https://x402.wtf",
+    "token": {
+      "symbol": "CLAWD",
+      "chain": "solana",
+      "mint": "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+    }
+  },
+  "services": [
+    {
+      "name": "web",
+      "endpoint": "https://x402.wtf/agents/clawd-gateway-runtime"
+    },
+    {
+      "name": "A2A",
+      "endpoint": "https://x402.wtf/api/agents/a2a",
+      "version": "0.3.0"
+    },
+    {
+      "name": "catalog",
+      "endpoint": "https://x402.wtf/api/agents/catalog/clawd-gateway-runtime.json"
+    },
+    {
+      "name": "registration",
+      "endpoint": "https://x402.wtf/api/agents/registry/clawd-gateway-runtime.json"
+    }
+  ],
+  "registrations": [
+    {
+      "agentId": "openclawd:clawd-gateway-runtime",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-gateway-runtime.json"
+    }
+  ],
+  "supportedTrust": [
+    "reputation",
+    "crypto-economic",
+    "token-gated"
+  ],
+  "metaplex": {
+    "programs": [
+      "agent-registry"
+    ],
+    "sdk": "@metaplex-foundation/mpl-agent-registry",
+    "expectedIdentity": {
+      "asset": null,
+      "agentIdentityPda": null,
+      "assetSignerPda": null,
+      "executiveProfilePda": null
+    },
+    "registrationFlow": [
+      "mint MPL Core agent asset",
+      "register AgentIdentity with this registrationUri",
+      "optionally register an executive profile",
+      "delegate execution only after operator review"
+    ]
+  },
+  "openclawd": {
+    "identifier": "clawd-gateway-runtime",
+    "capabilities": [
+      "x402-gateway-routing",
+      "agent-registry",
+      "skill-registry",
+      "telegram-webhook",
+      "solana-rpc",
+      "read-only"
+    ],
+    "payment": {
+      "enabled": true,
+      "network": "solana-mainnet",
+      "protocols": [
+        "x402",
+        "mpp"
+      ],
+      "acceptedCurrencies": [
+        "USDC",
+        "USDT",
+        "CASH"
+      ],
+      "approvalMode": "operator"
+    },
+    "agentToken": null
+  }
+}

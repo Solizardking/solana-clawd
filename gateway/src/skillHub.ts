@@ -9,6 +9,7 @@ import { Router, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import {
@@ -18,15 +19,31 @@ import {
   registerSkill,
   revokeSkill,
   loadCatalog,
+  catalogEntryToKind,
   ComponentKind,
+  type CatalogEntry,
+  type SkillHubEntry,
 } from '../../formal_verification/skill-hub.js';
 
 const router = Router();
 
-const SKILLS_ROOT = path.resolve(
-  new URL(import.meta.url).pathname,
-  '../../../skills',
-);
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
+
+function findRepoRoot(): string {
+  let current = MODULE_DIR;
+  for (let i = 0; i < 8; i += 1) {
+    if (fs.existsSync(path.join(current, 'skills', 'catalog.json'))) {
+      return current;
+    }
+    const next = path.dirname(current);
+    if (next === current) break;
+    current = next;
+  }
+  return process.cwd();
+}
+
+const REPO_ROOT = findRepoRoot();
+const SKILLS_ROOT = path.join(REPO_ROOT, 'skills');
 
 const metadataRouteLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -62,6 +79,51 @@ function firstParam(value: string | string[] | undefined): string {
   return value ?? '';
 }
 
+type PublicSkillEntry = SkillHubEntry | (CatalogEntry & {
+  kind: ComponentKind;
+  active: boolean;
+  metadata_uri: string;
+  registryBacked: false;
+});
+
+function getCatalogEntryBySlug(slug: string): CatalogEntry | undefined {
+  return loadCatalog().find((entry) => entry.slug === slug);
+}
+
+function getPublicSkillBySlug(slug: string): PublicSkillEntry | undefined {
+  const registered = getSkillBySlug(slug);
+  if (registered) return registered;
+
+  const catalogEntry = getCatalogEntryBySlug(slug);
+  if (!catalogEntry) return undefined;
+
+  return {
+    ...catalogEntry,
+    kind: catalogEntryToKind(catalogEntry),
+    active: true,
+    metadata_uri: `https://x402.wtf/api/skills/slug/${catalogEntry.slug}/metadata.json`,
+    registryBacked: false as const,
+  };
+}
+
+function listPublicSkills(kindFilter?: ComponentKind, activeOnly = true): PublicSkillEntry[] {
+  const registered = listSkills({ kind: kindFilter, active: activeOnly });
+  const registeredSlugs = new Set(registered.map((entry) => entry.slug));
+  const catalogFallbacks = loadCatalog()
+    .filter((entry) => !registeredSlugs.has(entry.slug))
+    .map((entry) => ({
+      ...entry,
+      kind: catalogEntryToKind(entry),
+      active: true,
+      metadata_uri: `https://x402.wtf/api/skills/slug/${entry.slug}/metadata.json`,
+      registryBacked: false as const,
+    }))
+    .filter((entry) => !kindFilter || entry.kind === kindFilter)
+    .filter((entry) => !activeOnly || entry.active);
+
+  return [...registered, ...catalogFallbacks].sort((a, b) => a.slug.localeCompare(b.slug));
+}
+
 function verifyAuthoritySignature(authority: string, signature: string | undefined, body: unknown): boolean {
   if (!signature) return false;
   try {
@@ -86,7 +148,7 @@ router.get('/api/skills', cacheHeaders(30), (req: Request, res: Response) => {
   try {
     const kindFilter = req.query.kind as ComponentKind | undefined;
     const activeOnly = req.query.active !== 'false';
-    const skills = listSkills({ kind: kindFilter, active: activeOnly });
+    const skills = listPublicSkills(kindFilter, activeOnly);
     res.json({ count: skills.length, skills });
   } catch (err: unknown) {
     const e = err as Error;
@@ -105,7 +167,7 @@ router.get('/api/skills/catalog', cacheHeaders(120), (_req: Request, res: Respon
 });
 
 router.get('/api/skills/kinds', cacheHeaders(60), (_req: Request, res: Response) => {
-  const skills = listSkills({ active: true });
+  const skills = listPublicSkills(undefined, true);
   const counts: Record<string, number> = {};
   for (const s of skills) {
     counts[s.kind] = (counts[s.kind] ?? 0) + 1;
@@ -123,7 +185,7 @@ router.get('/api/skills/:skillId([0-9a-f]{64})', cacheHeaders(60), (req: Request
 });
 
 router.get('/api/skills/slug/:slug', cacheHeaders(60), (req: Request, res: Response) => {
-  const entry = getSkillBySlug(firstParam(req.params.slug));
+  const entry = getPublicSkillBySlug(firstParam(req.params.slug));
   if (!entry) {
     res.status(404).json({ error: 'Skill not found' });
     return;
@@ -132,7 +194,7 @@ router.get('/api/skills/slug/:slug', cacheHeaders(60), (req: Request, res: Respo
 });
 
 router.get('/api/skills/slug/:slug/metadata.json', cacheHeaders(300), metadataRouteLimiter, (req: Request, res: Response) => {
-  const entry = getSkillBySlug(firstParam(req.params.slug));
+  const entry = getPublicSkillBySlug(firstParam(req.params.slug));
   if (!entry || !entry.active) {
     res.status(404).json({ error: 'Skill not found or inactive' });
     return;
@@ -150,35 +212,37 @@ router.get('/api/skills/slug/:slug/metadata.json', cacheHeaders(300), metadataRo
 
   res.json({
     name: entry.name,
-    description: description || entry.slug,
+    description: description || ('description' in entry ? entry.description : '') || entry.slug,
     image: `https://x402.wtf/api/skills/slug/${entry.slug}/card.svg`,
     external_url: `https://x402.wtf/skills/${entry.slug}`,
     attributes: [
       { trait_type: 'Kind', value: entry.kind },
-      { trait_type: 'STRIDE Score', value: entry.stride_score },
-      { trait_type: 'Kani Verified', value: String(entry.kani_verified) },
+      { trait_type: 'STRIDE Score', value: 'stride_score' in entry ? entry.stride_score : 'catalog-only' },
+      { trait_type: 'Kani Verified', value: 'kani_verified' in entry ? String(entry.kani_verified) : 'catalog-only' },
       { trait_type: 'Active', value: String(entry.active) },
-      { trait_type: 'Registered At', value: entry.registered_at },
+      { trait_type: 'Registered At', value: 'registered_at' in entry ? entry.registered_at : 'catalog-only' },
     ],
     properties: {
-      skill_id: entry.skill_id,
-      spec_hash: entry.spec_hash,
-      authority: entry.authority,
-      on_chain: entry.on_chain ?? false,
+      skill_id: 'skill_id' in entry ? entry.skill_id : null,
+      spec_hash: 'spec_hash' in entry ? entry.spec_hash : null,
+      authority: 'authority' in entry ? entry.authority : null,
+      on_chain: 'on_chain' in entry ? entry.on_chain ?? false : false,
+      catalog_homepage: 'homepage' in entry ? entry.homepage : `https://x402.wtf/skills/${entry.slug}`,
+      catalog_manifest: 'manifest' in entry ? entry.manifest : entry.metadata_uri,
     },
   });
 });
 
 router.get('/api/skills/slug/:slug/card.svg', cacheHeaders(600), (req: Request, res: Response) => {
   const slug = firstParam(req.params.slug);
-  const entry = getSkillBySlug(slug);
+  const entry = getPublicSkillBySlug(slug);
   const name = entry?.name ?? slug;
-  const score = entry?.stride_score ?? 0;
+  const score = entry && 'stride_score' in entry ? entry.stride_score : 0;
   const kind = entry?.kind ?? 'skill';
   const scoreColor = score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444';
   const safeName = escapeForXml(name.slice(0, 30));
   const safeKind = escapeForXml(kind.toUpperCase());
-  const safeSkillIdPrefix = escapeForXml(entry?.skill_id?.slice(0, 16) ?? '');
+  const safeSkillIdPrefix = escapeForXml(entry && 'skill_id' in entry ? entry.skill_id.slice(0, 16) : 'catalog-only');
 
   res.setHeader('Content-Type', 'image/svg+xml');
   res.send(
@@ -194,7 +258,7 @@ router.get('/api/skills/slug/:slug/card.svg', cacheHeaders(600), (req: Request, 
     '<text x="24" y="110" font-family="monospace" font-size="11" fill="#64748b">STRIDE</text>' +
     '<text x="24" y="130" font-family="monospace" font-size="22" font-weight="bold" fill="' + scoreColor + '">' + String(score) + '</text>' +
     '<text x="80" y="130" font-family="monospace" font-size="11" fill="#475569">/100</text>' +
-    (entry?.kani_verified ? '<text x="330" y="130" font-family="monospace" font-size="11" fill="#22c55e">KANI \u2713</text>' : '') +
+    (entry && 'kani_verified' in entry && entry.kani_verified ? '<text x="330" y="130" font-family="monospace" font-size="11" fill="#22c55e">KANI \u2713</text>' : '') +
     '<text x="24" y="150" font-family="monospace" font-size="9" fill="#334155">' + safeSkillIdPrefix + '...</text>' +
     '</svg>'
   );

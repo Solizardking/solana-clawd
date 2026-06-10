@@ -1,0 +1,50 @@
+name: x402 Setup Verification
+
+on:
+  pull_request:
+    paths:
+      - "agents/**"
+      - "gateway/**"
+      - "formal_verification/**"
+      - "skills/**"
+      - "install.sh"
+      - ".github/workflows/x402-setup.yml"
+  push:
+    branches:
+      - main
+      - newnew
+    paths:
+      - "agents/**"
+      - "gateway/**"
+      - "formal_verification/**"
+      - "skills/**"
+      - "install.sh"
+      - ".github/workflows/x402-setup.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Verify agents and install wiring
+        working-directory: agents
+        run: npm test
+
+      - name: Install gateway dependencies
+        working-directory: gateway
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify gateway x402 routes
+        working-directory: gateway
+        run: npm test

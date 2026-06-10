@@ -1,49 +1,127 @@
 diff --git a/main/CMakeLists.txt b/main/CMakeLists.txt
-index 89af2ed..0000000 100644
 --- a/main/CMakeLists.txt
 +++ b/main/CMakeLists.txt
-@@ -15,5 +15,7 @@ SRCS
+@@ -10,6 +10,9 @@ SRCS
+     "input.c"
      "system.c"
      "work_queue.c"
 +    "orelane.c"
 +    "orelane_api.c"
++    "orelane_led.c"
      "lv_font_portfolio-6x8.c"
      "logo.c"
      "./bap/bap.c"
+@@ -84,7 +87,8 @@ PRIV_REQUIRES
+     "vfs"
+     "esp_driver_i2c"
+     "tcp_transport"
+     "stratum_v2"
+     "esp_mm"
++    "led_strip"
+ 
+ EMBED_FILES "http_server/recovery_page.html"
+ )
+diff --git a/main/Kconfig.projbuild b/main/Kconfig.projbuild
+--- a/main/Kconfig.projbuild
++++ b/main/Kconfig.projbuild
+@@ -49,6 +49,40 @@ menu "Bitaxe Configuration"
+                 GPIO pin for BAP transmitting line.
+             
+     endmenu
++
++    menu "ORELANE Base LED"
++
++        config ORELANE_LED_ENABLED
++            bool "Enable ORELANE base LED color cycle"
++            default y
++            help
++                Enables a WS2812/SK6812-style addressable RGB base LED strip.
++
++        config ORELANE_LED_GPIO
++            int "ORELANE base LED data GPIO"
++            default 21
++            depends on ORELANE_LED_ENABLED
++            help
++                GPIO connected to the base LED strip data input. Change this to match your wiring.
++
++        config ORELANE_LED_COUNT
++            int "ORELANE base LED count"
++            range 1 128
++            default 8
++            depends on ORELANE_LED_ENABLED
++
++        config ORELANE_LED_BRIGHTNESS_PERCENT
++            int "ORELANE base LED brightness percent"
++            range 1 100
++            default 18
++            depends on ORELANE_LED_ENABLED
++
++        config ORELANE_LED_CYCLE_MS
++            int "ORELANE base LED color cycle interval ms"
++            range 100 10000
++            default 700
++            depends on ORELANE_LED_ENABLED
++    endmenu
+     
+ 
+     config ASIC_VOLTAGE
+         int "ASIC Core Voltage (mV)"
+diff --git a/main/idf_component.yml b/main/idf_component.yml
+--- a/main/idf_component.yml
++++ b/main/idf_component.yml
+@@ -3,6 +3,7 @@ dependencies:
+   lvgl/lvgl: "9.3.0"
+   espressif/esp_lvgl_port: "2.6.3"
+   esp_lcd_sh1107: "1.1.0"  
++  espressif/led_strip: "^3.0.1"
+   ## Required IDF version
+   idf:
+     version: ">=5.5.0"
 diff --git a/main/main.c b/main/main.c
-index 354b2af..0000000 100644
 --- a/main/main.c
 +++ b/main/main.c
-@@ -22,6 +22,7 @@
- #include "filesystem.h"
- #include "input.h"
- #include "log_buffer.h"
+@@ -19,6 +19,8 @@
+ #include "device_config.h"
+ #include "connect.h"
+ #include "asic_reset.h"
 +#include "orelane.h"
++#include "orelane_led.h"
+ #include "asic_init.h"
  
  static GlobalState GLOBAL_STATE;
- 
-@@ -111,6 +112,8 @@ void app_main(void)
+@@ -89,6 +91,9 @@ void app_main(void)
      if (!GLOBAL_STATE.SELF_TEST_MODULE.is_active) {
          // start the API for AxeOS
          start_rest_server((void *) &GLOBAL_STATE);
 +        orelane_init(&GLOBAL_STATE);
 +        orelane_start();
++        orelane_led_start();
      }
  
      // After mounting SPIFFS
+     SYSTEM_init_versions(&GLOBAL_STATE);
 diff --git a/main/http_server/http_server.c b/main/http_server/http_server.c
-index 0000000..0000000 100644
 --- a/main/http_server/http_server.c
 +++ b/main/http_server/http_server.c
-@@ -25,6 +25,7 @@
- #include "system_api_json.h"
- #include "log_buffer.h"
- #include "cjson_utils.h"
+@@ -44,7 +44,8 @@
+ #include "axe-os/api/system/asic_settings.h"
+ #include "display.h"
+ #include "http_server.h"
 +#include "orelane_api.h"
- #include "utils.h"
+ #include "websocket.h"
+ #include "websocket_log.h"
+ #include "websocket_api.h"
  
- static const char * TAG = "http_server";
-@@ -1240,6 +1241,8 @@ esp_err_t start_rest_server(void * pvParameters)
+@@ -1242,7 +1243,7 @@ esp_err_t start_rest_server(void * pvParameters)
+     config.uri_match_fn = httpd_uri_match_wildcard;
+     config.stack_size = 8192;
+     config.max_open_sockets = 20;
+-    config.max_uri_handlers = 25;
++    config.max_uri_handlers = 32;
+     config.close_fn = websocket_close_fn;
+     config.lru_purge_enable = true;
+ 
+@@ -1402,6 +1403,8 @@ esp_err_t start_rest_server(void * pvParameters)
      };
      httpd_register_uri_handler(server, &ws_live);
  

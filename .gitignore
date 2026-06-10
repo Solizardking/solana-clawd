@@ -420,3 +420,4 @@ hf_token*
 # Never commit raw HF user access tokens (hf_xxxx...)
 **/stored_tokens
 clawd-grok
+!agents/clawd-grok

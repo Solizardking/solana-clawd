@@ -22,5 +22,7 @@ jobs:
       - name: Test locale
         run: bun run test:locale
 
+      - name: Verify x402 setup
+        run: bun run verify:x402
 
 

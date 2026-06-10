@@ -81,4 +81,15 @@ describe('routeWithKeywords', () => {
     expect(intent.action).toBe('bitaxe_freq_set');
     expect(intent.frequencyMhz).toBe(500);
   });
+
+  it('routes bitaxe_led_set with color', () => {
+    const intent = routeWithKeywords('set the base LED to purple');
+    expect(intent.action).toBe('bitaxe_led_set');
+    expect(intent.ledColor).toBe('purple');
+  });
+
+  it('routes bitaxe_led_cycle', () => {
+    expect(routeWithKeywords('cycle the bitaxe led rainbow').action).toBe('bitaxe_led_cycle');
+    expect(routeWithKeywords('set up the bitaxe led to change colors').action).toBe('bitaxe_led_cycle');
+  });
 });

@@ -1,17 +1,44 @@
 {
-    "schema_version": "v1",
-    "name_for_human": "OpenClawd Agents",
-    "name_for_model": "openclawd_agents",
-    "description_for_human": "OpenClawd Solana-native financial AI agent registry with catalog JSON, ACP discovery, and Metaplex Agent Registry registration documents.",
-    "description_for_model": "OpenClawd Solana-native financial AI agent registry with catalog JSON, ACP discovery, and Metaplex Agent Registry registration documents.",
-    "auth": {
-        "type": "none"
-    },
-    "api": {
-        "type": "none",
-        "url": "https://agents.openclawd.biz/api/agents"
-    },
-    "logo_url": "https://agents.openclawd.biz/nich.jpg",
-    "contact_email": "security@openclawd.biz",
-    "legal_info_url": "https://github.com/clawdsolana/OpenClawd/blob/main/agents/LICENSE"
+  "schema_version": "v1",
+  "name_for_human": "OpenClawd Agents",
+  "name_for_model": "openclawd_agents",
+  "description_for_human": "OpenClawd Solana-native agent registry with catalog JSON, ACP discovery, x402 gateway routing, skill discovery, Telegram gateway hooks, and Metaplex Agent Registry documents.",
+  "description_for_model": "Use OpenClawd Agents to discover Solana-native agents and skills on x402.wtf. Canonical surfaces include https://x402.wtf/agents, https://x402.wtf/skills, https://x402.wtf/gateway, and https://x402.wtf/telegram.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "none",
+    "url": "https://x402.wtf/api/agents"
+  },
+  "logo_url": "https://x402.wtf/nich.jpg",
+  "contact_email": "operators@x402.wtf",
+  "legal_info_url": "https://github.com/openclawd/solana-clawd/blob/main/agents/LICENSE",
+  "agent_registry": {
+    "hub": "https://x402.wtf/agents",
+    "catalog": "https://x402.wtf/api/agents/catalog",
+    "registry": "https://x402.wtf/api/agents/registry",
+    "templates": "https://x402.wtf/api/agents/templates",
+    "acp": "https://x402.wtf/api/agents/acp-registry.json"
+  },
+  "skill_registry": {
+    "hub": "https://x402.wtf/skills",
+    "catalog": "https://x402.wtf/api/skills/catalog",
+    "list": "https://x402.wtf/api/skills"
+  },
+  "gateway": {
+    "hub": "https://x402.wtf/gateway",
+    "health": "https://x402.wtf/health",
+    "telegram_webhook": "https://x402.wtf/telegram/webhook"
+  },
+  "staking": {
+    "hub": "https://x402.wtf/staking",
+    "config": "https://x402.wtf/api/staking/config",
+    "portfolio": "https://x402.wtf/api/staking/portfolio/{owner}",
+    "assets": "https://x402.wtf/api/staking/assets/{owner}",
+    "asset": "https://x402.wtf/api/staking/agent/{assetId}",
+    "batch": "https://x402.wtf/api/staking/agents/batch",
+    "transaction": "https://x402.wtf/api/staking/transaction",
+    "das_methods": ["getAssetsByOwner", "getAsset", "getAssetBatch"]
+  }
 }

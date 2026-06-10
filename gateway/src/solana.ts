@@ -181,6 +181,14 @@ export interface DasAsset {
       name?: string;
       symbol?: string;
       description?: string;
+      attributes?: Array<{ trait_type?: string; value?: unknown }>;
+    };
+    files?: Array<{ uri?: string; mime?: string }>;
+    links?: {
+      image?: string;
+      animation_url?: string;
+      external_url?: string;
+      [key: string]: unknown;
     };
   };
   grouping?: Array<{ group_key?: string; group_value?: string }>;
@@ -192,6 +200,14 @@ export interface DasAsset {
     balance?: number | string;
     decimals?: number;
     symbol?: string;
+    supply?: number | string;
+    token_program?: string;
+    price_info?: {
+      price_per_token?: number;
+      total_price?: number;
+      currency?: string;
+      [key: string]: unknown;
+    };
   };
   compression?: {
     compressed?: boolean;
@@ -218,6 +234,30 @@ interface ClawdHolding {
   source: 'das' | 'token-accounts';
 }
 
+export interface DasTokenHolding {
+  mint: string;
+  name: string;
+  symbol: string | null;
+  amount: string;
+  decimals: number;
+  uiAmount: number;
+  priceUsd: number | null;
+  valueUsd: number | null;
+  interface: string | null;
+  tokenProgram: string | null;
+  asset: DasAsset;
+}
+
+export interface OwnerDasPortfolio {
+  owner: string;
+  total: number;
+  page: number;
+  limit: number;
+  allAssets: DasAsset[];
+  agentAssets: DasAsset[];
+  tokenAssets: DasTokenHolding[];
+}
+
 function dasTokenUiAmount(asset: DasAsset): number {
   const balance = Number(asset.token_info?.balance ?? 0);
   const decimals = Number(asset.token_info?.decimals ?? 0);
@@ -232,6 +272,35 @@ function isCollectionMatch(asset: DasAsset, collection?: string): boolean {
   );
 }
 
+function dasMetadataText(asset: DasAsset): string {
+  const metadata = asset.content?.metadata;
+  const attributes = metadata?.attributes
+    ?.map((attr) => `${attr.trait_type ?? ''} ${String(attr.value ?? '')}`)
+    .join(' ') ?? '';
+  return [
+    asset.id,
+    asset.interface ?? '',
+    metadata?.name ?? '',
+    metadata?.symbol ?? '',
+    metadata?.description ?? '',
+    attributes,
+    ...(asset.grouping ?? []).map((group) => `${group.group_key ?? ''} ${group.group_value ?? ''}`),
+  ].join(' ').toLowerCase();
+}
+
+function isFungibleDasAsset(asset: DasAsset): boolean {
+  const iface = (asset.interface ?? '').toLowerCase();
+  return iface.includes('fungible') || Number(asset.token_info?.decimals ?? 0) > 0;
+}
+
+function isLikelyAgentAsset(asset: DasAsset, collection?: string): boolean {
+  if (!isCollectionMatch(asset, collection)) return false;
+  if (collection) return true;
+  if (isFungibleDasAsset(asset)) return false;
+  const text = dasMetadataText(asset);
+  return /\b(agent|clawd|openclawd|x402|metaplex core|core asset|staking)\b/.test(text);
+}
+
 export function assetIsFrozen(asset: DasAsset): boolean {
   if (asset.ownership?.frozen === true) return true;
   const plugins = asset.plugins as Record<string, unknown> | undefined;
@@ -242,6 +311,13 @@ export function assetIsFrozen(asset: DasAsset): boolean {
 export async function heliusGetAsset(assetId: string): Promise<DasAsset | null> {
   const resp = await heliusDasRequest('getAsset', { id: assetId }) as { result?: DasAsset };
   return resp.result ?? null;
+}
+
+export async function heliusGetAssetBatch(assetIds: string[]): Promise<DasAsset[]> {
+  const ids = [...new Set(assetIds.map((id) => id.trim()).filter(Boolean))].slice(0, 1000);
+  if (ids.length === 0) return [];
+  const resp = await heliusDasRequest('getAssetBatch', { ids }) as { result?: DasAsset[] };
+  return resp.result ?? [];
 }
 
 export async function getClawdTokenHolding(owner: string): Promise<ClawdHolding> {
@@ -281,20 +357,61 @@ export async function getOwnerDasAssets(owner: string, collection?: string): Pro
   total: number;
   assets: DasAsset[];
 }> {
+  const portfolio = await getOwnerDasPortfolio(owner, collection);
+  return { total: portfolio.total, assets: portfolio.agentAssets };
+}
+
+export function dasTokenHolding(asset: DasAsset): DasTokenHolding {
+  const uiAmount = dasTokenUiAmount(asset);
+  const priceUsd = Number(asset.token_info?.price_info?.price_per_token);
+  const valueUsd = Number(asset.token_info?.price_info?.total_price);
+  return {
+    mint: asset.id,
+    name: asset.content?.metadata?.name ?? asset.token_info?.symbol ?? asset.id,
+    symbol: asset.token_info?.symbol ?? asset.content?.metadata?.symbol ?? null,
+    amount: String(asset.token_info?.balance ?? '0'),
+    decimals: Number(asset.token_info?.decimals ?? 0),
+    uiAmount,
+    priceUsd: Number.isFinite(priceUsd) ? priceUsd : null,
+    valueUsd: Number.isFinite(valueUsd) ? valueUsd : null,
+    interface: asset.interface ?? null,
+    tokenProgram: asset.token_info?.token_program ?? null,
+    asset,
+  };
+}
+
+export async function getOwnerDasPortfolio(owner: string, collection?: string): Promise<OwnerDasPortfolio> {
   const resp = await heliusDasRequest('getAssetsByOwner', {
     ownerAddress: owner,
     page: 1,
     limit: 1000,
     options: {
-      showFungible: false,
+      showFungible: true,
+      showNativeBalance: true,
       showCollectionMetadata: true,
       showUnverifiedCollections: true,
+      showGrandTotal: true,
+      showZeroBalance: false,
     },
   }) as DasAssetsByOwnerResponse;
 
-  const items = resp.result?.items ?? [];
-  const assets = items.filter((asset) => isCollectionMatch(asset, collection));
-  return { total: resp.result?.total ?? items.length, assets };
+  const result = resp.result;
+  const items = result?.items ?? [];
+  const tokenAssets = items
+    .filter(isFungibleDasAsset)
+    .map(dasTokenHolding)
+    .filter((token) => token.uiAmount > 0);
+  const agentAssets = items.filter((asset) => isLikelyAgentAsset(asset, collection));
+
+  return {
+    owner,
+    total: result?.total ?? items.length,
+    page: result?.page ?? 1,
+    limit: result?.limit ?? 1000,
+    allAssets: items,
+    agentAssets,
+    tokenAssets,
+  };
 }
 
 // ---------------------------------------------------------------------------

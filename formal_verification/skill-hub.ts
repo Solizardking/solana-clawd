@@ -16,6 +16,7 @@
 import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { analyzeComponent, StrideReport } from './stride.js';
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -23,7 +24,25 @@ import { analyzeComponent, StrideReport } from './stride.js';
 export const MIN_STRIDE_SCORE_SKILL = 60;
 export const MIN_STRIDE_SCORE_AGENT = 70;
 
-const REPO_ROOT = path.resolve(import.meta.dirname ?? __dirname, '..');
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
+
+function findRepoRoot(): string {
+  let current = MODULE_DIR;
+  for (let i = 0; i < 8; i += 1) {
+    if (
+      fs.existsSync(path.join(current, 'skills', 'catalog.json')) &&
+      fs.existsSync(path.join(current, 'formal_verification'))
+    ) {
+      return current;
+    }
+    const next = path.dirname(current);
+    if (next === current) break;
+    current = next;
+  }
+  return path.resolve(MODULE_DIR, '..');
+}
+
+const REPO_ROOT = findRepoRoot();
 const SKILLS_ROOT = path.resolve(REPO_ROOT, 'skills');
 const CATALOG_PATH = path.join(REPO_ROOT, 'skills', 'catalog.json');
 const SKILL_HUB_REGISTRY = path.join(REPO_ROOT, 'formal_verification', 'skill-hub-registry.json');

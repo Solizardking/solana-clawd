@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "erc-8004-agent-registration-v1",
+  "protocol": "metaplex-agent-registry",
+  "name": "Clawd Pump Runtime",
+  "description": "Rust PumpFun/PumpSwap runtime for wallet monitoring, copy trading, parser diagnostics, risk gates, Telegram alerts, and paper-first Solana execution.",
+  "image": "https://x402.wtf/nich.jpg",
+  "external_url": "https://x402.wtf/agents/clawd-pump-runtime",
+  "active": true,
+  "createdAt": "2026-06-10",
+  "updatedAt": "2026-06-10T02:06:27.541Z",
+  "tags": [
+    "solana",
+    "clawd",
+    "pumpfun",
+    "pumpswap",
+    "copy-trading",
+    "rust",
+    "risk-management",
+    "telegram"
+  ],
+  "categories": [
+    "trading"
+  ],
+  "owner": {
+    "organization": "OpenClawd",
+    "website": "https://x402.wtf",
+    "token": {
+      "symbol": "CLAWD",
+      "chain": "solana",
+      "mint": "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+    }
+  },
+  "services": [
+    {
+      "name": "web",
+      "endpoint": "https://x402.wtf/agents/clawd-pump-runtime"
+    },
+    {
+      "name": "A2A",
+      "endpoint": "https://x402.wtf/api/agents/a2a",
+      "version": "0.3.0"
+    },
+    {
+      "name": "catalog",
+      "endpoint": "https://x402.wtf/api/agents/catalog/clawd-pump-runtime.json"
+    },
+    {
+      "name": "registration",
+      "endpoint": "https://x402.wtf/api/agents/registry/clawd-pump-runtime.json"
+    }
+  ],
+  "registrations": [
+    {
+      "agentId": "openclawd:clawd-pump-runtime",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-pump-runtime.json"
+    }
+  ],
+  "supportedTrust": [
+    "reputation",
+    "crypto-economic",
+    "token-gated"
+  ],
+  "metaplex": {
+    "programs": [
+      "agent-registry"
+    ],
+    "sdk": "@metaplex-foundation/mpl-agent-registry",
+    "expectedIdentity": {
+      "asset": null,
+      "agentIdentityPda": null,
+      "assetSignerPda": null,
+      "executiveProfilePda": null
+    },
+    "registrationFlow": [
+      "mint MPL Core agent asset",
+      "register AgentIdentity with this registrationUri",
+      "optionally register an executive profile",
+      "delegate execution only after operator review"
+    ]
+  },
+  "openclawd": {
+    "identifier": "clawd-pump-runtime",
+    "capabilities": [
+      "swap-execution",
+      "wallet-monitoring",
+      "copy-trading",
+      "risk-gate",
+      "telegram-alerts",
+      "read-only"
+    ],
+    "payment": null,
+    "agentToken": null
+  }
+}

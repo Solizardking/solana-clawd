@@ -514,22 +514,43 @@ router.get('/adk/manifest.json', cacheHeaders(300), (_req: Request, res: Respons
 
 router.get('/.well-known/ai-plugin.json', cacheHeaders(3600), (_req: Request, res: Response) => {
   res.json({
-    schema_version: 'v1', name_for_human: 'CLAWD Agents', name_for_model: 'clawd_agents',
-    description_for_human: 'Autonomous Solana AI agents with on-chain identity, payment processing, and multi-agent coordination. 124+ agents available.',
-    description_for_model: 'Use the CLAWD agents for Solana analysis, market commentary, and autonomous operations. Browse the full catalog of 124+ agents.',
+    schema_version: 'v1', name_for_human: 'OpenClawd Agents', name_for_model: 'openclawd_agents',
+    description_for_human: 'OpenClawd Solana-native agent registry with catalog JSON, ACP discovery, x402 gateway routing, skill discovery, Telegram gateway hooks, and Metaplex Agent Registry documents.',
+    description_for_model: 'Use OpenClawd Agents to discover Solana-native agents and skills on x402.wtf. Canonical surfaces include https://x402.wtf/agents, https://x402.wtf/skills, https://x402.wtf/gateway, and https://x402.wtf/telegram.',
     auth: { type: 'none' },
     api: {
-      type: 'openapi',
-      url: BASE_URL + '/.well-known/openapi.yaml',
+      type: 'none',
+      url: BASE_URL + '/api/agents',
     },
-    logo_url: 'https://raw.githubusercontent.com/x402agent/solana-clawd/main/assets/openclawd-banner.svg',
-    legal_info_url: BASE_URL + '/identity',
-    // Extended ACP fields
+    logo_url: BASE_URL + '/nich.jpg',
+    contact_email: 'operators@x402.wtf',
+    legal_info_url: 'https://github.com/openclawd/solana-clawd/blob/main/agents/LICENSE',
     agent_registry: {
+      hub: BASE_URL + '/agents',
       catalog: BASE_URL + '/api/agents/catalog',
       registry: BASE_URL + '/api/agents/registry',
       templates: BASE_URL + '/api/agents/templates',
       acp: BASE_URL + '/api/agents/acp-registry.json',
+    },
+    skill_registry: {
+      hub: BASE_URL + '/skills',
+      catalog: BASE_URL + '/api/skills/catalog',
+      list: BASE_URL + '/api/skills',
+    },
+    gateway: {
+      hub: BASE_URL + '/gateway',
+      health: BASE_URL + '/health',
+      telegram_webhook: BASE_URL + '/telegram/webhook',
+    },
+    staking: {
+      hub: BASE_URL + '/staking',
+      config: BASE_URL + '/api/staking/config',
+      portfolio: BASE_URL + '/api/staking/portfolio/{owner}',
+      assets: BASE_URL + '/api/staking/assets/{owner}',
+      asset: BASE_URL + '/api/staking/agent/{assetId}',
+      batch: BASE_URL + '/api/staking/agents/batch',
+      transaction: BASE_URL + '/api/staking/transaction',
+      das_methods: ['getAssetsByOwner', 'getAsset', 'getAssetBatch'],
     },
   });
 });

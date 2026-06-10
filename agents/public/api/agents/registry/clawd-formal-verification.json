@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "erc-8004-agent-registration-v1",
+  "protocol": "metaplex-agent-registry",
+  "name": "Clawd Formal Verification",
+  "description": "Formal verification, invariant gates, and attestation workflows for Solana Clawd skills, registries, risk engines, and Metaplex execution delegation.",
+  "image": "https://x402.wtf/nich.jpg",
+  "external_url": "https://x402.wtf/agents/clawd-formal-verification",
+  "active": true,
+  "createdAt": "2026-06-10",
+  "updatedAt": "2026-06-10T02:06:27.541Z",
+  "tags": [
+    "solana",
+    "clawd",
+    "formal-verification",
+    "invariants",
+    "risk",
+    "attestation",
+    "metaplex",
+    "agent-registry"
+  ],
+  "categories": [
+    "security"
+  ],
+  "owner": {
+    "organization": "OpenClawd",
+    "website": "https://x402.wtf",
+    "token": {
+      "symbol": "CLAWD",
+      "chain": "solana",
+      "mint": "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+    }
+  },
+  "services": [
+    {
+      "name": "web",
+      "endpoint": "https://x402.wtf/agents/clawd-formal-verification"
+    },
+    {
+      "name": "A2A",
+      "endpoint": "https://x402.wtf/api/agents/a2a",
+      "version": "0.3.0"
+    },
+    {
+      "name": "catalog",
+      "endpoint": "https://x402.wtf/api/agents/catalog/clawd-formal-verification.json"
+    },
+    {
+      "name": "registration",
+      "endpoint": "https://x402.wtf/api/agents/registry/clawd-formal-verification.json"
+    }
+  ],
+  "registrations": [
+    {
+      "agentId": "openclawd:clawd-formal-verification",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-formal-verification.json"
+    }
+  ],
+  "supportedTrust": [
+    "reputation",
+    "crypto-economic",
+    "token-gated"
+  ],
+  "metaplex": {
+    "programs": [
+      "agent-registry",
+      "core"
+    ],
+    "sdk": "@metaplex-foundation/mpl-agent-registry",
+    "expectedIdentity": {
+      "asset": null,
+      "agentIdentityPda": null,
+      "assetSignerPda": null,
+      "executiveProfilePda": null
+    },
+    "registrationFlow": [
+      "mint MPL Core agent asset",
+      "register AgentIdentity with this registrationUri",
+      "optionally register an executive profile",
+      "delegate execution only after operator review"
+    ]
+  },
+  "openclawd": {
+    "identifier": "clawd-formal-verification",
+    "capabilities": [
+      "formal-verification",
+      "invariant-checking",
+      "risk-gate",
+      "metaplex-register-identity",
+      "metaplex-delegate-execution",
+      "read-only"
+    ],
+    "payment": null,
+    "agentToken": null
+  }
+}

@@ -1,10 +1,52 @@
 {
   "schemaVersion": "openclawd.metaplex.registry.index.v1",
-  "generatedAt": "2026-06-08T20:32:27.165Z",
+  "generatedAt": "2026-06-10T02:06:27.541Z",
   "registry": "metaplex-agent-registry",
   "host": "https://x402.wtf",
-  "count": 124,
+  "count": 130,
   "agents": [
+    {
+      "id": "clawd-formal-verification",
+      "name": "Clawd Formal Verification",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-formal-verification.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
+    {
+      "id": "clawd-gateway-runtime",
+      "name": "Clawd Gateway Runtime",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-gateway-runtime.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
+    {
+      "id": "clawd-grok-runtime",
+      "name": "Clawd Grok Runtime",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-grok-runtime.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
+    {
+      "id": "clawd-operator-runtime",
+      "name": "Clawd Operator Runtime",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-operator-runtime.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
+    {
+      "id": "clawd-pump-runtime",
+      "name": "Clawd Pump Runtime",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-pump-runtime.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
+    {
+      "id": "clawd-router-runtime",
+      "name": "Clawd Router Runtime",
+      "registrationUri": "https://x402.wtf/api/agents/registry/clawd-router-runtime.json",
+      "agentRegistry": "solana:mainnet:metaplex-agent-registry",
+      "status": "pending-onchain-registration"
+    },
     {
       "id": "clawdex",
       "name": "Clawdex",

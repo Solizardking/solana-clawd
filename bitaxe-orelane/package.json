@@ -12,6 +12,7 @@
     "build": "tsc -p .",
     "start": "node --import tsx/esm src/index.ts",
     "status": "node --import tsx/esm src/index.ts --status",
+    "led": "node --import tsx/esm src/led.ts",
     "bot": "node --import tsx/esm src/telegram-bot.ts",
     "bot:test": "node --import tsx/esm src/telegram-bot.ts --test",
     "test": "vitest run",

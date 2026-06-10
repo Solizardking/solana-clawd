@@ -40,6 +40,35 @@ export interface BitaxeSafetyReport {
   reasons: string[];
 }
 
+export interface BitaxeLedColor {
+  red: number;
+  green: number;
+  blue: number;
+  name?: string;
+}
+
+export interface BitaxeLedResponse {
+  message: string;
+  applied?: boolean;
+  color?: BitaxeLedColor;
+  enabled?: boolean;
+  mode?: 'off' | 'solid' | 'cycle' | string;
+  brightnessPercent?: number;
+}
+
+export const BITAXE_LED_COLORS: Record<string, BitaxeLedColor> = {
+  off: { red: 0, green: 0, blue: 0, name: 'off' },
+  red: { red: 255, green: 0, blue: 0, name: 'red' },
+  orange: { red: 255, green: 96, blue: 0, name: 'orange' },
+  yellow: { red: 255, green: 220, blue: 0, name: 'yellow' },
+  green: { red: 0, green: 255, blue: 32, name: 'green' },
+  cyan: { red: 0, green: 200, blue: 255, name: 'cyan' },
+  blue: { red: 0, green: 64, blue: 255, name: 'blue' },
+  purple: { red: 160, green: 0, blue: 255, name: 'purple' },
+  pink: { red: 255, green: 32, blue: 160, name: 'pink' },
+  white: { red: 255, green: 255, blue: 255, name: 'white' },
+};
+
 async function fetchJson<T>(url: string, init?: RequestInit, timeoutMs = 10_000): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -104,12 +133,90 @@ export async function rebootBitaxe(baseUrl: string): Promise<void> {
 }
 
 export async function setBitaxeFrequency(baseUrl: string, frequencyMhz: number): Promise<void> {
-  const url = new URL('/api/system/settings', baseUrl).toString();
+  const url = new URL('/api/system', baseUrl).toString();
   await fetchJson(url, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ frequency: frequencyMhz }),
   });
+}
+
+function clampColor(value: number): number {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
+export function parseBitaxeLedColor(raw: string | undefined): BitaxeLedColor | null {
+  if (!raw) return null;
+  const value = raw.trim().toLowerCase();
+  if (!value) return null;
+
+  if (BITAXE_LED_COLORS[value]) {
+    return { ...BITAXE_LED_COLORS[value] };
+  }
+
+  const hex = value.match(/^#?([0-9a-f]{6})$/i);
+  if (hex) {
+    const intValue = Number.parseInt(hex[1], 16);
+    return {
+      red: (intValue >> 16) & 0xff,
+      green: (intValue >> 8) & 0xff,
+      blue: intValue & 0xff,
+      name: `#${hex[1].toLowerCase()}`,
+    };
+  }
+
+  const rgb = value.match(/^(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})$/);
+  if (rgb) {
+    return {
+      red: clampColor(Number(rgb[1])),
+      green: clampColor(Number(rgb[2])),
+      blue: clampColor(Number(rgb[3])),
+      name: `${clampColor(Number(rgb[1]))},${clampColor(Number(rgb[2]))},${clampColor(Number(rgb[3]))}`,
+    };
+  }
+
+  return null;
+}
+
+export async function setBitaxeBaseLed(baseUrl: string, color: BitaxeLedColor, brightnessPercent = 18): Promise<BitaxeLedResponse> {
+  const url = new URL('/api/orelane/led', baseUrl).toString();
+  const response = await fetchJson<Omit<BitaxeLedResponse, 'message' | 'color'>>(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      mode: color.name === 'off' ? 'off' : 'solid',
+      red: color.red,
+      green: color.green,
+      blue: color.blue,
+      brightnessPercent,
+    }),
+  });
+
+  return {
+    ...response,
+    color,
+    applied: response.enabled,
+    message: response.enabled === false
+      ? 'base LED command accepted, but firmware reports LED support is disabled'
+      : `base LED set to ${color.name ?? `${color.red},${color.green},${color.blue}`}`,
+  };
+}
+
+export async function cycleBitaxeBaseLed(baseUrl: string, brightnessPercent = 18): Promise<BitaxeLedResponse> {
+  const url = new URL('/api/orelane/led', baseUrl).toString();
+  const response = await fetchJson<Omit<BitaxeLedResponse, 'message'>>(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode: 'cycle', brightnessPercent }),
+  });
+
+  return {
+    ...response,
+    applied: response.enabled,
+    message: response.enabled === false
+      ? 'base LED cycle command accepted, but firmware reports LED support is disabled'
+      : 'base LED color cycle enabled',
+  };
 }
 
 export function computeEfficiency(info: BitaxeSystemInfo): number {

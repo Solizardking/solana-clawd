@@ -109,6 +109,9 @@
 /optimize       — BTC lottery/latency plan + ORE round analysis
 /freq           — Get current Bitaxe frequency
 /freq 500       — Set frequency to 500 MHz (gated)
+/led red        — Set base LED color (gated, firmware overlay required)
+/led #00ff80    — Set base LED by hex color
+/led_cycle      — Cycle base LED colors on-device
 /pause          — Pause Bitaxe mining (gated)
 /resume         — Resume Bitaxe mining (gated)
 /reboot         — Restart Bitaxe (gated)
@@ -188,20 +191,30 @@ npm test
 npm run status
 ```
 
-### 6. Test Telegram Bot (no Telegram connection needed)
+### 6. Change Base LED Color
+Requires the firmware overlay endpoint and live rig-control gates:
+
+```bash
+npm run led -- red
+npm run led -- "#00ff80"
+npm run led -- cycle
+```
+
+### 7. Test Telegram Bot (no Telegram connection needed)
 ```bash
 npm run bot:test -- /help
 npm run bot:test -- /ticker SOL
 npm run bot:test -- "show me RSI on SOL"
 npm run bot:test -- "what's the hashrate?"
+npm run bot:test -- "/led purple"
 ```
 
-### 7. Run the Bot
+### 8. Run the Bot
 ```bash
 npm run bot
 ```
 
-### 8. Run Full Control Loop
+### 9. Run Full Control Loop
 ```bash
 npm start
 ```
@@ -391,7 +404,8 @@ vulcan status
 | [src/telegram-bot.ts](src/telegram-bot.ts) | Telegram bot with retry + graceful shutdown |
 | [src/controller.ts](src/controller.ts) | Parallelized snapshot collection + execution |
 | [src/operator.ts](src/operator.ts) | All bot intent handlers |
-| [src/bitaxe.ts](src/bitaxe.ts) | AxeOS API: info, pause, resume, reboot, freq, efficiency |
+| [src/bitaxe.ts](src/bitaxe.ts) | AxeOS API: info, pause, resume, reboot, freq, LED, efficiency |
+| [src/led.ts](src/led.ts) | Direct base LED color CLI |
 | [src/helius.ts](src/helius.ts) | Helius DAS API: wallet asset lookup |
 | [src/perps-bridge.ts](src/perps-bridge.ts) | Vulcan CLI integration: ticker, TA, paper/live trades |
 | [src/deepseek.ts](src/deepseek.ts) | DeepSeek NLP routing + keyword fallback |

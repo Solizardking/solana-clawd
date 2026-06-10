@@ -45,6 +45,8 @@ const INTENT_TOOL = {
             'bitaxe_freq_set',
             'bitaxe_hashrate',
             'bitaxe_efficiency',
+            'bitaxe_led_set',
+            'bitaxe_led_cycle',
             'ore_decision',
             'ore_checkpoint',
             'ore_claim',
@@ -70,6 +72,7 @@ const INTENT_TOOL = {
         amountSol: { type: 'number' },
         squares: { type: 'array', items: { type: 'number' } },
         frequencyMhz: { type: 'number' },
+        ledColor: { type: 'string' },
         timeframe: { type: 'string' },
         rawText: { type: 'string' },
       },
@@ -89,6 +92,8 @@ function systemPrompt(): string {
     'bitaxe_efficiency — efficiency, W/GH, power per hashrate questions',
     'bitaxe_freq_get — current frequency questions',
     'bitaxe_freq_set — set/change frequency (include frequencyMhz)',
+    'bitaxe_led_set — set/change the Bitaxe base LED color (include ledColor)',
+    'bitaxe_led_cycle — cycle/rainbow/pulse through base LED colors',
     'bitaxe_pause / bitaxe_resume — explicit pause or resume of the Bitcoin miner',
     'bitaxe_reboot / bitaxe_restart — reboot or restart the miner',
     'ore_checkpoint — explicit ORE checkpoint request',
@@ -127,6 +132,20 @@ export function routeWithKeywords(text: string): BotIntent {
   const symbol = lower.match(/\b(sol|btc|eth|jup|bonk|wif)\b/i)?.[1]?.toUpperCase();
   const notional = lower.match(/\$?(\d+(?:\.\d+)?)\s*(?:usd|usdc|notional)?/i)?.[1];
   const freqMatch = lower.match(/(\d+(?:\.\d+)?)\s*mhz/i);
+  const ledColorMatch =
+    lower.match(/#[0-9a-f]{6}/i) ??
+    lower.match(/[0-9]{1,3}\s*,\s*[0-9]{1,3}\s*,\s*[0-9]{1,3}/i) ??
+    lower.match(/\b(off|red|orange|yellow|green|cyan|blue|purple|pink|white)\b/i);
+
+  if (
+    (lower.includes('led') || lower.includes('base light') || lower.includes('base led')) &&
+    (lower.includes('cycle') || lower.includes('rainbow') || lower.includes('pulse') || lower.includes('change colors') || lower.includes('changing colors'))
+  ) {
+    return { action: 'bitaxe_led_cycle', rawText: text };
+  }
+  if (lower.includes('led') || lower.includes('base light') || lower.includes('base led')) {
+    return { action: 'bitaxe_led_set', ledColor: ledColorMatch?.[1], rawText: text };
+  }
 
   if (lower.includes('reboot') || lower.includes('restart')) {
     return { action: 'bitaxe_reboot', rawText: text };

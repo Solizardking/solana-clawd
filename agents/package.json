@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "build": "node build-catalog.cjs && node scripts/validate-catalog.cjs",
-    "test": "node scripts/validate-catalog.cjs"
+    "build": "node build-catalog.cjs && node scripts/validate-catalog.cjs && node scripts/validate-x402-setup.cjs",
+    "test": "node scripts/validate-catalog.cjs && node scripts/validate-x402-setup.cjs",
+    "test:locale": "node scripts/validate-catalog.cjs",
+    "verify:x402": "node scripts/validate-x402-setup.cjs"
   }
 }

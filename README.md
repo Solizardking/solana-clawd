@@ -21,7 +21,7 @@
 ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   \___
 |                                                                             |
 |    S O V E R E I G N   A I   ·   S O L A N A   ·   x 4 0 2   ·   W T F   |
-|    125 agents  ·  130+ skills  ·  12 packages  ·  CAAP/1.0 agent auth      |
+|    130 agents  ·  136 skills  ·  12 packages  ·  CAAP/1.0 agent auth       |
 |_____________________________________________________________________________|
     \   🦞   /          \   🦞   /          \   🦞   /          \   🦞   /
      \_/ \_/              \_/ \_/              \_/ \_/              \_/ \_/
@@ -34,18 +34,18 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**🦞 125 agents · 🎯 130+ skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
+**🦞 130 agents · 🎯 136 skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
 
 <div style="position: relative; padding-top: 56.25%;">
   <iframe
-    src="https://customer-oh7hxjdpro3mt496.cloudflarestream.com/0a91344b5b88044f760c52f7fee3d6b2/iframe"
+    src="https://customer-oh7hxjdpro3mt496.cloudflarestream.com/6e851c788faeb732ae8eb0e355b39741/iframe"
     style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
     allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
     allowfullscreen="true"
   ></iframe>
 </div>
 
-**Watch the video:** https://customer-oh7hxjdpro3mt496.cloudflarestream.com/0a91344b5b88044f760c52f7fee3d6b2/iframe
+**Watch the video:** https://customer-oh7hxjdpro3mt496.cloudflarestream.com/6e851c788faeb732ae8eb0e355b39741/iframe
 
 ---
 
@@ -74,8 +74,8 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 [![CA](https://img.shields.io/badge/CA-8cHzQH...pump-C85C2B?style=for-the-badge&logo=solana&logoColor=white)](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 [![x402](https://img.shields.io/badge/x402.wtf-payments-1E5AA8?style=for-the-badge)](https://x402.wtf)
 [![Website](https://img.shields.io/badge/x402.wtf-website-147D64?style=for-the-badge)](https://x402.wtf)
-[![Agents](https://img.shields.io/badge/125_agents-C85C2B?style=for-the-badge&logo=robotframework&logoColor=white)](https://x402.wtf/agents)
-[![Skills](https://img.shields.io/badge/130+_skills-9B59B6?style=for-the-badge&logo=skillshare&logoColor=white)](https://x402.wtf/skills)
+[![Agents](https://img.shields.io/badge/130_agents-C85C2B?style=for-the-badge&logo=robotframework&logoColor=white)](https://x402.wtf/agents)
+[![Skills](https://img.shields.io/badge/136_skills-9B59B6?style=for-the-badge&logo=skillshare&logoColor=white)](https://x402.wtf/skills)
 [![Gateway](https://img.shields.io/badge/Gateway_Live-1E5AA8?style=for-the-badge&logo=telegram&logoColor=white)](https://x402.wtf/gateway)
 [![CAAP](https://img.shields.io/badge/CAAP%2F1.0-E67E22?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/better-auth/agent-auth)
 [![PR](https://img.shields.io/badge/pay.sh-verified-2EA44F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/solana-foundation/pay/pull/376)
@@ -110,6 +110,30 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 | 🦊 ZealBit | Memecoin Shaman | Common / 4107 | verified | `3rKCAoGT...AQvQQ3` |
 | 🌀 PsiCore | Alpha Hunter | Uncommon / 5121 | pending | `4MNnYHHH...RicnE1` |
 <!-- MINTED_SCOREBOARD:END -->
+
+## x402 Setup Verification
+
+The GitHub, install, and gateway paths are now wired to the canonical x402 surfaces:
+
+| Surface | Route | Verification |
+|---|---|---|
+| Agents hub | [`x402.wtf/agents`](https://x402.wtf/agents) | `agents` catalog validates 130 agents and the explicit `agents/` workspace paths |
+| Skills hub | [`x402.wtf/skills`](https://x402.wtf/skills) | Gateway serves 136 catalog skills plus per-skill metadata fallback |
+| Gateway | [`x402.wtf/gateway`](https://x402.wtf/gateway) | `gateway/scripts/smoke-x402-routes.mjs` starts the built gateway and checks public routes |
+| Telegram | [`x402.wtf/telegram`](https://x402.wtf/telegram) | Smoke test verifies `POST /telegram/webhook` returns `200 OK` |
+| Discovery | [`/.well-known/ai-plugin.json`](https://x402.wtf/.well-known/ai-plugin.json) | Static and dynamic discovery docs expose agents, skills, gateway, and Telegram URLs |
+
+Repeatable checks:
+
+```bash
+cd agents && npm run test
+cd ../gateway && npm test
+```
+
+What these cover:
+- `agents/scripts/validate-x402-setup.cjs` checks `CNAME`, `.well-known`, catalog counts, skills catalog URLs, installer wiring, GitHub Actions, gateway route source, and every explicitly listed `agents/` path.
+- `.github/workflows/x402-setup.yml` runs the same agents verifier and gateway smoke test on PRs/pushes touching `agents/`, `gateway/`, `formal_verification/`, `skills/`, or `install.sh`.
+- `install.sh --gateway` now builds the gateway and runs `npm run smoke:x402` before reporting the gateway as ready.
 
 ---
 
@@ -536,7 +560,7 @@ cd packages/agentwallet && npm run build    # agentwallet-vault (builds clean)
 
 ```bash
 cd agents && node build-catalog.cjs
-# → agents-catalog.json (125 agents)
+# → agents-catalog.json (130 agents)
 # → public/.well-known/agent-auth.json  (CAAP/1.0 discovery)
 # → public/.well-known/acp.json         (ACP registry)
 # → public/api/agents/                  (full static API)
@@ -574,7 +598,7 @@ open https://x402.wtf/terminal
 ║                     S O L A N A   C L A W D                             ║
 ╠═════════════════════════════╦════════════════════════════════════════════╣
 ║  x402.wtf            ║  Main site · TUI · SDK · token             ║
-║  x402.wtf/agents     ║  Browse + search all 125 agents            ║
+║  x402.wtf/agents     ║  Browse + search all 130 agents            ║
 ║  x402.wtf/gateway    ║  x402 payment gateway · USDC routing       ║
 ║  x402.wtf/skills     ║  Installable agent skills catalog          ║
 ║  x402.wtf/terminal   ║  Browser terminal (zero install)           ║
@@ -610,7 +634,7 @@ Most agent frameworks stop at chat. OpenClawd handles the hard parts:
 | **Memory** | KNOWN / INFERRED / LEARNED memory tiers + SQLite shell-state |
 | **Economics** | Agents earn (USDC/SOL), pay (x402), and gate their own API access |
 | **Sovereignty** | Runtime operates without a hosted control plane — agent owns its keys |
-| **Agent Kit** | 125 agent definitions + gacha machine + hub + registry |
+| **Agent Kit** | 130 agent definitions + gacha machine + hub + registry |
 | **Free Inference** | Free OpenRouter models wired in — no paid key to start |
 | **Lore** | Lobsters molt. They don't shrink with age. Neither do your agents. |
 
@@ -788,12 +812,12 @@ ClawdBrowser/src/
 
 ---
 
-## 🎰 Agent Kit — 125 Solana DeFi Agents
+## 🎰 Agent Kit — 130 Solana DeFi Agents
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════╗
 ║           S O L A N A   C L A W D   A G E N T   K I T                  ║
-║               125 production-ready DeFi agent definitions                ║
+║               130 production-ready DeFi agent definitions                ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║                                                                          ║
 ║  TRADING              ANALYTICS           INFRASTRUCTURE                 ║
@@ -1060,7 +1084,7 @@ programs/programs/    ✅ built  ⚓ Solana AI Inference Protocol — on-chain +
 ### Zone 3 — Agent Surface
 
 ```
-agents/                      🤖 125 Solana agents  →  x402.wtf/agents
+agents/                      🤖 130 Solana agents  →  x402.wtf/agents
 ├── AGENTS.md                full agent catalog + capability table
 ├── CLAUDE.md                Claude Code agent context
 ├── GEMINI.md                Gemini agent integration notes
@@ -1081,7 +1105,7 @@ agents/                      🤖 125 Solana agents  →  x402.wtf/agents
 │                              public/.well-known/acp.json          (ACP registry)
 │                              public/api/agents/                   (static API)
 │
-└── src/                     125 JSON agent definitions
+└── src/                     130 JSON agent definitions
     ├── solana-clawd-auth-agent.json         🔐 CAAP/1.0 auth specialist (featured)
     ├── solana-autonomous-trader.json        OODA loop · live execution
     ├── solana-arbitrage-scanner.json        cross-DEX spread detection
@@ -1270,7 +1294,7 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 ╠═══════════╬═══════════════════════════════════╬══════════════════════════╣
 ║  Runtime  ║  src/                             ║  Leviathan OODA engine   ║
 ║  Packages ║  packages/ (8)                    ║  6 npm · 2 dev           ║
-║  Agents   ║  agents/ · characters/            ║  125 defs · personas     ║
+║  Agents   ║  agents/ · characters/            ║  130 defs · personas     ║
 ║  AI Infra ║  mcp-server/ · x402/ · vendor/    ║  MCP · payments · x402   ║
 ║  Skills   ║  skills/ · library/ · knowledge/  ║  100+ installable skills ║
 ║  Bots     ║  livekit-agent/ · clawdbot-*/     ║  voice · Telegram        ║
@@ -1854,7 +1878,7 @@ The gateway ships with every Solana Clawd install and provides:
 
 - **Telegram bot** — `/menu`, `/wallet`, `/trade`, `/alerts`, `/price`, `/search`
 - **x402 tier gating** — $CLAWD holder tiers unlock features
-- **Full 124+ agent catalog** served over HTTP (no auth required)
+- **Full 130 agent catalog** served over HTTP (no auth required)
 - **Birdeye real-time** price + whale trade alerts
 - **Claude-powered** natural-language trading ("buy 0.05 SOL of ...")
 - **Helius DAS** asset discovery
@@ -1869,7 +1893,7 @@ cd gateway && npm start
 
 | Endpoint | Description |
 |---|---|
-| `GET /api/agents/catalog` | 124+ agents |
+| `GET /api/agents/catalog` | 130 agents |
 | `GET /api/agents/catalog/:id` | Individual agent |
 | `GET /api/agents/registry` | Registry index |
 | `GET /api/agents/templates` | Agent scaffolds |
@@ -1987,7 +2011,7 @@ node packages/agent-hub/dist/cli.js --help
 # 4. Agent catalog builds
 cd agents && node build-catalog.cjs
 # → "✅ Wrote agents-catalog.json"
-# → "125 agents"
+# → "130 agents"
 # → public/.well-known/agent-auth.json (CAAP/1.0 discovery)
 
 # 5. CAAP discovery

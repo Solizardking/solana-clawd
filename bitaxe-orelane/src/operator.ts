@@ -1,4 +1,13 @@
-import { computeEfficiency, pauseBitaxeMining, rebootBitaxe, resumeBitaxeMining, setBitaxeFrequency } from './bitaxe.js';
+import {
+  computeEfficiency,
+  cycleBitaxeBaseLed,
+  parseBitaxeLedColor,
+  pauseBitaxeMining,
+  rebootBitaxe,
+  resumeBitaxeMining,
+  setBitaxeBaseLed,
+  setBitaxeFrequency,
+} from './bitaxe.js';
 import type { BotIntent, OperatorResponse } from './bot-types.js';
 import type { OrelaneAppConfig } from './config.js';
 import { getHybridStatusReport } from './controller.js';
@@ -38,6 +47,10 @@ function parseFrequency(raw: string | undefined): number | undefined {
   return Number.isFinite(mhz) && mhz > 0 ? mhz : undefined;
 }
 
+function parseLedColor(parts: string[]): string | undefined {
+  return parts.length > 1 ? parts.slice(1).join(' ') : undefined;
+}
+
 function parseCommand(text: string): BotIntent | null {
   const parts = text.trim().split(/\s+/).filter(Boolean);
   const command = parts[0]?.toLowerCase();
@@ -64,6 +77,12 @@ function parseCommand(text: string): BotIntent | null {
     case '/freq':
       if (parts[1]) return { action: 'bitaxe_freq_set', frequencyMhz: parseFrequency(parts[1]), rawText: text };
       return { action: 'bitaxe_freq_get', rawText: text };
+    case '/led':
+    case '/base_led':
+      return { action: 'bitaxe_led_set', ledColor: parseLedColor(parts), rawText: text };
+    case '/led_cycle':
+    case '/rainbow':
+      return { action: 'bitaxe_led_cycle', rawText: text };
     case '/bitaxe_pause':
     case '/pause':
       return { action: 'bitaxe_pause', rawText: text };
@@ -144,6 +163,8 @@ function helpText(): string {
     '/efficiency — W/GH efficiency metric',
     '/optimize — BTC lottery/latency and ORE round plan',
     '/freq [MHz] — get or set Bitaxe frequency',
+    '/led <color|#rrggbb|r,g,b> — set base LED color',
+    '/led_cycle — cycle base LED colors',
     '/pause /resume — gated Bitaxe mining control',
     '/reboot — gated Bitaxe restart',
     '',
@@ -270,6 +291,7 @@ function dashboardsText(config: OrelaneAppConfig): string {
     `Dashboard=${config.dashboardUrl}`,
     `Firmware status=${new URL('/api/orelane/status', config.bitaxeUrl).toString()}`,
     `Firmware bundle=${new URL('/api/orelane/bundle', config.bitaxeUrl).toString()}`,
+    `Firmware LED=${new URL('/api/orelane/led', config.bitaxeUrl).toString()}`,
     `Vulcan bin=${config.vulcanBin}`,
   ].join('\n');
 }
@@ -307,6 +329,24 @@ async function executeIntent(config: OrelaneAppConfig, intent: BotIntent): Promi
       }
       await setBitaxeFrequency(config.bitaxeUrl, intent.frequencyMhz);
       return ok(`Bitaxe frequency set to ${intent.frequencyMhz} MHz.`);
+    case 'bitaxe_led_set': {
+      if (!canControlRig(config)) {
+        return blocked('LED change blocked. Require RIG_CONTROL_LIVE=true, OPERATOR_CONFIRMED=true, DRY_RUN=false.');
+      }
+      const color = parseBitaxeLedColor(intent.ledColor);
+      if (!color) {
+        return blocked('Provide LED color: /led red, /led #00ff80, or /led 0,128,255');
+      }
+      const response = await setBitaxeBaseLed(config.bitaxeUrl, color);
+      return ok(response.message || `Bitaxe base LED set to ${color.name ?? `${color.red},${color.green},${color.blue}`}.`, response);
+    }
+    case 'bitaxe_led_cycle': {
+      if (!canControlRig(config)) {
+        return blocked('LED cycle blocked. Require RIG_CONTROL_LIVE=true, OPERATOR_CONFIRMED=true, DRY_RUN=false.');
+      }
+      const response = await cycleBitaxeBaseLed(config.bitaxeUrl);
+      return ok(response.message, response);
+    }
     case 'bitaxe_pause':
       if (!canControlRig(config)) {
         return blocked('Rig pause blocked. Require RIG_CONTROL_LIVE=true, OPERATOR_CONFIRMED=true, DRY_RUN=false.');
