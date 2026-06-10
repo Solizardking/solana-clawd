@@ -1098,8 +1098,9 @@ setInterval(async () => {
   });
 }, 4500);
 
-// Configure Vite middleware or serve production static assets
-async function startServer() {
+// Configure Vite middleware or serve production static assets.
+// Vercel imports the Express app as a serverless handler; local dev starts a listener.
+async function configureServer() {
   if (process.env.NODE_ENV !== "production") {
     // Development server with HMR routing
     const vite = await createViteServer({
@@ -1115,10 +1116,19 @@ async function startServer() {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
+}
 
+const serverReady = configureServer();
+
+if (!process.env.VERCEL) {
+  serverReady.then(() => {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`[Goal Generator OS] Server listening on http://0.0.0.0:${PORT}`);
   });
+  });
 }
 
-startServer();
+export default async function handler(req: express.Request, res: express.Response) {
+  await serverReady;
+  return app(req, res);
+}

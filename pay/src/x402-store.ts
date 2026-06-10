@@ -30,7 +30,7 @@ export interface X402Product {
   /** atomic units (USDC has 6 decimals) */
   priceAtomic: string;
   /** category for the storefront grid */
-  category: "payments" | "discovery" | "identity" | "inference" | "attestation";
+  category: "payments" | "discovery" | "identity" | "inference" | "attestation" | "staking";
   tags: string[];
 }
 
@@ -140,6 +140,18 @@ export const X402_PRODUCTS: X402Product[] = [
     priceAtomic: "5000",
     category: "discovery",
     tags: ["x402", "discovery", "mcp", "registry"],
+  },
+  {
+    id: "agent-staking-das",
+    title: "Agent Staking DAS Scan",
+    summary: "Read CLAWD holder status, agent Core assets, and SPL tokens for staking readiness.",
+    avatar: "🥩",
+    challengePath: "/api/x402wtf/checkout?product=agent-staking-das",
+    deliverable: "Helius DAS-backed staking portfolio summary with agent assets, token assets, and staking eligibility hints.",
+    priceUsd: "0.01",
+    priceAtomic: "10000",
+    category: "staking",
+    tags: ["x402", "staking", "helius", "das", "clawd", "agents"],
   },
   {
     id: "registry-register",
