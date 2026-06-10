@@ -59,13 +59,31 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 | 🐚 **Antigravity Managed Agents** | Isolated Linux sandbox — code execution, Git/GCS sources, network rules, credential injection |
 | 🖥️ **Computer Use** | Browser automation — screenshot-based control with human-in-the-loop safety confirmation |
 | 🧠 **Gemini 3.5 Flash Provider** | Full `@google/genai` SDK integration — InferProvider adapter, search grounding, code execution |
-| 🤖 **CLAWD Gateway** | Telegram bot + HTTP API with Helius/Birdeye/Solana integration — `npm run gateway:start` |
+| 🤖 **CLAWD Gateway** | Telegram bot + HTTP API with Helius/Birdeye/Solana integration — `npm start --prefix gateway` |
 | 🔀 **ClawdRouter** | Solana-native LLM router — 15-dimension scoring, 55+ models, wallet-signed auth, USDC x402 |
 | 🔐 **CAAP/1.0 Agent Auth** | Vendored 5-package auth stack — 116 TS files, SIWS, DAS, TEE attestation, Clerk bridge |
 | 🛡️ **Formal Verification** | Kani Rust Verifier + STRIDE scoring for skill registry |
 | 🎨 **Skill Hub** | Formally verified skill registry with Ed25519 signature-gated registration |
 | 🐹 **clawd-go — Solana Go SDK** | Full solana-go v1.16.0 wrapper — zero-config RPC + free AI via x402.wtf, no keys needed |
 | 🦞 **Agent Staking Protocol** | Metaplex Core lock/unlock primitive — no escrow, no custody transfer, live on devnet |
+
+---
+
+## Current Session Handoff — Smoke-Tested June 10, 2026
+
+This README now reflects the repo as smoke-tested from source, not just the intended product surface.
+
+| Area | Current truth | Smoke command |
+|---|---|---|
+| Root runtime | TypeScript check and runtime build pass after `pnpm install` restores workspace deps | `pnpm run check` · `pnpm run build` |
+| Agents hub | 130 agents and 136 skills validate through the x402 setup verifier | `npm test --prefix agents` |
+| Gateway | Gateway TypeScript build and x402 route smoke test pass | `npm test --prefix gateway` |
+| Library | 82 library agents validate and mirror into `public/library/` | `npm run library:validate` · `npm run library:doctor` |
+| CLI package path | The published `@openclawdsolana/clawd` package lives at `packages/clawd-code-cli/` | `node packages/clawd-code-cli/dist/index.js --help` |
+| Characters | Current character loader reports 97 personas | `node packages/clawd-code-cli/dist/index.js character list` |
+| Local registry | Registry stats use `~/.clawd/agent-index.db`; sandboxed runners may need permission to access it | `node packages/agent-registry/dist/cli/index.js stats` |
+
+Environment note: this checkout declares Node `>=20 <25`. The smoke run was executed on Node `v25.6.1`, so pnpm prints an unsupported-engine warning even though the verified checks above pass.
 
 ---
 
@@ -313,7 +331,7 @@ To publish that page on GitHub Pages, push to `newnew` or `main`. The workflow a
 
 ```bash
 clawd --help                   # TUI help
-clawd character list           # lists 94 personas (no key needed)
+clawd character list           # lists 97 personas (no key needed)
 clawd agent stats              # shows local registry stats
 clawd-registry stats           # same from the registry CLI
 clawd-hub --help               # hub CLI help
@@ -321,7 +339,7 @@ clawd-hub --help               # hub CLI help
 
 Expected output for `clawd character list`:
 ```
-  94 character(s) in ~/.../characters
+  97 character(s) in ~/.../characters
 
   Alice                          eliza        alice-character-json
   Ben Graham                     investor     ben-graham
@@ -484,25 +502,25 @@ cd ../clawd-code-cli && npm run build
 ls packages/agentwallet/dist/      # should contain cli.js, vault.js, server.js, crypto.js
 ls packages/agent-registry/dist/   # should contain index.js, cli/, indexer/, ...
 ls packages/agent-hub/dist/        # should contain cli.js, routes/, server/, ws/
-ls packages/clawd/dist/            # should contain index.js, commands/, agent/, ...
+ls packages/clawd-code-cli/dist/   # should contain index.js, commands/, agent/, ...
 ls dist/                           # leviathan root dist
 ```
 
-**Step 5 — Smoke-test the CLIs directly from dist:**
+**Step 6 — Smoke-test the CLIs directly from dist:**
 
 ```bash
 node packages/agentwallet/dist/cli.js --help          # vault CLI help
 node packages/agentwallet/dist/cli.js wallet list     # list stored wallets
-node packages/clawd/dist/index.js --help
-node packages/clawd/dist/index.js character list      # lists 94 personas
-node packages/clawd/dist/index.js agent stats         # empty registry, OK
+node packages/clawd-code-cli/dist/index.js --help
+node packages/clawd-code-cli/dist/index.js character list      # lists 97 personas
+node packages/clawd-code-cli/dist/index.js agent stats         # empty registry, OK
 node packages/agent-registry/dist/cli/index.js stats  # Registry Index Stats
 node packages/agent-hub/dist/cli.js --help            # hub CLI
 ```
 
 Expected output for `character list`:
 ```
-  94 character(s) in .../characters
+  97 character(s) in .../characters
 
   Alice                          eliza        alice-character-json
   Ben Graham                     investor     ben-graham
@@ -521,7 +539,7 @@ Expected output for `agent stats` / `registry stats`:
 
 > **Note:** `bigint: Failed to load bindings` is a cosmetic warning from `better-sqlite3` falling back to pure JS — it does not affect functionality.
 
-**Step 5b — Verify dist directories exist:**
+**Step 6b — Verify dist directories exist:**
 
 ```bash
 ls packages/agent-registry/dist/
@@ -530,14 +548,14 @@ ls packages/agent-registry/dist/
 ls packages/agent-hub/dist/
 # → cli.js  index.js  routes  server  ws
 
-ls packages/clawd/dist/
+ls packages/clawd-code-cli/dist/
 # → agent  commands  grok  index.js  tools  ui  utils  ...
 
 ls dist/
 # → leviathan root (index.js, agent/, gacha/, identity/, ...)
 ```
 
-**Step 6 — Set up your environment:**
+**Step 7 — Set up your environment:**
 
 ```bash
 cp .env.example .env
@@ -546,11 +564,11 @@ nano .env
 # Optional: XAI_API_KEY, ANTHROPIC_API_KEY, HELIUS_API_KEY, SOLANA_PRIVATE_KEY
 ```
 
-**Step 7 — Run:**
+**Step 8 — Run:**
 
 ```bash
-node packages/clawd/dist/index.js                    # TUI
-node packages/clawd/dist/index.js --character alice  # TUI as Alice
+node packages/clawd-code-cli/dist/index.js                    # TUI
+node packages/clawd-code-cli/dist/index.js --character alice  # TUI as Alice
 node packages/agent-hub/dist/cli.js start --open     # open hub dashboard
 
 # Or use the convenience scripts from root package.json:
@@ -572,8 +590,8 @@ cd packages/agentwallet && npm run build    # agentwallet-vault (builds clean)
 ```bash
 cd agents && node build-catalog.cjs
 # → agents-catalog.json (130 agents)
-# → public/.well-known/agent-auth.json  (CAAP/1.0 discovery)
-# → public/.well-known/acp.json         (ACP registry)
+# → public/.well-known/acp.json         (ACP discovery)
+# → public/api/agents/acp-registry.json (full ACP registry)
 # → public/api/agents/                  (full static API)
 ```
 
@@ -684,17 +702,19 @@ OpenClawd implements **CAAP/1.0** (Clawd Agent Attestation Protocol) — a SIWS-
 
 ### Discovery
 
-All CAAP metadata is published at the well-known endpoint:
+Agent discovery and commerce metadata are published at the well-known endpoints:
 
 ```bash
-curl https://x402.wtf/.well-known/agent-auth.json
-# → { "protocol": "CAAP/1.0", "provider": "Clawd", "capabilities": [...], ... }
+curl https://x402.wtf/.well-known/agent.json
+curl https://x402.wtf/.well-known/acp.json
+# → agent metadata plus the Agent Commerce Protocol registry
 ```
 
 The same file is generated locally when you run `node agents/build-catalog.cjs`:
 
 ```
-agents/public/.well-known/agent-auth.json
+agents/public/.well-known/acp.json
+agents/public/api/agents/acp-registry.json
 ```
 
 ### SDK — connect any agent in 3 steps
@@ -767,7 +787,7 @@ Add `agentAuth` to any agent definition:
 {
   "agentAuth": {
     "protocol": "CAAP/1.0",
-    "discovery": "https://x402.wtf/.well-known/agent-auth.json",
+    "discovery": "https://x402.wtf/.well-known/acp.json",
     "registrationEndpoint": "https://x402.wtf/api/auth/agent/register",
     "modes": ["delegated", "autonomous"],
     "keyAlgorithms": ["Ed25519"],
@@ -1112,8 +1132,8 @@ agents/                      🤖 130 Solana agents  →  x402.wtf/agents
 │
 ├── build-catalog.cjs        build script → agents-catalog.json
 │                            also writes:
-│                              public/.well-known/agent-auth.json  (CAAP discovery)
-│                              public/.well-known/acp.json          (ACP registry)
+│                              public/.well-known/acp.json          (ACP discovery)
+│                              public/api/agents/acp-registry.json  (ACP registry)
 │                              public/api/agents/                   (static API)
 │
 └── src/                     130 JSON agent definitions
@@ -1975,7 +1995,7 @@ clawd-registry --version         # → 2.0.0
 clawd-hub --version              # → 2.0.0
 
 # 2. Characters load (no API key needed)
-clawd character list             # → "94 character(s) in .../characters"
+clawd character list             # → "97 character(s) in .../characters"
 clawd character show clawd       # → "You are Clawd. ..."
 
 # 3. Registry works (empty is correct)
@@ -2010,8 +2030,8 @@ node packages/agentwallet/dist/cli.js --help
 node packages/agentwallet/dist/cli.js wallet list
 # → "No wallets found." (fresh vault, OK)
 
-node packages/clawd/dist/index.js character list
-# → "94 character(s)..."
+node packages/clawd-code-cli/dist/index.js character list
+# → "97 character(s)..."
 
 node packages/agent-registry/dist/cli/index.js stats
 # → "Total agents: 0"
@@ -2023,15 +2043,15 @@ node packages/agent-hub/dist/cli.js --help
 cd agents && node build-catalog.cjs
 # → "✅ Wrote agents-catalog.json"
 # → "130 agents"
-# → public/.well-known/agent-auth.json (CAAP/1.0 discovery)
+# → public/.well-known/acp.json (ACP discovery)
 
-# 5. CAAP discovery
-cat agents/public/.well-known/agent-auth.json | python3 -m json.tool | grep protocol
-# → "protocol": "CAAP/1.0"
+# 5. ACP discovery
+jq '.protocol' agents/public/.well-known/acp.json
+# → "Agent Commerce Protocol"
 
 # 6. install.sh flags parse correctly
 bash install.sh --help
-# → "Usage: install.sh [--minimal] [--leviathan] [--sdk] [--full] [--tui-only]"
+# → "Usage: install.sh [flags]"
 ```
 
 ### Known non-errors
@@ -2040,6 +2060,7 @@ bash install.sh --help
 |---|---|---|
 | `bigint: Failed to load bindings, pure JS will be used` | `better-sqlite3` native bindings not compiled | None — pure JS fallback works |
 | `Ignored build scripts: puppeteer, sharp, workerd` | pnpm sandbox policy | None — optional features only |
+| `Unsupported engine: wanted {"node":">=20 <25"}` | Running a newer local Node, such as v25.x | Use Node 20-24 for release parity; current smoke checks still pass |
 | `Total agents: 0` | Local registry is empty on fresh install | None — add with `clawd-registry add <address>` |
 
 ---
@@ -2067,7 +2088,7 @@ echo "OPENROUTER_API_KEY=sk-or-v1-..." >> ~/.clawd/.env
 
 ```bash
 clawd --help                 # TUI CLI options
-clawd character list         # lists 94 personas (no key needed)
+clawd character list         # lists 97 personas (no key needed)
 clawd agent stats            # local registry stats
 clawd-registry stats         # same from registry CLI
 clawd-hub --help             # hub server help
@@ -2125,7 +2146,7 @@ leviathan --status   # depth + balances + lifetime stats
 npm install @auth/agent
 
 # Discover capabilities
-curl https://x402.wtf/.well-known/agent-auth.json
+curl https://x402.wtf/.well-known/acp.json
 
 # Register via SDK
 node -e "
@@ -2184,7 +2205,7 @@ X402_MAX_SESSION=         # session spend cap (default: 1.00)
 BETTER_AUTH_URL=          # base URL (default: https://x402.wtf)
 BETTER_AUTH_SECRET=       # 32-byte random secret for JWT signing
 BETTER_AUTH_DATABASE_URL= # Postgres URL for agent/host/grant tables
-AGENT_AUTH_DISCOVERY=     # override: /.well-known/agent-auth.json URL
+AGENT_AUTH_DISCOVERY=     # override: /.well-known/acp.json URL
 
 # ── Agent Hub ───────────────────────────────────────────────────
 CLAWD_HUB_PORT=3747
@@ -2379,7 +2400,7 @@ The client only calls the gateway. The gateway is the only place that touches th
 | 🏛 x402 Gateway | [x402.wtf/gateway](https://x402.wtf/gateway) |
 | 🎯 x402 Skills | [x402.wtf/skills](https://x402.wtf/skills) |
 | 🔐 Agent Auth | [github.com/better-auth/agent-auth](https://github.com/better-auth/agent-auth) |
-| 🔑 CAAP Discovery | [x402.wtf/.well-known/agent-auth.json](https://x402.wtf/.well-known/agent-auth.json) |
+| 🔑 ACP Discovery | [x402.wtf/.well-known/acp.json](https://x402.wtf/.well-known/acp.json) |
 | 🖥 AI Terminal | [x402.wtf/terminal](https://x402.wtf/terminal) |
 | 🤖 AI (Cheshire) | [cheshireterminal.ai](https://cheshireterminal.ai) |
 | 💬 Telegram | [t.me/clawdtoken](https://t.me/clawdtoken) |
