@@ -26,6 +26,7 @@
         "agent-chat": "/api/x402wtf/agent/chat?product=agent-chat",
         "pay-attest": "/api/x402wtf/checkout?product=pay-attest",
         "agent-registry": "/api/x402wtf/agents?product=agent-registry",
+        "agent-staking-das": "/api/x402wtf/checkout?product=agent-staking-das",
         "registry-register": "/api/x402wtf/register?product=registry-register",
         "receipt-verify": "/api/x402wtf/verify?product=receipt-verify"
       }
@@ -101,6 +102,25 @@
         ]
       },
       {
+        "id": "agent-staking-das",
+        "title": "Agent Staking DAS Scan",
+        "summary": "Read CLAWD holder status, agent Core assets, and SPL tokens for staking readiness.",
+        "avatar": "🥩",
+        "challengePath": "/api/x402wtf/checkout?product=agent-staking-das",
+        "deliverable": "Helius DAS-backed staking portfolio summary with agent assets, token assets, and staking eligibility hints.",
+        "priceUsd": "0.01",
+        "priceAtomic": "10000",
+        "category": "staking",
+        "tags": [
+          "x402",
+          "staking",
+          "helius",
+          "das",
+          "clawd",
+          "agents"
+        ]
+      },
+      {
         "id": "registry-register",
         "title": "Merchant Registration",
         "summary": "Register a new operator wallet as a paid merchant on x402.wtf.",
@@ -147,6 +167,6 @@
   },
   "manifest": {
     "version": "2.1",
-    "issuedAt": "2026-06-09T16:19:18.523Z"
+    "issuedAt": "2026-06-10T03:24:26.136Z"
   }
 }

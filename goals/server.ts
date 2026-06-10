@@ -7,7 +7,6 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import crypto from "crypto";
-import { createServer as createViteServer } from "vite";
 import { Connection, PublicKey } from "@solana/web3.js";
 
 // Load environment variables for local testing
@@ -997,7 +996,7 @@ app.post("/api/phoenix/strategies/action", (req, res) => {
 });
 
 // Setup the active Strategies background ticker
-setInterval(async () => {
+const strategyTicker = setInterval(async () => {
   if (strategyRuns.length === 0) return;
   const livePrices = await queryJupiterLivePrices();
   const solPrice = livePrices.SOL;
@@ -1097,12 +1096,14 @@ setInterval(async () => {
     }
   });
 }, 4500);
+strategyTicker.unref?.();
 
 // Configure Vite middleware or serve production static assets.
 // Vercel imports the Express app as a serverless handler; local dev starts a listener.
 async function configureServer() {
   if (process.env.NODE_ENV !== "production") {
     // Development server with HMR routing
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
