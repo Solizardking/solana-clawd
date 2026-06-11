@@ -6,3 +6,7 @@ pub mod stake_agent;
 pub use stake_agent::*;
 pub mod unstake_agent;
 pub use unstake_agent::*;
+pub mod stake_for_verification;
+pub use stake_for_verification::*;
+pub mod unstake_verification;
+pub use unstake_verification::*;
