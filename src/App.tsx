@@ -1,6 +1,6 @@
 import "./index.css"
 import { useEffect, useMemo, useState } from "react"
-import type { CSSProperties } from "react"
+import type { CSSProperties, FormEvent } from "react"
 import LibraryApp from "./LibraryApp.js"
 
 type Agent = {
@@ -33,6 +33,8 @@ type AgentScore = Agent & {
   liquidationRisk: number
   heat: number
   proof: string
+  trainingLevel?: number
+  trainingSamples?: number
 }
 
 type ConversationLine = {
@@ -40,6 +42,51 @@ type ConversationLine = {
   label: string
   text: string
   tone: "left" | "right" | "referee" | "system"
+}
+
+type TrainingMode = "perps" | "risk" | "dialogue"
+
+type UserSession = {
+  handle: string
+  wallet: string
+  agentId: string
+  createdAt: string
+}
+
+type TrainingState = {
+  agentId: string
+  level: number
+  samples: number
+  reward: number
+  riskBias: number
+  mode: TrainingMode
+  autoTrain: boolean
+  lastTrainedAt: string | null
+  memory: string[]
+}
+
+type RealtimeSnapshot = {
+  status: "connecting" | "live" | "degraded" | "offline"
+  slot: number | null
+  blockHeight: number | null
+  health: string
+  latencyMs: number | null
+  quoteOut: number | null
+  updatedAt: string | null
+  source: string
+  error?: string
+}
+
+type PhantomProvider = {
+  isPhantom?: boolean
+  connect: () => Promise<{ publicKey: { toString: () => string } }>
+  disconnect?: () => Promise<void>
+}
+
+declare global {
+  interface Window {
+    solana?: PhantomProvider
+  }
 }
 
 const boxBannerUrl = new URL("../assets/box-agents-banner.svg", import.meta.url).href
@@ -52,6 +99,23 @@ const DEEPSEEK_RUNTIME = {
   fastModel: "deepseek-v4-flash",
   apiKeyEnv: "DEEPSEEK_API_KEY",
   rpcEnv: "HELIUS_RPC_URL",
+}
+
+const SOLANA_PUBLIC_RPC_URL = "https://api.mainnet-beta.solana.com"
+const JUPITER_SOL_USDC_QUOTE_URL =
+  "https://quote-api.jup.ag/v6/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qTJzoE9A6NsY7p2YyJ61TmxZE&amount=1000000000&slippageBps=30"
+const SESSION_STORAGE_KEY = "clawd-arena-session"
+const TRAINING_STORAGE_KEY_PREFIX = "clawd-arena-training:"
+
+const DEFAULT_REALTIME_SNAPSHOT: RealtimeSnapshot = {
+  status: "connecting",
+  slot: null,
+  blockHeight: null,
+  health: "checking",
+  latencyMs: null,
+  quoteOut: null,
+  updatedAt: null,
+  source: "public Solana RPC",
 }
 
 const AGENTS: Agent[] = [
@@ -159,6 +223,113 @@ const POSITIONS = [
   { symbol: "BTC-PERP", notional: 164_200, funding: 0.009, leverage: "2.2x", mode: "paper" },
   { symbol: "BONK-PERP", notional: 46_800, funding: 0.031, leverage: "1.4x", mode: "paper" },
 ]
+
+function createTrainingState(agentId: string): TrainingState {
+  return {
+    agentId,
+    level: 1,
+    samples: 0,
+    reward: 0,
+    riskBias: 54,
+    mode: "perps",
+    autoTrain: false,
+    lastTrainedAt: null,
+    memory: [],
+  }
+}
+
+function storageKeyForTraining(session: UserSession) {
+  return `${TRAINING_STORAGE_KEY_PREFIX}${session.handle.toLowerCase()}:${session.agentId}`
+}
+
+function readStoredSession(): UserSession | null {
+  if (typeof window === "undefined") return null
+
+  try {
+    const raw = window.localStorage.getItem(SESSION_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as Partial<UserSession>
+    const agentId = AGENTS.some((agent) => agent.id === parsed.agentId) ? parsed.agentId : AGENTS[0].id
+    if (!parsed.handle || !agentId) return null
+
+    return {
+      handle: String(parsed.handle),
+      wallet: typeof parsed.wallet === "string" ? parsed.wallet : "",
+      agentId,
+      createdAt: typeof parsed.createdAt === "string" ? parsed.createdAt : new Date().toISOString(),
+    }
+  } catch {
+    return null
+  }
+}
+
+function persistSession(session: UserSession | null) {
+  if (typeof window === "undefined") return
+  if (!session) {
+    window.localStorage.removeItem(SESSION_STORAGE_KEY)
+    return
+  }
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
+}
+
+function readStoredTraining(session: UserSession | null): TrainingState | null {
+  if (typeof window === "undefined" || !session) return null
+
+  try {
+    const raw = window.localStorage.getItem(storageKeyForTraining(session))
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as Partial<TrainingState>
+    return {
+      ...createTrainingState(session.agentId),
+      ...parsed,
+      agentId: session.agentId,
+      level: clamp(Number(parsed.level ?? 1), 1, 50),
+      samples: Math.max(0, Number(parsed.samples ?? 0)),
+      reward: Number(parsed.reward ?? 0),
+      riskBias: clamp(Number(parsed.riskBias ?? 54), 0, 100),
+      mode: parsed.mode === "risk" || parsed.mode === "dialogue" || parsed.mode === "perps" ? parsed.mode : "perps",
+      autoTrain: Boolean(parsed.autoTrain),
+      memory: Array.isArray(parsed.memory) ? parsed.memory.slice(0, 6).map(String) : [],
+    }
+  } catch {
+    return null
+  }
+}
+
+function persistTraining(session: UserSession | null, training: TrainingState) {
+  if (typeof window === "undefined" || !session) return
+  window.localStorage.setItem(storageKeyForTraining(session), JSON.stringify(training))
+}
+
+function truncateWallet(value: string) {
+  if (!value) return "not linked"
+  if (value.length <= 14) return value
+  return `${value.slice(0, 6)}...${value.slice(-4)}`
+}
+
+function formatTime(value: string | null) {
+  if (!value) return "pending"
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(new Date(value))
+}
+
+function formatSolQuote(value: number | null) {
+  if (value === null) return "pending"
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
+function formatNumber(value: number | null) {
+  if (value === null) return "pending"
+  return new Intl.NumberFormat("en-US").format(value)
+}
 
 function buildConversation(pair: { left: AgentScore; right: AgentScore }, leader: AgentScore, round: number, totalEquity: number): ConversationLine[] {
   const trailing = leader.id === pair.left.id ? pair.right : pair.left
