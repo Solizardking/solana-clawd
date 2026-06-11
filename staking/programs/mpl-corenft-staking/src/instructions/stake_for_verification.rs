@@ -1,14 +1,6 @@
 use crate::*;
-use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::token::{transfer, Token, TokenAccount, Transfer};
 
-/// Stake CLAWD tokens to obtain Clawd Verified status.
-///
-/// Any Solana wallet (agent) can call this instruction to stake >= MIN_CLAWD_STAKE
-/// CLAWD tokens into the program vault. On success a `ClawdVerificationRecord` PDA
-/// is created at ["clawd-verified", agent] which serves as the on-chain verified badge.
-///
-/// Any program or wallet can check verification by deriving the PDA and confirming
-/// the account exists with `is_active = true`.
 #[derive(Accounts)]
 pub struct StakeForVerification<'info> {
     /// The agent wallet seeking Clawd Verified status.
@@ -53,11 +45,12 @@ pub struct StakeForVerification<'info> {
     )]
     pub clawd_vault: Account<'info, TokenAccount>,
 
-    /// $CLAWD SPL token mint — validated against global_pool.clawd_mint.
-    #[account(
-        constraint = clawd_mint.key() == global_pool.clawd_mint @ StakingError::InvalidMint
-    )]
-    pub clawd_mint: Account<'info, Mint>,
+    /// $CLAWD SPL token mint.
+    /// UncheckedAccount avoids the anchor_spl::token::Mint Discriminator issue.
+    /// Validated by the token::mint constraints above and the key check in the handler.
+    /// CHECK: key validated against global_pool.clawd_mint in handler.
+    #[account(constraint = clawd_mint.key() == global_pool.clawd_mint @ StakingError::InvalidMint)]
+    pub clawd_mint: UncheckedAccount<'info>,
 
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
@@ -74,7 +67,7 @@ pub fn stake_for_verification_handler(
         .unix_timestamp;
 
     // Transfer CLAWD from the agent's ATA into the program vault.
-    token::transfer(
+    transfer(
         CpiContext::new(
             ctx.accounts.token_program.to_account_info(),
             Transfer {
@@ -114,7 +107,7 @@ pub fn stake_for_verification_handler(
 }
 
 /// Emitted every time an agent obtains Clawd Verified status.
-/// Index on `agent` to build a verified-agent directory.
+/// Index on `agent` to build a permissionless verified-agent directory.
 #[event]
 pub struct AgentVerified {
     pub agent: Pubkey,

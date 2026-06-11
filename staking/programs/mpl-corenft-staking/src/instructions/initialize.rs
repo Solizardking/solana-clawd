@@ -1,5 +1,5 @@
 use crate::*;
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::token::{Token, TokenAccount};
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
@@ -15,9 +15,12 @@ pub struct Initialize<'info> {
     )]
     pub global_pool: Account<'info, GlobalPool>,
 
-    /// $CLAWD SPL token mint. Validated by the caller; stored in GlobalPool for
-    /// runtime checks in stake_for_verification / unstake_verification.
-    pub clawd_mint: Account<'info, Mint>,
+    /// $CLAWD SPL token mint.
+    /// Stored in GlobalPool and used as the `token::mint` anchor for the vault.
+    /// Using UncheckedAccount so we don't depend on anchor_spl::token::Mint
+    /// implementing Discriminator (it doesn't in anchor-spl 0.30.1).
+    /// CHECK: any SPL token mint the admin designates; key is stored in GlobalPool.
+    pub clawd_mint: UncheckedAccount<'info>,
 
     /// Program-owned vault that holds all staked CLAWD tokens.
     /// PDA: ["clawd-vault"]. Authority = global_pool PDA.

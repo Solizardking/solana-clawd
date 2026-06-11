@@ -1,11 +1,6 @@
 use crate::*;
-use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::token::{transfer, Token, TokenAccount, Transfer};
 
-/// Return staked CLAWD tokens and revoke the agent's Clawd Verified badge.
-///
-/// Closes the `ClawdVerificationRecord` PDA (lamports returned to agent) and
-/// transfers the full staked CLAWD amount back from the vault to the agent's ATA.
-/// The agent's wallet can immediately re-stake to regain verified status.
 #[derive(Accounts)]
 pub struct UnstakeVerification<'info> {
     /// The verified agent. Must match verification_record.agent.
@@ -48,11 +43,10 @@ pub struct UnstakeVerification<'info> {
     )]
     pub clawd_vault: Account<'info, TokenAccount>,
 
-    /// $CLAWD SPL token mint — validated against global_pool.clawd_mint.
-    #[account(
-        constraint = clawd_mint.key() == global_pool.clawd_mint @ StakingError::InvalidMint
-    )]
-    pub clawd_mint: Account<'info, Mint>,
+    /// $CLAWD SPL token mint.
+    /// CHECK: key validated against global_pool.clawd_mint in handler.
+    #[account(constraint = clawd_mint.key() == global_pool.clawd_mint @ StakingError::InvalidMint)]
+    pub clawd_mint: UncheckedAccount<'info>,
 
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
@@ -68,7 +62,7 @@ pub fn unstake_verification_handler(ctx: Context<UnstakeVerification>) -> Result
     // Transfer staked CLAWD from vault back to agent's ATA.
     // Vault authority is the global_pool PDA so we need signer seeds.
     let bump = ctx.bumps.global_pool;
-    token::transfer(
+    transfer(
         CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info(),
             Transfer {
@@ -86,9 +80,7 @@ pub fn unstake_verification_handler(ctx: Context<UnstakeVerification>) -> Result
         .total_verified_agents
         .checked_sub(1)
         .ok_or(StakingError::CounterUnderflow)?;
-    pool.total_clawd_staked = pool
-        .total_clawd_staked
-        .saturating_sub(stake_amount);
+    pool.total_clawd_staked = pool.total_clawd_staked.saturating_sub(stake_amount);
 
     emit!(AgentUnverified {
         agent: ctx.accounts.agent.key(),
