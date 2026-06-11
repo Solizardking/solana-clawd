@@ -1,6 +1,8 @@
 use crate::*;
 use anchor_spl::token::Token;
-use spl_token::state::Account as SplTokenAccount;
+
+/// SPL token account is always 165 bytes (Pack::LEN for spl_token::state::Account).
+const SPL_TOKEN_ACCOUNT_LEN: usize = 165;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
@@ -28,7 +30,7 @@ pub struct Initialize<'info> {
     #[account(
         init,
         payer = admin,
-        space = SplTokenAccount::LEN,
+        space = SPL_TOKEN_ACCOUNT_LEN,
         seeds = [CLAWD_VAULT_SEED],
         bump,
         owner = spl_token::ID

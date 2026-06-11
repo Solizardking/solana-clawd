@@ -108,6 +108,14 @@ const publicDir = join(packageRoot, "public");
 const dataDir = join(publicDir, "data");
 mkdirSync(dataDir, { recursive: true });
 
+// On Vercel only the package directory is uploaded; skip regenerating the snapshot
+// so the pre-built committed version is preserved.
+const agentsSrcDir = join(workspaceRoot, "agents", "src");
+if (!existsSync(agentsSrcDir)) {
+  console.log("agents/src not found — skipping snapshot regeneration (using committed snapshot).");
+  process.exit(0);
+}
+
 const templates = readJsonFiles(join(workspaceRoot, "agents", "src"))
   .map(({ file, data }) => summarizeTemplate(file, data))
   .sort((a, b) => a.name.localeCompare(b.name));
