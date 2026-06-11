@@ -27,12 +27,12 @@ pub struct UnstakeVerification<'info> {
     pub verification_record: Account<'info, ClawdVerificationRecord>,
 
     /// Agent's CLAWD ATA — destination for returned stake.
-    /// CHECK: mint validated in handler; recipient of PDA-signed transfer.
+    /// CHECK: recipient of PDA-signed transfer; validated indirectly by token program.
     #[account(mut)]
     pub agent_clawd_ata: UncheckedAccount<'info>,
 
-    /// Program-owned vault — source of the returned stake.
-    /// CHECK: validated to be the canonical clawd-vault PDA in constraints.
+    /// Program-owned vault — source of the returned stake. PDA: ["clawd-vault"].
+    /// CHECK: seeds constraint ensures this is the canonical vault.
     #[account(
         mut,
         seeds = [CLAWD_VAULT_SEED],
@@ -40,7 +40,7 @@ pub struct UnstakeVerification<'info> {
     )]
     pub clawd_vault: UncheckedAccount<'info>,
 
-    /// $CLAWD SPL token mint — validated against global_pool.clawd_mint.
+    /// $CLAWD SPL token mint.
     /// CHECK: key validated against global_pool.clawd_mint below.
     #[account(constraint = clawd_mint.key() == global_pool.clawd_mint @ StakingError::InvalidMint)]
     pub clawd_mint: UncheckedAccount<'info>,
@@ -57,9 +57,9 @@ pub fn unstake_verification_handler(ctx: Context<UnstakeVerification>) -> Result
         .unix_timestamp;
 
     // Transfer staked CLAWD from vault back to agent's ATA.
-    // The vault is a PDA whose authority is global_pool — sign with global_pool seeds.
+    // Vault authority is the global_pool PDA — sign with global_pool seeds.
     let bump = ctx.bumps.global_pool;
-    let ix = spl_token::instruction::transfer(
+    let transfer_ix = spl_token::instruction::transfer(
         ctx.accounts.token_program.key,
         ctx.accounts.clawd_vault.key,
         ctx.accounts.agent_clawd_ata.key,
@@ -68,11 +68,12 @@ pub fn unstake_verification_handler(ctx: Context<UnstakeVerification>) -> Result
         stake_amount,
     )?;
     invoke_signed(
-        &ix,
+        &transfer_ix,
         &[
             ctx.accounts.clawd_vault.to_account_info(),
             ctx.accounts.agent_clawd_ata.to_account_info(),
             ctx.accounts.global_pool.to_account_info(),
+            ctx.accounts.token_program.to_account_info(),
         ],
         &[&[GLOBAL_AUTHORITY_SEED, &[bump]]],
     )?;

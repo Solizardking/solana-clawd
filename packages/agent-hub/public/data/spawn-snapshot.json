@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-10T23:55:14.741Z",
+  "generatedAt": "2026-06-11T07:50:28.317Z",
   "templates": [
     {
       "id": "solana-technical-analyst",
@@ -3322,7 +3322,7 @@
       "description": "HTTP and Telegram gateway services for the agent stack.",
       "kind": "runtime",
       "exists": true,
-      "entries": 13
+      "entries": 14
     },
     {
       "id": "formal-verification",
@@ -3349,7 +3349,7 @@
       "description": "On-chain Solana programs and clients.",
       "kind": "protocol",
       "exists": true,
-      "entries": 2
+      "entries": 3
     },
     {
       "id": "skills",

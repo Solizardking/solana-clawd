@@ -8,10 +8,10 @@
       "use": "@vercel/node",
       "config": {
         "includeFiles": [
-          "packages/agent-hub/public/data/**",
-          "packages/agent-hub/dist/lib/playbooks.js",
-          "packages/agent-hub/dist/lib/modules.js",
-          "packages/agent-hub/dist/lib/workspace.js"
+          "public/data/**",
+          "dist/lib/playbooks.js",
+          "dist/lib/modules.js",
+          "dist/lib/workspace.js"
         ]
       }
     },

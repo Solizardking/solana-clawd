@@ -1,16 +1,6 @@
 use crate::*;
-use anchor_lang::solana_program::{program::invoke, program_option::COption};
+use anchor_lang::solana_program::program::invoke;
 use anchor_spl::token::Token;
-
-/// Read the mint pubkey from a raw SPL token account AccountInfo.
-fn read_token_account_mint(info: &AccountInfo) -> Result<Pubkey> {
-    let data = info.try_borrow_data()?;
-    // SPL token account layout: mint is bytes 0..32
-    if data.len() < 32 {
-        return err!(StakingError::InvalidAgentAsset);
-    }
-    Ok(Pubkey::try_from(&data[0..32]).map_err(|_| error!(StakingError::InvalidAgentAsset))?)
-}
 
 #[derive(Accounts)]
 pub struct StakeForVerification<'info> {
@@ -36,12 +26,12 @@ pub struct StakeForVerification<'info> {
     pub verification_record: Account<'info, ClawdVerificationRecord>,
 
     /// Agent's CLAWD ATA — source of the stake.
-    /// CHECK: mint validated in handler; authority checked via transfer CPI.
+    /// CHECK: mint validated against global_pool.clawd_mint in handler.
     #[account(mut)]
     pub agent_clawd_ata: UncheckedAccount<'info>,
 
-    /// Program-owned vault that holds all staked CLAWD.
-    /// CHECK: validated to be the canonical clawd-vault PDA in constraints.
+    /// Program-owned vault — PDA: ["clawd-vault"].
+    /// CHECK: seeds constraint ensures this is the canonical vault.
     #[account(
         mut,
         seeds = [CLAWD_VAULT_SEED],
@@ -49,7 +39,7 @@ pub struct StakeForVerification<'info> {
     )]
     pub clawd_vault: UncheckedAccount<'info>,
 
-    /// $CLAWD SPL token mint — validated against global_pool.clawd_mint.
+    /// $CLAWD SPL token mint.
     /// CHECK: key validated against global_pool.clawd_mint below.
     #[account(constraint = clawd_mint.key() == global_pool.clawd_mint @ StakingError::InvalidMint)]
     pub clawd_mint: UncheckedAccount<'info>,
@@ -64,16 +54,12 @@ pub fn stake_for_verification_handler(
 ) -> Result<()> {
     require!(amount >= MIN_CLAWD_STAKE, StakingError::InsufficientStake);
 
-    // Validate agent ATA mint matches CLAWD mint.
-    let ata_mint = read_token_account_mint(&ctx.accounts.agent_clawd_ata)?;
-    require_keys_eq!(ata_mint, global_pool.clawd_mint, StakingError::InvalidMint);
-
     let now = Clock::get()
         .map_err(|_| error!(StakingError::ClockUnavailable))?
         .unix_timestamp;
 
-    // Transfer CLAWD from agent's ATA into the vault.
-    let ix = spl_token::instruction::transfer(
+    // Transfer CLAWD from agent's ATA into the program vault (agent signs).
+    let transfer_ix = spl_token::instruction::transfer(
         ctx.accounts.token_program.key,
         ctx.accounts.agent_clawd_ata.key,
         ctx.accounts.clawd_vault.key,
@@ -82,11 +68,12 @@ pub fn stake_for_verification_handler(
         amount,
     )?;
     invoke(
-        &ix,
+        &transfer_ix,
         &[
             ctx.accounts.agent_clawd_ata.to_account_info(),
             ctx.accounts.clawd_vault.to_account_info(),
             ctx.accounts.agent.to_account_info(),
+            ctx.accounts.token_program.to_account_info(),
         ],
     )?;
 

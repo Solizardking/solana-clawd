@@ -1,5 +1,6 @@
 use crate::*;
 use anchor_spl::token::Token;
+use spl_token::state::Account as SplTokenAccount;
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
@@ -15,17 +16,19 @@ pub struct Initialize<'info> {
     )]
     pub global_pool: Account<'info, GlobalPool>,
 
-    /// $CLAWD SPL token mint. Stored in GlobalPool; used as mint for the vault init.
-    /// CHECK: any SPL token mint the admin designates — key stored in GlobalPool.
+    /// $CLAWD SPL token mint. Key is stored in GlobalPool and used to gate
+    /// the stake_for_verification / unstake_verification instructions.
+    /// CHECK: any valid SPL token mint the admin designates.
     pub clawd_mint: UncheckedAccount<'info>,
 
-    /// Program-owned CLAWD vault. PDA: ["clawd-vault"]. Authority = global_pool PDA.
-    /// Initialised here as a raw SPL token account owned by the global_pool PDA.
-    /// CHECK: initialised below via spl_token CPI.
+    /// Program-owned vault for staked CLAWD. PDA: ["clawd-vault"].
+    /// Allocated here by system_program then initialised as a token account
+    /// via spl_token CPI, with authority = global_pool PDA.
+    /// CHECK: initialised via spl_token::instruction::initialize_account3 in handler.
     #[account(
         init,
         payer = admin,
-        space = spl_token::state::Account::LEN,
+        space = SplTokenAccount::LEN,
         seeds = [CLAWD_VAULT_SEED],
         bump,
         owner = spl_token::ID
@@ -38,19 +41,18 @@ pub struct Initialize<'info> {
 }
 
 pub fn initialize_handler(ctx: Context<Initialize>) -> Result<()> {
-    // Initialise the vault token account via spl_token CPI.
-    let cpi_accounts = spl_token::instruction::initialize_account3(
+    // Initialise the vault as an SPL token account owned by global_pool PDA.
+    let init_ix = spl_token::instruction::initialize_account3(
         ctx.accounts.token_program.key,
         ctx.accounts.clawd_vault.key,
         ctx.accounts.clawd_mint.key,
         &ctx.accounts.global_pool.key(),
     )?;
     anchor_lang::solana_program::program::invoke(
-        &cpi_accounts,
+        &init_ix,
         &[
             ctx.accounts.clawd_vault.to_account_info(),
             ctx.accounts.clawd_mint.to_account_info(),
-            ctx.accounts.rent.to_account_info(),
         ],
     )?;
 
