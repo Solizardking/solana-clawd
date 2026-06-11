@@ -1,0 +1,40 @@
+- generic [ref=e3] [box=0,-367,1440,3074]:
+  - banner [ref=e4] [box=0,0,1440,105]:
+    - generic [ref=e5] [box=18,0,1404,104]:
+      - generic [ref=e6] [box=18,14,616,75]:
+        - generic [ref=e8] [box=48,37,9,30]: ZD
+        - generic [ref=e9] [box=102,14,532,75]
+      - generic [ref=e13] [box=1022,28,400,48]:
+        - generic "Rail status" [ref=e14] [box=1022,31,247,42]: Devnet / Mainnet-beta Ready
+        - button "Select Wallet" [ref=e17] [cursor=pointer] [box=1281,28,141,48]
+  - main [ref=e18] [box=18,-262,1404,2534]:
+    - generic [ref=e19] [box=18,-227,1404,2443]:
+      - generic [ref=e20] [box=18,-227,1404,514]:
+        - generic [ref=e21] [box=67,-178,804,416]
+        - complementary "Private rail status" [ref=e29] [box=890,-178,483,416]
+      - generic [ref=e48] [box=18,306,1404,180]:
+        - generic [ref=e49] [box=18,306,339,180]
+        - generic [ref=e53] [box=373,306,339,180]
+        - generic [ref=e57] [box=728,306,339,180]
+        - generic [ref=e61] [box=1083,306,339,180]
+      - generic [ref=e65] [box=18,506,1404,74]:
+        - generic [ref=e66] [box=31,535,127,16]: Operator Mode
+        - generic [ref=e67] [box=173,519,1236,48]
+      - generic [ref=e74] [box=44,625,1352,1326]:
+        - generic [ref=e75] [box=44,625,1352,120]
+        - generic [ref=e79] [box=44,768,1352,657]
+        - generic [ref=e98] [box=44,1424,1352,527]
+      - generic [ref=e116] [box=18,1996,1404,220]:
+        - generic [ref=e117] [box=18,1996,457,220]
+        - generic [ref=e124] [box=491,1996,457,220]
+        - generic [ref=e131] [box=965,1996,457,220]
+  - contentinfo [ref=e138] [box=0,2336,1440,371]:
+    - generic [ref=e139] [box=18,2337,1404,370]:
+      - generic [ref=e140] [box=18,2375,1404,62]:
+        - generic [ref=e141] [box=35,2392,111,16]: Dark Protocol
+        - strong [ref=e142] [box=675,2392,730,28]: Paper custody, SVM anchors, x402/AP2/M2M receipts, and EVM intent proofs in one operator surface.
+      - generic [ref=e143] [box=18,2460,1404,138]:
+        - generic [ref=e144] [box=18,2460,457,138]
+        - generic [ref=e147] [box=491,2460,457,138]
+        - generic [ref=e154] [box=965,2460,457,138]
+      - generic [ref=e160] [box=18,2630,1404,38]: © 2025 Dark Protocol. Apache 2.0 License. Secrets stay local; proofs travel.
