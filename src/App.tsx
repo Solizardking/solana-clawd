@@ -249,7 +249,7 @@ function readStoredSession(): UserSession | null {
     const raw = window.localStorage.getItem(SESSION_STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as Partial<UserSession>
-    const agentId = AGENTS.some((agent) => agent.id === parsed.agentId) ? parsed.agentId : AGENTS[0].id
+    const agentId = typeof parsed.agentId === "string" && AGENTS.some((agent) => agent.id === parsed.agentId) ? parsed.agentId : AGENTS[0].id
     if (!parsed.handle || !agentId) return null
 
     return {
@@ -382,6 +382,156 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
 
+type RpcBatchEntry = {
+  id: number
+  result?: unknown
+  error?: { message?: string }
+}
+
+type JupiterQuote = {
+  outAmount?: string
+}
+
+function rpcResult(entries: RpcBatchEntry[], id: number) {
+  return entries.find((entry) => entry.id === id)?.result
+}
+
+function rpcNumber(entries: RpcBatchEntry[], id: number) {
+  const value = rpcResult(entries, id)
+  return typeof value === "number" ? value : null
+}
+
+async function fetchRealtimeSnapshot(): Promise<RealtimeSnapshot> {
+  const startedAt = performance.now()
+  const rpcRequest = [
+    { jsonrpc: "2.0", id: 1, method: "getHealth" },
+    { jsonrpc: "2.0", id: 2, method: "getSlot", params: [{ commitment: "confirmed" }] },
+    { jsonrpc: "2.0", id: 3, method: "getBlockHeight", params: [{ commitment: "confirmed" }] },
+  ]
+
+  const [rpcResponse, quoteResponse] = await Promise.allSettled([
+    fetch(SOLANA_PUBLIC_RPC_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(rpcRequest),
+    }).then(async (response) => {
+      if (!response.ok) throw new Error(`RPC ${response.status}`)
+      return (await response.json()) as RpcBatchEntry[] | RpcBatchEntry
+    }),
+    fetch(JUPITER_SOL_USDC_QUOTE_URL, {
+      headers: { accept: "application/json" },
+    }).then(async (response) => {
+      if (!response.ok) throw new Error(`quote ${response.status}`)
+      return (await response.json()) as JupiterQuote
+    }),
+  ])
+
+  if (rpcResponse.status === "rejected") {
+    throw rpcResponse.reason instanceof Error ? rpcResponse.reason : new Error("Solana RPC unavailable")
+  }
+
+  const rpcEntries = Array.isArray(rpcResponse.value) ? rpcResponse.value : [rpcResponse.value]
+  const firstRpcError = rpcEntries.find((entry) => entry.error)?.error?.message
+  if (firstRpcError) throw new Error(firstRpcError)
+
+  const healthResult = rpcResult(rpcEntries, 1)
+  const slot = rpcNumber(rpcEntries, 2)
+  const blockHeight = rpcNumber(rpcEntries, 3)
+  const health = typeof healthResult === "string" ? healthResult : "unknown"
+  let status: RealtimeSnapshot["status"] = slot === null || blockHeight === null ? "degraded" : "live"
+  let error: string | undefined
+  let quoteOut: number | null = null
+
+  if (quoteResponse.status === "fulfilled") {
+    const rawOutAmount = Number(quoteResponse.value.outAmount)
+    quoteOut = Number.isFinite(rawOutAmount) ? rawOutAmount / 1_000_000 : null
+  } else {
+    status = "degraded"
+    error = quoteResponse.reason instanceof Error ? quoteResponse.reason.message : "quote unavailable"
+  }
+
+  return {
+    status,
+    slot,
+    blockHeight,
+    health,
+    latencyMs: Math.round(performance.now() - startedAt),
+    quoteOut,
+    updatedAt: new Date().toISOString(),
+    source: "public Solana RPC + Jupiter quote",
+    error,
+  }
+}
+
+function useRealtimeSolana() {
+  const [snapshot, setSnapshot] = useState<RealtimeSnapshot>(DEFAULT_REALTIME_SNAPSHOT)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function poll() {
+      try {
+        const next = await fetchRealtimeSnapshot()
+        if (!cancelled) setSnapshot(next)
+      } catch (error) {
+        if (cancelled) return
+        setSnapshot((current) => ({
+          ...current,
+          status: "offline",
+          health: "unavailable",
+          latencyMs: null,
+          updatedAt: new Date().toISOString(),
+          error: error instanceof Error ? error.message : "realtime feed unavailable",
+        }))
+      }
+    }
+
+    void poll()
+    const timer = window.setInterval(() => {
+      void poll()
+    }, 6000)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [])
+
+  return snapshot
+}
+
+function trainAgent(state: TrainingState, agent: Agent, snapshot: RealtimeSnapshot, round: number, modeOverride?: TrainingMode): TrainingState {
+  const mode = modeOverride ?? state.mode
+  const samples = state.samples + 1
+  const liveBonus = snapshot.status === "live" ? 1.4 : snapshot.status === "degraded" ? 0.45 : -0.8
+  const latencyBonus = snapshot.latencyMs === null ? 0 : clamp((260 - snapshot.latencyMs) / 130, -1.25, 1.35)
+  const marketPulse = snapshot.slot === null ? 0 : Math.sin((snapshot.slot % 997) / 53 + round / 4) * 0.8
+  const quotePulse = snapshot.quoteOut === null ? 0 : Math.cos(snapshot.quoteOut / 11 + agent.seed) * 0.6
+  const modeEdge = mode === "risk" ? agent.metrics.discipline / 58 : mode === "dialogue" ? agent.metrics.speed / 74 : agent.metrics.edge / 62
+  const disciplineEdge = (agent.metrics.discipline - agent.metrics.risk * 0.3) / 42
+  const rewardDelta = Number((liveBonus + latencyBonus + marketPulse + quotePulse + modeEdge + disciplineEdge).toFixed(2))
+  const reward = Number((state.reward + rewardDelta).toFixed(2))
+  const riskShift = mode === "risk" ? 3.2 : mode === "perps" ? (snapshot.status === "live" ? 1.6 : -1.4) : 0.8
+  const riskBias = clamp(Number((state.riskBias + riskShift - Math.max(0, agent.metrics.risk - 58) * 0.04).toFixed(1)), 0, 100)
+  const level = clamp(Math.floor(1 + samples / 4 + Math.max(0, reward) / 8 + riskBias / 35), 1, 50)
+  const now = new Date().toISOString()
+  const sign = rewardDelta >= 0 ? "+" : ""
+  const decision = rewardDelta >= 0 ? "accepted" : "vetoed"
+  const memoryLine = `${formatTime(now)} ${agent.callSign} ${mode} ${decision} ${sign}${rewardDelta} | slot ${snapshot.slot ?? "n/a"} | ${snapshot.status}`
+
+  return {
+    ...state,
+    agentId: agent.id,
+    mode,
+    level,
+    samples,
+    reward,
+    riskBias,
+    lastTrainedAt: now,
+    memory: [memoryLine, ...state.memory].slice(0, 6),
+  }
+}
+
 function proofFor(agent: Agent, round: number) {
   const raw = `${agent.id}-${round}-${agent.seed}`
   let hash = 0
@@ -391,9 +541,11 @@ function proofFor(agent: Agent, round: number) {
   return `devnet:${hash.toString(16).padStart(8, "0")}`
 }
 
-function scoreAgent(agent: Agent, round: number): AgentScore {
+function scoreAgent(agent: Agent, round: number, training?: TrainingState): AgentScore {
+  const trained = training?.agentId === agent.id ? training : undefined
   const pulse = Math.sin((round + agent.seed) * 0.82) * 7 + Math.cos((round * 1.21 + agent.seed) * 0.6) * 5
   const riskDrag = (agent.metrics.risk - 40) * 0.34
+  const trainingBoost = trained ? trained.level * 8 + Math.min(70, trained.samples * 2) + Math.round(trained.reward * 1.5) : 0
   const elo = Math.round(
     820 +
       agent.metrics.edge * 4.7 +
@@ -401,15 +553,28 @@ function scoreAgent(agent: Agent, round: number): AgentScore {
       agent.metrics.speed * 1.8 -
       riskDrag +
       round * 9 +
-      pulse,
+      pulse +
+      trainingBoost,
   )
-  const pnl = Number(((agent.metrics.edge * 0.44 + agent.metrics.speed * 0.13 - agent.metrics.risk * 0.2 + pulse * 0.8 + round * 1.4) / 10).toFixed(2))
-  const wins = Math.max(0, Math.round((agent.metrics.edge + agent.metrics.speed + agent.metrics.discipline - agent.metrics.risk * 0.46 + round + pulse) / 28))
-  const drawdown = clamp(Math.round(agent.metrics.risk * 0.42 + Math.abs(pulse) - agent.metrics.discipline * 0.08), 2, 48)
-  const liquidationRisk = clamp(Math.round(agent.metrics.risk * 0.74 + Math.abs(pulse) - agent.metrics.discipline * 0.18), 4, 92)
-  const heat = clamp(Math.round(agent.metrics.edge * 0.42 + agent.metrics.speed * 0.28 + agent.metrics.discipline * 0.2 - agent.metrics.risk * 0.12 + 18), 0, 100)
+  const pnlBoost = trained ? trained.reward * 0.04 + trained.level * 0.12 : 0
+  const pnl = Number((((agent.metrics.edge * 0.44 + agent.metrics.speed * 0.13 - agent.metrics.risk * 0.2 + pulse * 0.8 + round * 1.4) / 10) + pnlBoost).toFixed(2))
+  const wins = Math.max(0, Math.round((agent.metrics.edge + agent.metrics.speed + agent.metrics.discipline - agent.metrics.risk * 0.46 + round + pulse) / 28) + (trained ? Math.floor(trained.samples / 3) : 0))
+  const drawdown = clamp(Math.round(agent.metrics.risk * 0.42 + Math.abs(pulse) - agent.metrics.discipline * 0.08 - (trained ? trained.riskBias * 0.08 : 0)), 2, 48)
+  const liquidationRisk = clamp(Math.round(agent.metrics.risk * 0.74 + Math.abs(pulse) - agent.metrics.discipline * 0.18 - (trained ? trained.level * 0.3 : 0)), 4, 92)
+  const heat = clamp(Math.round(agent.metrics.edge * 0.42 + agent.metrics.speed * 0.28 + agent.metrics.discipline * 0.2 - agent.metrics.risk * 0.12 + 18 + (trained ? trained.level * 0.8 : 0)), 0, 100)
 
-  return { ...agent, elo, pnl, wins, drawdown, liquidationRisk, heat, proof: proofFor(agent, round) }
+  return {
+    ...agent,
+    elo,
+    pnl,
+    wins,
+    drawdown,
+    liquidationRisk,
+    heat,
+    proof: proofFor(agent, round),
+    trainingLevel: trained?.level,
+    trainingSamples: trained?.samples,
+  }
 }
 
 function formatUsd(value: number) {
@@ -463,7 +628,7 @@ function AgentBox({ agent, active }: { agent: AgentScore; active: boolean }) {
         <MetricBar label="Discipline" value={agent.metrics.discipline} color={agent.color} />
       </div>
       <div className="agentFooter">
-        <span>{agent.box}</span>
+        <span>{agent.trainingLevel ? `trained L${agent.trainingLevel} - ${agent.box}` : agent.box}</span>
         <strong>{signedPercent(agent.pnl)}</strong>
       </div>
     </article>
