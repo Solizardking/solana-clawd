@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-11T07:50:28.317Z",
+  "generatedAt": "2026-06-11T07:56:58.165Z",
   "templates": [
     {
       "id": "solana-technical-analyst",
@@ -125,6 +125,159 @@
       "protocols": [],
       "createdAt": "2026-03-15",
       "sourcePath": "snapshot:solana-data-pipeline.json"
+    },
+    {
+      "id": "box-solana-arbitrage-scanner",
+      "name": "box-solana-arbitrage-scanner",
+      "description": "Cross-DEX arbitrage scanner inside an Upstash Box. Compares token prices across Jupiter, Raydium, and Orca to find profitable spread opportunities with net-profit estimates.",
+      "category": "defi",
+      "tags": [
+        "box",
+        "arbitrage",
+        "jupiter",
+        "raydium",
+        "orca",
+        "sandbox",
+        "defi"
+      ],
+      "avatar": "⚡",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-arbitrage-scanner.json"
+    },
+    {
+      "id": "box-solana-memecoin-screener",
+      "name": "box-solana-memecoin-screener",
+      "description": "Real-time meme coin screener in an Upstash Box. Scans DexScreener, Birdeye, and Jupiter for new listings, runs security checks, and ranks opportunities by risk-adjusted score.",
+      "category": "analytics",
+      "tags": [
+        "box",
+        "memecoin",
+        "dexscreener",
+        "birdeye",
+        "sandbox",
+        "screener"
+      ],
+      "avatar": "🎰",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-memecoin-screener.json"
+    },
+    {
+      "id": "box-solana-nft-flipper",
+      "name": "box-solana-nft-flipper",
+      "description": "NFT floor analysis and flip strategy agent inside an Upstash Box. Monitors Tensor and MagicEden for mispriced assets, scores collections, and surfaces flip targets.",
+      "category": "nft",
+      "tags": [
+        "box",
+        "nft",
+        "tensor",
+        "magiceden",
+        "sandbox",
+        "flip-strategy"
+      ],
+      "avatar": "🖼️",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-nft-flipper.json"
+    },
+    {
+      "id": "box-solana-onchain-analyst",
+      "name": "box-solana-onchain-analyst",
+      "description": "Deep on-chain forensics agent inside an Upstash Box. Investigates token contracts, wallet activity, and transaction patterns to produce severity-tagged security reports.",
+      "category": "security",
+      "tags": [
+        "box",
+        "forensics",
+        "security",
+        "on-chain",
+        "sandbox",
+        "solana"
+      ],
+      "avatar": "🔍",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-onchain-analyst.json"
+    },
+    {
+      "id": "box-solana-perps-trading-agent",
+      "name": "box-solana-perps-trading-agent",
+      "description": "Paper-first perpetuals trading planner inside an Upstash Box. Builds Phoenix perps call plans, runs paper/live-preview modes, and never submits signed transactions.",
+      "category": "trading",
+      "tags": [
+        "box",
+        "perps",
+        "phoenix",
+        "sandbox",
+        "paper-trading",
+        "solana"
+      ],
+      "avatar": "📉",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-perps-trading-agent.json"
+    },
+    {
+      "id": "box-solana-portfolio-manager",
+      "name": "box-solana-portfolio-manager",
+      "description": "AI portfolio manager in an Upstash Box. Tracks Solana wallet positions, scores diversification, and generates structured rebalancing recommendations.",
+      "category": "defi",
+      "tags": [
+        "box",
+        "portfolio",
+        "rebalancing",
+        "risk",
+        "sandbox",
+        "solana"
+      ],
+      "avatar": "💼",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-portfolio-manager.json"
+    },
+    {
+      "id": "box-solana-swarm-agent",
+      "name": "box-solana-swarm-agent",
+      "description": "Multi-agent swarm coordinator inside a shared Upstash Box. Spawns child agents for code execution, shell analysis, and blockchain forensics, then merges their outputs.",
+      "category": "infrastructure",
+      "tags": [
+        "box",
+        "swarm",
+        "multi-agent",
+        "orchestrator",
+        "sandbox",
+        "solana"
+      ],
+      "avatar": "🐝",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-swarm-agent.json"
+    },
+    {
+      "id": "box-solana-trading-agent",
+      "name": "box-solana-trading-agent",
+      "description": "Autonomous Solana token analysis and swap signal generation inside an isolated Upstash Box sandbox. Fetches live prices via Jupiter, runs security checks, and estimates slippage.",
+      "category": "trading",
+      "tags": [
+        "box",
+        "trading",
+        "jupiter",
+        "sandbox",
+        "signals",
+        "solana"
+      ],
+      "avatar": "📈",
+      "paymentEnabled": false,
+      "protocols": [],
+      "createdAt": "2026-06-11",
+      "sourcePath": "snapshot:solana-trading-agent.json"
     },
     {
       "id": "solana-clawd-cost-planner",

@@ -1,0 +1,48 @@
+# Exclude everything except packages/agent-hub and the agents catalog data needed for the prebuild
+
+# Large monorepo workspaces — not needed by agent-hub build
+clawd-pump/
+auth/
+staking/
+clawdbot-pumpfun/
+clawd-operator/
+library/
+clawd-grok/
+agentwallet/
+goals/
+bitaxe-orelane/
+gateway/
+clawd-code/
+programs/
+src/
+dark/
+knowledge/
+hedge/
+spinners/
+formal_verification/
+box/
+skills/
+dist/
+dist-web/
+
+# Other packages (keep packages/agent-hub)
+packages/agent-registry/
+packages/agent-sdk/
+packages/agentwallet/
+packages/clawd-guard/
+packages/leviathan/
+packages/nanoclawd/
+
+# node_modules everywhere
+node_modules/
+**/node_modules/
+
+# agent-hub own build output (rebuilt on Vercel)
+packages/agent-hub/dist/
+
+# Test / dev artifacts
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+coverage/
+.turbo/

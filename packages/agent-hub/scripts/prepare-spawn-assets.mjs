@@ -116,8 +116,12 @@ if (!existsSync(agentsSrcDir)) {
   process.exit(0);
 }
 
-const templates = readJsonFiles(join(workspaceRoot, "agents", "src"))
+const templates = [
+  ...readJsonFiles(join(workspaceRoot, "agents", "src")),
+  ...readJsonFiles(join(workspaceRoot, "box", "agents")),
+]
   .map(({ file, data }) => summarizeTemplate(file, data))
+  .filter((entry, index, all) => all.findIndex((t) => t.id === entry.id) === index)
   .sort((a, b) => a.name.localeCompare(b.name));
 
 const characters = [

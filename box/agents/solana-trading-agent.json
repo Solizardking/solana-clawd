@@ -1,0 +1,21 @@
+{
+  "author": "solizardking",
+  "config": {
+    "payment": { "enabled": false, "protocols": [] },
+    "runtime": "box",
+    "entrypoint": "agents/solana-trading-agent.ts"
+  },
+  "createdAt": "2026-06-11",
+  "homepage": "https://github.com/solizardking/solanaclawd",
+  "identifier": "box-solana-trading-agent",
+  "knowledgeCount": 0,
+  "meta": {
+    "avatar": "📈",
+    "category": "trading",
+    "description": "Autonomous Solana token analysis and swap signal generation inside an isolated Upstash Box sandbox. Fetches live prices via Jupiter, runs security checks, and estimates slippage.",
+    "tags": ["box", "trading", "jupiter", "sandbox", "signals", "solana"]
+  },
+  "pluginCount": 0,
+  "schemaVersion": 1,
+  "tokenUsage": 0
+}

@@ -1,0 +1,21 @@
+{
+  "author": "solizardking",
+  "config": {
+    "payment": { "enabled": false, "protocols": [] },
+    "runtime": "box",
+    "entrypoint": "agents/solana-memecoin-screener.ts"
+  },
+  "createdAt": "2026-06-11",
+  "homepage": "https://github.com/solizardking/solanaclawd",
+  "identifier": "box-solana-memecoin-screener",
+  "knowledgeCount": 0,
+  "meta": {
+    "avatar": "🎰",
+    "category": "analytics",
+    "description": "Real-time meme coin screener in an Upstash Box. Scans DexScreener, Birdeye, and Jupiter for new listings, runs security checks, and ranks opportunities by risk-adjusted score.",
+    "tags": ["box", "memecoin", "dexscreener", "birdeye", "sandbox", "screener"]
+  },
+  "pluginCount": 0,
+  "schemaVersion": 1,
+  "tokenUsage": 0
+}

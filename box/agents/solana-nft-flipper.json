@@ -1,0 +1,21 @@
+{
+  "author": "solizardking",
+  "config": {
+    "payment": { "enabled": false, "protocols": [] },
+    "runtime": "box",
+    "entrypoint": "agents/solana-nft-flipper.ts"
+  },
+  "createdAt": "2026-06-11",
+  "homepage": "https://github.com/solizardking/solanaclawd",
+  "identifier": "box-solana-nft-flipper",
+  "knowledgeCount": 0,
+  "meta": {
+    "avatar": "🖼️",
+    "category": "nft",
+    "description": "NFT floor analysis and flip strategy agent inside an Upstash Box. Monitors Tensor and MagicEden for mispriced assets, scores collections, and surfaces flip targets.",
+    "tags": ["box", "nft", "tensor", "magiceden", "sandbox", "flip-strategy"]
+  },
+  "pluginCount": 0,
+  "schemaVersion": 1,
+  "tokenUsage": 0
+}
