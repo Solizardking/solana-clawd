@@ -71,6 +71,103 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 ---
 
+## 🏆 Recent Commit Leaderboard
+
+> Auto-refreshed every 30 min by GitHub Actions. Latest activity from the team.
+
+<!-- COMMIT_LEADERBOARD:START -->
+| # | Commit | Message | Author | Date |
+|---|---|---|---|---|
+| 🥇 | [`e5867da`](../../commit/e5867daa) | ll | solizardking | Jun 11 |
+| 🥈 | [`2e96bdc`](../../commit/2e96bdca) | kkk | solizardking | Jun 11 |
+| 🥉 | [`735b833`](../../commit/735b833f) | llll | solizardking | Jun 11 |
+| 4️⃣ | [`4a8fec4`](../../commit/4a8fec49) | kjjkk | solizardking | Jun 11 |
+| 5️⃣ | [`4189b6a`](../../commit/4189b6a6) | dsfsdf | solizardking | Jun 11 |
+| 6️⃣ | [`c276b89`](../../commit/c276b895) | fafsad | solizardking | Jun 11 |
+| 7️⃣ | [`64835b6`](../../commit/64835b61) | fdsafds | solizardking | Jun 11 |
+| 8️⃣ | [`718dda1`](../../commit/718dda1c) | ;; | solizardking | Jun 11 |
+| 9️⃣ | [`ba203c5`](../../commit/ba203c5e) | ,.l.l | solizardking | Jun 11 |
+| 🔟 | [`9842b65`](../../commit/9842b658) | ;k;.l | solizardking | Jun 11 |
+<!-- COMMIT_LEADERBOARD:END -->
+
+---
+
+## 🗺️ Repo Map
+
+> Complete directory structure — click any folder to navigate.
+
+```
+solana-clawd/                       OpenClawd monorepo root
+│
+├── src/                            Main runtime source (React + TypeScript TUI)
+│   ├── agent/                      Agent lifecycle & prompts
+│   ├── services/                   LLM providers (Gemini, Grok, x402)
+│   ├── identity/                   Wallet + on-chain identity
+│   ├── skills/                     Skill loader & registry
+│   └── App.tsx                     8bitlabs Arena UI (vite build)
+│
+├── packages/                       Published npm packages
+│   ├── clawd-code-cli/             @openclawdsolana/clawd — TUI operator
+│   ├── agent-registry/             @openclawdsolana/agent-registry — on-chain index
+│   ├── agent-hub/                  @openclawdsolana/agent-hub — local dashboard
+│   ├── clawd-sdk/                  @openclawdsolana/solana-sdk — TypeScript SDK
+│   ├── agentwallet/                agentwallet-vault — encrypted keypair vault
+│   ├── clawd-wallet/               @openclawd/wallet — Privy + Jupiter wallet
+│   ├── agents-x402-solana/         @openclawd/agents-x402 — x402 monetization
+│   ├── percolator/                 @openclawd/percolator — perps CLI
+│   ├── clawd-guard/                @openclawdsolana/clawd-guard — GitHub App scanner
+│   ├── sovereign-research/         @openclawd/sovereign-research — research routing
+│   └── cli-standalone/             @openclawdsolana/clawd-standalone — standalone CLI
+│
+├── agents/                         130 agent definitions + catalog
+├── skills/                         136 skills (Claude Code compatible)
+├── library/                        Lobster Library — 82+ nano agents
+├── gateway/                        HTTP + Telegram gateway (fly.io deployable)
+├── clawdrouter/                    LLM router — 55+ models, wallet auth, USDC x402
+│
+├── dark/                           Dark Workspace — modular local-first wallet
+│   └── dark-wallet/                Browser wallet shell + swap + defi lanes
+│
+├── box/                            Ephemeral sandboxed agent runners
+├── goals/                          Runtime goal orchestration (Vite + Express)
+├── formal_verification/            Kani Rust verifier + STRIDE scoring
+│
+├── agentwallet/                    Agent wallet infrastructure
+├── auth/                           CAAP/1.0 auth surface
+├── vendor/agent-auth/              Vendored 5-pkg auth stack (SIWS, DAS, TEE)
+│
+├── mcp-server/                     MCP server (31 tools, fly.io deployable)
+├── x402/                           x402 protocol implementation
+├── solana-clawd-x402/              x402.wtf integration
+├── staking/                        Metaplex Core agent staking protocol
+│
+├── clawd-pump/                     Rust copy-trading bot (clawd-pump)
+├── clawd-perps-agent/              Perps agent starter template
+├── clawd-operator/                 Operator tooling
+├── clawd-grok/                     Grok Studio integration
+├── clawd-go/                       Solana Go SDK wrapper
+├── clawd-bot/                      Bot infrastructure
+├── clawd-code/                     Clawd Code extensions
+│
+├── livekit-agent/                  LiveKit backrooms Python agent
+├── bitaxe-orelane/                 BitAxe ORE mining integration
+├── hedge/                          Hedge strategies
+├── trading/                        Trading utilities
+├── pay/                            Payment infrastructure (x402 + USDC)
+│
+├── knowledge/                      Knowledge base & embeddings
+├── examples/                       Runnable demos
+├── scripts/                        Build & maintenance scripts
+├── spinners/                       Custom CLI animations (50 spinners)
+├── characters/                     97 AI personas
+│
+├── install.sh                      One-shot installer
+├── pay.sh                          Pay.sh verified installer
+└── pnpm-workspace.yaml             Workspace config
+```
+
+---
+
 ## Current Session Handoff — Smoke-Tested June 10, 2026
 
 This README now reflects the repo as smoke-tested from source, not just the intended product surface.

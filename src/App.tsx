@@ -863,8 +863,8 @@ export default function App() {
     <main className="arenaShell">
       <header className="arenaHeader">
         <a className="brandMark" href="/">
-          <span>CLAWD</span>
-          <strong>Solana Agent Arena</strong>
+          <span>8bit</span>
+          <strong>8bitlabs · Solana Arena</strong>
         </a>
         <nav>
           <a href="#arena">Arena</a>

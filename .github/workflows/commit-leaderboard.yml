@@ -1,0 +1,60 @@
+name: 🏆 Commit Leaderboard
+
+on:
+  push:
+    branches: [main, newnew]
+  schedule:
+    - cron: "*/30 * * * *"  # refresh every 30 min
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-leaderboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+
+      - name: Build commit leaderboard
+        id: leaderboard
+        run: |
+          node - <<'EOF'
+          const { execSync } = require("child_process");
+          const fs = require("fs");
+
+          const log = execSync(
+            'git log --oneline -15 --pretty=format:"%h|%an|%s|%cr|%ad" --date=format:"%b %d"',
+            { encoding: "utf8" }
+          ).trim();
+
+          const medal = ["🥇","🥈","🥉","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟"];
+          const rows = log.split("\n").map((line, i) => {
+            const [hash, author, subject, when, date] = line.split("|");
+            const safe = (subject || "").replace(/\|/g, "\\|").slice(0, 60);
+            return `| ${medal[i] ?? "·"} | [\`${hash}\`](../../commit/${hash}) | ${safe} | ${author} | ${date} |`;
+          });
+
+          const table = [
+            "| # | Commit | Message | Author | Date |",
+            "|---|---|---|---|---|",
+            ...rows
+          ].join("\n");
+
+          const readme = fs.readFileSync("README.md", "utf8");
+          const next = readme.replace(
+            /<!-- COMMIT_LEADERBOARD:START -->[\s\S]*?<!-- COMMIT_LEADERBOARD:END -->/,
+            `<!-- COMMIT_LEADERBOARD:START -->\n${table}\n<!-- COMMIT_LEADERBOARD:END -->`
+          );
+          fs.writeFileSync("README.md", next);
+          console.log("Leaderboard updated.");
+          EOF
+
+      - name: Commit leaderboard update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet README.md || (git add README.md && git commit -m "chore: refresh commit leaderboard [skip ci]")
+          git push
