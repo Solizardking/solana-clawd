@@ -1,5 +1,6 @@
 use crate::*;
-use anchor_spl::token::{transfer, Token, TokenAccount, Transfer};
+use anchor_lang::solana_program::program::invoke_signed;
+use anchor_spl::token::Token;
 
 #[derive(Accounts)]
 pub struct UnstakeVerification<'info> {
@@ -25,26 +26,22 @@ pub struct UnstakeVerification<'info> {
     )]
     pub verification_record: Account<'info, ClawdVerificationRecord>,
 
-    /// Agent's CLAWD token account — destination for returned stake.
-    #[account(
-        mut,
-        token::mint = clawd_mint,
-        token::authority = agent,
-    )]
-    pub agent_clawd_ata: Account<'info, TokenAccount>,
+    /// Agent's CLAWD ATA — destination for returned stake.
+    /// CHECK: mint validated in handler; recipient of PDA-signed transfer.
+    #[account(mut)]
+    pub agent_clawd_ata: UncheckedAccount<'info>,
 
-    /// Program-owned vault that holds the staked CLAWD.
+    /// Program-owned vault — source of the returned stake.
+    /// CHECK: validated to be the canonical clawd-vault PDA in constraints.
     #[account(
         mut,
-        token::mint = clawd_mint,
-        token::authority = global_pool,
         seeds = [CLAWD_VAULT_SEED],
         bump
     )]
-    pub clawd_vault: Account<'info, TokenAccount>,
+    pub clawd_vault: UncheckedAccount<'info>,
 
-    /// $CLAWD SPL token mint.
-    /// CHECK: key validated against global_pool.clawd_mint in handler.
+    /// $CLAWD SPL token mint — validated against global_pool.clawd_mint.
+    /// CHECK: key validated against global_pool.clawd_mint below.
     #[account(constraint = clawd_mint.key() == global_pool.clawd_mint @ StakingError::InvalidMint)]
     pub clawd_mint: UncheckedAccount<'info>,
 
@@ -60,19 +57,24 @@ pub fn unstake_verification_handler(ctx: Context<UnstakeVerification>) -> Result
         .unix_timestamp;
 
     // Transfer staked CLAWD from vault back to agent's ATA.
-    // Vault authority is the global_pool PDA so we need signer seeds.
+    // The vault is a PDA whose authority is global_pool — sign with global_pool seeds.
     let bump = ctx.bumps.global_pool;
-    transfer(
-        CpiContext::new_with_signer(
-            ctx.accounts.token_program.to_account_info(),
-            Transfer {
-                from: ctx.accounts.clawd_vault.to_account_info(),
-                to: ctx.accounts.agent_clawd_ata.to_account_info(),
-                authority: ctx.accounts.global_pool.to_account_info(),
-            },
-            &[&[GLOBAL_AUTHORITY_SEED, &[bump]]],
-        ),
+    let ix = spl_token::instruction::transfer(
+        ctx.accounts.token_program.key,
+        ctx.accounts.clawd_vault.key,
+        ctx.accounts.agent_clawd_ata.key,
+        &ctx.accounts.global_pool.key(),
+        &[],
         stake_amount,
+    )?;
+    invoke_signed(
+        &ix,
+        &[
+            ctx.accounts.clawd_vault.to_account_info(),
+            ctx.accounts.agent_clawd_ata.to_account_info(),
+            ctx.accounts.global_pool.to_account_info(),
+        ],
+        &[&[GLOBAL_AUTHORITY_SEED, &[bump]]],
     )?;
 
     let pool = &mut ctx.accounts.global_pool;
@@ -98,6 +100,5 @@ pub struct AgentUnverified {
     pub agent: Pubkey,
     pub stake_amount: u64,
     pub unstaked_at: i64,
-    /// Global count of currently-verified agents after this unstake.
     pub total_verified: u64,
 }
