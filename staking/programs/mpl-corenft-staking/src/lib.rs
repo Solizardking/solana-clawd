@@ -41,4 +41,26 @@ pub mod openclawd_agent_staking {
     pub fn claim_rewards(ctx: Context<ClaimRewards>) -> Result<()> {
         claim_rewards::claim_rewards_handler(ctx)
     }
+
+    /// Stake CLAWD tokens to obtain Clawd Verified status.
+    ///
+    /// Any Solana wallet (agent) can call this with >= MIN_CLAWD_STAKE CLAWD tokens.
+    /// Creates a `ClawdVerificationRecord` PDA at ["clawd-verified", agent] —
+    /// the on-chain verified badge that any program can query permissionlessly.
+    ///
+    /// The `AgentVerified` event is emitted and indexes the global verified count.
+    pub fn stake_for_verification(
+        ctx: Context<StakeForVerification>,
+        amount: u64,
+    ) -> Result<()> {
+        stake_for_verification::stake_for_verification_handler(ctx, amount)
+    }
+
+    /// Return staked CLAWD and revoke the agent's Clawd Verified badge.
+    ///
+    /// Closes the `ClawdVerificationRecord` PDA (lamports returned to agent) and
+    /// transfers the full staked CLAWD amount back to the agent's ATA.
+    pub fn unstake_verification(ctx: Context<UnstakeVerification>) -> Result<()> {
+        unstake_verification::unstake_verification_handler(ctx)
+    }
 }
