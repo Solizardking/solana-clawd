@@ -4,7 +4,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { createFallbackConnection, parseEndpoints } from "@nirholas/pump-sdk";
+import { createFallbackConnection, parseEndpoints } from "./pump-sdk.js";
 import { registerPromptHandlers } from "./handlers/prompts.js";
 import { registerResourceHandlers } from "./handlers/resources.js";
 import { registerToolHandlers } from "./handlers/tools.js";
@@ -74,7 +74,7 @@ export class SolanaWalletMCPServer {
     this.state.initialized = true;
     console.error("Pump Fun MCP Server started (stdio)");
     console.error(`Protocol version: ${MCP_VERSION}`);
-    console.error(`Tools: 53 (wallet, quoting, trading, fees, analytics, AMM, social, metadata, incentives)`);
+    console.error(`Tools: 55 (wallet, quoting, trading, fees, analytics, AMM, social, metadata, incentives)`);
   }
 
   async startHttp(port = 3001): Promise<void> {
@@ -95,7 +95,7 @@ export class SolanaWalletMCPServer {
 
         if (req.url === "/health" && req.method === "GET") {
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ ok: true, tools: 53 }));
+          res.end(JSON.stringify({ ok: true, tools: 55 }));
           return;
         }
 

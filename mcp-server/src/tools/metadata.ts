@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
-import { bondingCurveMarketCap } from "@nirholas/pump-sdk";
-import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
+import { bondingCurveMarketCap } from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import { publicKeySchema } from "../utils/validation.js";
 import { lamportsToSol, formatBN } from "../utils/formatting.js";
 import { success, error, getErrorMessage } from "../types.js";
@@ -13,7 +13,7 @@ export const searchTokensSchema = z.object({
 });
 
 export async function searchTokens(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof searchTokensSchema>
 ): Promise<ToolResult> {
   try {
@@ -32,7 +32,7 @@ export const getTokenMetadataUriSchema = z.object({
 });
 
 export async function getTokenMetadataUri(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getTokenMetadataUriSchema>
 ): Promise<ToolResult> {
   try {
@@ -55,7 +55,7 @@ export const getTokenSocialsSchema = z.object({
 });
 
 export async function getTokenSocials(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getTokenSocialsSchema>
 ): Promise<ToolResult> {
   try {

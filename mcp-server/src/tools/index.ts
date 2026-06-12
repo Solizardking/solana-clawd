@@ -1,4 +1,5 @@
-import { OnlinePumpSdk, createFallbackConnection, parseEndpoints } from "@nirholas/pump-sdk";
+import { OnlinePumpSdk, createFallbackConnection, parseEndpoints } from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import type { ToolResult, ServerState } from "../types.js";
 import { error } from "../types.js";
 
@@ -97,7 +98,7 @@ export interface ToolDefinition {
   name: string;
   description: string;
   inputSchema: Record<string, unknown>;
-  handler: (sdk: OnlinePumpSdk, params: any) => Promise<ToolResult>;
+  handler: (sdk: OnlinePumpSdkInstance, params: any) => Promise<ToolResult>;
 }
 
 function zodToJsonSchema(schema: any): Record<string, unknown> {
@@ -143,7 +144,7 @@ function zodToJsonSchema(schema: any): Record<string, unknown> {
 
 // Wallet tools don't need SDK, wrap them to match the interface
 function walletToolHandler(fn: (params: any) => Promise<ToolResult>) {
-  return (_sdk: OnlinePumpSdk, params: any) => fn(params);
+  return (_sdk: OnlinePumpSdkInstance, params: any) => fn(params);
 }
 
 export const ALL_TOOLS: ToolDefinition[] = [
@@ -507,9 +508,9 @@ export const TOOL_DEFINITIONS = ALL_TOOLS.map((t) => ({
   inputSchema: t.inputSchema,
 }));
 
-let _onlineSdk: OnlinePumpSdk | null = null;
+let _onlineSdk: OnlinePumpSdkInstance | null = null;
 
-function getOnlineSdk(): OnlinePumpSdk {
+function getOnlineSdk(): OnlinePumpSdkInstance {
   if (_onlineSdk) return _onlineSdk;
   const endpoints = parseEndpoints(
     process.env.SOLANA_RPC_URLS ?? process.env.SOLANA_RPC_URL,

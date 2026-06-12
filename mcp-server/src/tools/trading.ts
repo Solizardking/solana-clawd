@@ -7,8 +7,8 @@ import {
   getBuyTokenAmountFromSolAmount,
   getSellSolAmountFromTokenAmount,
   newBondingCurve,
-} from "@nirholas/pump-sdk";
-import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
+} from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import { publicKeySchema, bnStringSchema, slippageSchema } from "../utils/validation.js";
 import { instructionsToJson } from "../utils/formatting.js";
 import { success, error, getErrorMessage } from "../types.js";
@@ -26,7 +26,7 @@ export const buildBuySchema = z.object({
 });
 
 export async function buildBuyInstructions(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildBuySchema>
 ): Promise<ToolResult> {
   try {
@@ -79,7 +79,7 @@ export const buildSellSchema = z.object({
 });
 
 export async function buildSellInstructions(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildSellSchema>
 ): Promise<ToolResult> {
   try {
@@ -132,7 +132,7 @@ export const buildCreateTokenSchema = z.object({
 });
 
 export async function buildCreateToken(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildCreateTokenSchema>
 ): Promise<ToolResult> {
   try {
@@ -170,7 +170,7 @@ export const buildCreateAndBuySchema = z.object({
 });
 
 export async function buildCreateAndBuy(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildCreateAndBuySchema>
 ): Promise<ToolResult> {
   try {
@@ -225,7 +225,7 @@ export const buildAmmSwapSchema = z.object({
 });
 
 export async function buildAmmSwap(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildAmmSwapSchema>
 ): Promise<ToolResult> {
   try {
@@ -271,7 +271,7 @@ export const buildMigrateSchema = z.object({
 });
 
 export async function buildMigrateInstructions(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildMigrateSchema>
 ): Promise<ToolResult> {
   try {

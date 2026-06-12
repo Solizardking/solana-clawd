@@ -4,8 +4,8 @@ import BN from "bn.js";
 import {
   PUMP_SDK,
   feeSharingConfigPda,
-} from "@nirholas/pump-sdk";
-import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
+} from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import { publicKeySchema, shareholderSchema, platformSchema } from "../utils/validation.js";
 import { formatBps, instructionsToJson, lamportsToSol, formatBN } from "../utils/formatting.js";
 import { success, error, getErrorMessage } from "../types.js";
@@ -19,7 +19,7 @@ export const buildCreateFeeSharingSchema = z.object({
 });
 
 export async function buildCreateFeeSharing(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildCreateFeeSharingSchema>
 ): Promise<ToolResult> {
   try {
@@ -55,7 +55,7 @@ export const buildUpdateShareholdersSchema = z.object({
 });
 
 export async function buildUpdateShareholders(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildUpdateShareholdersSchema>
 ): Promise<ToolResult> {
   try {
@@ -100,7 +100,7 @@ export const buildRevokeAdminSchema = z.object({
 });
 
 export async function buildRevokeAdmin(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildRevokeAdminSchema>
 ): Promise<ToolResult> {
   try {
@@ -128,7 +128,7 @@ export const getShareholdersSchema = z.object({
 });
 
 export async function getShareholders(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getShareholdersSchema>
 ): Promise<ToolResult> {
   try {
@@ -159,7 +159,7 @@ export const getDistributableAmountSchema = z.object({
 });
 
 export async function getDistributableAmount(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getDistributableAmountSchema>
 ): Promise<ToolResult> {
   try {
@@ -184,7 +184,7 @@ export const buildClaimShareSchema = z.object({
 });
 
 export async function buildClaimShare(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildClaimShareSchema>
 ): Promise<ToolResult> {
   try {

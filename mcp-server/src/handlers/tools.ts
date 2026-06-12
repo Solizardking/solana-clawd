@@ -4,7 +4,8 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import type { Connection } from "@solana/web3.js";
-import { OnlinePumpSdk } from "@nirholas/pump-sdk";
+import { OnlinePumpSdk } from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import type { ServerState } from "../types.js";
 import { ALL_TOOLS } from "../tools/index.js";
 
@@ -28,8 +29,8 @@ export function registerToolHandlers(
   const toolMap = new Map(ALL_TOOLS.map((t) => [t.name, t]));
 
   // Lazy singleton SDK — created on first SDK tool call
-  let sdk: OnlinePumpSdk | null = null;
-  function getSdk(): OnlinePumpSdk {
+  let sdk: OnlinePumpSdkInstance | null = null;
+  function getSdk(): OnlinePumpSdkInstance {
     if (!sdk) {
       const connection = getConnection();
       sdk = new OnlinePumpSdk(connection);
@@ -58,7 +59,7 @@ export function registerToolHandlers(
 
     try {
       // Wallet tools pass a null-ish sdk (the walletToolHandler wrapper ignores it)
-      // SDK tools get the lazy-initialized OnlinePumpSdk
+      // SDK tools get the lazy-initialized OnlinePumpSdk instance
       const sdkInstance = WALLET_TOOLS.has(name) ? (null as any) : getSdk();
       return await tool.handler(sdkInstance, args ?? {});
     } catch (err) {

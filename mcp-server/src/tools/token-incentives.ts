@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
-import { PUMP_SDK } from "@nirholas/pump-sdk";
-import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
+import { PUMP_SDK } from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import { publicKeySchema } from "../utils/validation.js";
 import { formatBN, rawToTokens, instructionsToJson } from "../utils/formatting.js";
 import { success, error, getErrorMessage } from "../types.js";
@@ -14,7 +14,7 @@ export const getUnclaimedTokensSchema = z.object({
 });
 
 export async function getUnclaimedTokens(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getUnclaimedTokensSchema>
 ): Promise<ToolResult> {
   try {
@@ -37,7 +37,7 @@ export const getCurrentDayTokensSchema = z.object({
 });
 
 export async function getCurrentDayTokens(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getCurrentDayTokensSchema>
 ): Promise<ToolResult> {
   try {
@@ -60,7 +60,7 @@ export const getVolumeStatsSchema = z.object({
 });
 
 export async function getVolumeStats(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getVolumeStatsSchema>
 ): Promise<ToolResult> {
   try {
@@ -85,7 +85,7 @@ export const buildClaimIncentivesSchema = z.object({
 });
 
 export async function buildClaimIncentives(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildClaimIncentivesSchema>
 ): Promise<ToolResult> {
   try {
@@ -108,7 +108,7 @@ export const buildClaimCashbackSchema = z.object({
 });
 
 export async function buildClaimCashback(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildClaimCashbackSchema>
 ): Promise<ToolResult> {
   try {

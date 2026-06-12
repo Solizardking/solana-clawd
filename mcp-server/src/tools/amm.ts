@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
-import { PUMP_SDK, canonicalPumpPoolPda } from "@nirholas/pump-sdk";
-import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
+import { PUMP_SDK, canonicalPumpPoolPda } from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import { publicKeySchema, bnStringSchema } from "../utils/validation.js";
 import { formatBN, instructionsToJson } from "../utils/formatting.js";
 import { success, error, getErrorMessage } from "../types.js";
@@ -14,7 +14,7 @@ export const getAmmPoolSchema = z.object({
 });
 
 export async function getAmmPool(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getAmmPoolSchema>
 ): Promise<ToolResult> {
   try {
@@ -41,7 +41,7 @@ export const getAmmReservesSchema = z.object({
 });
 
 export async function getAmmReserves(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getAmmReservesSchema>
 ): Promise<ToolResult> {
   try {
@@ -64,7 +64,7 @@ export const getAmmPriceSchema = z.object({
 });
 
 export async function getAmmPrice(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getAmmPriceSchema>
 ): Promise<ToolResult> {
   try {
@@ -93,7 +93,7 @@ export const buildAmmDepositSchema = z.object({
 });
 
 export async function buildAmmDeposit(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildAmmDepositSchema>
 ): Promise<ToolResult> {
   try {
@@ -129,7 +129,7 @@ export const buildAmmWithdrawSchema = z.object({
 });
 
 export async function buildAmmWithdraw(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildAmmWithdrawSchema>
 ): Promise<ToolResult> {
   try {

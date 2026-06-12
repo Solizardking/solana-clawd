@@ -3,7 +3,7 @@ import {
   PUMP_AMM_PROGRAM_ID,
   PUMP_FEE_PROGRAM_ID,
   MAX_SHAREHOLDERS,
-} from "@nirholas/pump-sdk";
+} from "../pump-sdk.js";
 import { PublicKey } from "@solana/web3.js";
 import type { ResourceResult, ServerState } from "../types.js";
 import { readKeypairResource, listKeypairResources } from "./keypair.js";

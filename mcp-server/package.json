@@ -1,7 +1,7 @@
 {
   "name": "@pump-fun/mcp-server",
   "version": "1.0.0",
-  "description": "Solana Clawd MCP server for the Pump SDK: 53 tools for token creation, trading, fees, analytics, AMM, incentives, and wallet workflows",
+  "description": "Solana Clawd MCP server for the Pump SDK: 55 tools for token creation, trading, fees, analytics, AMM, incentives, and wallet workflows",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

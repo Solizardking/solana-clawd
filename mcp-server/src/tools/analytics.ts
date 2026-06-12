@@ -4,8 +4,8 @@ import BN from "bn.js";
 import {
   PUMP_SDK,
   bondingCurveMarketCap,
-} from "@nirholas/pump-sdk";
-import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
+} from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import { publicKeySchema } from "../utils/validation.js";
 import { lamportsToSol, rawToTokens, formatBN } from "../utils/formatting.js";
 import { success, error, getErrorMessage } from "../types.js";
@@ -17,7 +17,7 @@ export const getBondingCurveStateSchema = z.object({
 });
 
 export async function getBondingCurveState(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getBondingCurveStateSchema>
 ): Promise<ToolResult> {
   try {
@@ -44,7 +44,7 @@ export const getTokenInfoSchema = z.object({
 });
 
 export async function getTokenInfo(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getTokenInfoSchema>
 ): Promise<ToolResult> {
   try {
@@ -76,7 +76,7 @@ export const getCreatorProfileSchema = z.object({
 });
 
 export async function getCreatorProfile(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getCreatorProfileSchema>
 ): Promise<ToolResult> {
   try {
@@ -100,7 +100,7 @@ export const getTokenHoldersSchema = z.object({
 });
 
 export async function getTokenHolders(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getTokenHoldersSchema>
 ): Promise<ToolResult> {
   try {
@@ -119,7 +119,7 @@ export const getRecentTradesSchema = z.object({
 });
 
 export async function getRecentTrades(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getRecentTradesSchema>
 ): Promise<ToolResult> {
   try {
@@ -136,7 +136,7 @@ export async function getRecentTrades(
 export const getSolUsdPriceSchema = z.object({});
 
 export async function getSolUsdPrice(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   _params: z.infer<typeof getSolUsdPriceSchema>
 ): Promise<ToolResult> {
   try {
@@ -168,7 +168,7 @@ export const getGraduationStatusSchema = z.object({
 });
 
 export async function getGraduationStatus(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getGraduationStatusSchema>
 ): Promise<ToolResult> {
   try {

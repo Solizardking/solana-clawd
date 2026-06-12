@@ -1,6 +1,6 @@
 # Solana Clawd MCP Server
 
-Model Context Protocol server for Pump.fun and Solana agent workflows. It exposes the Pump SDK through 53 MCP tools, 4 resource surfaces, and 5 guided prompts so Claude Desktop, Cursor, VS Code, Clawdex, and other MCP clients can quote, build, inspect, and prepare Solana transactions.
+Model Context Protocol server for Pump.fun and Solana agent workflows. It exposes the Pump SDK through 55 MCP tools, 4 resource surfaces, and 5 guided prompts so Claude Desktop, Cursor, VS Code, Clawdex, and other MCP clients can quote, build, inspect, and prepare Solana transactions.
 
 This package is intentionally transaction-builder first: tools return quotes, account data, signatures, or serialized instructions. A human wallet, trusted agent policy, or downstream transaction service must review, sign, and submit any onchain action.
 
@@ -8,7 +8,7 @@ This package is intentionally transaction-builder first: tools return quotes, ac
 
 | Surface | Count | Purpose |
 | --- | ---: | --- |
-| Tools | 53 | Wallet utilities, Pump quotes, transaction builders, fee sharing, analytics, AMM, metadata, incentives |
+| Tools | 55 | Wallet utilities, Pump quotes, transaction builders, fee sharing, analytics, AMM, metadata, incentives |
 | Resources | 4 | Program IDs, SDK configuration, generated keypair public views, address inspection |
 | Prompts | 5 | Token launch, buy flow, fee sharing setup, portfolio check, graduation check |
 | Transports | 2 | MCP stdio for desktop clients and streamable HTTP for local/proxy integrations |
@@ -25,7 +25,7 @@ Solana Clawd MCP Server
   src/index.ts
   src/server.ts
         |
-        +-- handlers/tools.ts      -> 53 tool definitions and dispatch
+        +-- handlers/tools.ts      -> 55 tool definitions and dispatch
         +-- handlers/resources.ts  -> programs, config, keypairs, addresses
         +-- handlers/prompts.ts    -> guided agent workflows
         |
@@ -261,4 +261,3 @@ For npm publishing, run `npm pack --dry-run` first and confirm the package conta
 - Main entry: `dist/index.js`
 - Type declarations: `dist/index.d.ts`
 - License: MIT
-

@@ -7,8 +7,8 @@ import {
   computeFeesBps,
   calculateFeeTier,
   bondingCurveMarketCap,
-} from "@nirholas/pump-sdk";
-import type { OnlinePumpSdk } from "@nirholas/pump-sdk";
+} from "../pump-sdk.js";
+import type { OnlinePumpSdkInstance } from "../pump-sdk.js";
 import { publicKeySchema, bnStringSchema, shareholderSchema } from "../utils/validation.js";
 import { lamportsToSol, formatBN, formatBps } from "../utils/formatting.js";
 import { instructionsToJson } from "../utils/formatting.js";
@@ -21,7 +21,7 @@ export const getFeeTierSchema = z.object({
 });
 
 export async function getFeeTier(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getFeeTierSchema>
 ): Promise<ToolResult> {
   try {
@@ -63,7 +63,7 @@ export const getFeeBreakdownSchema = z.object({
 });
 
 export async function getFeeBreakdown(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getFeeBreakdownSchema>
 ): Promise<ToolResult> {
   try {
@@ -109,7 +109,7 @@ export const getCreatorVaultBalanceSchema = z.object({
 });
 
 export async function getCreatorVaultBalance(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getCreatorVaultBalanceSchema>
 ): Promise<ToolResult> {
   try {
@@ -131,7 +131,7 @@ export const getMinDistributableSchema = z.object({
 });
 
 export async function getMinDistributableFee(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getMinDistributableSchema>
 ): Promise<ToolResult> {
   try {
@@ -156,7 +156,7 @@ export const buildCollectFeesSchema = z.object({
 });
 
 export async function buildCollectCreatorFees(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildCollectFeesSchema>
 ): Promise<ToolResult> {
   try {
@@ -178,7 +178,7 @@ export const buildDistributeFeesSchema = z.object({
 });
 
 export async function buildDistributeFees(
-  sdk: OnlinePumpSdk,
+  sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildDistributeFeesSchema>
 ): Promise<ToolResult> {
   try {
@@ -200,7 +200,7 @@ export const getFeeSharingConfigSchema = z.object({
 });
 
 export async function getFeeSharingConfig(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof getFeeSharingConfigSchema>
 ): Promise<ToolResult> {
   try {
@@ -222,7 +222,7 @@ export const buildUpdateFeeSharesSchema = z.object({
 });
 
 export async function buildUpdateFeeShares(
-  _sdk: OnlinePumpSdk,
+  _sdk: OnlinePumpSdkInstance,
   params: z.infer<typeof buildUpdateFeeSharesSchema>
 ): Promise<ToolResult> {
   try {
