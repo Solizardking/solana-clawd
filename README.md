@@ -97,7 +97,7 @@ npx skills add Solizardking/solana-clawd
 Then ask your agent: **"Install a spinner pack"** — it'll present all available themes.
 
 | Pack | Theme | Pack | Theme |
-|------|-------|------|-------|
+| --- | --- | --- | --- |
 | `developer` | Programming & dev culture | `vibecoder` | Vibe coding culture |
 | `pirate` | Pirate speak | `gordon-ramsay` | Angry chef yelling at code |
 | `corporate` | Buzzwords & jargon | `darth-vader` | Star Wars' Sith Lord |
