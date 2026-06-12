@@ -222,21 +222,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`5d3b51e9`](../../commit/5d3b51e9) | character: add WHITEPAPER.md at original knowledge path | solizardking | Jun 12 |
-| 🥈 | [`6330cf87`](../../commit/6330cf87) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 🥉 | [`71e9f8d2`](../../commit/71e9f8d2) | cheshire-terminal: rewrite WHITEPAPER.md as the original Che | solizardking | Jun 12 |
-| 4️⃣ | [`3f6b8383`](../../commit/3f6b8383) | sfddfs | solizardking | Jun 12 |
-| 5️⃣ | [`56156e42`](../../commit/56156e42) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 6️⃣ | [`210773ea`](../../commit/210773ea) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 12 |
-| 7️⃣ | [`f9c866bd`](../../commit/f9c866bd) | adfsfdasfdssadfdf | solizardking | Jun 12 |
-| 8️⃣ | [`9832a0e5`](../../commit/9832a0e5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 9️⃣ | [`a4a8b581`](../../commit/a4a8b581) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 🔟 | [`a82a34eb`](../../commit/a82a34eb) | readme: add staking, ClawdRouter, and spinners sections; rem | solizardking | Jun 12 |
+| 🥇 | [`51e6579f`](../../commit/51e6579f) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 12 |
+| 🥈 | [`981f0382`](../../commit/981f0382) | asdffdsa | solizardking | Jun 12 |
+| 🥉 | [`e202f806`](../../commit/e202f806) | fdsdfdfs | solizardking | Jun 12 |
+| 4️⃣ | [`951060ff`](../../commit/951060ff) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 5️⃣ | [`5d3b51e9`](../../commit/5d3b51e9) | character: add WHITEPAPER.md at original knowledge path | solizardking | Jun 12 |
+| 6️⃣ | [`6330cf87`](../../commit/6330cf87) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 7️⃣ | [`71e9f8d2`](../../commit/71e9f8d2) | cheshire-terminal: rewrite WHITEPAPER.md as the original Che | solizardking | Jun 12 |
+| 8️⃣ | [`3f6b8383`](../../commit/3f6b8383) | sfddfs | solizardking | Jun 12 |
+| 9️⃣ | [`56156e42`](../../commit/56156e42) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🔟 | [`210773ea`](../../commit/210773ea) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 12 |
+| · | [`f9c866bd`](../../commit/f9c866bd) | adfsfdasfdssadfdf | solizardking | Jun 12 |
+| · | [`9832a0e5`](../../commit/9832a0e5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| · | [`a4a8b581`](../../commit/a4a8b581) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| · | [`a82a34eb`](../../commit/a82a34eb) | readme: add staking, ClawdRouter, and spinners sections; rem | solizardking | Jun 12 |
 | · | [`f9576456`](../../commit/f9576456) | adfdf | solizardking | Jun 12 |
-| · | [`19588157`](../../commit/19588157) | asdfdfas | solizardking | Jun 12 |
-| · | [`68fe1094`](../../commit/68fe1094) | afdfdaadfs | solizardking | Jun 12 |
-| · | [`ff75e8c1`](../../commit/ff75e8c1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`b26a2185`](../../commit/b26a2185) | staking: wire stake_for_verification and unstake_verificatio | solizardking | Jun 12 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
