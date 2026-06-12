@@ -6,18 +6,18 @@ check: lint-ts lint-py
 lint: lint-ts lint-py
 
 lint-ts:
-	cd nemoclawd && npm run check
+	cd nemo-clawd-mcp && npm run lint
 
 lint-py:
-	cd nemoclawd-blueprint && $(MAKE) check
+	cd nemo-clawd-python && $(MAKE) check
 
 format: format-ts format-py
 
 format-ts:
-	cd nemoclawd && npm run lint:fix && npm run format
+	cd nemo-clawd-mcp && npm run lint
 
 format-py:
-	cd nemoclawd-blueprint && $(MAKE) format
+	cd nemo-clawd-python && $(MAKE) format
 
 # --- Documentation ---
 

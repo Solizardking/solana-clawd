@@ -9,3 +9,5 @@ packages:
   - "programs/programs/client"
   - "box"
   - "goals"
+  - "nemo-clawd"
+  - "nemo-clawd/nemo-clawd-mcp"
