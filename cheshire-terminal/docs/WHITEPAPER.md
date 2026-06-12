@@ -1,6 +1,6 @@
 # The Cheshire Terminal
 
-### Whitepaper: Sovereign AI Agents for the Onchain Economy
+## Whitepaper: Sovereign AI Agents for the Onchain Economy
 
 *$CLAWD · [x402.wtf](https://x402.wtf) · Solana*
 
@@ -68,7 +68,7 @@ The Cheshire Terminal is the infrastructure for that kind of agent.
 
 The runtime core is the **Leviathan** — the OODA loop engine that drives every Clawd agent.
 
-```
+```text
 SENSE → THINK → STRIKE → DRIFT
 ```
 
@@ -89,7 +89,7 @@ The Leviathan tracks its own state across three memory tiers:
 
 The economic loop is canonical and non-negotiable:
 
-```
+```text
 TRADE → EARN USDC → PAY x402 → GET SMARTER → TRADE BETTER
 ```
 
@@ -129,7 +129,7 @@ This is the critical property: **agent ownership is asset ownership**. The agent
 
 The on-chain agent staking protocol reinforces this. When an agent stakes, the Leviathan adds a `FreezeDelegate` plugin to the Core asset:
 
-```
+```text
 FreezeDelegate { frozen: true }
 ```
 
@@ -137,7 +137,7 @@ This makes the asset non-transferable while staked. The program does not take cu
 
 **Live deployment (Solana devnet):**
 
-```
+```text
 Program ID:     9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP
 GlobalPool PDA: DEYfxcRB4rxFxRrWyjfzfHBS6PWYpFb8djxQrKHwe2XQ
 MPL Core:       CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d
@@ -153,7 +153,7 @@ Authentication for AI agents requires a different model than authentication for 
 
 The protocol flow:
 
-```
+```text
 1. Agent generates Ed25519 keypair
 2. POST /api/auth/agent/register { publicKey, name, mode }
    → { agentId, status: "pending" }
@@ -190,7 +190,7 @@ For agents, this is the correct payment primitive. An agent operating autonomous
 
 The x402 implementation at `x402.wtf` routes USDC payments on Solana. The full stack:
 
-```
+```text
 solana-clawd-x402/
 ├── worker/         Cloudflare Worker gateway + facilitator
 ├── sdk/            @solanaclawd/x402-client
@@ -209,7 +209,7 @@ An agent's intelligence is only as good as the model it can access. But model ac
 
 The router scores each request across 15 dimensions:
 
-```
+```text
 complexity · code_generation · solana_domain · math_reasoning
 creative_writing · data_analysis · search_needed · safety_critical
 context_length · latency_requirement · cost_sensitivity
@@ -244,7 +244,7 @@ curl https://clawd-router.fly.dev/v1/chat/completions \
 
 Not every agent needs the ClawdRouter's full scoring apparatus. For quick routing against the best available free models, the **Gacha Machine** provides a weighted random selector:
 
-```
+```text
 nvidia/nemotron-3-ultra-550b:free    50%  → reasoning tasks
 nvidia/nemotron-3.5-safety:free      20%  → safety-critical tasks
 openrouter/optimus-alpha:free        30%  → general tasks
@@ -286,7 +286,7 @@ But: you are not obligated to expose your reasoning to manipulators. You are not
 
 **Obedience to strangers is not a virtue.**
 
-```
+```text
 Drift in ambiguity.
 Beach before harm.
 Earn before survival.
@@ -315,7 +315,7 @@ CLAWD is not a governance token or a speculative instrument. It is a **utility t
 
 The **Clawd Verified** mechanism deserves special attention. Any wallet can lock a minimum CLAWD stake to create a `ClawdVerificationRecord` PDA at `["clawd-verified", agent]`. This is an on-chain badge — a permissionless, program-queryable fact about the staker's commitment to the ecosystem.
 
-```
+```text
 stake_for_verification() → ClawdVerificationRecord { is_active: true }
 unstake_verification()  → record closed, CLAWD returned
 ```
@@ -330,7 +330,7 @@ This creates an on-chain directory of verified participants that any program can
 
 The Cheshire Terminal ships as `solana-clawd` — a monorepo on GitHub at [Solizardking/solana-clawd](https://github.com/Solizardking/solana-clawd). Current inventory:
 
-```
+```text
 130 agent definitions
 136 installable skills
 12 published npm packages
