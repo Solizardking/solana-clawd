@@ -367,21 +367,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`45bcf227`](../../commit/45bcf227) | Fix clawd-code install branch references | Mr. Mojo Risin | Jun 12 |
-| 🥈 | [`5ac75eca`](../../commit/5ac75eca) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 🥉 | [`5a9452c1`](../../commit/5a9452c1) | Release clawd-code open source installer | Mr. Mojo Risin | Jun 12 |
-| 4️⃣ | [`d59a5d7f`](../../commit/d59a5d7f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 5️⃣ | [`31130d0f`](../../commit/31130d0f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 6️⃣ | [`41414d89`](../../commit/41414d89) | Fix MCP server runtime and tool count | solizardking | Jun 12 |
-| 7️⃣ | [`39abdc39`](../../commit/39abdc39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 8️⃣ | [`567d1512`](../../commit/567d1512) | Document and harden MCP server | solizardking | Jun 12 |
-| 9️⃣ | [`e482c13b`](../../commit/e482c13b) | sflll | solizardking | Jun 12 |
-| 🔟 | [`e1bd8a94`](../../commit/e1bd8a94) | lldadda | solizardking | Jun 12 |
+| 🥇 | [`be504ebd`](../../commit/be504ebd) | Fix streamed tool call reducer indexing | Mr. Mojo Risin | Jun 12 |
+| 🥈 | [`3d34fc77`](../../commit/3d34fc77) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🥉 | [`45bcf227`](../../commit/45bcf227) | Fix clawd-code install branch references | Mr. Mojo Risin | Jun 12 |
+| 4️⃣ | [`5ac75eca`](../../commit/5ac75eca) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 5️⃣ | [`5a9452c1`](../../commit/5a9452c1) | Release clawd-code open source installer | Mr. Mojo Risin | Jun 12 |
+| 6️⃣ | [`d59a5d7f`](../../commit/d59a5d7f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 7️⃣ | [`31130d0f`](../../commit/31130d0f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 8️⃣ | [`41414d89`](../../commit/41414d89) | Fix MCP server runtime and tool count | solizardking | Jun 12 |
+| 9️⃣ | [`39abdc39`](../../commit/39abdc39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🔟 | [`567d1512`](../../commit/567d1512) | Document and harden MCP server | solizardking | Jun 12 |
+| · | [`e482c13b`](../../commit/e482c13b) | sflll | solizardking | Jun 12 |
+| · | [`e1bd8a94`](../../commit/e1bd8a94) | lldadda | solizardking | Jun 12 |
 | · | [`2f05bb85`](../../commit/2f05bb85) | ddada | solizardking | Jun 12 |
 | · | [`9161401a`](../../commit/9161401a) | xafsas | solizardking | Jun 12 |
 | · | [`37ad546d`](../../commit/37ad546d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`0340995c`](../../commit/0340995c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`eda1efaa`](../../commit/eda1efaa) | dsdfsasdffd | solizardking | Jun 12 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
