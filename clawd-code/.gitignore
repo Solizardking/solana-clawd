@@ -6,6 +6,9 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# Local Clawd runtime state
+.clawd/
+
 # Environment files — NEVER commit secrets
 .env
 .env.local
