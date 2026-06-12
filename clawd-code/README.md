@@ -10,7 +10,7 @@ running research/image/voice modes from one binary.
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/clawd-code/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/newnew/clawd-code/install.sh | sh
 ```
 
 The installer checks for Node.js 18+, installs the `clawd-code` binary, and
