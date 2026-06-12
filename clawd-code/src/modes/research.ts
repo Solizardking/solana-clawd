@@ -3,6 +3,8 @@
  * Multi-agent deep research with grok-4.20-multi-agent
  */
 
+import { createXaiClient, type XaiTextResponse } from '../xai.js';
+
 export class ResearchMode {
   constructor(private config: any) {}
 
@@ -23,69 +25,52 @@ export class ResearchMode {
     console.log('[RESEARCH MODE] Tools enabled: web_search, x_search, code_execution');
     console.log('[RESEARCH MODE] Leader agent synthesizing findings...\n');
 
-    // Run multi-agent research
     const results = await this.runMultiAgentResearch(query);
-    
-    // Display results
+
     console.log('\n╔═══════════════════════════════════════════════════════════════╗');
     console.log('║  RESEARCH RESULTS — grok-4.20-multi-agent                        ║');
     console.log('╠═══════════════════════════════════════════════════════════════╣');
-    console.log('║                                                               ║');
     console.log('║  TOPIC: ' + query.substring(0, 50).padEnd(53) + '║');
-    console.log('║                                                               ║');
-    console.log('║  • LangChain: Modular chains, tool calling, active ecosystem   ║');
-    console.log('║  • CrewAI: Role-based multi-agent, clean YAML config          ║');
-    console.log('║  • Microsoft AutoGen: Enterprise-grade, session management     ║');
-    console.log('║  • xAI multi-agent: grok-4.20-native, server-side tools       ║');
-    console.log('║  • AutoGPT: Python-native, autonomous goal decomposition      ║');
-    console.log('║                                                               ║');
     console.log('╠═══════════════════════════════════════════════════════════════╣');
-    console.log('║  Solana Integration: xAI multi-agent recommended (native)     ║');
-    console.log('║  Confidence: 0.91 | Agents used: ' + this.config.agentCount + '                        ║');
+    console.log('║  STATUS: complete | Agents requested: ' + String(this.config.agentCount).padEnd(25) + '║');
     console.log('╚═══════════════════════════════════════════════════════════════╝');
+
+    console.log('\n' + (results.content || 'No research output returned.'));
+    if (results.citations.length > 0) {
+      console.log('\nCitations:');
+      for (const citation of results.citations) {
+        console.log(`- ${citation}`);
+      }
+    }
     
     console.log('\n[RESEARCH MODE] Research complete. Say "code" to generate implementation.');
   }
 
-  private async runMultiAgentResearch(query: string): Promise<any> {
-    const { spawn } = await import('child_process');
-    
-    // Use xAI Responses API with multi-agent model
-    const pythonCode = `
-import os
-import requests
-import json
-
-client = OpenAI(
-    api_key=os.environ.get("XAI_API_KEY", ""),
-    base_url="https://api.x.ai/v1"
-)
-
-# Multi-agent research with grok-4.20-multi-agent
-response = client.responses.create(
-    model="${this.config.model}",
-    reasoning={"effort": "${this.config.agentCount === 16 ? 'high' : 'low'}"},
-    input=[{"role": "user", "content": "${query}"}],
-    tools=[{"type": "web_search"}, {"type": "x_search"}]
-)
-
-print(json.dumps({"status": "complete", "output": response.output_text}))
-`;
-
+  private async runMultiAgentResearch(query: string): Promise<XaiTextResponse> {
     try {
-      const result = spawn('python3', ['-c', pythonCode], {
-        env: { ...process.env, XAI_API_KEY: this.config.xaiApiKey },
-        stdio: ['pipe', 'pipe', 'pipe']
-      });
-      
-      let output = '';
-      result.stdout.on('data', (data) => { output += data.toString(); });
-      
-      return new Promise(resolve => {
-        result.on('close', () => resolve({ status: 'complete', output }));
+      const client = createXaiClient(this.config.xaiApiKey);
+      if (!client) {
+        return { content: 'Multi-agent research unavailable: XAI_API_KEY is not set.', citations: [] };
+      }
+
+      return await client.responses({
+        model: this.config.model || 'grok-4.20-multi-agent',
+        reasoning: { effort: this.config.agentCount === 16 ? 'high' : 'low' },
+        input: [
+          {
+            role: 'user',
+            content: query,
+          },
+        ],
+        tools: [
+          { type: 'web_search' },
+          { type: 'x_search' },
+          { type: 'code_interpreter' },
+        ],
       });
     } catch (error) {
-      return { status: 'fallback', output: 'Multi-agent research unavailable' };
+      const message = error instanceof Error ? error.message : String(error);
+      return { content: `Multi-agent research unavailable: ${message}`, citations: [] };
     }
   }
 }

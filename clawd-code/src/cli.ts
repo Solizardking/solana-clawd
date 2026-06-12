@@ -258,6 +258,9 @@ async function main(): Promise<void> {
 
   const config = loadConfig();
   const modeArg = args[0].toLowerCase();
+  if (['code', 'trade', 'research', 'image', 'voice'].includes(modeArg)) {
+    config.mode = modeArg.toUpperCase() as Mode;
+  }
 
   // Parse global flags
   if (args.includes('--live')) {
