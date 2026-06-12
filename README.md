@@ -38,6 +38,59 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 ---
 
+## 🚀 One-Shot Install & Launch
+
+```bash
+# Option 1 — Quick clone + launch (recommended)
+git clone https://github.com/openclawd/solana-clawd.git
+cd solana-clawd
+npm install
+npm run tui
+
+# Option 2 — curl installer (global packages)
+curl -fsSL https://raw.githubusercontent.com/openclawd/solana-clawd/main/install.sh | bash
+
+# Option 3 — TUI directly via tsx
+npx tsx tui/start.ts [--url <gateway_url>] [--session <key>] [--message <text>]
+```
+
+### TUI Slash Commands
+
+After launching the TUI (`npm run tui`), use these built-in slash commands:
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show all slash commands |
+| `/status` | Gateway status summary |
+| `/agent <id>` | Switch agent |
+| `/session <key>` | Switch session |
+| `/model <provider/model>` | Set model |
+| `/think <level>` | Set thinking level |
+| `/verbose <on\|off>` | Toggle verbose output |
+| `/clawd <sub>` | OpenClawd CLI — skills, agents, marketplace, wallet, payments, node |
+| `/connect` | Connect this agent to solanaclawd.com |
+| `/register` | Register agent on Metaplex Agent Registry |
+| `/attest <skill\|verify\|status\|agent\|vault>` | SAS attestation operations |
+
+**`/clawd` subcommands:**
+```
+/clawd skills                — list skills
+/clawd skills:search <q>     — search skills
+/clawd skills:featured       — featured skills
+/clawd agents                — list agents
+/clawd status                — system status
+/clawd connect               — connect agent
+/clawd register              — registration info
+/clawd marketplace           — marketplace listing
+/clawd wallet                — wallet info
+/clawd prices                — token prices
+/clawd payment:supported     — supported payment methods
+/clawd payment:verify <id>   — verify a payment
+/clawd payment:settle <tx>   — settle a payment
+```
+
+---
+
 ## 🔒 Agent Staking — Live on Devnet
 
 The first non-custodial agent staking protocol on Solana. Metaplex Core agents are locked with a `FreezeDelegate` plugin — no escrow, no custody transfer, the asset stays in your wallet.
