@@ -3,7 +3,7 @@ set -eu
 
 PACKAGE_NAME="${CLAWD_CODE_PACKAGE:-@solana-clawd/clawd-code}"
 REPO_URL="${CLAWD_CODE_REPO:-https://github.com/Solizardking/solana-clawd.git}"
-REF="${CLAWD_CODE_REF:-main}"
+REF="${CLAWD_CODE_REF:-newnew}"
 INSTALL_DIR="${CLAWD_CODE_INSTALL_DIR:-$HOME/.clawd-code/src}"
 CONFIG_DIR="$HOME/.clawd-code"
 
