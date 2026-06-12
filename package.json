@@ -237,6 +237,7 @@
     "automation:full": "npm run build && node dist/index.js --spawn && node dist/index.js --run",
     "examples:list": "npx tsx -e \"console.log('Available examples: ooda, paysh, a2a, dark-defi, buddies, lobtrader, listen, wallet, orch, research');\"",
     "examples:run": "echo 'Usage: npm run demo:<name>  e.g. npm run demo:ooda'",
+    "audit:repo": "node scripts/audit-repo.mjs",
     "readme": "node scripts/update-readme.mjs",
     "readme:x402": "node scripts/update-readme.mjs x402"
   },
@@ -262,6 +263,7 @@
     "chalk": "^5.3.0",
     "cron-parser": "^4.9.0",
     "gray-matter": "^4.0.3",
+    "openai": "^5.23.2",
     "ora": "^8.0.0",
     "simple-git": "^3.24.0",
     "tweetnacl": "^1.0.3",

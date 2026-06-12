@@ -11,12 +11,14 @@ Last local audit: 2026-06-12 on branch `newnew`.
 - Local live env files are ignored by `.gitignore`, including `.env`, `.env.local`, `.env.*`, and service-level `.env` files.
 - A local Solana deploy keypair exists under `programs/programs/target/`, which is ignored as build output.
 - No installed `gitleaks` or `trufflehog` binary was available during this pass, so the audit used local Git and text-pattern scans.
+- `npm run audit:repo` now runs the repeatable local audit used for tracked filenames, suspicious content patterns, package surfaces, and `install.sh` executability.
 
 ## Before Publishing
 
 Run a dedicated scanner before pushing or tagging a release:
 
 ```bash
+npm run audit:repo
 gitleaks detect --source . --no-git --redact
 gitleaks detect --source . --redact
 ```

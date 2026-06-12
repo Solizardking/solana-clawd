@@ -39,7 +39,7 @@ RUN groupadd -r sandbox && useradd -r -g sandbox -d /sandbox -s /bin/bash sandbo
     && chown -R sandbox:sandbox /sandbox
 
 # Install OpenClaw CLI
-RUN npm install -g openclawd@2026.3.11
+RUN npm install -g openclawd@1.0.0
 
 # Install PyYAML for blueprint runner
 RUN pip3 install --break-system-packages pyyaml

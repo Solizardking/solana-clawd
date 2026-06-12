@@ -48,7 +48,7 @@
     "vitest": "^2.0.0"
   },
   "dependencies": {
-    "openclawd": "2026.3.11"
+    "openclawd": "^1.0.0"
   },
   "files": [
     "bin/",
