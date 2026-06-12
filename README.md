@@ -86,6 +86,35 @@ Most NFT staking contracts were built for static collectibles. OpenClawd Agent S
 
 ---
 
+## 🎡 Clawd Spinners — 45+ Themed Packs
+
+Install themed spinner verb packs for Clawd agents directly from this repo.
+
+```bash
+npx skills add Solizardking/solana-clawd
+```
+
+Then ask your agent: **"Install a spinner pack"** — it'll present all available themes.
+
+| Pack | Theme | Pack | Theme |
+|------|-------|------|-------|
+| `developer` | Programming & dev culture | `vibecoder` | Vibe coding culture |
+| `pirate` | Pirate speak | `gordon-ramsay` | Angry chef yelling at code |
+| `corporate` | Buzzwords & jargon | `darth-vader` | Star Wars' Sith Lord |
+| `space` | Space & sci-fi | `yoda` | Star Wars' Jedi Master |
+| `wizard` | Fantasy & magic | `walter-white` | Breaking Bad's Heisenberg |
+| `sherlock-holmes` | Deductive reasoning | `jack-sparrow` | Chaotic pirate captain |
+| `startup` | Startup culture | `panicker` | Pure dev anxiety |
+| `sarcastic-ai` | Self-aware AI humor | `philosophical` | Deep thoughts |
+| `vim` | Vim editor enthusiasts | `wholesome` | Cozy & wholesome vibes |
+| `bob-ross` | Happy little accidents | `zombie` | Zombie apocalypse survival |
+
+...and 25 more: `90s-kid` · `blue-collar-dev` · `borat` · `cat` · `chaos` · `coffee` · `cowboy` · `detective` · `gardening` · `gym-bro` · `honest-no-filter` · `meme` · `michael-scott` · `minions` · `motivational` · `ninja` · `ocean` · `retro-gaming` · `sf-entrepreneur` · `shakespeare` · `superhero` · `the-dude` · `therapist` · `time-traveler` · `cowboy`
+
+Browse all packs in [`spinners/`](./spinners/) · [x402.wtf/skills](https://x402.wtf/skills)
+
+---
+
 ## 🏆 Recent Commit Leaderboard
 
 > Auto-refreshed every 30 min by GitHub Actions. Latest activity from the team.
