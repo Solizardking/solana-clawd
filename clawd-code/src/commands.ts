@@ -3,6 +3,8 @@
  * /perps /wallet /send /price /balance /goal /positions /strategies /agents /funding /scan /signals
  */
 
+import { loadClawdEnv } from './env.js';
+
 const HELIUS_KEY = process.env.HELIUS_API_KEY ?? '';
 const HELIUS_RPC = process.env.HELIUS_RPC_URL ??
   (HELIUS_KEY
@@ -13,6 +15,18 @@ const PHOENIX_RISE = 'https://api.phoenix.gg/enclave';
 type JsonRpcResponse<T = unknown> = {
   result?: T;
 };
+
+function aiModeConfig(): Record<string, string | number> {
+  const env = loadClawdEnv();
+  return {
+    provider: env.CLAWD_PROVIDER || 'xai',
+    model: env.CLAWD_MODEL || 'grok-4.3',
+    xaiApiKey: env.XAI_API_KEY || '',
+    deepSeekApiKey: env.DEEPSEEK_API_KEY || '',
+    deepSeekBaseUrl: env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
+    agentCount: parseInt(env.CLAWD_AGENT_COUNT || '4', 10),
+  };
+}
 
 async function rpcCall(method: string, params: any[]): Promise<any> {
   try {
@@ -189,7 +203,7 @@ export async function cmdGoal(args: string[]): Promise<void> {
   } else if (lower.includes('research') || lower.includes('analyze')) {
     console.log(`[GOAL] Routing to RESEARCH MODE: ${goal}`);
     const { ResearchMode } = await import('./modes/research.js');
-    const mode = new ResearchMode({ xaiApiKey: process.env.XAI_API_KEY || '' });
+    const mode = new ResearchMode(aiModeConfig());
     await mode.run([goal]);
   } else if (lower.includes('image') || lower.includes('picture') || lower.includes('draw')) {
     console.log(`[GOAL] Routing to IMAGE MODE: ${goal}`);
@@ -205,7 +219,7 @@ export async function cmdGoal(args: string[]): Promise<void> {
     // Default to code mode
     console.log(`[GOAL] Routing to CODE MODE: ${goal}`);
     const { CodeMode } = await import('./modes/code.js');
-    const mode = new CodeMode({ xaiApiKey: process.env.XAI_API_KEY || '' });
+    const mode = new CodeMode(aiModeConfig());
     await mode.run([goal]);
   }
 }

@@ -166,6 +166,7 @@ First run: cp .env.example ~/.clawd-code/.env
 }
 
 async function main(): Promise<void> {
+  loadClawdEnv();
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
