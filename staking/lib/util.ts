@@ -6,15 +6,15 @@ import {
 } from "@solana/spl-token";
 
 export const METAPLEX = new PublicKey(
-  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
 );
 export const MPL_DEFAULT_RULE_SET = new PublicKey(
-  "AdH2Utn6Fus15ZhtenW4hZBQnvtLgM1YCW2MfVp7pYS5"
+  "AdH2Utn6Fus15ZhtenW4hZBQnvtLgM1YCW2MfVp7pYS5",
 );
 
 const getAssociatedTokenAccount = async (
   ownerPubkey: PublicKey,
-  mintPk: PublicKey
+  mintPk: PublicKey,
 ): Promise<PublicKey> => {
   let associatedTokenAccountPubkey = PublicKey.findProgramAddressSync(
     [
@@ -22,7 +22,7 @@ const getAssociatedTokenAccount = async (
       TOKEN_PROGRAM_ID.toBuffer(),
       mintPk.toBuffer(), // mint address
     ],
-    ASSOCIATED_TOKEN_PROGRAM_ID
+    ASSOCIATED_TOKEN_PROGRAM_ID,
   )[0];
 
   return associatedTokenAccountPubkey;
@@ -32,7 +32,7 @@ const createAssociatedTokenAccountInstruction = (
   associatedTokenAddress: anchor.web3.PublicKey,
   payer: anchor.web3.PublicKey,
   walletAddress: anchor.web3.PublicKey,
-  splTokenMintAddress: anchor.web3.PublicKey
+  splTokenMintAddress: anchor.web3.PublicKey,
 ) => {
   const keys = [
     { pubkey: payer, isSigner: true, isWritable: true },
@@ -62,7 +62,7 @@ const getATokenAccountsNeedCreate = async (
   connection: anchor.web3.Connection,
   walletAddress: anchor.web3.PublicKey,
   owner: anchor.web3.PublicKey,
-  nfts: anchor.web3.PublicKey[]
+  nfts: anchor.web3.PublicKey[],
 ) => {
   let instructions = [],
     destinationAccounts = [];
@@ -74,7 +74,7 @@ const getATokenAccountsNeedCreate = async (
         destinationPubkey,
         walletAddress,
         owner,
-        mint
+        mint,
       );
       instructions.push(createATAIx);
     }
@@ -87,7 +87,7 @@ const getATokenAccountsNeedCreate = async (
           userAccount,
           walletAddress,
           walletAddress,
-          mint
+          mint,
         );
         instructions.push(createATAIx);
       }
@@ -104,13 +104,13 @@ const getMetadata = async (mint: PublicKey): Promise<PublicKey> => {
   return (
     await PublicKey.findProgramAddress(
       [Buffer.from("metadata"), METAPLEX.toBuffer(), mint.toBuffer()],
-      METAPLEX
+      METAPLEX,
     )
   )[0];
 };
 
 const getMasterEdition = async (
-  mint: anchor.web3.PublicKey
+  mint: anchor.web3.PublicKey,
 ): Promise<anchor.web3.PublicKey> => {
   return (
     await anchor.web3.PublicKey.findProgramAddress(
@@ -120,14 +120,14 @@ const getMasterEdition = async (
         mint.toBuffer(),
         Buffer.from("edition"),
       ],
-      METAPLEX
+      METAPLEX,
     )
   )[0];
 };
 
 export function findTokenRecordPda(
   mint: PublicKey,
-  token: PublicKey
+  token: PublicKey,
 ): PublicKey {
   return PublicKey.findProgramAddressSync(
     [
@@ -137,7 +137,7 @@ export function findTokenRecordPda(
       Buffer.from("token_record"),
       token.toBuffer(),
     ],
-    METAPLEX
+    METAPLEX,
   )[0];
 }
 

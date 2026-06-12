@@ -51,7 +51,7 @@ reserved
 The deployed devnet program is:
 
 ```text
-Program ID:      D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP
+Program ID:      9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP
 Global pool PDA: EyDhP1HU3yqCmqCpKkQHFuX3wMD6sJF1kK8eeRwmTr1K
 MPL Core:        CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d
 ```

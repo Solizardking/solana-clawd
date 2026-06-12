@@ -1,316 +1,431 @@
-# 🦞 OpenClawd Agent Staking Protocol
+<div align="center">
+  <img src="docs/banner.svg" alt="OpenClawd Agent Staking" width="900"/>
+</div>
 
-[![x402](https://img.shields.io/badge/x402.wtf-payments-1E5AA8?style=for-the-badge)](https://x402.wtf)
-[![$CLAWD](https://img.shields.io/badge/$CLAWD-8cHzQH...pump-C85C2B?style=for-the-badge&logo=solana&logoColor=white)](https://pump.fun/coin/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
-[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](./LICENSE)
+<div align="center">
 
-*Powered by [x402.wtf](https://x402.wtf) · $CLAWD: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`*
+[![Solana](https://img.shields.io/badge/Solana-Devnet%20Live-14F195?style=for-the-badge&logo=solana&logoColor=white)](https://explorer.solana.com/address/9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP?cluster=devnet)
+[![Anchor](https://img.shields.io/badge/Anchor-v0.30.1-9945FF?style=for-the-badge)](https://www.anchor-lang.com/)
+[![MPL Core](https://img.shields.io/badge/Metaplex-Core%20NFT-FF6B35?style=for-the-badge)](https://developers.metaplex.com/core)
+[![License](https://img.shields.io/badge/License-MIT-00C2FF?style=for-the-badge)](LICENSE)
+
+**Stake your OpenClawd agent NFTs on Solana · Earn $CLAWD · Stay non-custodial**
+
+[Program Explorer](https://explorer.solana.com/address/9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP?cluster=devnet) · [Global Pool](https://explorer.solana.com/address/DEYfxcRB4rxFxRrWyjfzfHBS6PWYpFb8djxQrKHwe2XQ?cluster=devnet) · [$CLAWD Token](https://explorer.solana.com/address/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
+
+</div>
 
 ---
 
-OpenClawd Agent Staking is an Anchor program and frontend-ready transaction
-surface for staking Metaplex Core agent assets on Solana. It lets an agent owner
-lock a Core asset in place by adding a frozen `FreezeDelegate` plugin, then later
-unstake by unfreezing and removing that plugin.
+## Live Deployment
 
-**No escrow. No custody transfer. The asset stays in the owner's wallet.**
+> **The program is deployed and the global pool is initialized on Solana devnet.**
 
-## Position in the OpenClawd stack
+| Account | Address | Status |
+|---------|---------|--------|
+| **Program** | `9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP` | ✅ Live |
+| **Global Pool PDA** | `DEYfxcRB4rxFxRrWyjfzfHBS6PWYpFb8djxQrKHwe2XQ` | ✅ Initialized |
+| **$CLAWD Token** | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` | ✅ Active |
+| **Network** | Solana Devnet | — |
+| **Mainnet** | *Pending devnet review (Gate 4)* | — |
 
-This package is the **live devnet lock layer** of the broader OpenClawd Agent
-Staking platform. It proves the critical primitive: a Metaplex Core agent can be
-made non-transferable through `FreezeDelegate` without transferring custody.
+---
 
-The larger reward/position protocol lives in:
+## What Is This?
 
-```text
-programs/clawd-stake/
-server/_core/clawdStakeRoutes.ts
-server/_core/clawdStakeWebhook.ts
-convex/clawdStake.ts
+The **OpenClawd Agent Staking** protocol lets holders of Metaplex Core agent NFTs lock their agents to earn **$CLAWD** token rewards — without ever giving up custody. The NFT never leaves your wallet; instead, a `FreezeDelegate` plugin is attached on-chain to make it non-transferable for the duration of the stake.
+
+Rewards accrue second-by-second at **1,000 CLAWD base-units per second** per agent (~86.4 CLAWD/day). When you claim, an on-chain event is emitted and the backend treasury wallet settles the $CLAWD transfer to your wallet — no vault, no lockup, fully verifiable.
+
+---
+
+## How It Works
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                                                                          │
+│   1. STAKE          2. ACCRUE            3. CLAIM          4. UNSTAKE   │
+│                                                                          │
+│   Agent NFT  ───►  Rewards grow    ───►  On-chain    ───►  FreezeDelegate│
+│   stays in         1,000 base-units      event             removed;      │
+│   your wallet      per second            emitted ──►       NFT freely    │
+│   FreezeDelegate   since stake_time      backend sends     transferable  │
+│   frozen=true                            $CLAWD to wallet  again         │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
-That layer adds weighted `StakePosition` accounts, lock durations, CLAWD
-emissions, SOL fee-share, and phase-2 gacha fee routing. The live `/staking`
-frontend surfaces the lock layer today and documents the reward protocol as the
-next layer of the same product, not a separate experiment.
+### Flow Diagram
 
-## Live Devnet Deployment
+```mermaid
+flowchart TD
+    A([Wallet]) -->|"stake_agent()"| B[FreezeDelegate\nPlugin Added]
+    B --> C[(UserPool PDA\ncreated)]
+    C --> D{Time passes}
+    D -->|"claim_rewards()"| E[RewardsClaimed\nevent on-chain]
+    E --> F([Backend Treasury\nsends CLAWD])
+    D -->|"unstake_agent()"| G[FreezeDelegate\nRemoved]
+    G --> H[(UserPool PDA\nclosed — rent returned)]
+    H --> I([Pending rewards\nemitted on unstake])
 
-Current devnet deployment:
-
-```text
-Program ID:      D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP
-Global pool PDA: EyDhP1HU3yqCmqCpKkQHFuX3wMD6sJF1kK8eeRwmTr1K
-MPL Core:        CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d
-Cluster:         devnet
+    style A fill:#1a1a2e,stroke:#9945FF,color:#e0e0e0
+    style F fill:#1a1a2e,stroke:#14F195,color:#e0e0e0
+    style I fill:#1a1a2e,stroke:#14F195,color:#e0e0e0
+    style B fill:#161b22,stroke:#FF6B35,color:#e0e0e0
+    style G fill:#161b22,stroke:#14F195,color:#e0e0e0
+    style C fill:#161b22,stroke:#9945FF,color:#e0e0e0
+    style H fill:#161b22,stroke:#9945FF,color:#e0e0e0
+    style E fill:#161b22,stroke:#00C2FF,color:#e0e0e0
 ```
 
-The main OpenClawd frontend route is:
+---
 
-```text
-/staking
+## Protocol Architecture
+
+### On-Chain State
+
+```
+┌──────────────────────────────────────────────────┐
+│  GlobalPool PDA                                  │
+│  seeds = ["global-authority"]                    │
+│  address: DEYfxcRB4rxFxRrWyjfzfHBS6PWYpFb8djxQr │
+│                                                  │
+│  admin:                     Pubkey               │
+│  total_agents_staked:        u64                 │
+│  total_rewards_distributed:  u64                 │
+│  reserved:                  [u64; 4]             │
+└────────────────────┬─────────────────────────────┘
+                     │  1 per staked agent
+          ┌──────────▼──────────────────────────────┐
+          │  UserPool PDA                           │
+          │  seeds = ["user-pool", asset_pubkey]    │
+          │                                         │
+          │  owner:           Pubkey                │
+          │  asset:           Pubkey                │
+          │  stake_time:      i64  ← Unix timestamp │
+          │  last_claim_time: i64  ← reset on claim │
+          │  total_claimed:   u64  ← base-units     │
+          └─────────────────────────────────────────┘
+                  Closed on unstake — rent returned
 ```
 
-The legacy `/agents/stake` and `/stake` URLs redirect to `/staking`. The
-frontend builds wallet-signed transactions directly for `initialize`,
-`stakeAgent`, and `unstakeAgent`; it also reads the global pool PDA and inspects
-the Core asset `FreezeDelegate` state.
+### Instructions
 
-## What It Does
+| Instruction | Signer | What it does |
+|-------------|--------|--------------|
+| `initialize` | Admin | Creates `GlobalPool` PDA, sets admin. Called once. |
+| `stake_agent` | NFT Owner | Adds `FreezeDelegate(frozen=true)` to asset via CPI. Creates `UserPool`. |
+| `unstake_agent` | Owner or Admin | Unfreezes + removes plugin. Closes `UserPool`. Emits pending rewards. |
+| `claim_rewards` | NFT Owner | Updates `last_claim_time`. Emits `RewardsClaimed` event. Backend settles CLAWD. |
 
-- Initializes a global staking pool PDA with an admin authority.
-- Stakes a Metaplex Core asset by adding `FreezeDelegate { frozen: true }`.
-- Unstakes by updating the `FreezeDelegate` to `frozen: false`, then removing it.
-- Tracks `total_agents_staked` in the global pool.
-- Allows normal unstake by owner and emergency unstake by the configured admin.
-- Provides a TypeScript CLI for `init`, `stake`/`lock`, and `unstake`/`unlock`.
+### Events
 
-## Project Layout
+| Event | Fields | Emitted by |
+|-------|--------|-----------|
+| `AgentStaked` | `owner, asset, stake_time` | `stake_agent` |
+| `AgentUnstaked` | `owner, asset, unstake_time, pending_rewards, total_accrued` | `unstake_agent` |
+| `RewardsClaimed` | `owner, asset, amount, claim_time` | `claim_rewards` |
 
-```text
-staking/
-├── programs/mpl-corenft-staking/   Anchor Rust program
-│   └── src/
-│       ├── lib.rs                  declare_id! + instruction dispatch
-│       ├── constant.rs             PDA seeds
-│       ├── state.rs                GlobalPool account struct
-│       ├── error.rs                StakingError enum
-│       └── instructions/
-│           ├── mod.rs
-│           ├── initialize.rs       Create global pool
-│           ├── stake_agent.rs      Add FreezeDelegate plugin
-│           └── unstake_agent.rs    Remove FreezeDelegate plugin
-├── cli/
-│   ├── command.ts                  Commander CLI entrypoint
-│   └── scripts.ts                  CLI orchestration (init, stake, unstake)
-├── lib/
-│   ├── constant.ts                 Program ID, seeds, collection, RPC config
-│   ├── idl.ts                      Hardcoded IDL (no Anchor workspace needed)
-│   ├── scripts.ts                  Transaction builder helpers
-│   └── util.ts                     Metaplex PDA derivation helpers
-├── tests/
-│   └── mpl-corenft-pnft-staking.ts Anchor integration test
-├── Anchor.toml                     Solana cluster, wallet, program ID config
-├── package.json                    @openclawdsolana/agent-staking
-├── tsconfig.json
-└── README.md                       This file
+---
+
+## Reward Schedule
+
+Rewards accrue at **1,000 CLAWD base-units per second** per staked agent (6-decimal token, so 1,000 base-units = 0.001 CLAWD).
+
+| Period | Base-Units Earned | CLAWD Earned |
+|--------|:-----------------:|:------------:|
+| 1 second | 1,000 | 0.001 |
+| 1 minute | 60,000 | 0.06 |
+| 1 hour | 3,600,000 | 3.6 |
+| 1 day | 86,400,000 | **86.4** |
+| 1 week | 604,800,000 | **604.8** |
+| 1 month (30d) | 2,592,000,000 | **2,592** |
+
+The rate is defined in `constant.rs` and is adjustable via server-side multipliers without a program upgrade.
+
+**Reward formula:**
 ```
-
-## Program Accounts
-
-### `initialize`
-
-Creates the global pool PDA:
-
-```text
-seed: ["global-authority"]
+pending = (now - last_claim_time) * REWARD_RATE_PER_SECOND
 ```
+Using saturating arithmetic — no overflow or underflow possible.
 
-Accounts:
-- `admin` signer and payer
-- `global_pool` PDA
-- `system_program`
+---
 
-### `stakeAgent`
+## Getting Started
 
-Adds a frozen Core `FreezeDelegate` plugin.
+### Prerequisites
 
-Accounts:
-- `owner` asset owner
-- `user` signer and payer, must equal `owner`
-- `global_pool`
-- `asset` Metaplex Core asset account
-- `collection` Metaplex Core collection account
-- `core_program`
-- `system_program`
+- Node.js 18+ and npm/yarn
+- [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools) configured for devnet
+- A funded devnet wallet (`solana airdrop 2`)
+- A Metaplex Core agent NFT in the collection
 
-Validation:
-- `user == owner`
-- decoded Core `asset.owner == owner`
-- decoded Core `asset.update_authority == Collection(collection)`
-
-### `unstakeAgent`
-
-Unfreezes and removes the Core `FreezeDelegate` plugin.
-
-Accounts:
-- `owner` asset owner
-- `user` signer and payer
-- `global_pool`
-- `asset` Metaplex Core asset account
-- `collection` Metaplex Core collection account
-- `core_program`
-- `system_program`
-
-Validation:
-- `asset.owner == owner`
-- decoded Core `asset.update_authority == Collection(collection)`
-- `user == owner`, or `user == global_pool.admin` for emergency recovery
-
-## Environment
-
-Devnet defaults:
-
-```bash
-export SOLANA_RPC_URL="https://api.devnet.solana.com"
-export ANCHOR_WALLET="$HOME/.config/solana/id.json"
-export OPENCLAWD_AGENT_STAKING_PROGRAM_ID="D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP"
-export OPENCLAWD_AGENT_COLLECTION="<metaplex-core-collection-address>"
-```
-
-Mainnet should use a dedicated deployer or Squads-controlled upgrade authority:
-
-```bash
-export SOLANA_RPC_URL="https://your-mainnet-rpc.example"
-export ANCHOR_WALLET="$HOME/.config/solana/openclawd-mainnet-deployer.json"
-export OPENCLAWD_AGENT_STAKING_PROGRAM_ID="<mainnet-program-id>"
-export OPENCLAWD_AGENT_COLLECTION="<mainnet-core-collection-address>"
-```
-
-Do not commit populated `.env` files, deployer keypairs, wallet JSON, or
-production API secrets.
-
-## Install
+### Install
 
 ```bash
 cd staking
 npm install
-npm run build       # anchor build — compiles Rust program
 ```
+
+### Build
+
+```bash
+npm run build
+# or: anchor build
+```
+
+### Run Tests (Devnet)
+
+```bash
+# Requires ANCHOR_WALLET and ANCHOR_PROVIDER_URL set (or defaults apply)
+npm test
+# or: anchor test
+```
+
+The test suite runs 7 phases end-to-end against devnet:
+1. Creates a fresh Metaplex Core collection
+2. Mints a test agent NFT into that collection
+3. Reads the live GlobalPool (already initialized)
+4. Stakes the agent — verifies `FreezeDelegate` added, `UserPool` created, counter incremented
+5. Waits 3 seconds and verifies reward accrual
+6. Claims rewards — verifies `last_claim_time` advances, `total_claimed` increases
+7. Unstakes — verifies plugin removed, `UserPool` closed, rent returned, counter decremented
+8. Rejects a double-stake attempt (PDA collision guard)
+
+---
 
 ## CLI Usage
 
-Initialize the global pool (first deploy only):
+The project ships a Commander-based TypeScript CLI for all staking operations.
 
 ```bash
+# Initialize global pool (admin only — already done on devnet)
 npm run script:devnet -- init
-```
 
-Stake (lock) a Metaplex Core agent asset:
-
-```bash
+# Stake an agent NFT
 npm run script:devnet -- stake \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
-```
+  --asset <AGENT_ASSET_ADDRESS> \
+  --collection <COLLECTION_ADDRESS>
 
-Alias:
-
-```bash
-npm run script:devnet -- lock \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
-```
-
-Unstake (unlock):
-
-```bash
+# Unstake an agent NFT
 npm run script:devnet -- unstake \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
+  --asset <AGENT_ASSET_ADDRESS> \
+  --collection <COLLECTION_ADDRESS>
+
+# Claim accrued rewards
+npm run script:devnet -- claim \
+  --asset <AGENT_ASSET_ADDRESS>
+
+# Check stake status
+npm run script:devnet -- status \
+  --asset <AGENT_ASSET_ADDRESS>
 ```
 
-Alias:
+All commands accept `-e/--env`, `-r/--rpc`, and `-k/--keypair` flags. Defaults: `devnet`, public devnet RPC, `~/.config/solana/id.json`.
 
-```bash
-npm run script:devnet -- unlock \
-  --asset <agent-core-asset-address> \
-  --collection "$OPENCLAWD_AGENT_COLLECTION"
+---
+
+## Integrating a New Agent
+
+### 1. Mint a Metaplex Core Agent
+
+```typescript
+import { mintAndSubmitAgent, mplAgentIdentity } from '@metaplex-foundation/mpl-agent-registry'
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import { keypairIdentity } from '@metaplex-foundation/umi'
+
+const umi = createUmi('https://api.devnet.solana.com').use(mplAgentIdentity())
+umi.use(keypairIdentity(keypair))
+
+const result = await mintAndSubmitAgent(umi, {}, {
+  wallet: umi.identity.publicKey,
+  name: 'My Clawd Agent',
+  uri: 'https://arweave.net/your-metadata.json',
+  agentMetadata: {
+    type: 'agent',
+    name: 'My Clawd Agent',
+    description: 'An autonomous Clawd agent',
+    services: [{ name: 'trading', endpoint: 'https://myagent.ai/trade' }],
+    registrations: [],
+    supportedTrust: [],
+  },
+})
+// result.assetAddress → your agent's on-chain address
 ```
 
-## Deploy
+### 2. Stake via Program SDK
 
-### Devnet
+```typescript
+import * as anchor from "@coral-xyz/anchor"
+import { PublicKey, SystemProgram } from "@solana/web3.js"
 
-```bash
-solana config set --url "$SOLANA_RPC_URL"
-solana config set --keypair "$ANCHOR_WALLET"
-solana balance
-npm run build
-npm run deploy:devnet
+const PROGRAM_ID = new PublicKey("9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP")
+const MPL_CORE_PROGRAM_ID = new PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d")
+
+const [globalPool] = PublicKey.findProgramAddressSync(
+  [Buffer.from("global-authority")], PROGRAM_ID
+)
+const [userPool] = PublicKey.findProgramAddressSync(
+  [Buffer.from("user-pool"), assetPubkey.toBuffer()], PROGRAM_ID
+)
+
+await program.methods.stakeAgent()
+  .accountsStrict({
+    owner: wallet.publicKey,
+    user:  wallet.publicKey,
+    globalPool,
+    userPool,
+    asset:         assetPubkey,
+    collection:    collectionPubkey,
+    coreProgram:   MPL_CORE_PROGRAM_ID,
+    systemProgram: SystemProgram.programId,
+  })
+  .rpc({ commitment: "confirmed" })
 ```
 
-Initialize the global pool after a first deploy:
+### 3. Claim Rewards
 
-```bash
-npm run script:devnet -- init
+```typescript
+await program.methods.claimRewards()
+  .accountsStrict({
+    owner: wallet.publicKey,
+    globalPool,
+    userPool,
+    systemProgram: SystemProgram.programId,
+  })
+  .rpc({ commitment: "confirmed" })
+// Backend treasury detects RewardsClaimed event → transfers CLAWD to owner
 ```
 
-### Mainnet Gate
+---
 
-Mainnet deployment should only happen after:
-- clean build with aligned Anchor versions
-- devnet stake and unstake test with a real Core collection
-- confirmed program id and upgrade authority
-- funded deployer wallet
-- explicit `[programs.mainnet]` block in `Anchor.toml`
-- frontend env pointed at the mainnet program id and collection
-- admin recovery runbook reviewed
+## Agent Commerce Integration
 
-The current `Anchor.toml` intentionally omits `[programs.mainnet]`.
+Clawd agents are more than stakeable NFTs — they participate in **autonomous agent commerce**:
 
-## Frontend Usage
+| Feature | Description |
+|---------|-------------|
+| **EIP-8004 compliance** | Every agent registration emits discoverable identity metadata |
+| **Asset Signer PDA** | The agent's on-chain wallet — a PDA with no private key, controlled via MPL Core's Execute hook |
+| **Executive delegation** | Off-chain operators sign transactions on the agent's behalf (revocable per-asset) |
+| **x402 ready** | Agent metadata declares stablecoin payment support for agent-to-agent commerce |
+| **A2A / MCP** | Agents can discover, hire, and pay other agents over standard protocols |
 
-The OpenClawd app exposes `/staking`.
+---
 
-Required frontend env when overriding defaults:
+## Security Model
 
-```bash
-VITE_OPENCLAWD_AGENT_STAKING_PROGRAM_ID="D5MLxrKAnppBVLuukKQzQGTMSfEwBqWCDPGAhGhthdLP"
-VITE_OPENCLAWD_AGENT_COLLECTION="<metaplex-core-collection-address>"
-VITE_SOLANA_RPC_URL="$SOLANA_RPC_URL"
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     Security Guarantees                          │
+│                                                                  │
+│  ✓  Non-custodial     NFT never leaves owner's wallet           │
+│  ✓  No private keys   .gitignore blocks all key file patterns   │
+│  ✓  PDA wallet        Asset Signer has no extractable key       │
+│  ✓  Owner wins        Owner can always unstake; admin cannot    │
+│                       block or steal the asset                   │
+│  ✓  Emergency escape  Admin can unstake for recovery only        │
+│  ✓  Overflow safe     All arithmetic uses checked_add/sub       │
+│  ✓  Clock safe        Clock::get() failures bubble as errors    │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-User flow:
-1. Connect a Solana wallet.
-2. Paste a Metaplex Core agent asset address.
-3. Paste or preconfigure the agent collection address.
-4. Inspect the asset to confirm owner, collection, and freeze status.
-5. Click `stake` to add the frozen `FreezeDelegate`.
-6. Click `unstake` to unfreeze and remove the delegate.
+**Key invariants enforced on-chain:**
+- `user.key() == owner.key()` — prevents staking on behalf of another wallet
+- `asset.owner == owner.key()` — Metaplex Core ownership verified via `BaseAssetV1` decode
+- `asset.update_authority == Collection(collection.key())` — collection membership enforced
+- `UserPool PDA` is keyed to `asset_pubkey` — double-staking the same asset is impossible (PDA collision)
+- `close = user` on `UserPool` — rent goes back to the signer, not a fixed address
 
-Admin recovery flow:
-1. Connect the admin wallet.
-2. Paste the asset address and collection.
-3. Paste the real asset owner into the owner override field.
-4. Submit `unstake`.
+**Blocked by `.gitignore`:**
+`*.json`, `*.pem`, `*.key`, `id_*`, `keypair*`, `wallet*`, `secret*`, `private*`, `.env*`
 
-## Integration with OpenClawd Ecosystem
+---
 
-This protocol sits under the OpenClawd Solana-native agent economy:
+## Error Reference
 
-- agent minting via Metaplex Core
-- agent registration via Metaplex Agent Registry
-- staking state visible in `/staking`
-- wallet-gated agent actions
-- policy checks in the OpenClawd backend
-- staking status indexing for dashboards and future rewards
-- admin runbooks for emergency unlocks
-- **All powered by [x402.wtf](https://x402.wtf)** — the HTTP 402 micropayment protocol on Solana USDC
+| Code | Name | Meaning |
+|------|------|---------|
+| 6000 | `InvalidAdmin` | Caller is not the configured program admin |
+| 6001 | `InvalidMetadata` | Asset account failed Metaplex Core decode |
+| 6002 | `InvalidCollection` | Collection doesn't match asset's update authority |
+| 6003 | `MetadataCreatorParseError` | Creator array parse failure |
+| 6004 | `InvalidOwner` | Caller doesn't own the asset |
+| 6005 | `InvalidAgentAsset` | Asset address doesn't match a staked record |
+| 6006 | `CounterOverflow` | Global stake counter would overflow u64 |
+| 6007 | `CounterUnderflow` | Global stake counter would underflow |
+| 6008 | `RewardOverflow` | Arithmetic overflow computing rewards |
+| 6009 | `NoRewardsToClaim` | No rewards have accrued since last claim |
+| 6010 | `ClockUnavailable` | Sysvar clock not accessible |
 
-### Connected modules
+---
 
-| Module | Path | Role |
-|---|---|---|
-| **Agents catalog** | [`../agents/`](../agents/) | 124+ Solana agent JSONs; staking is the commitment layer for Core assets minted here |
-| **Agent hub** | [`../agents/README.md`](../agents/README.md) | Agent lifecycle: mint → register → stake → index → route rewards |
-| **Gateway** | [`../gateway/`](../gateway/) | Serves agent catalog via REST; `/agents/stake` flows call into this protocol |
-| **CLAWD Router** | [`../clawdrouter/`](../clawdrouter/) | Routes gacha fees into `clawd-stake` reward protocol |
-| **Programs** | [`../programs/programs/`](../programs/programs/) | On-chain AI inference protocol with token staking |
-| **Main repo** | [`../README.md`](../README.md) | Full OpenClawd documentation |
+## Project Structure
 
-See [`../agents/README.md`](../agents/README.md) § "Agent Staking Is Part Of The Agent Hub" for the hub's perspective on staking as a first-class agent lifecycle state.
+```
+staking/
+├── programs/
+│   └── mpl-corenft-staking/
+│       └── src/
+│           ├── lib.rs              ← Program entry · 4 instructions
+│           ├── constant.rs         ← PDA seeds · REWARD_RATE_PER_SECOND
+│           ├── error.rs            ← 11 error codes
+│           ├── state.rs            ← GlobalPool + UserPool structs
+│           └── instructions/
+│               ├── initialize.rs   ← Bootstrap global pool
+│               ├── stake_agent.rs  ← FreezeDelegate CPI · UserPool init
+│               ├── unstake_agent.rs← Thaw + remove plugin · close PDA
+│               └── claim_rewards.rs← Event emit · off-chain settlement
+├── cli/
+│   ├── command.ts                  ← Commander CLI (stake/unstake/init/claim)
+│   └── scripts.ts                  ← Anchor SDK helpers
+├── lib/
+│   ├── constant.ts                 ← Program ID, collection address, RPC
+│   ├── scripts.ts                  ← Reusable stake/unstake helpers
+│   └── util.ts                     ← Wallet + provider utilities
+├── tests/
+│   └── mpl-corenft-pnft-staking.ts ← 7-phase devnet integration suite
+├── docs/
+│   ├── index.html                  ← Documentation site
+│   └── banner.svg                  ← Animated header
+├── Anchor.toml                     ← Anchor config (devnet cluster)
+├── AGENTS.md                       ← Developer guide + security audit
+└── ARTICLE.md                      ← Protocol writeup
+```
 
-## Safety Notes
+---
 
-- This is a lock/unlock primitive, not a yield product.
-- The admin can emergency-unstake assets only through the program constraints.
-- Use a dedicated deployer and program upgrade authority.
-- Public RPC is not reliable enough for production.
-- Keep the collection address pinned in frontend/backend config.
-- Run `anchor keys sync` after changing the program keypair.
+## Tech Stack
 
-## License
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| On-chain | Anchor (Solana) | v0.30.1 |
+| NFT Standard | Metaplex MPL Core | v1.0.2 |
+| Agent Identity | Metaplex Agent Registry | latest |
+| JS SDK | `@metaplex-foundation/umi` | latest |
+| CLI | Commander.js | latest |
+| Tests | Mocha + Chai (Anchor) | — |
+| Payments | x402 / A2A / MCP | — |
 
-MIT · Powered by [x402.wtf](https://x402.wtf) · $CLAWD: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
+---
+
+## Mainnet Readiness Gate
+
+Mainnet deployment is intentionally blocked until:
+
+- [ ] Gate 4 devnet review complete
+- [ ] Anchor keys derived for mainnet program ID
+- [ ] `[programs.mainnet]` block added to `Anchor.toml`
+- [ ] Upgrade authority transferred to Squads multisig
+- [ ] `[provider].cluster` switched to `mainnet`
+
+---
+
+<div align="center">
+
+Built by [OpenClawd](https://x402.wtf) · $CLAWD: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
+
+[![Solana Explorer — Program](https://img.shields.io/badge/Explorer-Program-9945FF?style=flat-square&logo=solana)](https://explorer.solana.com/address/9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP?cluster=devnet)
+[![Solana Explorer — GlobalPool](https://img.shields.io/badge/Explorer-GlobalPool-14F195?style=flat-square&logo=solana)](https://explorer.solana.com/address/DEYfxcRB4rxFxRrWyjfzfHBS6PWYpFb8djxQrKHwe2XQ?cluster=devnet)
+
+</div>

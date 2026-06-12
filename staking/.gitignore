@@ -1,9 +1,42 @@
+# === Anchor / Solana ===
 .anchor
-.DS_Store
 target
 **/*.rs.bk
-node_modules
 test-ledger
-.yarn
 migrations
+
+# === Private Keys & Secrets ===
+*.json
+*.pem
+*.p12
+*.pfx
+id_*
+keypair*
+wallet*
+secret*
+private*
+*secret*
+*private*
+.env
+.env.*
+!.env.example
+*.key
+
+# === Node ===
+node_modules
+.yarn
+.yarnrc.yml
+
+# === OS ===
+.DS_Store
+*.swp
+*.swo
+*~
+
+# === Build artifacts ===
+dist
+build
 app
+
+# === Logs ===
+*.log
