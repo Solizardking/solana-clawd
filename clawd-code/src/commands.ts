@@ -10,6 +10,10 @@ const HELIUS_RPC = process.env.HELIUS_RPC_URL ??
     : 'https://api.mainnet-beta.solana.com');
 const PHOENIX_RISE = 'https://api.phoenix.gg/enclave';
 
+type JsonRpcResponse<T = unknown> = {
+  result?: T;
+};
+
 async function rpcCall(method: string, params: any[]): Promise<any> {
   try {
     const response = await fetch(HELIUS_RPC, {
@@ -17,7 +21,8 @@ async function rpcCall(method: string, params: any[]): Promise<any> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
     });
-    return (await response.json())?.result;
+    const data = (await response.json()) as JsonRpcResponse;
+    return data.result;
   } catch {
     return null;
   }
