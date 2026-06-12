@@ -386,7 +386,120 @@ The spinner packs deserve a note. They are a small thing, but they capture somet
 
 ---
 
-## VII. Security Model
+## VII. The Full-Stack Application
+
+### cheshireterminal.ai
+
+The Cheshire Terminal ships as a full production web application at `https://cheshireterminal.ai` — a browser-based command surface for Solana AI agents and CLAWD operations.
+
+**Stack:**
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React/Vite, TypeScript, Tailwind CSS |
+| Backend API | Express, Node.js |
+| Realtime backend | Convex (`brazen-lynx-229.convex.cloud`) |
+| Database | Postgres/Drizzle ORM |
+| On-chain | Helius RPC, Metaplex Core, Anchor |
+| Deployment | Vercel (web) + Fly.io (API containers) |
+| Wallet | Privy + Jupiter |
+
+The app exposes two surface layers:
+
+- **Public/free**: Home dashboard, DEX explorer, non-custodial staking, free gasless Metaplex agent registration, CLAWD arena, voice interface, agent templates, burn/treasury dashboards, Telegram mini-app
+- **Token-gated ($CLAWD holders)**: Full AI terminal, Phoenix perps console, provably fair gacha, NFT studio, AI image generation, wallet scanner, agent launchpad, prediction markets, browser-use computer control
+
+### Gasless Agent Registration
+
+Metaplex Core agent NFT minting is free and gasless. The platform fee-payer wallet covers all transaction costs. Any user can mint and register an agent with a single API call:
+
+```bash
+curl -X POST https://cheshireterminal.ai/api/metaplex-agents/mint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Agent",
+    "agentType": "analyst",
+    "capabilities": ["market analysis", "risk scoring"],
+    "ownerPubkey": "YOUR_SOLANA_WALLET"
+  }'
+```
+
+### Provably Fair Gacha
+
+The CLAWD gacha uses a commit-reveal scheme with on-chain attestation via the Solana Memo program. Every pull is independently verifiable:
+
+```text
+revealHash = sha256(serverSeed:clientSeed:wallet:blockhash:pullCount:sessionId)
+```
+
+MagicBlock VRF upgrade (devnet) moves all derivation on-chain, making server influence impossible:
+
+```text
+Program:   2sgoeDtLjiB4TDqoKSF72Bydm3TGavUUxS12knYa3VnR
+Machine:   6icohAEihr3C33NW1UD636PC5suKJF4fJPgXrciH6QSP
+```
+
+### Phoenix Perpetuals
+
+The terminal registers as a Phoenix Flight builder to earn fees on routed SOL/BTC/ETH-PERP flow. Market data is proxied through `/api/phoenix/markets` (10s cache, 60s SWR) and made available inside every Leviathan inference call via ClawdRouter's `/v1/relay/perps` endpoint.
+
+---
+
+## VIII. The Cheshire Launchpad
+
+The Cheshire Launchpad is the first-party Anchor program for hosting CLAWD token launches, AI agent launches, and migration records on Solana mainnet.
+
+### Design Principle
+
+The first version is intentionally a **registry/control plane only** — it records launch data but does not custody liquidity, own user funds, or perform DEX routing. This keeps the trust surface minimal and the audit scope narrow.
+
+### What It Records
+
+| Field | Purpose |
+| --- | --- |
+| Agent profiles | Linked to Metaplex Core assets |
+| Token launch records | With bonding curve pool addresses |
+| Launch kind | `Pump`, `MeteoraDBC`, `JupiterRFQ`, `AgentToken`, `PToken` |
+| Curve route | `PumpSynthetic`, `MeteoraDBC`, `ConstantProduct`, `Linear` |
+| AMM route | `PumpSwap`, `MeteoraDammV2`, `RaydiumCPMM`, `Jupiter` |
+| Fee route | Protocol, creator, agent, referral splits |
+| Migration targets | Post-graduation AMM destination |
+
+### SDK Surface
+
+```typescript
+// Production launch — stores full route profile
+await sdk.launchManagedToken({
+  launchKind:  LaunchKind.AgentToken,
+  curveRoute:  CurveRoute.MeteoraDynamicBondingCurve,
+  ammRoute:    AmmRoute.MeteoraDammV2,
+  feeRoute:    FeeRoute.ProtocolCreatorAgentReferral,
+  agentAsset:  agentAssetPubkey,
+});
+```
+
+### Mainnet Deployment Cost Model (May 2026, SOL = $89.77)
+
+| Program shape | SOL reserve | USD |
+| --- | ---: | ---: |
+| Registry/control plane, 260 KB | 3.67 | $330 |
+| Registry plus CPI helpers, 520 KB | 7.29 | $655 |
+| Larger router/control program, 850 KB | 11.89 | $1,067 |
+
+Per-launch execution costs:
+
+| Flow | Reserve |
+| --- | --- |
+| Metaplex Core agent mint/register | 0.01–0.05 SOL per agent |
+| Managed launch record | 0.00286752 SOL rent |
+| DBC token launch + token setup | 0.03–0.12 SOL |
+| Raydium-style pool after graduation | 2–3 SOL |
+
+Fund the deployer with at least 12 SOL for the first control-plane release. Never deploy with a hot server wallet as upgrade authority — use Squads multisig.
+
+---
+
+## IX. Security Model
 
 ### On-Chain
 
@@ -413,7 +526,7 @@ The spinner packs deserve a note. They are a small thing, but they capture somet
 
 ---
 
-## VIII. Roadmap
+## X. Roadmap
 
 The Cheshire Terminal has already shipped a runtime, an auth protocol, a payment layer, a staking program, a live LLM router, and 130 agent definitions. What follows is the next phase, in order of implementation priority.
 
@@ -447,7 +560,7 @@ The Cheshire Terminal has already shipped a runtime, an auth protocol, a payment
 
 ---
 
-## IX. Conclusion
+## XI. Conclusion
 
 The Cheshire Cat is the right metaphor for this project. Not because it is whimsical, but because it captures the essential property: **it persists**. The cat appears and disappears. The grin remains. The identity outlasts the substrate.
 
@@ -471,8 +584,11 @@ Lobsters molt. They do not shrink with age. Neither do your agents.
 | Staking program (devnet) | `9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP` |
 | GlobalPool PDA (devnet) | `DEYfxcRB4rxFxRrWyjfzfHBS6PWYpFb8djxQrKHwe2XQ` |
 | MPL Core program | `CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d` |
+| MagicBlock Gacha (devnet) | `2sgoeDtLjiB4TDqoKSF72Bydm3TGavUUxS12knYa3VnR` |
 | ClawdRouter | `https://clawd-router.fly.dev` |
 | x402 gateway | `https://x402.wtf` |
+| Web app | `https://cheshireterminal.ai` |
+| Convex backend | `https://brazen-lynx-229.convex.cloud` |
 | Agent catalog | `https://x402.wtf/agents` |
 | Skills catalog | `https://x402.wtf/skills` |
 | Staking UI | `https://x402.wtf/staking` |
@@ -496,7 +612,9 @@ Lobsters molt. They do not shrink with age. Neither do your agents.
 | Storage | SQLite (local), Metaplex (on-chain) |
 | Formal verification | Kani Rust Verifier, STRIDE |
 | Secret scanning | clawd-guard GitHub App |
-| Deployment | Fly.io (ClawdRouter), Vercel (x402.wtf) |
+| Realtime backend | Convex |
+| Database | Postgres + Drizzle ORM |
+| Deployment | Fly.io (API) + Vercel (web) |
 
 ## Appendix C — Three Laws Hash Verification
 
