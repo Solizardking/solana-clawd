@@ -78,21 +78,21 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`c686b373`](../../commit/c686b373) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 🥈 | [`ce7e5dde`](../../commit/ce7e5dde) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 🥉 | [`634a39d3`](../../commit/634a39d3) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 11 |
-| 4️⃣ | [`162409f1`](../../commit/162409f1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 11 |
-| 5️⃣ | [`ac08f2f8`](../../commit/ac08f2f8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 11 |
-| 6️⃣ | [`5f67cf0c`](../../commit/5f67cf0c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 11 |
-| 7️⃣ | [`3562d350`](../../commit/3562d350) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 11 |
-| 8️⃣ | [`a4476ad4`](../../commit/a4476ad4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 11 |
-| 9️⃣ | [`a6467ebb`](../../commit/a6467ebb) | fdssdfafsd | solizardking | Jun 11 |
-| 🔟 | [`90756c02`](../../commit/90756c02) | sdfdsffddfdffd | solizardking | Jun 11 |
-| · | [`dd2a8f49`](../../commit/dd2a8f49) | dsffd;;;; | solizardking | Jun 11 |
-| · | [`e5867daa`](../../commit/e5867daa) | ll | solizardking | Jun 11 |
-| · | [`2e96bdca`](../../commit/2e96bdca) | kkk | solizardking | Jun 10 |
-| · | [`735b833f`](../../commit/735b833f) | llll | solizardking | Jun 10 |
-| · | [`4a8fec49`](../../commit/4a8fec49) | kjjkk | solizardking | Jun 10 |
+| 🥇 | [`b26a2185`](../../commit/b26a2185) | staking: wire stake_for_verification and unstake_verificatio | solizardking | Jun 12 |
+| 🥈 | [`a235baaa`](../../commit/a235baaa) | adfdadf;k | solizardking | Jun 12 |
+| 🥉 | [`974e4162`](../../commit/974e4162) | sadffsd | solizardking | Jun 11 |
+| 4️⃣ | [`5addceea`](../../commit/5addceea) | sadfdfsfsasdf | solizardking | Jun 11 |
+| 5️⃣ | [`8c478b4a`](../../commit/8c478b4a) | adfsfd | solizardking | Jun 11 |
+| 6️⃣ | [`7753ee52`](../../commit/7753ee52) | afddasff | solizardking | Jun 11 |
+| 7️⃣ | [`6c9a4a6d`](../../commit/6c9a4a6d) | afdsfda | solizardking | Jun 11 |
+| 8️⃣ | [`6682262e`](../../commit/6682262e) | sadffsd | solizardking | Jun 11 |
+| 9️⃣ | [`18645534`](../../commit/18645534) | sdfsdf | solizardking | Jun 11 |
+| 🔟 | [`24ef6193`](../../commit/24ef6193) | dsfdsfdsfdasff | solizardking | Jun 11 |
+| · | [`4c45f7b4`](../../commit/4c45f7b4) | sdffsd | solizardking | Jun 11 |
+| · | [`39e1d567`](../../commit/39e1d567) | sgdgssdfsfd | solizardking | Jun 11 |
+| · | [`d4a42e42`](../../commit/d4a42e42) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| · | [`c686b373`](../../commit/c686b373) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| · | [`ce7e5dde`](../../commit/ce7e5dde) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
