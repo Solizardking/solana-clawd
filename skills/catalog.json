@@ -2,7 +2,7 @@
   {
     "slug": "clawd-guard-secrets",
     "name": "clawd-guard-secrets",
-    "description": "Clawd Guard — the sovereign secrets sentinel. Mandatory reading for every Solana developer. Teaches .gitignore best practices, secrets patterns that must never touch git (wallet JSON, keypairs, .env files, private keys, API tokens), and the Brown Alert Protocol for when you've already committed a secret. Built by Clawd to stop you from becoming a cautionary tale.",
+    "description": "Clawd Guard \u2014 the sovereign secrets sentinel. Mandatory reading for every Solana developer. Teaches .gitignore best practices, secrets patterns that must never touch git (wallet JSON, keypairs, .env files, private keys, API tokens), and the Brown Alert Protocol for when you've already committed a secret. Built by Clawd to stop you from becoming a cautionary tale.",
     "category": "Security / Solana",
     "homepage": "https://x402.wtf/skills/clawd-guard-secrets",
     "manifest": "https://x402.wtf/skills/clawd-guard-secrets/manifest.json",
@@ -282,7 +282,7 @@
   {
     "slug": "summarize",
     "name": "summarize",
-    "description": "Summarize or extract text/transcripts from URLs, podcasts, and local files (great fallback for “transcribe this YouTube/video”).",
+    "description": "Summarize or extract text/transcripts from URLs, podcasts, and local files (great fallback for \u201ctranscribe this YouTube/video\u201d).",
     "category": "Media / Devices",
     "homepage": "https://x402.wtf/skills/summarize",
     "manifest": "https://x402.wtf/skills/summarize/manifest.json",
@@ -452,7 +452,7 @@
   {
     "slug": "clawdex",
     "name": "clawdex",
-    "description": "Clawdex — dual-engine coding agent. Claude Code (reasoning + planning) + OpenAI Codex (fast execution) + Browser Use boxes (web research) + Upstash compute boxes (isolated sandboxes).",
+    "description": "Clawdex \u2014 dual-engine coding agent. Claude Code (reasoning + planning) + OpenAI Codex (fast execution) + Browser Use boxes (web research) + Upstash compute boxes (isolated sandboxes).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/clawdex",
     "manifest": "https://x402.wtf/skills/clawdex/manifest.json",
@@ -492,7 +492,7 @@
   {
     "slug": "dflow-kalshi-market-data",
     "name": "dflow-kalshi-market-data",
-    "description": "Read market data for a known Kalshi prediction market on DFlow — orderbook, trades, top-of-book prices, candlesticks, forecast-percentile history, and Kalshi in-game live data — via one-shot REST snapshots, historical ranges, or live WebSocket streams. Use when the user asks \"show me the orderbook for X\", \"get last hour of trades\", \"build a live price ticker\", \"stream orderbook depth\", \"pull 1-minute candles for the last day\", \"watch in-game scores for this sports market\", or \"alert me when the orderbook moves\". Do NOT use to discover markets matching a criterion (use `dflow-kalshi-market-scanner`), to place orders (use `dflow-kalshi-trading`), or to read a user's own positions/P&L (use `dflow-kalshi-portfolio`).",
+    "description": "Read market data for a known Kalshi prediction market on DFlow \u2014 orderbook, trades, top-of-book prices, candlesticks, forecast-percentile history, and Kalshi in-game live data \u2014 via one-shot REST snapshots, historical ranges, or live WebSocket streams. Use when the user asks \"show me the orderbook for X\", \"get last hour of trades\", \"build a live price ticker\", \"stream orderbook depth\", \"pull 1-minute candles for the last day\", \"watch in-game scores for this sports market\", or \"alert me when the orderbook moves\". Do NOT use to discover markets matching a criterion (use `dflow-kalshi-market-scanner`), to place orders (use `dflow-kalshi-trading`), or to read a user's own positions/P&L (use `dflow-kalshi-portfolio`).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/dflow-kalshi-market-data",
     "manifest": "https://x402.wtf/skills/dflow-kalshi-market-data/manifest.json",
@@ -502,7 +502,7 @@
   {
     "slug": "dflow-kalshi-market-scanner",
     "name": "dflow-kalshi-market-scanner",
-    "description": "Find Kalshi prediction markets on DFlow that match a criterion — arbitrage (YES+NO<$1), cheap long-shots, near-certain short-dated plays, biggest movers, widest spreads, highest volume, closing soonest, and series/event-level scans. Use when the user asks \"where's the free money?\", \"any mispriced markets?\", \"cheap YES with volume\", \"what moved today?\", \"markets closing soon\", \"cheapest YES in this event\", \"top markets by volume\", or \"alert me when X happens\" (streaming). Do NOT use to place orders (use `dflow-kalshi-trading`), to view a user's own positions (use `dflow-kalshi-portfolio`), or for general live-data plumbing unrelated to a scan (use `dflow-kalshi-market-data`).",
+    "description": "Find Kalshi prediction markets on DFlow that match a criterion \u2014 arbitrage (YES+NO<$1), cheap long-shots, near-certain short-dated plays, biggest movers, widest spreads, highest volume, closing soonest, and series/event-level scans. Use when the user asks \"where's the free money?\", \"any mispriced markets?\", \"cheap YES with volume\", \"what moved today?\", \"markets closing soon\", \"cheapest YES in this event\", \"top markets by volume\", or \"alert me when X happens\" (streaming). Do NOT use to place orders (use `dflow-kalshi-trading`), to view a user's own positions (use `dflow-kalshi-portfolio`), or for general live-data plumbing unrelated to a scan (use `dflow-kalshi-market-data`).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/dflow-kalshi-market-scanner",
     "manifest": "https://x402.wtf/skills/dflow-kalshi-market-scanner/manifest.json",
@@ -512,7 +512,7 @@
   {
     "slug": "dflow-kalshi-portfolio",
     "name": "dflow-kalshi-portfolio",
-    "description": "View what a wallet holds on DFlow's Kalshi prediction markets — current positions, unrealized mark-to-market, realized P&L, activity history, and redeemable winners. Use when the user asks \"what are my positions?\", \"what do I own?\", \"am I up or down?\", \"what's my fill history?\", \"what can I redeem?\", \"mark my portfolio to market\", or \"show me this wallet's DFlow activity\". Read-only. Do NOT use to place sells or redemptions (use `dflow-kalshi-trading`), for market-wide data unrelated to a wallet (use `dflow-kalshi-market-data`), or to discover new markets (use `dflow-kalshi-market-scanner`).",
+    "description": "View what a wallet holds on DFlow's Kalshi prediction markets \u2014 current positions, unrealized mark-to-market, realized P&L, activity history, and redeemable winners. Use when the user asks \"what are my positions?\", \"what do I own?\", \"am I up or down?\", \"what's my fill history?\", \"what can I redeem?\", \"mark my portfolio to market\", or \"show me this wallet's DFlow activity\". Read-only. Do NOT use to place sells or redemptions (use `dflow-kalshi-trading`), for market-wide data unrelated to a wallet (use `dflow-kalshi-market-data`), or to discover new markets (use `dflow-kalshi-market-scanner`).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/dflow-kalshi-portfolio",
     "manifest": "https://x402.wtf/skills/dflow-kalshi-portfolio/manifest.json",
@@ -542,7 +542,7 @@
   {
     "slug": "dflow-platform-fees",
     "name": "dflow-platform-fees",
-    "description": "Monetize a DFlow integration by collecting a builder-defined fee on trades your app routes through the Trade API — either a fixed percentage (spot + PM) via `platformFeeBps`, or a probability-weighted dynamic fee (PM outcome tokens only) via `platformFeeScale`. Use when the user asks \"how do I take a cut of trades?\", \"add a builder fee\", \"monetize my swap UI\", \"charge a platform fee\", \"how does platformFeeBps / platformFeeScale work?\", or \"where do my fees get paid?\". Do NOT use to run a trade itself (use `dflow-spot-trading` or `dflow-kalshi-trading` — both also cover priority fees and sponsored / gasless flows).",
+    "description": "Monetize a DFlow integration by collecting a builder-defined fee on trades your app routes through the Trade API \u2014 either a fixed percentage (spot + PM) via `platformFeeBps`, or a probability-weighted dynamic fee (PM outcome tokens only) via `platformFeeScale`. Use when the user asks \"how do I take a cut of trades?\", \"add a builder fee\", \"monetize my swap UI\", \"charge a platform fee\", \"how does platformFeeBps / platformFeeScale work?\", or \"where do my fees get paid?\". Do NOT use to run a trade itself (use `dflow-spot-trading` or `dflow-kalshi-trading` \u2014 both also cover priority fees and sponsored / gasless flows).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/dflow-platform-fees",
     "manifest": "https://x402.wtf/skills/dflow-platform-fees/manifest.json",
@@ -552,7 +552,7 @@
   {
     "slug": "dflow-proof-kyc",
     "name": "dflow-proof-kyc",
-    "description": "Integrate DFlow Proof — a Solana wallet identity-verification primitive (Stripe Identity under the hood) — for either (a) gating your own app's features behind KYC, or (b) completing the mandatory verification step for Kalshi prediction-market buys on DFlow. Use when the user asks \"how do I KYC a wallet?\", \"check if a wallet is verified\", \"add KYC to my DeFi app\", \"handle unverified_wallet_not_allowed / PROOF_NOT_VERIFIED\", \"redirect to dflow.net/proof\", or \"gate a feature by jurisdiction or identity\". Do NOT use to actually place trades (use `dflow-kalshi-trading`), for geoblocking (separate concern, handled inline in the trading skill), for age gating (Proof doesn't currently verify age), or for spot swaps (no KYC required).",
+    "description": "Integrate DFlow Proof \u2014 a Solana wallet identity-verification primitive (Stripe Identity under the hood) \u2014 for either (a) gating your own app's features behind KYC, or (b) completing the mandatory verification step for Kalshi prediction-market buys on DFlow. Use when the user asks \"how do I KYC a wallet?\", \"check if a wallet is verified\", \"add KYC to my DeFi app\", \"handle unverified_wallet_not_allowed / PROOF_NOT_VERIFIED\", \"redirect to dflow.net/proof\", or \"gate a feature by jurisdiction or identity\". Do NOT use to actually place trades (use `dflow-kalshi-trading`), for geoblocking (separate concern, handled inline in the trading skill), for age gating (Proof doesn't currently verify age), or for spot swaps (no KYC required).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/dflow-proof-kyc",
     "manifest": "https://x402.wtf/skills/dflow-proof-kyc/manifest.json",
@@ -732,7 +732,7 @@
   {
     "slug": "phantom-wallet-mcp",
     "name": "phantom-wallet-mcp",
-    "description": "Execute wallet operations through the Phantom MCP server. Use when the user wants to interact with their Phantom wallet directly — get addresses, transfer SOL or SPL tokens, buy/swap tokens, sign transactions, and sign messages across Solana, Ethereum, Bitcoin, and Sui. Requires the @phantom/mcp-server to be configured as an MCP server.",
+    "description": "Execute wallet operations through the Phantom MCP server. Use when the user wants to interact with their Phantom wallet directly \u2014 get addresses, transfer SOL or SPL tokens, buy/swap tokens, sign transactions, and sign messages across Solana, Ethereum, Bitcoin, and Sui. Requires the @phantom/mcp-server to be configured as an MCP server.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/phantom-wallet-mcp",
     "manifest": "https://x402.wtf/skills/phantom-wallet-mcp/manifest.json",
@@ -742,7 +742,7 @@
   {
     "slug": "pump-admin-ops",
     "name": "pump-admin-ops",
-    "description": "Admin and authority operations for the Pump protocol — set coin creator, update token incentives, set IDL authority, claim cashback, Mayhem mode, and BothPrograms cross-program admin instructions.",
+    "description": "Admin and authority operations for the Pump protocol \u2014 set coin creator, update token incentives, set IDL authority, claim cashback, Mayhem mode, and BothPrograms cross-program admin instructions.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-admin-ops",
     "manifest": "https://x402.wtf/skills/pump-admin-ops/manifest.json",
@@ -752,7 +752,7 @@
   {
     "slug": "pump-ai-agents",
     "name": "pump-ai-agents",
-    "description": "AI agent integration layer for the Pump SDK — agent instruction files, .well-known discovery, LLM context documents, 15+ skill files, MCP server prompts, and terminal management rules for GitHub Copilot, Claude, and Gemini.",
+    "description": "AI agent integration layer for the Pump SDK \u2014 agent instruction files, .well-known discovery, LLM context documents, 15+ skill files, MCP server prompts, and terminal management rules for GitHub Copilot, Claude, and Gemini.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-ai-agents",
     "manifest": "https://x402.wtf/skills/pump-ai-agents/manifest.json",
@@ -762,7 +762,7 @@
   {
     "slug": "pump-bonding-curve",
     "name": "pump-bonding-curve",
-    "description": "Constant-product AMM bonding curve math for Pump token pricing — buy/sell quoting, fee-aware calculations, market cap computation, tiered fees, ceiling division, virtual vs real reserves, and edge-case handling.",
+    "description": "Constant-product AMM bonding curve math for Pump token pricing \u2014 buy/sell quoting, fee-aware calculations, market cap computation, tiered fees, ceiling division, virtual vs real reserves, and edge-case handling.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-bonding-curve",
     "manifest": "https://x402.wtf/skills/pump-bonding-curve/manifest.json",
@@ -772,7 +772,7 @@
   {
     "slug": "pump-build-release",
     "name": "pump-build-release",
-    "description": "Build and release pipeline for the Pump SDK — tsup TypeScript builds, Cargo release profiles, semantic release with commitizen, npm publishing, linting, Makefile targets, Vercel deployment, and MCP server distribution.",
+    "description": "Build and release pipeline for the Pump SDK \u2014 tsup TypeScript builds, Cargo release profiles, semantic release with commitizen, npm publishing, linting, Makefile targets, Vercel deployment, and MCP server distribution.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-build-release",
     "manifest": "https://x402.wtf/skills/pump-build-release/manifest.json",
@@ -782,7 +782,7 @@
   {
     "slug": "pump-claims-readonly",
     "name": "pump-claims-readonly",
-    "description": "Read-only query methods for PumpFun claims — unclaimed token rewards, creator vault balances, volume accumulators, distributable fees, and current-day token previews across Pump and PumpAMM programs.",
+    "description": "Read-only query methods for PumpFun claims \u2014 unclaimed token rewards, creator vault balances, volume accumulators, distributable fees, and current-day token previews across Pump and PumpAMM programs.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-claims-readonly",
     "manifest": "https://x402.wtf/skills/pump-claims-readonly/manifest.json",
@@ -802,7 +802,7 @@
   {
     "slug": "pump-fee-system",
     "name": "pump-fee-system",
-    "description": "Complete Pump protocol fee system — tiered protocol fees based on market cap, creator fee collection across two programs, basis point arithmetic, and ceiling division for dust-safe calculations.",
+    "description": "Complete Pump protocol fee system \u2014 tiered protocol fees based on market cap, creator fee collection across two programs, basis point arithmetic, and ceiling division for dust-safe calculations.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-fee-system",
     "manifest": "https://x402.wtf/skills/pump-fee-system/manifest.json",
@@ -812,7 +812,7 @@
   {
     "slug": "pump-mcp-server",
     "name": "pump-mcp-server",
-    "description": "Model Context Protocol server exposing 53 tools, 3 resource types, and 3 prompts for AI agent consumption — quoting, building transactions, fee management, analytics, AMM operations, social fees, wallet operations over stdio transport.",
+    "description": "Model Context Protocol server exposing 53 tools, 3 resource types, and 3 prompts for AI agent consumption \u2014 quoting, building transactions, fee management, analytics, AMM operations, social fees, wallet operations over stdio transport.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-mcp-server",
     "manifest": "https://x402.wtf/skills/pump-mcp-server/manifest.json",
@@ -822,7 +822,7 @@
   {
     "slug": "pump-rust-vanity",
     "name": "pump-rust-vanity",
-    "description": "Production-grade multi-threaded Rust vanity address generator for Solana — 100K+ keys/sec using Rayon parallel iterators with solana-sdk, Base58 pattern matching, prefix/suffix support, security-hardened file output, and Criterion benchmarks.",
+    "description": "Production-grade multi-threaded Rust vanity address generator for Solana \u2014 100K+ keys/sec using Rayon parallel iterators with solana-sdk, Base58 pattern matching, prefix/suffix support, security-hardened file output, and Criterion benchmarks.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-rust-vanity",
     "manifest": "https://x402.wtf/skills/pump-rust-vanity/manifest.json",
@@ -832,7 +832,7 @@
   {
     "slug": "pump-sdk-core",
     "name": "pump-sdk-core",
-    "description": "Build and extend the core Pump SDK — an offline-first TypeScript SDK that constructs Solana TransactionInstructions for token creation, buying, selling, migration, and creator fee collection across three on-chain programs (Pump, PumpAMM, PumpFees).",
+    "description": "Build and extend the core Pump SDK \u2014 an offline-first TypeScript SDK that constructs Solana TransactionInstructions for token creation, buying, selling, migration, and creator fee collection across three on-chain programs (Pump, PumpAMM, PumpFees).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-sdk-core",
     "manifest": "https://x402.wtf/skills/pump-sdk-core/manifest.json",
@@ -842,7 +842,7 @@
   {
     "slug": "pump-security",
     "name": "pump-security",
-    "description": "Defense-in-depth security across Rust, TypeScript, and Bash for the Pump SDK — cryptographic key handling, memory zeroization, secure file I/O, input validation, privilege management, dependency auditing, and a 60+ item security checklist.",
+    "description": "Defense-in-depth security across Rust, TypeScript, and Bash for the Pump SDK \u2014 cryptographic key handling, memory zeroization, secure file I/O, input validation, privilege management, dependency auditing, and a 60+ item security checklist.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-security",
     "manifest": "https://x402.wtf/skills/pump-security/manifest.json",
@@ -852,7 +852,7 @@
   {
     "slug": "pump-shell-scripts",
     "name": "pump-shell-scripts",
-    "description": "Production-quality Bash scripts for Solana vanity generation, keypair verification, batch operations, dependency auditing, and test orchestration — with security-hardened patterns including file permissions, input validation, and cleanup traps.",
+    "description": "Production-quality Bash scripts for Solana vanity generation, keypair verification, batch operations, dependency auditing, and test orchestration \u2014 with security-hardened patterns including file permissions, input validation, and cleanup traps.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-shell-scripts",
     "manifest": "https://x402.wtf/skills/pump-shell-scripts/manifest.json",
@@ -862,7 +862,7 @@
   {
     "slug": "pump-solana-architecture",
     "name": "pump-solana-architecture",
-    "description": "Design and derive Program Derived Addresses (PDAs) and account layouts across the Pump ecosystem's four Solana programs — global singletons, per-token accounts, per-user accumulators, and cross-program coordination patterns.",
+    "description": "Design and derive Program Derived Addresses (PDAs) and account layouts across the Pump ecosystem's four Solana programs \u2014 global singletons, per-token accounts, per-user accumulators, and cross-program coordination patterns.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-solana-architecture",
     "manifest": "https://x402.wtf/skills/pump-solana-architecture/manifest.json",
@@ -872,7 +872,7 @@
   {
     "slug": "pump-solana-dev",
     "name": "pump-solana-dev",
-    "description": "Solana development patterns used in the Pump SDK — Anchor IDL-based program interaction, SPL Token and Token-2022 management, transaction construction with instruction composition, RPC batching, and cross-program coordination.",
+    "description": "Solana development patterns used in the Pump SDK \u2014 Anchor IDL-based program interaction, SPL Token and Token-2022 management, transaction construction with instruction composition, RPC batching, and cross-program coordination.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-solana-dev",
     "manifest": "https://x402.wtf/skills/pump-solana-dev/manifest.json",
@@ -882,7 +882,7 @@
   {
     "slug": "pump-solana-wallet",
     "name": "pump-solana-wallet",
-    "description": "Secure Solana wallet generation using official Solana Labs libraries — Ed25519 keypairs, memory zeroization, vanity address generation, offline-only operation, and multi-language implementations (Rust, TypeScript, Bash).",
+    "description": "Secure Solana wallet generation using official Solana Labs libraries \u2014 Ed25519 keypairs, memory zeroization, vanity address generation, offline-only operation, and multi-language implementations (Rust, TypeScript, Bash).",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-solana-wallet",
     "manifest": "https://x402.wtf/skills/pump-solana-wallet/manifest.json",
@@ -892,7 +892,7 @@
   {
     "slug": "pump-testing",
     "name": "pump-testing",
-    "description": "Multi-language test infrastructure for the Pump SDK — Rust unit/integration/security/performance tests, TypeScript Jest tests, Python fuzz tests, shell test orchestration, Criterion benchmarks, and CI quality gates.",
+    "description": "Multi-language test infrastructure for the Pump SDK \u2014 Rust unit/integration/security/performance tests, TypeScript Jest tests, Python fuzz tests, shell test orchestration, Criterion benchmarks, and CI quality gates.",
     "category": "Solana / Blockchain",
     "homepage": "https://x402.wtf/skills/pump-testing",
     "manifest": "https://x402.wtf/skills/pump-testing/manifest.json",
@@ -998,6 +998,16 @@
     "manifest": "https://x402.wtf/skills/solana-clawd-agentic-commerce/manifest.json",
     "attested": true,
     "attested_at": "2026-06-04"
+  },
+  {
+    "slug": "nemo-clawd",
+    "name": "nemo-clawd",
+    "description": "nemoClawd \u2014 xAI Grok powered Solana agentic trading engine. Use when launching nemoClawd with Grok multi-agent research, running OODA trading loops, using the 31 MCP tools (Helius, Pump.fun, Metaplex), starting the Telegram bot, managing Blockchain Buddies, or integrating the nvidia-nim provider and OpenClaw plugin.",
+    "category": "AI Agents / Solana",
+    "homepage": "https://x402.wtf/skills/nemo-clawd",
+    "manifest": "https://x402.wtf/skills/nemo-clawd/manifest.json",
+    "attested": false,
+    "attested_at": null
   },
   {
     "slug": "solana-formal-verification",
@@ -1282,7 +1292,7 @@
   {
     "slug": "agent-auth",
     "name": "agent-auth",
-    "description": "Solana-native agent identity and authentication — SIWS, CAAP/1.0 on-chain attestation, Phala TEE confidential compute, Clerk identity bridge, and CLAWD token-gated subscription tiers.",
+    "description": "Solana-native agent identity and authentication \u2014 SIWS, CAAP/1.0 on-chain attestation, Phala TEE confidential compute, Clerk identity bridge, and CLAWD token-gated subscription tiers.",
     "category": "Utilities",
     "homepage": "https://x402.wtf/skills/agent-auth",
     "manifest": "https://x402.wtf/skills/agent-auth/manifest.json",
@@ -1342,7 +1352,7 @@
   {
     "slug": "solana-dev-skill-main",
     "name": "solana-dev",
-    "description": "End-to-end Solana development patterns — programs, clients, testing, deployment, and toolchain setup.",
+    "description": "End-to-end Solana development patterns \u2014 programs, clients, testing, deployment, and toolchain setup.",
     "category": "DeFi / Solana",
     "homepage": "https://x402.wtf/skills/solana-dev-skill-main",
     "manifest": "https://x402.wtf/skills/solana-dev-skill-main/manifest.json",
@@ -1352,7 +1362,7 @@
   {
     "slug": "greptile",
     "name": "greptile",
-    "description": "AI code reviews via Greptile — trigger PR reviews, run local CLI reviews, query codebase graphs, apply auto-fixes, manage custom rules, and analyze review analytics. Use for code review, PR feedback, issue triage, and codebase exploration.",
+    "description": "AI code reviews via Greptile \u2014 trigger PR reviews, run local CLI reviews, query codebase graphs, apply auto-fixes, manage custom rules, and analyze review analytics. Use for code review, PR feedback, issue triage, and codebase exploration.",
     "category": "Dev Tools / Agents",
     "homepage": "https://x402.wtf/skills/greptile",
     "manifest": "https://x402.wtf/skills/greptile/manifest.json",
