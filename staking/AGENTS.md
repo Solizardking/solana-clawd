@@ -48,9 +48,10 @@ staking/
 
 ```bash
 npm run script:devnet -- init                                    # Initialize global pool
-npm run script:devnet -- stake --asset <ASSET> --collection <C>  # Stake agent
-npm run script:devnet -- unstake --asset <ASSET> --collection <C> # Unstake agent
+npm run script:devnet -- stake --asset <ASSET>                   # Stake agent (collection auto-derived)
+npm run script:devnet -- unstake --asset <ASSET>                 # Unstake agent (collection auto-derived)
 npm run script:devnet -- claim --asset <ASSET>                    # Claim rewards
+npm run script:devnet -- status --asset <ASSET>                   # Inspect on-chain stake state
 ```
 
 ## Tech Stack

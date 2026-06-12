@@ -204,13 +204,11 @@ npm run script:devnet -- init
 
 # Stake an agent NFT
 npm run script:devnet -- stake \
-  --asset <AGENT_ASSET_ADDRESS> \
-  --collection <COLLECTION_ADDRESS>
+  --asset <AGENT_ASSET_ADDRESS>
 
 # Unstake an agent NFT
 npm run script:devnet -- unstake \
-  --asset <AGENT_ASSET_ADDRESS> \
-  --collection <COLLECTION_ADDRESS>
+  --asset <AGENT_ASSET_ADDRESS>
 
 # Claim accrued rewards
 npm run script:devnet -- claim \
@@ -220,6 +218,8 @@ npm run script:devnet -- claim \
 npm run script:devnet -- status \
   --asset <AGENT_ASSET_ADDRESS>
 ```
+
+The CLI auto-derives the collection from the Metaplex Core asset's update authority. Pass `--collection` only if you want an explicit safety check.
 
 All commands accept `-e/--env`, `-r/--rpc`, and `-k/--keypair` flags. Defaults: `devnet`, public devnet RPC, `~/.config/solana/id.json`.
 

@@ -12,6 +12,8 @@ import {
 
 import {
   createInitializeTx,
+  createClaimRewardsTx,
+  getStakeStatus,
   createStakeAgentTx,
   createUnstakeAgentTx,
 } from "../lib/scripts";
@@ -109,7 +111,7 @@ export const initProject = async () => {
 
 export const stakeAgent = async (
   asset: string,
-  collection: string,
+  collection: string | undefined,
   keypair: string,
 ) => {
   try {
@@ -130,7 +132,7 @@ export const stakeAgent = async (
 
 export const unstakeAgent = async (
   asset: string,
-  collection: string,
+  collection: string | undefined,
   keypair: string,
 ) => {
   try {
@@ -151,6 +153,56 @@ export const unstakeAgent = async (
 
 export const lockCorenft = stakeAgent;
 export const unlockCorenft = unstakeAgent;
+
+export const claimRewards = async (
+  asset: string,
+  keypair: string,
+) => {
+  try {
+    const tx = await createClaimRewardsTx(
+      payer as anchor.Wallet,
+      asset,
+      program,
+      solConnection,
+      keypair,
+    );
+
+    await addAdminSignAndConfirm(tx);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const printStakeStatus = async (
+  asset: string,
+  keypair: string,
+) => {
+  try {
+    const status = await getStakeStatus(
+      asset,
+      program,
+      solConnection,
+      keypair,
+    );
+
+    console.log("Asset:", status.assetAddress);
+    console.log("Name:", status.assetName ?? "Unknown");
+    console.log("Owner:", status.owner);
+    console.log("Collection:", status.collectionAddress ?? "Not collection-backed");
+    console.log("UserPool PDA:", status.userPool);
+    console.log("FreezeDelegate Frozen:", status.freezeDelegateFrozen);
+    console.log("Staked:", status.staked);
+    if (status.staked) {
+      console.log("Stake Time:", status.stakeTime);
+      console.log("Last Claim Time:", status.lastClaimTime);
+      console.log("Total Claimed (base-units):", status.totalClaimedBaseUnits);
+      console.log("Pending Rewards (base-units):", status.pendingBaseUnits);
+      console.log("Pending Rewards (CLAWD):", status.pendingClawd);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 export const addAdminSignAndConfirm = async (txData: Buffer) => {
   // Deserialize the transaction

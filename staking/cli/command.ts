@@ -1,11 +1,13 @@
 import { program } from "commander";
 import {
   initProject,
+  claimRewards,
+  printStakeStatus,
   stakeAgent,
   unstakeAgent,
   setClusterConfig,
 } from "./scripts";
-import { CORE_COLLECTION_ADDRESS, DEFAULT_DEVNET_RPC } from "../lib/constant";
+import { DEFAULT_DEVNET_RPC } from "../lib/constant";
 
 // program.version('0.0.1');
 
@@ -31,8 +33,7 @@ function stakeCommand(name: string) {
     .option("-a, --asset <string>", "Metaplex Core asset address")
     .option(
       "-c, --collection <string>",
-      "Metaplex Core collection address",
-      CORE_COLLECTION_ADDRESS.toBase58(),
+      "Metaplex Core collection address (auto-derived from the asset if omitted)",
     )
     .action(async (directory, cmd) => {
       const { env, keypair, rpc, mint, asset, nftType, collection } =
@@ -66,8 +67,7 @@ function unstakeCommand(name: string) {
     .option("-a, --asset <string>", "Metaplex Core asset address")
     .option(
       "-c, --collection <string>",
-      "Metaplex Core collection address",
-      CORE_COLLECTION_ADDRESS.toBase58(),
+      "Metaplex Core collection address (auto-derived from the asset if omitted)",
     )
     .action(async (directory, cmd) => {
       const { env, keypair, rpc, mint, asset, nftType, collection } =
@@ -93,10 +93,48 @@ function unstakeCommand(name: string) {
     });
 }
 
+function claimCommand(name: string) {
+  programCommand(name)
+    .option("-m, --mint <string>")
+    .option("-a, --asset <string>", "Metaplex Core asset address")
+    .action(async (directory, cmd) => {
+      const { env, keypair, rpc, mint, asset } = cmd.opts();
+      const assetAddress = mint ?? asset;
+
+      await setClusterConfig(env, keypair, rpc);
+      if (assetAddress === undefined) {
+        console.log("Missing agent asset address");
+        return;
+      }
+
+      await claimRewards(assetAddress, keypair);
+    });
+}
+
+function statusCommand(name: string) {
+  programCommand(name)
+    .option("-m, --mint <string>")
+    .option("-a, --asset <string>", "Metaplex Core asset address")
+    .action(async (directory, cmd) => {
+      const { env, keypair, rpc, mint, asset } = cmd.opts();
+      const assetAddress = mint ?? asset;
+
+      await setClusterConfig(env, keypair, rpc);
+      if (assetAddress === undefined) {
+        console.log("Missing agent asset address");
+        return;
+      }
+
+      await printStakeStatus(assetAddress, keypair);
+    });
+}
+
 stakeCommand("stake");
 stakeCommand("lock");
 unstakeCommand("unstake");
 unstakeCommand("unlock");
+claimCommand("claim");
+statusCommand("status");
 
 function programCommand(name: string) {
   return program

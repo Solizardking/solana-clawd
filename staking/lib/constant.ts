@@ -21,3 +21,5 @@ export const DEFAULT_DEVNET_RPC =
 
 export const DEFAULT_MAINNET_RPC =
   process.env.SOLANA_MAINNET_RPC_URL ?? "https://api.mainnet-beta.solana.com";
+
+export const REWARD_RATE_BASE_UNITS_PER_SECOND = 1_000;
