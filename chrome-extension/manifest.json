@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "OpenClawd — pAGENT Browser",
+  "short_name": "OpenClawd",
+  "version": "3.0.0",
+  "description": "AI agent browser with wallet, trading, and OpenClawd harness integration. Your keys never leave your machine.",
+  "author": "OpenClawd",
+  "homepage_url": "https://github.com/x402agent/openclawd",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "OpenClawd — pAGENT Browser"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "alarms"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:7777/*",
+    "http://127.0.0.1:18800/*",
+    "http://127.0.0.1:18790/*",
+    "http://localhost:7777/*",
+    "http://localhost:18800/*",
+    "http://localhost:18790/*",
+    "http://127.0.0.1:8420/*",
+    "http://localhost:8420/*",
+    "http://127.0.0.1:3001/*",
+    "http://localhost:3001/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
