@@ -449,8 +449,14 @@ Current working directory: ${process.cwd()}`,
         } else if (Array.isArray(acc[key]) && Array.isArray(value)) {
           const accArray = acc[key] as any[];
           for (let i = 0; i < value.length; i++) {
-            if (!accArray[i]) accArray[i] = {};
-            accArray[i] = reduce(accArray[i], value[i]);
+            const deltaItem = value[i] as any;
+            const targetIndex =
+              deltaItem && typeof deltaItem.index === "number"
+                ? deltaItem.index
+                : i;
+            if (!accArray[targetIndex]) accArray[targetIndex] = {};
+            accArray[targetIndex] = reduce(accArray[targetIndex], deltaItem);
+            delete accArray[targetIndex].index;
           }
         } else if (typeof acc[key] === "object" && typeof value === "object") {
           acc[key] = reduce(acc[key], value);
