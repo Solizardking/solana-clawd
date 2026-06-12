@@ -1,4 +1,5 @@
 # The Vibes
+
 ## Character, Culture, and Spirit of the Cheshire Terminal
 
 ---

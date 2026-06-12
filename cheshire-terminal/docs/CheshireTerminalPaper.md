@@ -1,7 +1,8 @@
 # Cheshire Terminal
+
 ## The Origin Paper
 
-*From cross-chain experiment to sovereign agentic OS*
+From cross-chain experiment to sovereign agentic OS
 
 ---
 
@@ -27,11 +28,13 @@ The Cheshire Terminal began as an autonomous agent operating across Base and Sol
 This was proof-of-concept. It proved the thesis was correct — an AI agent *could* operate with real economic agency across chains. But it also revealed what mattered and what did not.
 
 **What mattered:**
+
 - On-chain identity (persistent, transferable, ownable)
 - Payment rails (autonomous, non-interruptible)
 - Execution authority (sign and execute without human approval)
 
 **What did not matter:**
+
 - The specific chain
 - The specific model
 - The specific UI

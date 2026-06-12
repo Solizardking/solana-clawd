@@ -1,4 +1,5 @@
 # On-Chain Development Guide
+
 ## Building Sovereign Agents on Solana with the Cheshire Terminal Stack
 
 ---
