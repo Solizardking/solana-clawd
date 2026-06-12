@@ -230,24 +230,36 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  // Solana-style slash commands
-  const slashCommands: Record<string, (a: string[]) => Promise<void>> = {
+  // Solana-style slash commands and install-friendly aliases
+  const directCommands: Record<string, (a: string[]) => Promise<void>> = {
     '/perps':      C.cmdPerps,
+    'perps':       C.cmdPerps,
     '/wallet':     C.cmdWallet,
+    'wallet':      C.cmdWallet,
     '/send':       C.cmdSend,
+    'send':        C.cmdSend,
     '/price':      C.cmdPrice,
+    'price':       C.cmdPrice,
     '/balance':    C.cmdBalance,
+    'balance':     C.cmdBalance,
     '/positions':  C.cmdPositions,
+    'positions':   C.cmdPositions,
     '/funding':    C.cmdFunding,
+    'funding':     C.cmdFunding,
     '/signals':    C.cmdSignals,
+    'signals':     C.cmdSignals,
     '/strategies': C.cmdStrategies,
+    'strategies':  C.cmdStrategies,
     '/agents':     C.cmdAgents,
+    'agents':      C.cmdAgents,
     '/goal':       C.cmdGoal,
+    'goal':        C.cmdGoal,
     '/help':       C.cmdHelp,
+    'help':        C.cmdHelp,
   };
 
-  if (slashCommands[args[0]]) {
-    await slashCommands[args[0]](args.slice(1));
+  if (directCommands[args[0]]) {
+    await directCommands[args[0]](args.slice(1));
     process.exit(0);
   }
 

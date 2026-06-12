@@ -4,6 +4,7 @@
  */
 
 import { loadClawdEnv } from './env.js';
+import { createWallet, listWallets } from './wallet.js';
 
 const CLAWD_ENV = loadClawdEnv();
 const HELIUS_KEY = CLAWD_ENV.HELIUS_API_KEY ?? '';
@@ -62,12 +63,47 @@ export async function cmdPerps(args: string[]): Promise<void> {
 
 export async function cmdWallet(args: string[]): Promise<void> {
   const sub = args[0] || 'balance';
+  if (sub === 'create') {
+    const nameFlag = args.indexOf('--name');
+    const name = nameFlag !== -1 ? args[nameFlag + 1] : args[1] || 'default';
+    try {
+      const wallet = createWallet(name);
+      console.log('\n╔════════════════════════════════════════════════════════╗');
+      console.log('║  WALLET CREATED                                        ║');
+      console.log('╠════════════════════════════════════════════════════════╣');
+      console.log(`║  Name: ${wallet.name.padEnd(47)}║`);
+      console.log(`║  Pubkey: ${wallet.publicKey.slice(0, 44).padEnd(45)}║`);
+      console.log('╠════════════════════════════════════════════════════════╣');
+      console.log(`║  Keypair: ${wallet.path.slice(0, 44).padEnd(43)}║`);
+      console.log('║  File mode: 0600. Keep this file private.              ║');
+      console.log('╚════════════════════════════════════════════════════════╝\n');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[WALLET] ${message}`);
+    }
+    return;
+  }
+
+  if (sub === 'list') {
+    const wallets = listWallets();
+    console.log('\n╔════════════════════════════════════════════════════════╗');
+    console.log('║  WALLETS                                              ║');
+    console.log('╠════════════════════════════════════════════════════════╣');
+    if (wallets.length === 0) {
+      console.log('║  No wallets yet. Run: clawd-code wallet create         ║');
+    } else {
+      for (const wallet of wallets) {
+        console.log(`║  ${wallet.name.slice(0, 12).padEnd(12)} ${wallet.publicKey.slice(0, 36).padEnd(36)}║`);
+      }
+    }
+    console.log('╚════════════════════════════════════════════════════════╝\n');
+    return;
+  }
+
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║  WALLET — Solana via Vulcan CLI                        ║');
   console.log('╠════════════════════════════════════════════════════════╣');
-  if (sub === 'create')      console.log('║  $ vulcan wallet create --name my-wallet               ║');
-  else if (sub === 'list')   console.log('║  $ vulcan wallet list                                  ║');
-  else if (sub === 'import') console.log('║  $ vulcan wallet import --name <n> <key>              ║');
+  if (sub === 'import') console.log('║  $ vulcan wallet import --name <n> <key>              ║');
   else                       console.log('║  $ vulcan wallet balance                               ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  Safety: All wallet ops via Vulcan CLI.                 ║');

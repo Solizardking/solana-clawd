@@ -30,9 +30,18 @@
 ## Installation
 
 ```bash
-# Clone the repository
+# One-shot installer
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/clawd-code/install.sh | sh
+```
+
+The installer checks for Node.js 18+, installs `clawd-code` globally, creates
+`~/.clawd-code/.env`, and puts the `clawd-code` binary on your PATH.
+
+### Manual install
+
+```bash
 git clone https://github.com/Solizardking/solana-clawd.git
-cd solana-clawd/agents/clawd-code
+cd solana-clawd/clawd-code
 
 # Copy environment config
 cp .env.example ~/.clawd-code/.env
@@ -46,8 +55,8 @@ cp .env.example ~/.clawd-code/.env
 npm install
 npm run build
 
-# Link to PATH (optional)
-ln -s $(pwd)/dist/cli.js /usr/local/bin/clawd-code
+# Link to PATH
+npm link
 ```
 
 ## Quick Start
@@ -58,6 +67,13 @@ clawd-code code "Build a Jupiter swap bot in TypeScript"
 
 # Trade mode: Check SOL funding rate
 clawd-code trade "funding rate on SOL perps"
+
+# Wallet: Create a local Solana keypair
+clawd-code wallet create
+
+# Perps dashboard and direct aliases
+clawd-code perps
+clawd-code funding
 
 # Research mode: Deep research with 16 agents
 clawd-code research --agents 16 "AI agent frameworks 2025"
@@ -79,6 +95,8 @@ clawd-code voice "Clawd Code is operational"
 | `PHOENIX_RISE_URL` | Phoenix Rise endpoint | api.phoenix.gg |
 | `VULCAN_MCP_URL` | Vulcan MCP server | localhost:3001 |
 | `LIVE_TRADING` | Enable live trading | false (paper) |
+| `OPERATOR_CONFIRMED` | Required for live trading | false |
+| `PERPS_SIM_ONLY` | Keep perps execution simulated | true |
 | `CLAWD_MODE` | Default mode | code |
 | `CLAWD_AGENT_COUNT` | Research agents | 4 |
 
@@ -151,6 +169,21 @@ clawd-code trade short SOL $100
 # Arm live trading
 clawd-code trade short SOL $100 --live
 ```
+
+## Wallets
+
+```bash
+# Create a local Solana keypair at ~/.clawd-code/wallets/default.json
+clawd-code wallet create
+
+# Create a named wallet
+clawd-code wallet create trader-1
+
+# List local wallets
+clawd-code wallet list
+```
+
+Wallet files are written with `0600` permissions. Do not share them.
 
 ### Preflight Checks
 Every trade runs preflight:

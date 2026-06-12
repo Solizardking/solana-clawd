@@ -13,6 +13,13 @@
     "start": "node dist/cli.js",
     "test": "echo \"No tests yet\" && exit 0"
   },
+  "files": [
+    "dist",
+    "install.sh",
+    "README.md",
+    ".env.example",
+    "clawd.json"
+  ],
   "keywords": [
     "solana",
     "ai-agent",
@@ -27,7 +34,9 @@
   ],
   "author": "Solizardking",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "@solana/web3.js": "^1.98.4"
+  },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "tsx": "^4.7.0",
