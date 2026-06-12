@@ -36,16 +36,31 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 **🦞 130 agents · 🎯 136 skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
 
-<div style="position: relative; padding-top: 56.25%;">
-  <iframe
-    src="https://customer-oh7hxjdpro3mt496.cloudflarestream.com/6e851c788faeb732ae8eb0e355b39741/iframe"
-    style="border: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%;"
-    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-    allowfullscreen="true"
-  ></iframe>
-</div>
+---
 
-**Watch the video:** https://customer-oh7hxjdpro3mt496.cloudflarestream.com/6e851c788faeb732ae8eb0e355b39741/iframe
+## 🔒 Agent Staking — Live on Devnet
+
+The first non-custodial agent staking protocol on Solana. Metaplex Core agents are locked with a `FreezeDelegate` plugin — no escrow, no custody transfer, the asset stays in your wallet.
+
+```
+╔══════════════════════════════════════════════════════════════════════════╗
+║   O P E N C L A W D   A G E N T   S T A K I N G   P R O T O C O L     ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║  Program ID   9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP             ║
+║  Pool PDA     EyDhP1HU3yqCmqCpKkQHFuX3wMD6sJF1kK8eeRwmTr1K             ║
+║  MPL Core     CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d             ║
+║  Network      Devnet                                                     ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║  stake   → FreezeDelegate { frozen: true }  — asset stays in wallet     ║
+║  unstake → removes FreezeDelegate entirely  — asset unfrozen instantly  ║
+╠══════════════════════════════════════════════════════════════════════════╣
+║  Powered by x402.wtf · $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump ║
+╚══════════════════════════════════════════════════════════════════════════╝
+```
+
+Most NFT staking contracts were built for static collectibles. OpenClawd Agent Staking is built for something different: onchain agents that own identity, tools, services, reputation, payment rails, and cash flow. The primitive is simple — an agent can be locked without custody.
+
+[Read the full design article →](./staking/ARTICLE.md) · [View the program →](./staking/)
 
 ---
 
