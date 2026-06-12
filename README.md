@@ -222,21 +222,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`b26a2185`](../../commit/b26a2185) | staking: wire stake_for_verification and unstake_verificatio | solizardking | Jun 12 |
-| 🥈 | [`a235baaa`](../../commit/a235baaa) | adfdadf;k | solizardking | Jun 12 |
-| 🥉 | [`974e4162`](../../commit/974e4162) | sadffsd | solizardking | Jun 11 |
-| 4️⃣ | [`5addceea`](../../commit/5addceea) | sadfdfsfsasdf | solizardking | Jun 11 |
-| 5️⃣ | [`8c478b4a`](../../commit/8c478b4a) | adfsfd | solizardking | Jun 11 |
-| 6️⃣ | [`7753ee52`](../../commit/7753ee52) | afddasff | solizardking | Jun 11 |
-| 7️⃣ | [`6c9a4a6d`](../../commit/6c9a4a6d) | afdsfda | solizardking | Jun 11 |
-| 8️⃣ | [`6682262e`](../../commit/6682262e) | sadffsd | solizardking | Jun 11 |
-| 9️⃣ | [`18645534`](../../commit/18645534) | sdfsdf | solizardking | Jun 11 |
-| 🔟 | [`24ef6193`](../../commit/24ef6193) | dsfdsfdsfdasff | solizardking | Jun 11 |
-| · | [`4c45f7b4`](../../commit/4c45f7b4) | sdffsd | solizardking | Jun 11 |
-| · | [`39e1d567`](../../commit/39e1d567) | sgdgssdfsfd | solizardking | Jun 11 |
-| · | [`d4a42e42`](../../commit/d4a42e42) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`c686b373`](../../commit/c686b373) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`ce7e5dde`](../../commit/ce7e5dde) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🥇 | [`a4a8b581`](../../commit/a4a8b581) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🥈 | [`a82a34eb`](../../commit/a82a34eb) | readme: add staking, ClawdRouter, and spinners sections; rem | solizardking | Jun 12 |
+| 🥉 | [`f9576456`](../../commit/f9576456) | adfdf | solizardking | Jun 12 |
+| 4️⃣ | [`19588157`](../../commit/19588157) | asdfdfas | solizardking | Jun 12 |
+| 5️⃣ | [`68fe1094`](../../commit/68fe1094) | afdfdaadfs | solizardking | Jun 12 |
+| 6️⃣ | [`ff75e8c1`](../../commit/ff75e8c1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 7️⃣ | [`b26a2185`](../../commit/b26a2185) | staking: wire stake_for_verification and unstake_verificatio | solizardking | Jun 12 |
+| 8️⃣ | [`a235baaa`](../../commit/a235baaa) | adfdadf;k | solizardking | Jun 12 |
+| 9️⃣ | [`974e4162`](../../commit/974e4162) | sadffsd | solizardking | Jun 11 |
+| 🔟 | [`5addceea`](../../commit/5addceea) | sadfdfsfsasdf | solizardking | Jun 11 |
+| · | [`8c478b4a`](../../commit/8c478b4a) | adfsfd | solizardking | Jun 11 |
+| · | [`7753ee52`](../../commit/7753ee52) | afddasff | solizardking | Jun 11 |
+| · | [`6c9a4a6d`](../../commit/6c9a4a6d) | afdsfda | solizardking | Jun 11 |
+| · | [`6682262e`](../../commit/6682262e) | sadffsd | solizardking | Jun 11 |
+| · | [`18645534`](../../commit/18645534) | sdfsdf | solizardking | Jun 11 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
