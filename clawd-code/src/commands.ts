@@ -5,8 +5,9 @@
 
 import { loadClawdEnv } from './env.js';
 
-const HELIUS_KEY = process.env.HELIUS_API_KEY ?? '';
-const HELIUS_RPC = process.env.HELIUS_RPC_URL ??
+const CLAWD_ENV = loadClawdEnv();
+const HELIUS_KEY = CLAWD_ENV.HELIUS_API_KEY ?? '';
+const HELIUS_RPC = CLAWD_ENV.HELIUS_RPC_URL ?? process.env.HELIUS_RPC_URL ??
   (HELIUS_KEY
     ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
     : 'https://api.mainnet-beta.solana.com');

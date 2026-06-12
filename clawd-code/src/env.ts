@@ -37,7 +37,13 @@ export function parseEnvFile(path: string): Record<string, string> {
 export function loadClawdEnv(): Record<string, string> {
   const localEnv = parseEnvFile(LOCAL_ENV_FILE);
   const configEnv = parseEnvFile(CONFIG_ENV_FILE);
-  const merged = { ...localEnv, ...configEnv, ...process.env };
+  const merged: Record<string, string> = { ...localEnv, ...configEnv };
+
+  for (const [key, value] of Object.entries(process.env)) {
+    if (value !== undefined) {
+      merged[key] = value;
+    }
+  }
 
   for (const [key, value] of Object.entries(merged)) {
     if (process.env[key] === undefined) {
