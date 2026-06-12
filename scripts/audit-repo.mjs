@@ -17,6 +17,7 @@ const IGNORED_SECRET_EXAMPLES = [
   /public-release-audit\.sh:/,
   /packages\/clawd-guard\/README\.md:/,
   /packages\/clawd-guard\/src\/scanner\.ts:/,
+  /scripts\/audit-repo\.mjs:/,
 ];
 
 function git(args, options = {}) {

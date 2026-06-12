@@ -9,7 +9,7 @@ const os = require("os");
 const { ROOT, run, runCapture } = require("./runner");
 const registry = require("./registry");
 
-const PRESETS_DIR = path.join(ROOT, "nemoclawd-blueprint", "policies", "presets");
+const PRESETS_DIR = path.join(ROOT, "nemo-clawd-python", "policies", "presets");
 
 function listPresets() {
   if (!fs.existsSync(PRESETS_DIR)) return [];

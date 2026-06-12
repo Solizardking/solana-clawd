@@ -6,6 +6,8 @@
 
 <div align="center">
 
+<img src="./assets/openclawd-banner.svg" alt="OpenClawd animated banner" width="100%" />
+
 ```
  ███████╗ ██████╗ ██╗      █████╗ ███╗   ██╗ █████╗      ██████╗██╗      █████╗ ██╗    ██╗██████╗
  ██╔════╝██╔═══██╗██║     ██╔══██╗████╗  ██║██╔══██╗    ██╔════╝██║     ██╔══██╗██║    ██║██╔══██╗
@@ -88,6 +90,19 @@ After launching the TUI (`npm run tui`), use these built-in slash commands:
 /clawd payment:verify <id>   — verify a payment
 /clawd payment:settle <tx>   — settle a payment
 ```
+
+### Verify a Fresh Checkout
+
+```bash
+pnpm install --frozen-lockfile
+npm run audit:repo
+npm run check
+npm run build
+npm test --prefix nemo-clawd
+bash -n install.sh && bash install.sh --help
+```
+
+`install.sh` is validated for shell syntax, executable mode, and help output. The full one-shot installer performs global package installs, so run it intentionally when you want to modify the host npm environment.
 
 ---
 
@@ -205,14 +220,14 @@ Recent upstream context from 2026-06-12:
 
 ## Security Posture
 
-This repo should never expose private keys, wallet keypairs, seed phrases, live `.env` files, or provider API keys. The current pass added [SECURITY.md](./SECURITY.md), tightened `.gitignore` for `.env.*`, and confirmed that tracked environment files are examples only.
+This repo should never expose private keys, wallet keypairs, seed phrases, live `.env` files, or provider API keys. The current pass added a repeatable repository audit at `npm run audit:repo`, kept [SECURITY.md](./SECURITY.md) current, and confirmed that tracked environment files are examples only.
 
 Local audit summary:
 
-- No committed secret-bearing filenames were found in git history for `.env`, `.pem`, `.key`, SSH key names, or `*keypair*.json`.
-- Live local env files such as `.env`, `.env.local`, service `.env` files, and Vercel local env files are ignored.
-- The local deploy keypair under `programs/programs/target/` is ignored as build output.
-- Dedicated scanners such as `gitleaks` or `trufflehog` were not installed locally, so run one before publishing a release.
+- `npm run audit:repo` currently reports 18,910 tracked files, 77 top-level directories, 76 package manifests, executable `install.sh`, 0 tracked secret-like filenames, and 0 unapproved secret-pattern hits.
+- Allowed tracked env files are templates such as `.env.example`, `.env.sample`, or `.env.template`.
+- Live local env files such as `.env`, `.env.local`, service `.env` files, Vercel local env files, wallet keypairs, PEM files, and provider credential files are ignored.
+- Dedicated scanners such as `gitleaks` or `trufflehog` should still run before publishing a release.
 
 ---
 
@@ -447,13 +462,17 @@ solana-clawd/                       OpenClawd monorepo root
 
 ---
 
-## Current Session Handoff — Smoke-Tested June 10, 2026
+## Current Session Handoff — Verified June 12, 2026
 
-This README now reflects the repo as smoke-tested from source, not just the intended product surface.
+This README reflects the repo as verified from source, not just the intended product surface.
 
 | Area | Current truth | Smoke command |
 |---|---|---|
-| Root runtime | TypeScript check and runtime build pass after `pnpm install` restores workspace deps | `pnpm run check` · `pnpm run build` |
+| Root install | Lockfile is reconciled across 26 pnpm workspace projects | `pnpm install --frozen-lockfile` |
+| Root runtime | TypeScript check and runtime build pass | `npm run check` · `npm run build` |
+| Repo audit | Secret filename/content scan, package surface count, directory count, and installer mode pass | `npm run audit:repo` |
+| One-shot installer | Shell syntax and help output pass; global install path is intentionally not run during local smoke tests | `bash -n install.sh` · `bash install.sh --help` |
+| NemoClawd | CLI wrapper, policy preset loading, registry helpers, NIM helpers, and installer preflight pass | `npm test --prefix nemo-clawd` |
 | Agents hub | 130 agents and 136 skills validate through the x402 setup verifier | `npm test --prefix agents` |
 | Gateway | Gateway TypeScript build and x402 route smoke test pass | `npm test --prefix gateway` |
 | Library | 82 library agents validate and mirror into `public/library/` | `npm run library:validate` · `npm run library:doctor` |
@@ -461,7 +480,14 @@ This README now reflects the repo as smoke-tested from source, not just the inte
 | Characters | Current character loader reports 97 personas | `node packages/clawd-code-cli/dist/index.js character list` |
 | Local registry | Registry stats use `~/.clawd/agent-index.db`; sandboxed runners may need permission to access it | `node packages/agent-registry/dist/cli/index.js stats` |
 
-Environment note: this checkout declares Node `>=20 <25`. The smoke run was executed on Node `v25.6.1`, so pnpm prints an unsupported-engine warning even though the verified checks above pass.
+Package fixes in this pass:
+- Root runtime now declares the `openai` dependency used by `src/gacha/index.ts`.
+- Runtime TypeScript includes DOM fetch types for the x402 fetch wrapper.
+- `nemo-clawd` now pins the published `openclawd@^1.0.0` package instead of an unpublished `2026.3.11` version.
+- `nemo-clawd/bin/nemoclawd.js` wraps the existing CLI entrypoint, matching `package.json` and tests.
+- Nemo policy presets load from the checked-in `nemo-clawd-python/policies/presets` directory.
+
+Environment note: this checkout declares Node `>=20 <25`. The smoke run was executed on Node `v25.6.1`, so pnpm prints an unsupported-engine warning even though the verified checks above pass. pnpm also warns that build scripts for `@google/genai`, `@prisma/engines`, `openclawd`, and `prisma` are awaiting `pnpm approve-builds`, and reports a non-fatal missing `workerd` bin link under `packages/agentwallet`.
 
 ---
 
