@@ -1,0 +1,51 @@
+# OpenClawd Profile — config.yaml
+# Each profile is a fully isolated agent home.
+
+name: {{NAME}}
+
+# ── Model / Provider ────────────────────────────────────────────────
+model: xai/grok-4.20-beta
+provider: clawdrouter          # routes through clawdrouter for cost optimization
+reasoning_model: xai/grok-4.20-beta
+long_context_model: moonshot/kimi-k2.6
+
+# ── Toolsets ─────────────────────────────────────────────────────────
+tools:
+  - browser                    # web browsing / research
+  - shell                      # local shell commands
+  - file_read                  # read files in profile scope
+  - file_write                 # write files in profile scope
+  - memory                     # profile memories / RAG
+  - solana                     # blockchain ops (wallet, swaps, mint)
+  - mcp_servers                # MCP tool connections
+
+# ── Terminal defaults ────────────────────────────────────────────────
+terminal:
+  cwd: ~/openclawd             # base working directory
+  shell: /bin/zsh
+  env_file: .env               # loaded automatically
+
+# ── Personality ──────────────────────────────────────────────────────
+personality: CLAWD.md          # path to CLAWD.md (this file's sibling)
+
+# ── Session settings ─────────────────────────────────────────────────
+session:
+  max_history: 50              # turns of context in active memory
+  summarize_after: 30          # auto-summarize long conversations
+  store_dir: sessions/
+
+# ── Memory settings ──────────────────────────────────────────────────
+memory:
+  store_dir: memories/
+  index_on_load: true
+  ttl_days: 90                 # forget older memories
+
+# ── Skills ───────────────────────────────────────────────────────────
+skills:
+  local_dir: skills/           # profile-local skill overrides
+  inherit_global: true         # also use skills/ at repo root
+
+# ── Gateway ──────────────────────────────────────────────────────────
+gateway:
+  cache_dir: gateway/
+  state_ttl: 3600              # seconds before re-fetching gateway config
