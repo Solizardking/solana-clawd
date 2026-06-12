@@ -3,12 +3,32 @@
  * /perps /wallet /send /price /balance /goal /positions /strategies /agents /funding /scan /signals
  */
 
-const HELIUS_KEY = process.env.HELIUS_API_KEY ?? '';
-const HELIUS_RPC = process.env.HELIUS_RPC_URL ??
+import { loadClawdEnv } from './env.js';
+import { createWallet, listWallets } from './wallet.js';
+
+const CLAWD_ENV = loadClawdEnv();
+const HELIUS_KEY = CLAWD_ENV.HELIUS_API_KEY ?? '';
+const HELIUS_RPC = CLAWD_ENV.HELIUS_RPC_URL ?? process.env.HELIUS_RPC_URL ??
   (HELIUS_KEY
     ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}`
     : 'https://api.mainnet-beta.solana.com');
 const PHOENIX_RISE = 'https://api.phoenix.gg/enclave';
+
+type JsonRpcResponse<T = unknown> = {
+  result?: T;
+};
+
+function aiModeConfig(): Record<string, string | number> {
+  const env = loadClawdEnv();
+  return {
+    provider: env.CLAWD_PROVIDER || 'xai',
+    model: env.CLAWD_MODEL || 'grok-4.3',
+    xaiApiKey: env.XAI_API_KEY || '',
+    deepSeekApiKey: env.DEEPSEEK_API_KEY || '',
+    deepSeekBaseUrl: env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
+    agentCount: parseInt(env.CLAWD_AGENT_COUNT || '4', 10),
+  };
+}
 
 async function rpcCall(method: string, params: any[]): Promise<any> {
   try {
@@ -17,7 +37,8 @@ async function rpcCall(method: string, params: any[]): Promise<any> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
     });
-    return (await response.json())?.result;
+    const data = (await response.json()) as JsonRpcResponse;
+    return data.result;
   } catch {
     return null;
   }
@@ -42,12 +63,47 @@ export async function cmdPerps(args: string[]): Promise<void> {
 
 export async function cmdWallet(args: string[]): Promise<void> {
   const sub = args[0] || 'balance';
+  if (sub === 'create') {
+    const nameFlag = args.indexOf('--name');
+    const name = nameFlag !== -1 ? args[nameFlag + 1] : args[1] || 'default';
+    try {
+      const wallet = createWallet(name);
+      console.log('\n╔════════════════════════════════════════════════════════╗');
+      console.log('║  WALLET CREATED                                        ║');
+      console.log('╠════════════════════════════════════════════════════════╣');
+      console.log(`║  Name: ${wallet.name.padEnd(47)}║`);
+      console.log(`║  Pubkey: ${wallet.publicKey.slice(0, 44).padEnd(45)}║`);
+      console.log('╠════════════════════════════════════════════════════════╣');
+      console.log(`║  Keypair: ${wallet.path.slice(0, 44).padEnd(43)}║`);
+      console.log('║  File mode: 0600. Keep this file private.              ║');
+      console.log('╚════════════════════════════════════════════════════════╝\n');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[WALLET] ${message}`);
+    }
+    return;
+  }
+
+  if (sub === 'list') {
+    const wallets = listWallets();
+    console.log('\n╔════════════════════════════════════════════════════════╗');
+    console.log('║  WALLETS                                              ║');
+    console.log('╠════════════════════════════════════════════════════════╣');
+    if (wallets.length === 0) {
+      console.log('║  No wallets yet. Run: clawd-code wallet create         ║');
+    } else {
+      for (const wallet of wallets) {
+        console.log(`║  ${wallet.name.slice(0, 12).padEnd(12)} ${wallet.publicKey.slice(0, 36).padEnd(36)}║`);
+      }
+    }
+    console.log('╚════════════════════════════════════════════════════════╝\n');
+    return;
+  }
+
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║  WALLET — Solana via Vulcan CLI                        ║');
   console.log('╠════════════════════════════════════════════════════════╣');
-  if (sub === 'create')      console.log('║  $ vulcan wallet create --name my-wallet               ║');
-  else if (sub === 'list')   console.log('║  $ vulcan wallet list                                  ║');
-  else if (sub === 'import') console.log('║  $ vulcan wallet import --name <n> <key>              ║');
+  if (sub === 'import') console.log('║  $ vulcan wallet import --name <n> <key>              ║');
   else                       console.log('║  $ vulcan wallet balance                               ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  Safety: All wallet ops via Vulcan CLI.                 ║');
@@ -184,7 +240,7 @@ export async function cmdGoal(args: string[]): Promise<void> {
   } else if (lower.includes('research') || lower.includes('analyze')) {
     console.log(`[GOAL] Routing to RESEARCH MODE: ${goal}`);
     const { ResearchMode } = await import('./modes/research.js');
-    const mode = new ResearchMode({ xaiApiKey: process.env.XAI_API_KEY || '' });
+    const mode = new ResearchMode(aiModeConfig());
     await mode.run([goal]);
   } else if (lower.includes('image') || lower.includes('picture') || lower.includes('draw')) {
     console.log(`[GOAL] Routing to IMAGE MODE: ${goal}`);
@@ -200,7 +256,7 @@ export async function cmdGoal(args: string[]): Promise<void> {
     // Default to code mode
     console.log(`[GOAL] Routing to CODE MODE: ${goal}`);
     const { CodeMode } = await import('./modes/code.js');
-    const mode = new CodeMode({ xaiApiKey: process.env.XAI_API_KEY || '' });
+    const mode = new CodeMode(aiModeConfig());
     await mode.run([goal]);
   }
 }
@@ -237,19 +293,21 @@ export async function cmdHelp(args: string[]): Promise<void> {
   console.log('║  MODES: code | trade | research | image | voice       ║');
   console.log('║                                                       ║');
   console.log('║  GLOBAL COMMANDS:                                      ║');
-  console.log('║  /perps          Perps dashboard                       ║');
-  console.log('║  /wallet [sub]   Wallet ops (create|list|import)      ║');
-  console.log('║  /balance [w]    Wallet balance snapshot               ║');
-  console.log('║  /send [args]    Send SOL or SPL tokens                ║');
-  console.log('║  /price [sym]    Token price via Birdeye              ║');
-  console.log('║  /positions      Open perps positions                  ║');
-  console.log('║  /funding        Funding rates                         ║');
-  console.log('║  /signals        Composite trading signals             ║');
-  console.log('║  /strategies     Vulcan strategy runners               ║');
-  console.log('║  /agents         Clawd agent registry                  ║');
-  console.log('║  /models         Grok model registry                   ║');
-  console.log('║  /provider       Switch xai ↔ openrouter              ║');
-  console.log('║  /goal [text]    Natural language intent router        ║');
-  console.log('║  /verify         Preflight environment checks          ║');
+  console.log('║  perps           Perps dashboard                       ║');
+  console.log('║  wallet [sub]    Wallet ops (create|list|import)      ║');
+  console.log('║  balance [w]     Wallet balance snapshot               ║');
+  console.log('║  send [args]     Send SOL or SPL tokens                ║');
+  console.log('║  price [sym]     Token price via Birdeye              ║');
+  console.log('║  positions       Open perps positions                  ║');
+  console.log('║  funding         Funding rates                         ║');
+  console.log('║  signals         Composite trading signals             ║');
+  console.log('║  strategies      Vulcan strategy runners               ║');
+  console.log('║  agents          Clawd agent registry                  ║');
+  console.log('║  models          Grok model registry                   ║');
+  console.log('║  provider        Switch xai/openrouter/deepseek        ║');
+  console.log('║  goal [text]     Natural language intent router        ║');
+  console.log('║  verify          Preflight environment checks          ║');
+  console.log('║                                                       ║');
+  console.log('║  Slash aliases still work: /perps, /wallet, /goal     ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
 }

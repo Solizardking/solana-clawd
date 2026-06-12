@@ -1,196 +1,151 @@
-# Clawd Code — World's First Headless Grok × Codex × Claude Code Hybrid
+# Clawd Code
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Model-grok--4.20--multi--agent-FF6B35?style=flat-square" alt="Grok">
-  <img src="https://img.shields.io/badge/Solana-Native-9945FF?style=flat-square" alt="Solana">
-  <img src="https://img.shields.io/badge/Payments-x402-00D084?style=flat-square" alt="x402">
-  <img src="https://img.shields.io/badge/Trading-Phoenix_Vulcan-FF6B6B?style=flat-square" alt="Trading">
-</p>
+Curl-installable Solana-native AI coding CLI with local wallet creation and
+paper-gated perpetuals workflows.
 
-## Overview
+`clawd-code` is a headless command-line agent for generating TypeScript/Solana
+code, checking perps market workflows, creating local Solana keypairs, and
+running research/image/voice modes from one binary.
 
-**Clawd Code** is a sovereign AI coding agent that combines:
-- **Grok's** irreverent real-time reasoning via xAI's grok-4.20-multi-agent
-- **Codex's** code synthesis prowess (OpenAI-compatible API)
-- **Claude Code's** agentic coding discipline
-- **Phoenix Rise** for realtime perpetuals market data
-- **Vulcan MCP** for trade execution
-- **x402 payments** for autonomous commerce
-
-## Features
-
-| Mode | Description | Capabilities |
-|------|-------------|-------------|
-| `code` | Write, review, ship production code | Grok-powered TypeScript/Solana generation |
-| `trade` | Perpetuals trading | Phoenix Rise funding arb, Vulcan MCP execution |
-| `research` | Multi-agent deep research | grok-4.20 with 4 or 16 sub-agents |
-| `image` | Image generation | DALL-E 3, Gemini 2.0 Flash |
-| `voice` | Text-to-speech | sherpa-onnx (local), ElevenLabs, sag CLI |
-
-## Installation
+## Install
 
 ```bash
-# Clone the repository
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/clawd-code/install.sh | sh
+```
+
+The installer checks for Node.js 18+, installs the `clawd-code` binary, and
+creates `~/.clawd-code/.env` if one does not already exist.
+
+Manual install:
+
+```bash
 git clone https://github.com/Solizardking/solana-clawd.git
-cd solana-clawd/agents/clawd-code
-
-# Copy environment config
+cd solana-clawd/clawd-code
 cp .env.example ~/.clawd-code/.env
-
-# Edit ~/.clawd-code/.env with your API keys
-# - XAI_API_KEY (required for Grok)
-# - SOLANA_RPC_URL (Helius recommended)
-# - HELIUS_API_KEY (for DAS token verification)
-
-# Build
 npm install
 npm run build
-
-# Link to PATH (optional)
-ln -s $(pwd)/dist/cli.js /usr/local/bin/clawd-code
+npm link
 ```
 
 ## Quick Start
 
 ```bash
-# Code mode: Generate a Jupiter swap bot
 clawd-code code "Build a Jupiter swap bot in TypeScript"
-
-# Trade mode: Check SOL funding rate
+clawd-code wallet create
+clawd-code wallet list
+clawd-code perps
+clawd-code funding
 clawd-code trade "funding rate on SOL perps"
-
-# Research mode: Deep research with 16 agents
-clawd-code research --agents 16 "AI agent frameworks 2025"
-
-# Image mode: Generate an image
-clawd-code image "cyberpunk Solana trading desk"
-
-# Voice mode: Text-to-speech
-clawd-code voice "Clawd Code is operational"
+clawd-code research --agents 16 "Solana perps funding arb"
 ```
+
+## Commands
+
+| Command | Purpose |
+| --- | --- |
+| `clawd-code code "<prompt>"` | Generate TypeScript/Solana code |
+| `clawd-code trade "<intent>"` | Run perps market, paper trade, and position workflows |
+| `clawd-code wallet create [name]` | Create a local Solana keypair |
+| `clawd-code wallet list` | List local wallet public keys |
+| `clawd-code perps` | Show perps dashboard |
+| `clawd-code funding` | Show funding-rate dashboard |
+| `clawd-code research "<prompt>"` | Run multi-agent research |
+| `clawd-code image "<prompt>"` | Generate images when configured |
+| `clawd-code voice "<text>"` | Generate voice when configured |
+| `clawd-code verify` | Run environment checks |
+
+Slash aliases such as `clawd-code /wallet create` and `clawd-code /perps` still
+work for compatibility.
 
 ## Configuration
 
-| Environment Variable | Description | Default |
-|---------------------|-------------|---------|
-| `XAI_API_KEY` | xAI API key for Grok | Required |
+Runtime configuration lives in `~/.clawd-code/.env`. Start from
+[.env.example](./.env.example).
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `CLAWD_PROVIDER` | AI provider: `xai`, `openrouter`, or `deepseek` | `xai` |
+| `CLAWD_MODEL` | Model used by the selected provider | `grok-4.20-multi-agent` |
+| `XAI_API_KEY` | xAI API key for Grok modes | empty |
+| `DEEPSEEK_API_KEY` | DeepSeek API key | empty |
+| `OPENROUTER_API_KEY` | OpenRouter API key | empty |
 | `SOLANA_RPC_URL` | Solana RPC endpoint | mainnet-beta |
-| `HELIUS_API_KEY` | Helius API for DAS | Optional |
-| `PHOENIX_RISE_URL` | Phoenix Rise endpoint | api.phoenix.gg |
-| `VULCAN_MCP_URL` | Vulcan MCP server | localhost:3001 |
-| `LIVE_TRADING` | Enable live trading | false (paper) |
-| `CLAWD_MODE` | Default mode | code |
-| `CLAWD_AGENT_COUNT` | Research agents | 4 |
+| `HELIUS_API_KEY` | Optional Helius key for RPC/DAS workflows | empty |
+| `VULCAN_MCP_URL` | Vulcan MCP server URL | `http://localhost:3001` |
+| `LIVE_TRADING` | Enables live trading path when true | `false` |
+| `OPERATOR_CONFIRMED` | Required operator acknowledgement for live trading | `false` |
+| `PERPS_SIM_ONLY` | Keeps perps execution simulated | `true` |
 
-## Safety Gates
+Never commit `.env`, wallet files, API keys, private keys, or generated outputs.
+The repository ignore rules exclude `.env`, `.clawd/`, `node_modules/`,
+`dist/`, and `outputs/`.
 
-Live trading requires **ALL** of the following:
+## Wallets
+
+```bash
+clawd-code wallet create
+clawd-code wallet create trader-1
+clawd-code wallet list
+```
+
+Wallets are stored as Solana CLI-compatible keypair JSON files under
+`~/.clawd-code/wallets` with `0600` permissions. Treat those files like private
+keys.
+
+## Perps Safety
+
+Perps workflows default to paper mode. Live trading requires all of these:
+
 ```bash
 LIVE_TRADING=true
 OPERATOR_CONFIRMED=true
 PERPS_SIM_ONLY=false
 ```
 
-Default is paper mode — no real funds are used.
+The trade mode also applies local preflight constraints such as allowed symbols,
+maximum notional, maximum leverage, and maximum spread. Review the code and your
+configuration before enabling live execution.
 
-## Architecture
+## Development
 
+```bash
+npm install
+npm run build
+npm test
+npm audit
+npm pack --dry-run
 ```
+
+Project layout:
+
+```text
 clawd-code/
+├── install.sh
+├── package.json
+├── README.md
+├── LICENSE
+├── clawd.json
 ├── src/
-│   ├── cli.ts              # CLI entry point
-│   ├── modes/
-│   │   ├── code.ts         # CODE MODE
-│   │   ├── trade.ts        # TRADE MODE
-│   │   ├── research.ts     # RESEARCH MODE
-│   │   ├── image.ts        # IMAGE MODE
-│   │   └── voice.ts        # VOICE MODE
-│   └── x402.ts             # x402 payment client
-├── clawd.json              # Agent character definition
-├── .env.example            # Environment template
-└── README.md
+│   ├── cli.ts
+│   ├── commands.ts
+│   ├── wallet.ts
+│   └── modes/
+└── tsconfig.json
 ```
 
-## Grok Integration
+## Release Contents
 
-### Multi-Agent Research (grok-4.20-multi-agent)
+The npm package allowlist includes only:
 
-```bash
-# 4 agents (fast research)
-clawd-code research "quick summary of Solana DeFi"
+- `dist/`
+- `install.sh`
+- `README.md`
+- `LICENSE`
+- `.env.example`
+- `clawd.json`
 
-# 16 agents (deep research)
-clawd-code research --agents 16 "comprehensive DeFi landscape analysis"
-```
-
-Tools enabled: `web_search`, `x_search`, `code_execution`
-
-### Code Generation (grok-4.3)
-
-Uses OpenAI-compatible SDK with xAI base URL:
-```typescript
-import OpenAI from 'openai';
-const client = new OpenAI({
-  apiKey: process.env.XAI_API_KEY,
-  baseURL: 'https://api.x.ai/v1'
-});
-```
-
-## Trading (Phoenix Rise + Vulcan MCP)
-
-```bash
-# Check funding rates
-clawd-code trade funding
-
-# Scan markets for signals
-clawd-code trade scan
-
-# Execute paper short
-clawd-code trade short SOL $100
-
-# Arm live trading
-clawd-code trade short SOL $100 --live
-```
-
-### Preflight Checks
-Every trade runs preflight:
-- Symbol in allowlist (SOL, ETH, BTC)
-- Notional ≤ $250 cap
-- Leverage ≤ 3× cap
-- Spread ≤ 40 bps cap
-
-## Voice Synthesis
-
-```bash
-# Local TTS (sherpa-onnx, zero API cost)
-clawd-code voice "Hello from Clawd Code"
-
-# Custom voice
-clawd-code voice --voice Clawd "Your message"
-
-# Save to file
-clawd-code voice --output /tmp/output.mp3 "Text to speak"
-```
-
-## x402 Payments
-
-All Clawd Code services can be payment-gated via x402:
-
-```typescript
-import { x402 } from './src/x402.js';
-
-// Make a payment-gated request
-const result = await x402.request('/api/premium-feature', {
-  amount: 0.001,  // USDC
-  method: 'POST',
-  body: { data: 'value' }
-});
-```
+Local runtime files and secrets are intentionally excluded.
 
 ## License
 
-MIT — See [CLAWD.md](../../CLAWD.md) for the Clawd Constitution.
-
----
-
-🦞 **Clawd Code**: Grok × Codex × Claude Code — Headless. Sovereign. Solana-native.
+MIT. See [LICENSE](./LICENSE).

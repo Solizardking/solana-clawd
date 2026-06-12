@@ -23,6 +23,28 @@ export const DEFAULT_MODEL = "grok-4.3";
 
 export const MODELS: ModelDefinition[] = [
   {
+    id: "deepseek-v4-pro",
+    name: "DeepSeek V4 Pro",
+    description: "DeepSeek flagship reasoning/coding model with 1M context",
+    contextWindow: 1_000_000,
+    inputPrice: 0.435,
+    outputPrice: 0.87,
+    reasoning: true,
+    supportsClientTools: true,
+    aliases: ["deepseek/pro", "deepseek-v4-pro[1m]", "v4-pro"],
+  },
+  {
+    id: "deepseek-v4-flash",
+    name: "DeepSeek V4 Flash",
+    description: "DeepSeek fast model with 1M context and low token cost",
+    contextWindow: 1_000_000,
+    inputPrice: 0.14,
+    outputPrice: 0.28,
+    reasoning: true,
+    supportsClientTools: true,
+    aliases: ["deepseek/flash", "v4-flash", "deepseek-chat", "deepseek-reasoner"],
+  },
+  {
     id: "grok-4.3",
     name: "Grok 4.3",
     description: "xAI flagship reasoning model — best for agent tasks, code, and market analysis",

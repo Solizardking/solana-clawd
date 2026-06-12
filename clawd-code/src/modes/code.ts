@@ -6,6 +6,8 @@
 import { execSync } from 'child_process';
 import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { createXaiClient } from '../xai.js';
+import { createDeepSeekClient } from '../deepseek.js';
 
 export class CodeMode {
   constructor(private config: any) {}
@@ -15,9 +17,9 @@ export class CodeMode {
     
     console.log('\n[CODE MODE] Initiating code synthesis...\n');
     
-    if (!this.config.xaiApiKey) {
-      console.error('[CODE MODE] ERROR: XAI_API_KEY not set. Grok unavailable.');
-      console.log('Set XAI_API_KEY in ~/.clawd-code/.env to enable AI code generation.');
+    if (!this.hasConfiguredProvider()) {
+      console.error('[CODE MODE] ERROR: No API key configured for selected provider.');
+      console.log('Set XAI_API_KEY or DEEPSEEK_API_KEY in ~/.clawd-code/.env or ./clawd-code/.env.');
       return;
     }
 
@@ -47,48 +49,46 @@ export class CodeMode {
   }
 
   private async generateWithGrok(prompt: string): Promise<string> {
-    // Use OpenAI-compatible SDK with xAI base URL
-    const { spawn } = await import('child_process');
-    
     const systemPrompt = `You are Clawd Code. Ship production TypeScript/Solana code only. No prose. Just code with brief inline comments. Include imports, types, error handling. Format for .ts files.`;
 
-    const pythonCode = `
-import os
-import httpx
-from openai import OpenAI
-
-client = OpenAI(
-    api_key=os.environ.get("XAI_API_KEY", ""),
-    base_url="https://api.x.ai/v1"
-)
-
-response = client.chat.completions.create(
-    model="grok-4.3",
-    messages=[
-        {"role": "system", "content": "${systemPrompt.replace(/"/g, '\\"')}"},
-        {"role": "user", "content": "${prompt.replace(/"/g, '\\"')}"}
-    ],
-    max_tokens=4000,
-    temperature=0.7
-)
-
-print(response.choices[0].message.content)
-`;
-
     try {
-      const result = spawn('python3', ['-c', pythonCode], { 
-        env: { ...process.env, XAI_API_KEY: this.config.xaiApiKey },
-        stdio: ['pipe', 'pipe', 'pipe']
+      if (this.shouldUseDeepSeek()) {
+        const client = createDeepSeekClient(this.config.deepSeekApiKey, this.config.deepSeekBaseUrl);
+        if (!client) return this.fallbackCode(prompt);
+
+        const response = await client.chat({
+          model: this.getDeepSeekModel(),
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt },
+          ],
+          maxTokens: 4000,
+          temperature: 0.7,
+          reasoningEffort: 'high',
+          thinking: true,
+        });
+
+        return response.content || '// Code generation unavailable';
+      }
+
+      const client = createXaiClient(this.config.xaiApiKey);
+      if (!client) return this.fallbackCode(prompt);
+
+      const response = await client.chat({
+        model: this.config.model === 'grok-4.20-multi-agent' ? 'grok-4.3' : (this.config.model || 'grok-4.3'),
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt },
+        ],
+        maxTokens: 4000,
+        temperature: 0.7,
       });
-      
-      let output = '';
-      result.stdout.on('data', (data) => { output += data.toString(); });
-      
-      return new Promise((resolve) => {
-        result.on('close', () => resolve(output || '// Code generation unavailable'));
-      });
+
+      return response.content || '// Code generation unavailable';
     } catch (error) {
-      console.log('[CODE MODE] Grok unavailable, generating fallback code...');
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(`[CODE MODE] Grok unavailable: ${message}`);
+      console.log('[CODE MODE] Generating fallback code...');
       return this.fallbackCode(prompt);
     }
   }
@@ -101,5 +101,19 @@ ${prompt}
 
 export {};
 `;
+  }
+
+  private hasConfiguredProvider(): boolean {
+    if (this.shouldUseDeepSeek()) return Boolean(this.config.deepSeekApiKey);
+    return Boolean(this.config.xaiApiKey);
+  }
+
+  private shouldUseDeepSeek(): boolean {
+    return this.config.provider === 'deepseek' || String(this.config.model || '').startsWith('deepseek-');
+  }
+
+  private getDeepSeekModel(): string {
+    const model = String(this.config.model || '');
+    return model.startsWith('deepseek-') ? model : 'deepseek-v4-pro';
   }
 }

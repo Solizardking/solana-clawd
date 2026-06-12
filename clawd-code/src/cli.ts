@@ -4,43 +4,24 @@
  * World's first headless Grok × Codex × Claude Code hybrid
  */
 
-import { readFileSync } from 'fs';
-import { homedir } from 'os';
-import { join } from 'path';
 import { MODELS, printModelsTable, normalizeModelId, DEFAULT_MODEL } from './grok-models.js';
 import { HeadlessWriter } from './headless.js';
 import { EnvironmentVerifier } from './verify.js';
 import { createOpenRouterClient, OpenRouterClient, DEFAULT_FREE_MODEL } from './openrouter.js';
+import { loadClawdEnv, maskSecret } from './env.js';
 import * as C from './commands.js';
-
-const CONFIG_DIR = join(homedir(), '.clawd-code');
-const ENV_FILE = join(CONFIG_DIR, '.env');
-
-// Load environment
-function loadEnv(): Record<string, string> {
-  try {
-    const env = readFileSync(ENV_FILE, 'utf-8');
-    const vars: Record<string, string> = {};
-    for (const line of env.split('\n')) {
-      const [key, ...rest] = line.split('=');
-      if (key && !key.startsWith('#')) {
-        vars[key.trim()] = rest.join('=').trim();
-      }
-    }
-    return vars;
-  } catch {
-    return {};
-  }
-}
 
 type Mode = 'CODE' | 'TRADE' | 'RESEARCH' | 'IMAGE' | 'VOICE';
 
 interface ClawdCodeConfig {
   mode: Mode;
+  provider: 'xai' | 'openrouter' | 'deepseek';
   liveTrading: boolean;
   operatorConfirmed: boolean;
   rpcUrl: string;
   xaiApiKey: string;
+  deepSeekApiKey: string;
+  deepSeekBaseUrl: string;
   heliusApiKey: string;
   phoenixRiseUrl: string;
   vulcanMcpUrl: string;
@@ -54,19 +35,31 @@ const DEFAULT_HELIUS_RPC = process.env.HELIUS_RPC_URL ||
     : 'https://api.mainnet-beta.solana.com');
 
 function loadConfig(): ClawdCodeConfig {
-  const env = loadEnv();
+  const env = loadClawdEnv();
+  const provider = normalizeProvider(env.CLAWD_PROVIDER || process.env.CLAWD_PROVIDER || 'xai');
   return {
     mode: (env.CLAWD_MODE as Mode) || 'CODE',
+    provider,
     liveTrading: env.LIVE_TRADING === 'true',
     operatorConfirmed: env.OPERATOR_CONFIRMED === 'true',
     rpcUrl: env.SOLANA_RPC_URL || env.HELIUS_RPC_URL || process.env.SOLANA_RPC_URL || DEFAULT_HELIUS_RPC,
     xaiApiKey: env.XAI_API_KEY || process.env.XAI_API_KEY || '',
+    deepSeekApiKey: env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY || '',
+    deepSeekBaseUrl: env.DEEPSEEK_BASE_URL || process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
     heliusApiKey: env.HELIUS_API_KEY || process.env.HELIUS_API_KEY || '',
     phoenixRiseUrl: env.PHOENIX_RISE_URL || 'https://api.phoenix.gg/enclave',
     vulcanMcpUrl: env.VULCAN_MCP_URL || 'http://localhost:3001',
     agentCount: parseInt(env.CLAWD_AGENT_COUNT || '4') as 4 | 16,
     model: env.CLAWD_MODEL || 'grok-4.20-multi-agent',
   };
+}
+
+function normalizeProvider(provider: string): 'xai' | 'openrouter' | 'deepseek' {
+  const normalized = provider.toLowerCase();
+  if (normalized === 'or') return 'openrouter';
+  if (normalized === 'ds') return 'deepseek';
+  if (normalized === 'deepseek' || normalized === 'openrouter' || normalized === 'xai') return normalized;
+  return 'xai';
 }
 
 async function runCodeMode(args: string[], config: ClawdCodeConfig): Promise<void> {
@@ -127,7 +120,7 @@ GLOBAL COMMANDS:
   /models                 List all available Grok models
   /models <id>           Switch to a specific model
   /provider              Show current AI provider
-  /provider <name>       Switch to xai or openrouter
+  /provider <name>       Switch to xai, openrouter, or deepseek
 
 COMMANDS:
   clawd-code code "Build a Jupiter swap bot"
@@ -154,9 +147,11 @@ EXAMPLES:
 ENVIRONMENT:
   SOLANA_RPC_URL         Solana RPC endpoint (default: Helius)
   XAI_API_KEY            xAI API key for Grok
+  DEEPSEEK_API_KEY       DeepSeek API key for deepseek-v4-pro/flash
+  DEEPSEEK_BASE_URL      Default: https://api.deepseek.com
   OPENROUTER_API_KEY     OpenRouter API key (free models supported)
   OPENROUTER_FREE_MODEL  Default: nex-agi/nex-n2-pro:free
-  CLAWD_PROVIDER         xai (default) | openrouter
+  CLAWD_PROVIDER         xai (default) | openrouter | deepseek
   HELIUS_API_KEY         Helius API key for DAS
   PHOENIX_RISE_URL       Phoenix Rise endpoint
   VULCAN_MCP_URL         Vulcan MCP server URL
@@ -171,6 +166,7 @@ First run: cp .env.example ~/.clawd-code/.env
 }
 
 async function main(): Promise<void> {
+  loadClawdEnv();
   const args = process.argv.slice(2);
 
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
@@ -201,17 +197,19 @@ async function main(): Promise<void> {
 
   // /provider command — switch between xai and openrouter
   if (args[0] === '/provider' || args[0] === 'provider') {
-    const env = loadEnv();
-    const current = env.CLAWD_PROVIDER || 'xai';
+    const env = loadClawdEnv();
+    const current = normalizeProvider(env.CLAWD_PROVIDER || 'xai');
     if (args[1]) {
-      const target = args[1].toLowerCase();
-      if (target === 'xai' || target === 'openrouter' || target === 'or') {
-        const normalized = target === 'or' ? 'openrouter' : target;
+      const normalized = normalizeProvider(args[1]);
+      if (['xai', 'openrouter', 'deepseek'].includes(normalized)) {
         console.log(`\n[CLAWD CODE] Switched provider: ${current} -> ${normalized}`);
         console.log(`Set CLAWD_PROVIDER=${normalized} in ~/.clawd-code/.env to persist.`);
+        if (normalized === 'deepseek') {
+          console.log('Set DEEPSEEK_API_KEY=<key> and CLAWD_MODEL=deepseek-v4-pro or deepseek-v4-flash.');
+        }
       } else {
-        console.log(`\n[CLAWD CODE] Unknown provider: ${target}`);
-        console.log('Available: xai, openrouter (or: or)');
+        console.log(`\n[CLAWD CODE] Unknown provider: ${args[1]}`);
+        console.log('Available: xai, openrouter (or), deepseek (ds)');
       }
     } else {
       console.log('\n╔════════════════════════════════════════════════════════╗');
@@ -221,31 +219,47 @@ async function main(): Promise<void> {
       console.log('╠════════════════════════════════════════════════════════╣');
       console.log('║  xai         (default)  xAI Grok models                 ║');
       console.log('║  openrouter  (alt)      Free models via OpenRouter      ║');
+      console.log('║  deepseek    (alt)      deepseek-v4-pro / v4-flash      ║');
       console.log('╚════════════════════════════════════════════════════════╝');
+      console.log(`\n  grok       key=${maskSecret(env.XAI_API_KEY)}`);
+      console.log(`  deepseek   key=${maskSecret(env.DEEPSEEK_API_KEY)} baseURL=${env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com'}`);
+      console.log(`  openrouter key=${maskSecret(env.OPENROUTER_API_KEY)} baseURL=${env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1'}`);
       console.log(`\n  Default OpenRouter free model: ${DEFAULT_FREE_MODEL}`);
-      console.log('  Switch: clawd-code /provider openrouter');
+      console.log('  Switch: clawd-code /provider deepseek');
     }
     process.exit(0);
   }
 
-  // Solana-style slash commands
-  const slashCommands: Record<string, (a: string[]) => Promise<void>> = {
+  // Solana-style slash commands and install-friendly aliases
+  const directCommands: Record<string, (a: string[]) => Promise<void>> = {
     '/perps':      C.cmdPerps,
+    'perps':       C.cmdPerps,
     '/wallet':     C.cmdWallet,
+    'wallet':      C.cmdWallet,
     '/send':       C.cmdSend,
+    'send':        C.cmdSend,
     '/price':      C.cmdPrice,
+    'price':       C.cmdPrice,
     '/balance':    C.cmdBalance,
+    'balance':     C.cmdBalance,
     '/positions':  C.cmdPositions,
+    'positions':   C.cmdPositions,
     '/funding':    C.cmdFunding,
+    'funding':     C.cmdFunding,
     '/signals':    C.cmdSignals,
+    'signals':     C.cmdSignals,
     '/strategies': C.cmdStrategies,
+    'strategies':  C.cmdStrategies,
     '/agents':     C.cmdAgents,
+    'agents':      C.cmdAgents,
     '/goal':       C.cmdGoal,
+    'goal':        C.cmdGoal,
     '/help':       C.cmdHelp,
+    'help':        C.cmdHelp,
   };
 
-  if (slashCommands[args[0]]) {
-    await slashCommands[args[0]](args.slice(1));
+  if (directCommands[args[0]]) {
+    await directCommands[args[0]](args.slice(1));
     process.exit(0);
   }
 
@@ -258,6 +272,9 @@ async function main(): Promise<void> {
 
   const config = loadConfig();
   const modeArg = args[0].toLowerCase();
+  if (['code', 'trade', 'research', 'image', 'voice'].includes(modeArg)) {
+    config.mode = modeArg.toUpperCase() as Mode;
+  }
 
   // Parse global flags
   if (args.includes('--live')) {
