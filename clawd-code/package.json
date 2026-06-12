@@ -34,9 +34,7 @@
   ],
   "author": "Solizardking",
   "license": "MIT",
-  "dependencies": {
-    "@solana/web3.js": "^1.98.4"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.11.0",
     "tsx": "^4.7.0",
