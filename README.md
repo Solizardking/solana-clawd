@@ -47,7 +47,7 @@ The first non-custodial agent staking protocol on Solana. Metaplex Core agents a
 ║   O P E N C L A W D   A G E N T   S T A K I N G   P R O T O C O L     ║
 ╠══════════════════════════════════════════════════════════════════════════╣
 ║  Program ID   9f84tiYsb7RoXwzpGwo2YzhaTDgM2HhKSF9rFncG9TTP             ║
-║  Pool PDA     EyDhP1HU3yqCmqCpKkQHFuX3wMD6sJF1kK8eeRwmTr1K             ║
+║  Pool PDA     DEYfxcRB4rxFxRrWyjfzfHBS6PWYpFb8djxQrKHwe2XQ              ║
 ║  MPL Core     CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d             ║
 ║  Network      Devnet                                                     ║
 ╠══════════════════════════════════════════════════════════════════════════╣
@@ -112,6 +112,106 @@ Then ask your agent: **"Install a spinner pack"** — it'll present all availabl
 ...and 25 more: `90s-kid` · `blue-collar-dev` · `borat` · `cat` · `chaos` · `coffee` · `cowboy` · `detective` · `gardening` · `gym-bro` · `honest-no-filter` · `meme` · `michael-scott` · `minions` · `motivational` · `ninja` · `ocean` · `retro-gaming` · `sf-entrepreneur` · `shakespeare` · `superhero` · `the-dude` · `therapist` · `time-traveler` · `cowboy`
 
 Browse all packs in [`spinners/`](./spinners/) · [x402.wtf/skills](https://x402.wtf/skills)
+
+---
+
+## 🔀 ClawdRouter
+
+OpenAI-compatible LLM router for x402.wtf agents — Solana-native, wallet-authenticated, with live perpetuals market data.
+
+| Service | URL |
+| --- | --- |
+| Router | `https://clawd-router.fly.dev` |
+| x402 control plane | `https://x402.wtf` |
+| Router docs | `https://x402.wtf/router` |
+| Public relay | `https://clawd-router.fly.dev/v1/relay` |
+
+**What it does:**
+
+- Routes `clawdrouter/auto` requests through a 15-dimension local scorer (complexity, code gen, Solana domain, etc.)
+- Forwards to **OpenRouter** with `cheshireterminal.ai/terminal` attribution (55+ models, 9 providers)
+- **$CLAWD token gating** — holder tiers control model access and rate limits
+- **x402 USDC micropayments** — non-holders pay per request via Solana USDC
+- **Live perps relay** — Phoenix perpetuals mark prices, funding rates, OI, orderbook, volume, trades, PnL
+- **Birdeye integration** — CLAWD token price, overview, DeFi TVL
+
+### Endpoints
+
+| Endpoint | Auth | Description |
+| --- | --- | --- |
+| `GET /health` | Public | Router health, wallet, network, uptime, CLAWD tier |
+| `GET /v1/models` | Public | OpenAI-compatible model list (55+ models) |
+| `POST /v1/chat/completions` | `clawd_sk_...` | OpenAI-compatible chat endpoint |
+| `GET /v1/stats` | Public | Usage counters, cost/savings, per-model breakdown |
+| `GET /v1/clawd/status` | Public | Wallet CLAWD tier, balance, rate limits |
+| `GET /v1/clawd/access` | `X-Clawd-Wallet` | Check any wallet's tier and model access |
+| `GET /v1/relay` | Public | Full snapshot: Solana + Perps + x402 health |
+| `GET /v1/relay/solana` | Public | Solana RPC health, slot, epoch, TPS, supply |
+| `GET /v1/relay/perps` | Public | Phoenix markets, funding rates, OI, volume, trades, PnL |
+| `GET /v1/relay/x402` | Public | x402.wtf + Birdeye relay status |
+
+### CLAWD Token Tiers
+
+| Tier | Min $CLAWD | Rate Limit | Model Access | x402 Required |
+| --- | --- | --- | --- | --- |
+| FREE | 0 | 20/hr | budget only | Yes |
+| HOLDER | 1,000 | 100/hr | budget + mid | No |
+| DIAMOND | 100,000 | 500/hr | budget + mid + premium | No |
+| WHALE | 1,000,000 | Unlimited | All | No |
+
+### Usage
+
+```bash
+# Get an API key from https://x402.wtf/profile/api
+curl https://clawd-router.fly.dev/v1/chat/completions \
+  -H "Authorization: Bearer clawd_sk_..." \
+  -H "Content-Type: application/json" \
+  -d '{"model":"clawdrouter/auto","messages":[{"role":"user","content":"Explain Phoenix perps risk."}]}'
+```
+
+```python
+from openai import OpenAI
+client = OpenAI(base_url="https://clawd-router.fly.dev/v1", api_key="clawd_sk_...")
+response = client.chat.completions.create(
+    model="clawdrouter/auto",
+    messages=[{"role": "user", "content": "Write a Solana agent plan"}],
+)
+```
+
+```bash
+# Live perps relay
+curl https://clawd-router.fly.dev/v1/relay/perps | jq '.phoenix.markets.body[0:3]'
+
+# Unauthenticated calls return 401 authentication_required
+curl -i https://clawd-router.fly.dev/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"clawdrouter/auto","messages":[{"role":"user","content":"hello"}]}'
+```
+
+### Local Development
+
+```bash
+cd clawdrouter
+npm install && npm run build && npm run dev
+# Without x402 control plane:
+CLAWDROUTER_AUTH_MODE=local npm run dev
+```
+
+### Fly.io Deployment
+
+```bash
+cd clawdrouter && npm run build
+fly deploy --config fly.toml --remote-only
+
+fly secrets set --app clawd-router \
+  OPENROUTER_API_KEY=... \
+  HELIUS_API_KEY=... \
+  HELIUS_RPC_URL=... \
+  BIRDEYE_API_KEY=... \
+  CLAWDROUTER_INTERNAL_SECRET=...
+```
+
+Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/api](https://x402.wtf/profile/api)
 
 ---
 
@@ -485,7 +585,7 @@ Public read-only routes stay open for browsing agents, skills, staking status, e
 └────────────────────────┴───────────────────────────────────────────┘
 ```
 
-### Endpoints
+### Library Endpoints
 
 | Method | URL | What it returns |
 |---|---|---|
