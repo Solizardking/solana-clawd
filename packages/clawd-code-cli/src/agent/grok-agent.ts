@@ -291,8 +291,8 @@ Current working directory: ${process.cwd()}`,
         tools,
         undefined,
         this.isGrokModel() && this.shouldUseSearchFor(message)
-          ? { search_parameters: { mode: "auto" } }
-          : { search_parameters: { mode: "off" } }
+          ? { searchMode: "auto" }
+          : { searchMode: "off" }
       );
 
       // Agent loop - continue until no more tool calls or max rounds reached
@@ -387,8 +387,8 @@ Current working directory: ${process.cwd()}`,
             tools,
             undefined,
             this.isGrokModel() && this.shouldUseSearchFor(message)
-              ? { search_parameters: { mode: "auto" } }
-              : { search_parameters: { mode: "off" } }
+              ? { searchMode: "auto" }
+              : { searchMode: "off" }
           );
         } else {
           // No more tool calls, add final response
@@ -511,8 +511,8 @@ Current working directory: ${process.cwd()}`,
           tools,
           undefined,
           this.isGrokModel() && this.shouldUseSearchFor(message)
-            ? { search_parameters: { mode: "auto" } }
-            : { search_parameters: { mode: "off" } }
+            ? { searchMode: "auto" }
+            : { searchMode: "off" }
         );
         let accumulatedMessage: any = {};
         let accumulatedContent = "";

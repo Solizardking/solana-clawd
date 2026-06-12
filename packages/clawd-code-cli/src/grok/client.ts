@@ -31,7 +31,7 @@ export interface SearchParameters {
 }
 
 export interface SearchOptions {
-  search_parameters?: SearchParameters;
+  searchMode?: SearchParameters["mode"];
 }
 
 export interface GrokResponse {
@@ -149,7 +149,7 @@ export class GrokClient {
       const activeModel = model || this.currentModel;
       // Use Agent Tools API (web_search + x_search) for Grok models when search is enabled.
       // The old `search_parameters` is deprecated (returns 410).
-      const useSearch = searchOptions?.search_parameters?.mode !== "off";
+      const useSearch = searchOptions?.searchMode !== "off";
       const allTools = [...(tools || [])];
       if (useSearch && !this.isOpenRouterModel(activeModel) && activeModel.startsWith("grok")) {
         allTools.push({ type: "web_search" } as any);
@@ -189,7 +189,7 @@ export class GrokClient {
     try {
       const activeModel = model || this.currentModel;
       // Use Agent Tools API (web_search + x_search) for Grok models when search is enabled.
-      const useSearch = searchOptions?.search_parameters?.mode !== "off";
+      const useSearch = searchOptions?.searchMode !== "off";
       const allTools = [...(tools || [])];
       if (useSearch && !this.isOpenRouterModel(activeModel) && activeModel.startsWith("grok")) {
         allTools.push({ type: "web_search" } as any);
@@ -232,7 +232,7 @@ export class GrokClient {
     };
 
     const searchOptions: SearchOptions = {
-      search_parameters: searchParameters || { mode: "on" },
+      searchMode: searchParameters?.mode || "on",
     };
 
     return this.chat([searchMessage], [], undefined, searchOptions);
