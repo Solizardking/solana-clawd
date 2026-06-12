@@ -421,9 +421,11 @@
           <label class="setting-label">MawdAxe API Key</label>
           <input type="password" class="setting-input" id="settingMawdaxeKey" placeholder="(optional)">
           <label class="setting-label">OpenRouter API Key</label>
-          <input type="password" class="setting-input" id="settingOrKey" placeholder="sk-or-v1-...">
-          <label class="setting-label">AI Model</label>
-          <input type="text" class="setting-input" id="settingOrModel" placeholder="anthropic/claude-sonnet-4-6" value="anthropic/claude-sonnet-4-6">
+          <input type="password" class="setting-input" id="settingOrKey" placeholder="sk-or-v1-... (free at openrouter.ai)">
+          <label class="setting-label">AI Model (free models need no credits)</label>
+          <select class="setting-input" id="settingOrModel">
+            <!-- Options populated by popup.js from OR_FREE_MODELS -->
+          </select>
           <button class="save-btn" id="saveSettings">Save Settings</button>
           <div class="setting-note">Start OpenClawd daemon locally. Connect to hub.solanaclawd.com or run local.</div>
       </div>

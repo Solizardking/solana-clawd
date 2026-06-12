@@ -50,7 +50,7 @@ curl -X POST "https://api.pinata.cloud/pinning/pinJSONToIPFS" \
 # {
 #   "name": "MawdBot summarizer",
 #   "description": "Condenses Solana memecoin research into one-liners.",
-#   "url": "https://x402.wtf/a2a/<agent-id>",
+#   "url": "https://solanaclawd.com/x402/a2a/<agent-id>",
 #   "version": "1.0.0",
 #   "skills": [{ "id": "summarize", "name": "Summarize", "description": "..." }],
 #   "pricing": { "summarize": { "amount": "50000", "asset": "EPjF...", "protocols": ["x402","mpp"] } }
@@ -67,7 +67,7 @@ const caller = Keypair.fromSecretKey(/* caller's wallet */);
 const conn = new Connection(process.env.HELIUS_RPC!);
 
 const res = await clawdFetch(
-  `https://x402.wtf/a2a/${AGENT_ID}`,
+  `https://solanaclawd.com/x402/a2a/${AGENT_ID}`,
   {
     method: "POST",
     headers: { "content-type": "application/json" },

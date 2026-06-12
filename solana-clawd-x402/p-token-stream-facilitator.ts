@@ -16,7 +16,7 @@
  *   → 1% overhead. Per-token billing is now real.
  *
  * How it works:
- *   1. Agent opens a stream against x402.wtf
+ *   1. Agent opens a stream against pay.solanaclawd.com
  *   2. Facilitator issues a METER challenge: price-per-token rate
  *   3. Agent pre-authorises a max spend (e.g. 0.10 USDC for 1000 tokens)
  *   4. Inference runs. Tokens stream back.
@@ -210,7 +210,7 @@ export class PTokenStreamFacilitator {
       settleBatchSize: this.batchSize,
       tokenProgram: P_TOKEN_PROGRAM_ID.toBase58(),
       cuPerTransfer: P_TOKEN_CU.transferChecked,
-      facilitator: process.env['PAYSH_RELAY_URL'] ?? 'https://x402.wtf/relay/v1',
+      facilitator: process.env['PAYSH_RELAY_URL'] ?? 'https://pay.solanaclawd.com/relay/v1',
       nonce: bs58.encode(crypto.getRandomValues(new Uint8Array(16))),
     };
   }

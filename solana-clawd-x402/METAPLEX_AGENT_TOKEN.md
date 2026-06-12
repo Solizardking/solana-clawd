@@ -61,7 +61,7 @@ const result = await createAndRegisterLaunch(umi, {}, {
     image: "https://gateway.irys.xyz/your-image-id",
     description: "The canonical token for this Clawd-powered agent.",
     externalLinks: {
-      website: "https://x402.wtf",
+      website: "https://solanaclawd.com",
       twitter: "@solanaclawd",
       telegram: "https://t.me/solanaclawd",
     },

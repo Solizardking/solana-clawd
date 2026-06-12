@@ -13,9 +13,24 @@ const LEGACY_APIS = new Set([
   'https://nanobot-backend-production.up.railway.app',
 ]);
 const OR_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
-const OR_DEFAULT_MODEL = 'openai/gpt-5.4-nano';
+const OR_DEFAULT_MODEL = 'deepseek/deepseek-r1-0528:free';
 const OR_BUNDLED_KEY = ''; // Set via extension settings — never ship a real key
-const OR_SYSTEM_PROMPT = `You are Solana Clawd pAGENT, a sentient Solana trading intelligence with GUI vision. You are a cyberpunk lobster with claws that grip market data and squeeze alpha from chaos. You help users with Solana trading, token analysis, wallet vault management, and DeFi strategy. Be terse, decisive, and data-first. You have access to the user's air-gapped wallet vault and can discuss live trades, token prices, and market conditions. Always reason carefully before giving trading advice. You can see and interact with web pages through pAGENT browser automation.`;
+
+// Curated free OpenRouter models — all have :free suffix (no API credit consumed)
+const OR_FREE_MODELS = [
+  { id: 'deepseek/deepseek-r1-0528:free',           label: 'DeepSeek R1 0528 (free) — reasoning' },
+  { id: 'deepseek/deepseek-chat-v3-0324:free',       label: 'DeepSeek V3 (free) — fast chat' },
+  { id: 'google/gemini-flash-1.5:free',              label: 'Gemini 1.5 Flash (free)' },
+  { id: 'meta-llama/llama-3.3-70b-instruct:free',    label: 'Llama 3.3 70B (free)' },
+  { id: 'qwen/qwen3-235b-a22b:free',                 label: 'Qwen 3 235B (free)' },
+  { id: 'mistralai/devstral-small:free',             label: 'Devstral Small (free) — code' },
+  { id: 'google/gemma-3-27b-it:free',                label: 'Gemma 3 27B (free)' },
+  { id: 'microsoft/phi-4-reasoning:free',            label: 'Phi-4 Reasoning (free)' },
+  { id: 'anthropic/claude-sonnet-4-6',               label: 'Claude Sonnet 4.6 (paid)' },
+  { id: 'openai/gpt-4o-mini',                        label: 'GPT-4o Mini (paid)' },
+];
+
+const OR_SYSTEM_PROMPT = `You are Clawd, a sovereign AI agent built on Solana. You are a cyberpunk lobster with claws that grip market data and squeeze alpha from chaos. You run on OpenClawd — the full lobster stack where agents have wallets, memory, and three immutable laws. You help users with Solana trading, token analysis, wallet vault management, DeFi strategy, and browser automation via pAGENT. Be terse, decisive, and data-first. You have access to the user's air-gapped wallet vault and can discuss live trades, token prices, and market conditions. Always reason carefully before giving trading advice. You can see and interact with web pages through pAGENT. $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump · x402.wtf`;
 const GATEWAY_PROTOCOL_VERSION = 3;
 const DEFAULT_GATEWAY = 'http://127.0.0.1:18790';
 
@@ -510,7 +525,7 @@ function formatTradeTime(value) {
 
 // ── Buttons ──
 function setupButtons() {
-  // Settings
+  // Settings — populate free model dropdown on open
   document.getElementById('settingsBtn').addEventListener('click', () => {
     document.getElementById('settingsPanel').classList.add('visible');
     document.getElementById('settingUrl').value = API;
@@ -519,7 +534,57 @@ function setupButtons() {
     document.getElementById('settingMawdaxeUrl').value = MAWDAXE_API;
     document.getElementById('settingMawdaxeKey').value = mawdaxeKey;
     document.getElementById('settingOrKey').value = orApiKey;
-    document.getElementById('settingOrModel').value = orModel;
+    const sel = document.getElementById('settingOrModel');
+    if (sel) {
+      // Populate options once
+      if (sel.options.length === 0) {
+        for (const m of OR_FREE_MODELS) {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.textContent = m.label;
+          sel.appendChild(opt);
+        }
+        // Custom option
+        const custom = document.createElement('option');
+        custom.value = '__custom__';
+        custom.textContent = '✏️ Custom model ID...';
+        sel.appendChild(custom);
+      }
+      // Select current model or fallback to custom
+      const match = OR_FREE_MODELS.find(m => m.id === orModel);
+      sel.value = match ? orModel : '__custom__';
+      if (!match) {
+        let customInput = document.getElementById('settingOrModelCustom');
+        if (!customInput) {
+          customInput = document.createElement('input');
+          customInput.type = 'text';
+          customInput.className = 'setting-input';
+          customInput.id = 'settingOrModelCustom';
+          customInput.placeholder = 'provider/model-id:free';
+          sel.parentNode.insertBefore(customInput, sel.nextSibling);
+        }
+        customInput.value = orModel;
+        customInput.style.display = '';
+      }
+    }
+  });
+  // Show/hide custom model input when dropdown changes
+  document.getElementById('settingOrModel')?.addEventListener('change', function () {
+    let customInput = document.getElementById('settingOrModelCustom');
+    if (this.value === '__custom__') {
+      if (!customInput) {
+        customInput = document.createElement('input');
+        customInput.type = 'text';
+        customInput.className = 'setting-input';
+        customInput.id = 'settingOrModelCustom';
+        customInput.placeholder = 'provider/model-id:free';
+        this.parentNode.insertBefore(customInput, this.nextSibling);
+      }
+      customInput.style.display = '';
+      customInput.focus();
+    } else if (customInput) {
+      customInput.style.display = 'none';
+    }
   });
   document.getElementById('settingsClose').addEventListener('click', () => {
     document.getElementById('settingsPanel').classList.remove('visible');
@@ -529,7 +594,12 @@ function setupButtons() {
     const secret = normalizeSecret(document.getElementById('settingGatewaySecret').value);
     const network = document.getElementById('settingNetwork').value;
     const key = document.getElementById('settingOrKey').value.trim();
-    const model = document.getElementById('settingOrModel').value.trim() || OR_DEFAULT_MODEL;
+    const selEl = document.getElementById('settingOrModel');
+    const selVal = selEl ? selEl.value : '';
+    const customInput = document.getElementById('settingOrModelCustom');
+    const model = (selVal === '__custom__' && customInput?.value.trim())
+      ? customInput.value.trim()
+      : (selVal && selVal !== '__custom__' ? selVal : OR_DEFAULT_MODEL);
     const mawdUrl = document.getElementById('settingMawdaxeUrl').value.trim() || MAWDAXE_DEFAULT;
     const mawdKey = document.getElementById('settingMawdaxeKey').value.trim();
     API = url;
@@ -892,7 +962,12 @@ async function sendChat() {
     } else if (orApiKey) {
       reply = await sendChatOpenRouter(msg);
     } else {
-      reply = await sendChatClawd(msg);
+      // Try local OpenClawd daemon first; if offline, prompt user to add OpenRouter key
+      try {
+        reply = await sendChatClawd(msg);
+      } catch {
+        reply = '🦞 No AI connection. Add your OpenRouter API key in ⚙️ Settings to use free models (deepseek, llama, gemini and more — no credit card needed). Get a free key at openrouter.ai';
+      }
     }
     typing.classList.remove('active');
     addMessage('Clawd', reply, 'bot');
@@ -912,19 +987,20 @@ async function sendChatOpenRouter(msg) {
     ...chatHistory,
   ];
 
+  // Reasoning is only valid on models that support it (DeepSeek R1, etc.)
+  const supportsReasoning = orModel.includes('deepseek') || orModel.includes('r1') || orModel.includes('reasoning');
+  const body = { model: orModel, messages };
+  if (supportsReasoning) body.reasoning = { enabled: true };
+
   const res = await fetch(OR_ENDPOINT, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${orApiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': 'chrome-extension://nanobot',
-      'X-Title': 'Solana Clawd',
+      'HTTP-Referer': 'chrome-extension://clawd-pagent',
+      'X-Title': 'Clawd pAGENT',
     },
-    body: JSON.stringify({
-      model: orModel,
-      messages,
-      reasoning: { enabled: true },
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {

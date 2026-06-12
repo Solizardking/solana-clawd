@@ -8,7 +8,7 @@
  *      in the PAYMENT-RESPONSE header so both sides have a tamper-evident
  *      record of the transaction.
  *
- * Served via the custom gateway at ipfs.x402.wtf/{cid}.
+ * Served via the custom gateway at ipfs.solanaclawd.com/{cid}.
  */
 
 import type { Env } from "../types";

@@ -114,6 +114,53 @@ export class InvokeError extends Error {
 
 // ─── Config ─────────────────────────────────────────────────────────
 
+// ─── OpenRouter ──────────────────────────────────────────────────────
+
+export const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
+
+/** Free OpenRouter models — :free suffix, no credits consumed */
+export const OPENROUTER_FREE_MODELS = [
+  'deepseek/deepseek-r1-0528:free',
+  'deepseek/deepseek-chat-v3-0324:free',
+  'google/gemini-flash-1.5:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'qwen/qwen3-235b-a22b:free',
+  'mistralai/devstral-small:free',
+  'google/gemma-3-27b-it:free',
+  'microsoft/phi-4-reasoning:free',
+] as const
+
+export type OpenRouterFreeModel = (typeof OPENROUTER_FREE_MODELS)[number]
+
+/**
+ * Create an LLMConfig pre-wired for OpenRouter.
+ * Injects HTTP-Referer and X-Title headers required for OpenRouter attribution.
+ */
+export function createOpenRouterConfig(
+  apiKey: string,
+  model: string = 'deepseek/deepseek-r1-0528:free',
+  options: Partial<LLMConfig> = {},
+): LLMConfig {
+  const orHeaders: Record<string, string> = {
+    'HTTP-Referer': 'https://x402.wtf',
+    'X-Title': 'Clawd pAGENT',
+  }
+  const baseFetch = options.customFetch ?? globalThis.fetch
+  return {
+    baseURL: OPENROUTER_BASE_URL,
+    model,
+    apiKey,
+    ...options,
+    customFetch: (url: RequestInfo | URL, init?: RequestInit) =>
+      baseFetch(url, {
+        ...init,
+        headers: { ...orHeaders, ...(init?.headers ?? {}) },
+      }),
+  }
+}
+
+// ─── Config ──────────────────────────────────────────────────────────
+
 export function parseLLMConfig(config: LLMConfig): Required<LLMConfig> {
   return {
     baseURL: config.baseURL,

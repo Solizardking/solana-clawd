@@ -13,6 +13,10 @@ import { createAgentCommand } from "./commands/agent.js";
 import { createCharacterCommand } from "./commands/character.js";
 import { createOpenRouterCommand } from "./commands/openrouter.js";
 import { createPreviewCommand } from "./commands/preview.js";
+import { createCloudCommand } from "./commands/cloud.js";
+import { createSkillsCommand } from "./commands/skills.js";
+import { createAttestCommand } from "./commands/attest.js";
+import { createNodeCommand, createMarketplaceCommand, createPayCommand } from "./commands/node.js";
 import type { ChatCompletionMessageParam } from "openai/resources/chat";
 
 // Load environment variables
@@ -380,5 +384,19 @@ program.addCommand(createOpenRouterCommand());
 
 // Repo / GitHub preview command
 program.addCommand(createPreviewCommand());
+
+// Cloud OS — service management, doctor, setup, paths, env
+program.addCommand(createCloudCommand());
+
+// Skills — ClawdHub skill catalog
+program.addCommand(createSkillsCommand());
+
+// Attestation — SAS on-chain attestations
+program.addCommand(createAttestCommand());
+
+// Node, Marketplace, Pay
+program.addCommand(createNodeCommand());
+program.addCommand(createMarketplaceCommand());
+program.addCommand(createPayCommand());
 
 program.parse();
