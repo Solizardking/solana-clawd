@@ -1,56 +1,17 @@
-<!-- ╔══════════════════════════════════════════════════════╗ -->
-<!-- ║  ooda/ — OODA loop decision framework               ║ -->
-<!-- ╚══════════════════════════════════════════════════════╝ -->
+# OODA
 
-<div align="center">
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=18&duration=1700&pause=350&color=FFD166&center=true&vCenter=true&width=900&lines=observe+%E2%86%92+orient+%E2%86%92+decide+%E2%86%92+act;market+loop+state+and+TUI+for+agent+control" alt="OODA animated header" />
+</p>
 
-```
-  ___   ___  ____   ____
- / _ \ / _ \|  _ \ / _  |
-| | | | | | | | | | |_| |
-| |_| | |_| | |_| |  _  |
- \___/ \___/|____/|_| |_|
+`ooda/` is the local observe-orient-decide-act loop that powers agent pulse checks, journals, and optional TUI output.
 
-SENSE → THINK → STRIKE → DRIFT
-```
-
-**OODA Loop — Observe · Orient · Decide · Act**
-
-</div>
-
----
-
-## What it does
-
-The `ooda/` directory contains the OODA loop decision framework used by OpenClawd agents. Every agent action passes through the OODA cycle:
-
-```
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│   OBSERVE → ORIENT → DECIDE → ACT → [repeat]       │
-│                                                     │
-│   · Observe  — Helius RPC, Birdeye, market data     │
-│   · Orient   — LLM reasoning, risk assessment       │
-│   · Decide   — Policy gates, paper-first mode       │
-│   · Act      — Execute or drift to next cycle       │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
-
-## Key files
-
-| File | Description |
-|---|---|
-| `ore-v3-smart-mining.md` | ORE v3 smart mining strategy using OODA loop |
-
-## Run a demo
+## Quickstart
 
 ```bash
-npm run demo:ooda
-# or
 npm run ooda
+npm run ooda:tui
+npm run demo:ooda
 ```
 
----
-
-> See also: [examples/ooda-loop.ts](../examples/) · [src/engine/](../src/engine/) · MIT
+The journal under `ooda/journal/` is local operational state. Review it before committing if you run long live sessions.
