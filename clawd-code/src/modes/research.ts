@@ -4,6 +4,7 @@
  */
 
 import { createXaiClient, type XaiTextResponse } from '../xai.js';
+import { createDeepSeekClient } from '../deepseek.js';
 
 export class ResearchMode {
   constructor(private config: any) {}
@@ -16,8 +17,9 @@ export class ResearchMode {
     console.log(`[RESEARCH MODE] Agent Count: ${this.config.agentCount}`);
     console.log(`[RESEARCH MODE] Query: ${query}`);
     
-    if (!this.config.xaiApiKey) {
-      console.error('\n[RESEARCH MODE] ERROR: XAI_API_KEY not set');
+    if (!this.hasConfiguredProvider()) {
+      console.error('\n[RESEARCH MODE] ERROR: No API key configured for selected provider');
+      console.error('[RESEARCH MODE] Set XAI_API_KEY or DEEPSEEK_API_KEY in ~/.clawd-code/.env or ./clawd-code/.env');
       return;
     }
 
@@ -48,6 +50,33 @@ export class ResearchMode {
 
   private async runMultiAgentResearch(query: string): Promise<XaiTextResponse> {
     try {
+      if (this.shouldUseDeepSeek()) {
+        const client = createDeepSeekClient(this.config.deepSeekApiKey, this.config.deepSeekBaseUrl);
+        if (!client) {
+          return { content: 'Research unavailable: DEEPSEEK_API_KEY is not set.', citations: [] };
+        }
+
+        const response = await client.chat({
+          model: this.getDeepSeekModel(),
+          reasoningEffort: this.config.agentCount === 16 ? 'high' : 'medium',
+          thinking: true,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are Clawd Research. Produce concise, source-aware technical research. If live data is needed, say what must be verified externally.',
+            },
+            {
+              role: 'user',
+              content: query,
+            },
+          ],
+          maxTokens: 6000,
+          temperature: 0.2,
+        });
+
+        return { content: response.content, citations: [] };
+      }
+
       const client = createXaiClient(this.config.xaiApiKey);
       if (!client) {
         return { content: 'Multi-agent research unavailable: XAI_API_KEY is not set.', citations: [] };
@@ -72,5 +101,19 @@ export class ResearchMode {
       const message = error instanceof Error ? error.message : String(error);
       return { content: `Multi-agent research unavailable: ${message}`, citations: [] };
     }
+  }
+
+  private hasConfiguredProvider(): boolean {
+    if (this.shouldUseDeepSeek()) return Boolean(this.config.deepSeekApiKey);
+    return Boolean(this.config.xaiApiKey);
+  }
+
+  private shouldUseDeepSeek(): boolean {
+    return this.config.provider === 'deepseek' || String(this.config.model || '').startsWith('deepseek-');
+  }
+
+  private getDeepSeekModel(): string {
+    const model = String(this.config.model || '');
+    return model.startsWith('deepseek-') ? model : 'deepseek-v4-pro';
   }
 }
