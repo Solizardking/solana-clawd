@@ -143,6 +143,7 @@
     "dev:web": "vite",
     "test": "pnpm exec vitest run \"src/**/*.{test,spec}.ts\" --passWithNoTests",
     "clean": "rm -rf dist",
+    "tui": "npx tsx tui/start.ts",
     "prepublishOnly": "npm run build && npm run library:build",
     "check": "tsc -p tsconfig.runtime.json --noEmit",
     "hub": "clawd-hub start --open",
