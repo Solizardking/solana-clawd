@@ -241,6 +241,7 @@
     "pump:preflight": "cd clawd-pump && ./scripts/preflight.sh",
     "pump:status": "cd clawd-pump && ./scripts/status.sh",
     "pump:control": "cd clawd-pump && ./scripts/bot_control.sh",
+    "pump:safe-defaults": "cd clawd-pump && ./scripts/apply_safe_defaults.sh",
     "pump:arm": "cd clawd-pump && ./scripts/arm_live.sh",
     "pump:disarm": "cd clawd-pump && ./scripts/disarm_live.sh",
     "pump:service:systemd": "cd clawd-pump && ./scripts/render_service.sh systemd copy",
