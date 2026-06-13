@@ -86,11 +86,8 @@ required="$(
 
 balance_output="/tmp/clawd-pump-solana-balance.log"
 balance=""
-if solana balance --url "$rpc_http" "$address" >"$balance_output" 2>&1; then
-  balance="$(awk '{print $1; exit}' "$balance_output")"
-fi
-
-if [[ -z "$balance" ]] && command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+query_error=""
+if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   rpc_payload="/tmp/clawd-pump-balance-rpc-payload.json"
   rpc_response="/tmp/clawd-pump-balance-rpc-response.json"
   jq -n --arg address "$address" \
@@ -98,16 +95,27 @@ if [[ -z "$balance" ]] && command -v curl >/dev/null 2>&1 && command -v jq >/dev
   if curl -fsS \
     --header "content-type: application/json" \
     --data-binary @"$rpc_payload" \
-    "$rpc_http" >"$rpc_response" 2>>"$balance_output"; then
+    "$rpc_http" >"$rpc_response" 2>"$balance_output"; then
     lamports="$(jq -r '.result.value // empty' "$rpc_response")"
     if [[ -n "$lamports" ]]; then
       balance="$(awk -v lamports="$lamports" 'BEGIN { printf "%.9f", lamports / 1000000000 }')"
     fi
+  else
+    query_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-180)"
+  fi
+fi
+
+if [[ -z "$balance" ]] && command -v solana >/dev/null 2>&1; then
+  if solana balance --url "$rpc_http" "$address" >"$balance_output" 2>&1; then
+    balance="$(awk '{print $1; exit}' "$balance_output")"
+  else
+    cli_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-180)"
+    query_error="${query_error:+${query_error}; }${cli_error}"
   fi
 fi
 
 if [[ -z "$balance" ]]; then
-  fail_out "unable to parse SOL balance" "$address" "" "$required"
+  fail_out "unable to query SOL balance${query_error:+ ($query_error)}" "$address" "" "$required"
 fi
 
 if awk -v b="$balance" -v r="$required" 'BEGIN { exit !(b + 0 >= r + 0) }'; then

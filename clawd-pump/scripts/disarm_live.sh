@@ -15,10 +15,16 @@ cp "$ENV_FILE" "$backup"
 
 tmp="$(mktemp)"
 awk \
-  -v keys="LIVE_TRADING_ENABLED,PUMP_DRY_RUN,AUTO_BUY_ENABLED" \
+  -v keys="LIVE_TRADING_ENABLED,PUMP_DRY_RUN,AUTO_BUY_ENABLED,MAX_TRADE_SOL,MIN_RESERVE_SOL,COUNTER_LIMIT,RISK_MANAGEMENT_ENABLED,RISK_TARGET_TOKEN_THRESHOLD,RISK_CHECK_INTERVAL_MINUTES" \
   -v live_trading_enabled="false" \
   -v pump_dry_run="true" \
   -v auto_buy_enabled="false" \
+  -v max_trade_sol="${MAX_TRADE_SOL_VALUE:-0.01}" \
+  -v min_reserve_sol="${MIN_RESERVE_SOL_VALUE:-0.05}" \
+  -v counter_limit="${COUNTER_LIMIT_VALUE:-10}" \
+  -v risk_management_enabled="true" \
+  -v risk_target_token_threshold="${RISK_TARGET_TOKEN_THRESHOLD_VALUE:-1000}" \
+  -v risk_check_interval_minutes="${RISK_CHECK_INTERVAL_MINUTES_VALUE:-10}" \
 '
 BEGIN {
   key_count = split(keys, order, ",")
@@ -26,6 +32,12 @@ BEGIN {
   values["LIVE_TRADING_ENABLED"] = live_trading_enabled
   values["PUMP_DRY_RUN"] = pump_dry_run
   values["AUTO_BUY_ENABLED"] = auto_buy_enabled
+  values["MAX_TRADE_SOL"] = max_trade_sol
+  values["MIN_RESERVE_SOL"] = min_reserve_sol
+  values["COUNTER_LIMIT"] = counter_limit
+  values["RISK_MANAGEMENT_ENABLED"] = risk_management_enabled
+  values["RISK_TARGET_TOKEN_THRESHOLD"] = risk_target_token_threshold
+  values["RISK_CHECK_INTERVAL_MINUTES"] = risk_check_interval_minutes
 }
 {
   line = $0

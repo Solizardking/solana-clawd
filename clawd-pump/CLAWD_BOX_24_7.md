@@ -206,6 +206,8 @@ Preflight Box credentials and MCP wiring without printing secret values or creat
 npm run box:pump:preflight -- --bootstrap-local-mcp
 ```
 
+`BOX_KEY` is accepted as an alias for `UPSTASH_BOX_API_KEY`. If a Box key is present and no direct model key is set, the launcher uses Upstash-managed model auth by default.
+
 Require both Box credentials and local live trading readiness:
 
 ```bash
@@ -240,7 +242,7 @@ Or bootstrap this repo's MCP server inside the Box:
 npm run box:pump -- --bootstrap-local-mcp --keep-alive --no-delete
 ```
 
-The Box launcher loads `clawd-pump/.env` into an allowlist before creating the Box, so RPC/API keys can reach the MCP server without printing them. By default the box agent is observation/transaction-builder oriented and does not forward signing keys. Passing a private key into a remote box requires both:
+The Box launcher loads `.env`, `.env.local`, and `clawd-pump/.env` into an allowlist before creating the Box, so RPC/API keys can reach the MCP server without printing them. By default the box agent is observation/transaction-builder oriented and does not forward signing keys. Passing a private key into a remote box requires both:
 
 ```bash
 --include-private-key
