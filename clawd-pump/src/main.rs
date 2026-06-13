@@ -59,7 +59,11 @@ mod http_server;
 
 use anchor_client::solana_sdk::signature::Signer;
 use solana_vntr_sniper::{
-    common::{config::Config, constants::RUN_MSG, cache::WALLET_TOKEN_ACCOUNTS},
+    common::{
+        config::{create_nonblocking_rpc_client, import_wallet, Config},
+        constants::RUN_MSG,
+        cache::WALLET_TOKEN_ACCOUNTS,
+    },
     engine::{
         copy_trading::{start_copy_trading, CopyTradingConfig},
         swap::SwapProtocol,
@@ -81,6 +85,7 @@ use serde::{Deserialize, Serialize};
 use reqwest;
 use std::collections::HashMap;
 use base64;
+use dotenv::dotenv;
 use tokio::time::{sleep, Duration};
 
 // Constants
@@ -688,6 +693,70 @@ fn env_flag(key: &str, default: bool) -> bool {
         .unwrap_or(default)
 }
 
+fn live_trading_enabled() -> bool {
+    env_flag("LIVE_TRADING_ENABLED", false) && !env_flag("PUMP_DRY_RUN", true)
+}
+
+fn require_live_trading(action: &str) -> Result<(), String> {
+    if live_trading_enabled() {
+        Ok(())
+    } else {
+        Err(format!(
+            "{} blocked: set LIVE_TRADING_ENABLED=true and PUMP_DRY_RUN=false only after funding a limited hot wallet and accepting live trading risk",
+            action
+        ))
+    }
+}
+
+fn require_trade_amount_within_limit(amount_sol: f64, action: &str) -> Result<(), String> {
+    let max_trade_sol = env_f64("MAX_TRADE_SOL", 0.01);
+    if amount_sol <= 0.0 {
+        return Err(format!("{} blocked: amount must be positive", action));
+    }
+    if amount_sol > max_trade_sol {
+        return Err(format!(
+            "{} blocked: amount {} SOL exceeds MAX_TRADE_SOL={} SOL",
+            action, amount_sol, max_trade_sol
+        ));
+    }
+    Ok(())
+}
+
+async fn print_wallet_info(check_balance: bool) -> Result<(), String> {
+    dotenv().ok();
+    let wallet = std::panic::catch_unwind(import_wallet)
+        .map_err(|_| "failed to load PRIVATE_KEY from .env".to_string())?
+        .map_err(|e| format!("failed to import wallet: {}", e))?;
+    let pubkey = wallet.pubkey();
+
+    println!("Funding address: {}", pubkey);
+    println!("Private key: set (not displayed)");
+
+    if !check_balance {
+        println!("SOL balance: skipped (pass --with-balance to query RPC)");
+        return Ok(());
+    }
+
+    match create_nonblocking_rpc_client().await {
+        Ok(rpc_client) => match tokio::time::timeout(Duration::from_secs(5), rpc_client.get_balance(&pubkey)).await {
+            Ok(Ok(lamports)) => {
+                println!("SOL balance: {:.9}", lamports as f64 / 1_000_000_000_f64);
+            }
+            Ok(Err(err)) => {
+                println!("SOL balance: unavailable ({})", err);
+            }
+            Err(_) => {
+                println!("SOL balance: unavailable (RPC request timed out)");
+            }
+        },
+        Err(err) => {
+            println!("SOL balance: unavailable ({})", err);
+        }
+    }
+
+    Ok(())
+}
+
 fn env_u64(key: &str, default: u64) -> u64 {
     std::env::var(key)
         .ok()
@@ -712,6 +781,8 @@ async fn run_autobuy_loop(config: &Config) -> Result<(), String> {
     let interval_seconds = env_u64("AUTO_BUY_INTERVAL_SECONDS", 60);
     let startup_delay_seconds = env_u64("AUTO_BUY_STARTUP_DELAY_SECONDS", 0);
     let max_buys = env_u64("AUTO_BUY_MAX_BUYS", 0);
+
+    require_trade_amount_within_limit(amount_sol, "autobuy")?;
 
     logger.log(format!(
         "Starting automated buys for {} using RPC_HTTP with amount {} SOL every {}s",
@@ -794,6 +865,15 @@ async fn run_autobuy_loop(config: &Config) -> Result<(), String> {
 
 #[tokio::main]
 async fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    if args.contains(&"--wallet-info".to_string()) || args.contains(&"--funding-address".to_string()) {
+        let check_balance = args.contains(&"--with-balance".to_string());
+        if let Err(e) = print_wallet_info(check_balance).await {
+            eprintln!("{}", e);
+        }
+        return;
+    }
+
     /* Initial Settings */
     let config = Config::new().await;
     let config = config.lock().await;
@@ -804,10 +884,13 @@ async fn main() {
     
 
     // Parse command line arguments
-    let args: Vec<String> = std::env::args().collect();
     if args.len() > 1 {
         // Check for command line arguments
         if args.contains(&"--wrap".to_string()) {
+            if let Err(e) = require_live_trading("wrap") {
+                eprintln!("{}", e);
+                return;
+            }
             println!("Wrapping SOL to WSOL...");
             
             // Get wrap amount from .env
@@ -827,6 +910,10 @@ async fn main() {
                 }
             }
         } else if args.contains(&"--unwrap".to_string()) {
+            if let Err(e) = require_live_trading("unwrap") {
+                eprintln!("{}", e);
+                return;
+            }
             println!("Unwrapping WSOL to SOL...");
             
             match unwrap_sol(&config).await {
@@ -840,6 +927,10 @@ async fn main() {
                 }
             }
         } else if args.contains(&"--close".to_string()) {
+            if let Err(e) = require_live_trading("close token accounts") {
+                eprintln!("{}", e);
+                return;
+            }
             println!("Closing all token accounts...");
             
             match close_all_token_accounts(&config).await {
@@ -863,6 +954,10 @@ async fn main() {
             println!("{}", summary);
             return;
         } else if args.contains(&"--launch".to_string()) {
+            if let Err(e) = require_live_trading("launch token") {
+                eprintln!("{}", e);
+                return;
+            }
             // --launch <name> <symbol> <description> <image_url> [dev_buy_sol]
             if args.len() < 6 {
                 eprintln!("Usage: --launch <name> <symbol> <description> <image_url> [dev_buy_sol]");
@@ -874,6 +969,12 @@ async fn main() {
             let description = &args[4];
             let image_url = &args[5];
             let dev_buy_sol = args.get(6).and_then(|v| v.parse::<f64>().ok());
+            if let Some(amount) = dev_buy_sol {
+                if let Err(e) = require_trade_amount_within_limit(amount, "launch dev buy") {
+                    eprintln!("{}", e);
+                    return;
+                }
+            }
             let twitter = std::env::var("TWITTER").ok();
             let telegram = std::env::var("TELEGRAM").ok();
             let website = std::env::var("WEBSITE").ok();
@@ -897,6 +998,10 @@ async fn main() {
             }
             return;
         } else if args.contains(&"--buy".to_string()) {
+            if let Err(e) = require_live_trading("buy") {
+                eprintln!("{}", e);
+                return;
+            }
             // Get token mint and amount from command line
             if args.len() < 4 {
                 eprintln!("Usage: --buy <mint_address> <amount_sol>");
@@ -911,6 +1016,10 @@ async fn main() {
                     return;
                 }
             };
+            if let Err(e) = require_trade_amount_within_limit(amount_sol, "buy") {
+                eprintln!("{}", e);
+                return;
+            }
             
             println!("Buying {} SOL worth of token {}", amount_sol, mint_address);
             match buy_token(&config, mint_address, amount_sol).await {
@@ -924,6 +1033,10 @@ async fn main() {
                 }
             }
         } else if args.contains(&"--balance".to_string()) {
+            if let Err(e) = require_live_trading("balance rebalance") {
+                eprintln!("{}", e);
+                return;
+            }
             println!("Checking and managing SOL/WSOL balance...");
             
             use solana_vntr_sniper::services::balance_manager::BalanceManager;
@@ -968,6 +1081,10 @@ async fn main() {
             }
             return;
         } else if args.contains(&"--risk-check".to_string()) {
+            if let Err(e) = require_live_trading("risk-check sell path") {
+                eprintln!("{}", e);
+                return;
+            }
             println!("Running manual risk management check...");
             
             // Seller-bot: use our own wallet as the only target address
@@ -998,6 +1115,10 @@ async fn main() {
         }
 
         if args.contains(&"--autobuy".to_string()) {
+            if let Err(e) = require_live_trading("autobuy") {
+                eprintln!("{}", e);
+                return;
+            }
             match run_autobuy_loop(&config).await {
                 Ok(_) => return,
                 Err(e) => {
@@ -1009,6 +1130,10 @@ async fn main() {
     }
 
     if env_flag("AUTO_BUY_ENABLED", false) {
+        if let Err(e) = require_live_trading("AUTO_BUY_ENABLED") {
+            eprintln!("{}", e);
+            return;
+        }
         match run_autobuy_loop(&config).await {
             Ok(_) => return,
             Err(e) => {
@@ -1020,6 +1145,11 @@ async fn main() {
 
 
     
+    if let Err(e) = require_live_trading("copy trading loop") {
+        eprintln!("{}", e);
+        return;
+    }
+
     // Initialize token account list
     initialize_token_account_list(&config).await;
 

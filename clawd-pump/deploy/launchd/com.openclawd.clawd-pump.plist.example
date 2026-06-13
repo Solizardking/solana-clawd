@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.openclawd.clawd-pump</string>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/8bit/Downloads/solana-clawd/clawd-pump</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/8bit/Downloads/solana-clawd/clawd-pump/scripts/run_24_7.sh</string>
+    <string>copy</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>RUST_LOG</key>
+    <string>info</string>
+    <key>LOG_DIR</key>
+    <string>/Users/8bit/Downloads/solana-clawd/clawd-pump/logs</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/8bit/Downloads/solana-clawd/clawd-pump/logs/launchd.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/8bit/Downloads/solana-clawd/clawd-pump/logs/launchd.err.log</string>
+</dict>
+</plist>

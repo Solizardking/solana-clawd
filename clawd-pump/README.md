@@ -93,6 +93,8 @@ The codebase is organized into several modules:
 
 ## Setup
 
+For 24/7 Clawd box operation, live arming, preflight checks, and supervised run modes, see [CLAWD_BOX_24_7.md](./CLAWD_BOX_24_7.md).
+
 ### Environment Variables
 
 To run this bot, you will need to configure the following environment variables:
@@ -102,6 +104,9 @@ To run this bot, you will need to configure the following environment variables:
 - `GRPC_ENDPOINT` - Your Yellowstone gRPC endpoint URL
 - `GRPC_X_TOKEN` - Your Yellowstone authentication token
 - `COPY_TRADING_TARGET_ADDRESS` - Wallet address(es) to monitor for trades (comma-separated for multiple addresses)
+- `PRIVATE_KEY` - Dedicated hot-wallet base58 private key. Do not use a primary wallet.
+- `LIVE_TRADING_ENABLED` - Must be `true` before live actions are allowed.
+- `PUMP_DRY_RUN` - Must be `false` before live actions are allowed.
 
 #### Telegram Notifications
 
@@ -127,6 +132,8 @@ Example `.env` values:
 ```bash
 RPC_HTTP=https://your-rpc-url
 TOKEN_ADDRESS=8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump
+LIVE_TRADING_ENABLED=true
+PUMP_DRY_RUN=false
 AUTO_BUY_ENABLED=true
 AUTO_BUY_AMOUNT_SOL=0.01
 AUTO_BUY_INTERVAL_SECONDS=60

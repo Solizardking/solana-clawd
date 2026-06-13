@@ -136,6 +136,25 @@ importers:
         specifier: ^2.1.9
         version: 2.1.9(@types/node@20.19.39)(lightningcss@1.32.0)
 
+  box:
+    dependencies:
+      '@upstash/box':
+        specifier: ^0.5.0
+        version: 0.5.0(zod@3.25.76)
+      zod:
+        specifier: ^3.22.0
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.10.0
+        version: 20.19.39
+      tsx:
+        specifier: ^4.7.0
+        version: 4.21.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   dark/dark-wallet:
     dependencies:
       '@solana/web3.js':
@@ -311,6 +330,9 @@ importers:
       '@nirholas/pump-sdk':
         specifier: ^1.30.0
         version: 1.30.0(bufferutil@4.1.0)(encoding@0.1.13)(puppeteer-core@24.43.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@noble/curves':
+        specifier: ^1.9.7
+        version: 1.9.7
       '@solana/web3.js':
         specifier: ^1.98.0
         version: 1.98.4(bufferutil@4.1.0)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -5419,6 +5441,12 @@ packages:
     resolution: {integrity: sha512-nAB74NfSNKknqQ1RrYj6uz8FcXEomu/MATJZxh/x+BArzN2U3JbOYC0APYzUIGhVY3m5hRxA8VPNdPBoG8txlA==}
     cpu: [x64]
     os: [win32]
+
+  '@upstash/box@0.5.0':
+    resolution: {integrity: sha512-0Cm1xU0390zHdbhjjw09jXxAz7bEwf66FYVimBqa0ZgeENyT3+TMal7zeatu9VANq1DJ9PJZl4LJMvHN+GKXiQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      zod: ^3.25.0 || ^4.0.0
 
   '@vercel/oidc@3.2.0':
     resolution: {integrity: sha512-UycprH3T6n3jH0k44NHMa7pnFHGu/N05MjojYr+Mc6I7obkoLIJujSWwin1pCvdy/eOxrI/l3uDLQsmcrOb4ug==}
@@ -18028,6 +18056,11 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
+
+  '@upstash/box@0.5.0(zod@3.25.76)':
+    dependencies:
+      zod: 3.25.76
+      zod-to-json-schema: 3.25.2(zod@3.25.76)
 
   '@vercel/oidc@3.2.0': {}
 

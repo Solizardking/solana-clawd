@@ -32,7 +32,7 @@ check_env_var() {
 }
 
 # Check critical variables
-critical_vars=("YELLOWSTONE_GRPC_HTTP" "YELLOWSTONE_GRPC_TOKEN" "COPY_TRADING_TARGET_ADDRESS" "WALLET_PRIVATE_KEY" "COUNTER_LIMIT")
+critical_vars=("YELLOWSTONE_GRPC_HTTP" "PRIVATE_KEY" "LIVE_TRADING_ENABLED" "PUMP_DRY_RUN" "COUNTER_LIMIT")
 missing_critical=0
 
 for var in "${critical_vars[@]}"; do
@@ -40,6 +40,16 @@ for var in "${critical_vars[@]}"; do
         missing_critical=$((missing_critical + 1))
     fi
 done
+
+echo
+echo "=== Live Gate Check ==="
+live_enabled=$(grep "^LIVE_TRADING_ENABLED=" .env | cut -d'=' -f2-)
+dry_run=$(grep "^PUMP_DRY_RUN=" .env | cut -d'=' -f2-)
+if [ "$live_enabled" != "true" ] || [ "$dry_run" != "false" ]; then
+    echo "❌ LIVE GATE CLOSED: set LIVE_TRADING_ENABLED=true and PUMP_DRY_RUN=false only when intentionally arming a limited hot wallet."
+else
+    echo "✅ LIVE GATE OPEN"
+fi
 
 echo
 echo "=== Counter Limit Check ==="
@@ -77,7 +87,7 @@ fi
 echo
 echo "=== Next Steps ==="
 echo "1. If environment variables are missing, add them to .env"
-echo "2. If COUNTER_LIMIT is 0, change it to 10 or higher"
-echo "3. Run: cargo run --release"
+echo "2. Run: ./scripts/preflight.sh"
+echo "3. If COUNTER_LIMIT is 0, change it to 10 or higher"
 echo "4. Check logs for 'Token transaction detected' or 'Target is BUYING'"
-echo "5. Use: cargo run --release -- --check-tokens to see counter status" 
+echo "5. Start supervised mode: ./scripts/run_24_7.sh copy" 

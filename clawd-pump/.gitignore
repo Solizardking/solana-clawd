@@ -33,4 +33,7 @@ backend
 .env.local
 .env
 # Logs
-*.log 
+*.log
+
+# Locally rendered service files
+deploy/generated/

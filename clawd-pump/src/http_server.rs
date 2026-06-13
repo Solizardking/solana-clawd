@@ -75,6 +75,28 @@ async fn run_pump(state: &AppState, args: &[&str]) -> ApiResponse {
     }
 }
 
+fn env_flag(key: &str, default: bool) -> bool {
+    std::env::var(key)
+        .ok()
+        .and_then(|v| v.parse::<bool>().ok())
+        .unwrap_or(default)
+}
+
+fn live_http_enabled() -> bool {
+    env_flag("LIVE_TRADING_ENABLED", false) && !env_flag("PUMP_DRY_RUN", true)
+}
+
+fn blocked_live_response(action: &str) -> ApiResponse {
+    ApiResponse {
+        success: false,
+        output: String::new(),
+        error: Some(format!(
+            "{} blocked: set LIVE_TRADING_ENABLED=true and PUMP_DRY_RUN=false before exposing live HTTP control",
+            action
+        )),
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Handlers
 // ---------------------------------------------------------------------------
@@ -87,6 +109,9 @@ async fn buy(
     State(state): State<Arc<AppState>>,
     Json(body): Json<BuyRequest>,
 ) -> (StatusCode, Json<ApiResponse>) {
+    if !live_http_enabled() {
+        return (StatusCode::FORBIDDEN, Json(blocked_live_response("buy")));
+    }
     let sol_str = body.sol.to_string();
     let result = run_pump(&state, &["--buy", &body.mint, &sol_str]).await;
     let status = if result.success { StatusCode::OK } else { StatusCode::BAD_REQUEST };
@@ -94,6 +119,9 @@ async fn buy(
 }
 
 async fn balance(State(state): State<Arc<AppState>>) -> Json<ApiResponse> {
+    if !live_http_enabled() {
+        return Json(blocked_live_response("balance rebalance"));
+    }
     Json(run_pump(&state, &["--balance"]).await)
 }
 
@@ -101,6 +129,9 @@ async fn wrap(
     State(state): State<Arc<AppState>>,
     Json(body): Json<WrapRequest>,
 ) -> Json<ApiResponse> {
+    if !live_http_enabled() {
+        return Json(blocked_live_response("wrap"));
+    }
     let result = if let Some(amount) = body.sol {
         let amt = amount.to_string();
         run_pump(&state, &["--wrap", &amt]).await
@@ -111,10 +142,16 @@ async fn wrap(
 }
 
 async fn unwrap(State(state): State<Arc<AppState>>) -> Json<ApiResponse> {
+    if !live_http_enabled() {
+        return Json(blocked_live_response("unwrap"));
+    }
     Json(run_pump(&state, &["--unwrap"]).await)
 }
 
 async fn close(State(state): State<Arc<AppState>>) -> Json<ApiResponse> {
+    if !live_http_enabled() {
+        return Json(blocked_live_response("close"));
+    }
     Json(run_pump(&state, &["--close"]).await)
 }
 
@@ -123,6 +160,9 @@ async fn check_tokens(State(state): State<Arc<AppState>>) -> Json<ApiResponse> {
 }
 
 async fn risk_check(State(state): State<Arc<AppState>>) -> Json<ApiResponse> {
+    if !live_http_enabled() {
+        return Json(blocked_live_response("risk-check"));
+    }
     Json(run_pump(&state, &["--risk-check"]).await)
 }
 

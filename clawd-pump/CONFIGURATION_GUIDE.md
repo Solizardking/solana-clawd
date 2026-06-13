@@ -14,10 +14,15 @@ Create a `.env` file in the project root with these variables:
 YELLOWSTONE_GRPC_HTTP=your_grpc_endpoint_here
 YELLOWSTONE_GRPC_TOKEN=your_grpc_token_here
 COPY_TRADING_TARGET_ADDRESS=suqh5sHtr8HyJ7q8scBimULPkPpA557prMG47xCHQfK,DfMxre4cKmvogbLrPigxmibVTTQDuzjdXojWzjCXXhzj
-WALLET_PRIVATE_KEY=your_wallet_private_key_here
+PRIVATE_KEY=your_dedicated_hot_wallet_private_key_here
+
+# CRITICAL - live arming gate
+LIVE_TRADING_ENABLED=false
+PUMP_DRY_RUN=true
 
 # CRITICAL - Set this to enable trading
 COUNTER_LIMIT=10
+MAX_TRADE_SOL=0.01
 
 # Trading Configuration
 TOKEN_AMOUNT=0.01
@@ -53,6 +58,17 @@ WRAP_AMOUNT=0.1
 The bot will now work even without a `.env` file, but you should still create one for proper configuration.
 
 ## Verification Steps
+
+0. **Run live readiness preflight:**
+   ```bash
+   ./scripts/preflight.sh
+   ```
+
+   Only after this passes and you intentionally accept live risk should you set:
+   ```bash
+   LIVE_TRADING_ENABLED=true
+   PUMP_DRY_RUN=false
+   ```
 
 1. **Check if bot is receiving transactions:**
    ```bash
