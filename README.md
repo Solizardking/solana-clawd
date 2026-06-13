@@ -367,21 +367,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`eed48e22`](../../commit/eed48e22) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 🥈 | [`d0ff3b6b`](../../commit/d0ff3b6b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 🥉 | [`97f2b1b1`](../../commit/97f2b1b1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 4️⃣ | [`1acc451f`](../../commit/1acc451f) | fix: remove deprecated xai live search parameter (#20) | Mr. Mojo Risin | Jun 12 |
-| 5️⃣ | [`35ff7bb9`](../../commit/35ff7bb9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 6️⃣ | [`0532931b`](../../commit/0532931b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 7️⃣ | [`be504ebd`](../../commit/be504ebd) | Fix streamed tool call reducer indexing | Mr. Mojo Risin | Jun 12 |
-| 8️⃣ | [`3d34fc77`](../../commit/3d34fc77) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 9️⃣ | [`45bcf227`](../../commit/45bcf227) | Fix clawd-code install branch references | Mr. Mojo Risin | Jun 12 |
-| 🔟 | [`5ac75eca`](../../commit/5ac75eca) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🥇 | [`51e3a851`](../../commit/51e3a851) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 🥈 | [`eed48e22`](../../commit/eed48e22) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 🥉 | [`d0ff3b6b`](../../commit/d0ff3b6b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 4️⃣ | [`97f2b1b1`](../../commit/97f2b1b1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 5️⃣ | [`1acc451f`](../../commit/1acc451f) | fix: remove deprecated xai live search parameter (#20) | Mr. Mojo Risin | Jun 12 |
+| 6️⃣ | [`35ff7bb9`](../../commit/35ff7bb9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 7️⃣ | [`0532931b`](../../commit/0532931b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 8️⃣ | [`be504ebd`](../../commit/be504ebd) | Fix streamed tool call reducer indexing | Mr. Mojo Risin | Jun 12 |
+| 9️⃣ | [`3d34fc77`](../../commit/3d34fc77) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🔟 | [`45bcf227`](../../commit/45bcf227) | Fix clawd-code install branch references | Mr. Mojo Risin | Jun 12 |
+| · | [`5ac75eca`](../../commit/5ac75eca) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
 | · | [`5a9452c1`](../../commit/5a9452c1) | Release clawd-code open source installer | Mr. Mojo Risin | Jun 12 |
 | · | [`d59a5d7f`](../../commit/d59a5d7f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
 | · | [`31130d0f`](../../commit/31130d0f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
 | · | [`41414d89`](../../commit/41414d89) | Fix MCP server runtime and tool count | solizardking | Jun 12 |
-| · | [`39abdc39`](../../commit/39abdc39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
