@@ -45,13 +45,9 @@ fail_out() {
   exit 1
 }
 
-rpc_http="$(env_value "RPC_HTTP")"
-if [[ -z "$rpc_http" ]]; then
+primary_rpc="$(env_value "RPC_HTTP")"
+if [[ -z "$primary_rpc" ]]; then
   fail_out "RPC_HTTP is not set"
-fi
-
-if ! command -v solana >/dev/null 2>&1; then
-  fail_out "solana CLI is not available"
 fi
 
 wallet_output="/tmp/clawd-pump-balance-wallet.log"
@@ -87,40 +83,54 @@ required="$(
 balance_output="/tmp/clawd-pump-solana-balance.log"
 balance=""
 query_error=""
+rpc_candidates=()
+
+add_rpc_candidate() {
+  local candidate="$1"
+  if [[ -z "$candidate" ]]; then
+    return
+  fi
+  for existing in "${rpc_candidates[@]}"; do
+    if [[ "$existing" == "$candidate" ]]; then
+      return
+    fi
+  done
+  rpc_candidates+=("$candidate")
+}
+
+add_rpc_candidate "$primary_rpc"
+add_rpc_candidate "$(env_value "SOLANA_RPC_URL")"
+add_rpc_candidate "$(env_value "HELIUS_RPC_URL")"
+add_rpc_candidate "${BALANCE_FALLBACK_RPC:-https://api.mainnet-beta.solana.com}"
+
 if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   rpc_payload="/tmp/clawd-pump-balance-rpc-payload.json"
   rpc_response="/tmp/clawd-pump-balance-rpc-response.json"
   jq -n --arg address "$address" \
     '{jsonrpc:"2.0", id:1, method:"getBalance", params:[$address]}' >"$rpc_payload"
-  if curl -fsS \
-    --header "content-type: application/json" \
-    --data-binary @"$rpc_payload" \
-    "$rpc_http" >"$rpc_response" 2>"$balance_output"; then
-    lamports="$(jq -r '.result.value // empty' "$rpc_response")"
-    if [[ -n "$lamports" ]]; then
-      balance="$(awk -v lamports="$lamports" 'BEGIN { printf "%.9f", lamports / 1000000000 }')"
+  for rpc_url in "${rpc_candidates[@]}"; do
+    if curl -fsS \
+      --header "content-type: application/json" \
+      --data-binary @"$rpc_payload" \
+      "$rpc_url" >"$rpc_response" 2>"$balance_output"; then
+      lamports="$(jq -r '.result.value // empty' "$rpc_response")"
+      if [[ -n "$lamports" ]]; then
+        balance="$(awk -v lamports="$lamports" 'BEGIN { printf "%.9f", lamports / 1000000000 }')"
+        break
+      fi
+    else
+      attempt_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-120)"
+      query_error="${query_error:+${query_error}; }${attempt_error}"
     fi
-  else
-    query_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-180)"
-  fi
+  done
 fi
 
-if [[ -z "$balance" ]] && command -v solana >/dev/null 2>&1; then
-  if solana balance --url "$rpc_http" "$address" >"$balance_output" 2>&1; then
+if [[ -z "$balance" && "${USE_SOLANA_CLI_BALANCE:-false}" == "true" ]] && command -v solana >/dev/null 2>&1; then
+  if solana balance --url "$primary_rpc" "$address" >"$balance_output" 2>&1; then
     balance="$(awk '{print $1; exit}' "$balance_output")"
   else
-    cli_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-180)"
+    cli_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-120)"
     query_error="${query_error:+${query_error}; }${cli_error}"
-  fi
-fi
-
-if [[ -z "$balance" ]] && command -v solana >/dev/null 2>&1; then
-  fallback_rpc="${BALANCE_FALLBACK_RPC:-https://api.mainnet-beta.solana.com}"
-  if solana balance --url "$fallback_rpc" "$address" >"$balance_output" 2>&1; then
-    balance="$(awk '{print $1; exit}' "$balance_output")"
-  else
-    fallback_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-180)"
-    query_error="${query_error:+${query_error}; }${fallback_error}"
   fi
 fi
 
