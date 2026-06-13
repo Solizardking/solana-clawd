@@ -2,6 +2,7 @@ import "./index.css"
 import { useEffect, useMemo, useState } from "react"
 import type { CSSProperties, FormEvent } from "react"
 import LibraryApp from "./LibraryApp.js"
+import TournamentPanel from "./arena/TournamentPanel.js"
 
 type Agent = {
   id: string
@@ -964,6 +965,7 @@ export default function App() {
       </section>
 
       <Scoreboard agents={scoredAgents} />
+      <TournamentPanel agents={AGENTS} round={round} running={running} />
       <MintedBanner />
     </main>
   )

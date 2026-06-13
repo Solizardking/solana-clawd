@@ -831,6 +831,217 @@ h1 {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Tournament Bracket UI
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.bracketPanel {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.32);
+}
+
+.bracketControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.bracketControls select,
+.bracketControls button {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text);
+  padding: 8px 12px;
+  font-size: 12px;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.bracketControls select:hover,
+.bracketControls button:hover {
+  border-color: var(--green);
+  background: rgba(20, 241, 149, 0.1);
+}
+
+.bracketControls select {
+  min-width: 200px;
+}
+
+.bracketControls button.active {
+  border-color: rgba(20, 241, 149, 0.64);
+  background: rgba(20, 241, 149, 0.16);
+  color: var(--green);
+}
+
+.bracketGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.bracketRoundLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(237, 244, 229, 0.12);
+  margin-bottom: 8px;
+}
+
+.bracketRoundLabel span {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.bracketRoundLabel code {
+  color: var(--cyan);
+  font-size: 11px;
+}
+
+.elimBracket {
+  display: grid;
+  gap: 6px;
+}
+
+.bracketMatch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid rgba(237, 244, 229, 0.1);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 160ms ease;
+}
+
+.bracketMatch:hover {
+  border-color: var(--line-strong);
+}
+
+.bracketMatch.completed {
+  border-color: rgba(20, 241, 149, 0.24);
+}
+
+.bracketMatch.zklive {
+  border-left: 3px solid var(--violet);
+}
+
+.bracketSide {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.bracketSide.winner {
+  background: rgba(20, 241, 149, 0.1);
+  color: var(--green);
+}
+
+.bracketSide.loser {
+  color: var(--muted);
+}
+
+.bracketSide .badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+
+.bracketSide .zkBadge {
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(192, 132, 252, 0.2);
+  color: var(--violet);
+}
+
+.bracketEmpty {
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ── Standings Table ──────────────────────────────────────────────────────── */
+
+.standingsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.standingsTable th {
+  color: var(--muted);
+  font-weight: normal;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.standingsTable td {
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(237, 244, 229, 0.06);
+}
+
+.standingsTable .nameCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.standingsTable .colorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.standingsTable .positive {
+  color: var(--green);
+}
+
+.standingsTable .negative {
+  color: var(--red);
+}
+
+@media (max-width: 720px) {
+  .standingsTable {
+    font-size: 12px;
+  }
+
+  .standingsTable th,
+  .standingsTable td {
+    padding: 6px 4px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   End Tournament Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @media (max-width: 520px) {
   h1 {
     font-size: 30px;
