@@ -66,7 +66,7 @@ require_number_le() {
     || fail "$key must be > 0 and <= $max"
 }
 
-printf "clawd-pump live readiness preflight\n"
+printf "clawd-pump readiness preflight\n"
 printf "env: %s\n\n" "$ENV_FILE"
 printf "mode: %s\n\n" "$MODE"
 
@@ -76,22 +76,35 @@ else
   ok "$ENV_FILE exists"
 fi
 
-require_set "RPC_HTTP"
-if [[ "$MODE" == "copy" ]]; then
-  require_set "YELLOWSTONE_GRPC_HTTP"
-else
-  if [[ -z "$(env_value "YELLOWSTONE_GRPC_HTTP")" ]]; then
-    warn "YELLOWSTONE_GRPC_HTTP is not set; not required for $MODE mode"
+if [[ "$MODE" == "serve" ]]; then
+  if [[ "$(env_value "PUMP_HTTP_PORT")" =~ ^[0-9]+$ ]]; then
+    ok "PUMP_HTTP_PORT is set"
   else
-    ok "YELLOWSTONE_GRPC_HTTP is set"
+    warn "PUMP_HTTP_PORT is missing or not numeric; default 8765 will be used"
   fi
+  if [[ "$(env_value "LIVE_TRADING_ENABLED")" == "true" && "$(env_value "PUMP_DRY_RUN")" == "false" ]]; then
+    warn "HTTP trade endpoints will be live because LIVE_TRADING_ENABLED=true and PUMP_DRY_RUN=false"
+  else
+    ok "HTTP trade endpoints remain blocked while live gates are disarmed"
+  fi
+else
+  require_set "RPC_HTTP"
+  if [[ "$MODE" == "copy" ]]; then
+    require_set "YELLOWSTONE_GRPC_HTTP"
+  else
+    if [[ -z "$(env_value "YELLOWSTONE_GRPC_HTTP")" ]]; then
+      warn "YELLOWSTONE_GRPC_HTTP is not set; not required for $MODE mode"
+    else
+      ok "YELLOWSTONE_GRPC_HTTP is set"
+    fi
+  fi
+  require_set "PRIVATE_KEY"
+  require_bool "LIVE_TRADING_ENABLED" "true"
+  require_bool "PUMP_DRY_RUN" "false"
 fi
-require_set "PRIVATE_KEY"
-require_bool "LIVE_TRADING_ENABLED" "true"
-require_bool "PUMP_DRY_RUN" "false"
 
 private_key="$(env_value "PRIVATE_KEY")"
-if [[ -n "$private_key" ]]; then
+if [[ "$MODE" != "serve" && -n "$private_key" ]]; then
   if [[ "${#private_key}" -lt 85 ]]; then
     fail "PRIVATE_KEY appears too short for a base58 Solana key"
   else
@@ -99,8 +112,10 @@ if [[ -n "$private_key" ]]; then
   fi
 fi
 
-require_number_le "MAX_TRADE_SOL" "${MAX_TRADE_SOL_CEILING:-0.05}"
-require_number_le "AUTO_BUY_AMOUNT_SOL" "${AUTO_BUY_AMOUNT_SOL_CEILING:-0.05}"
+if [[ "$MODE" != "serve" ]]; then
+  require_number_le "MAX_TRADE_SOL" "${MAX_TRADE_SOL_CEILING:-0.05}"
+  require_number_le "AUTO_BUY_AMOUNT_SOL" "${AUTO_BUY_AMOUNT_SOL_CEILING:-0.05}"
+fi
 
 counter_limit="$(env_value "COUNTER_LIMIT")"
 if [[ -z "$counter_limit" ]]; then
@@ -111,19 +126,17 @@ else
   fail "COUNTER_LIMIT must be a positive integer for live mode"
 fi
 
-if [[ "$(env_value "RISK_MANAGEMENT_ENABLED")" == "true" ]]; then
+if [[ "$MODE" == "serve" ]]; then
+  ok "risk management live checks are not required for serve mode"
+elif [[ "$(env_value "RISK_MANAGEMENT_ENABLED")" == "true" ]]; then
   ok "risk management is enabled"
 else
   fail "RISK_MANAGEMENT_ENABLED must be true for live 24/7 mode"
 fi
 
-if [[ "$(env_value "PUMP_HTTP_PORT")" =~ ^[0-9]+$ ]]; then
-  ok "PUMP_HTTP_PORT is set"
-else
-  warn "PUMP_HTTP_PORT is missing or not numeric; default 8765 will be used"
-fi
-
-if [[ "${REQUIRE_FUNDED_WALLET:-false}" == "true" ]]; then
+if [[ "$MODE" == "serve" ]]; then
+  ok "hot wallet funding is not required for serve mode startup"
+elif [[ "${REQUIRE_FUNDED_WALLET:-false}" == "true" ]]; then
   if ./scripts/wallet_balance_check.sh >/tmp/clawd-pump-wallet-balance-check.log 2>&1; then
     ok "hot wallet funding is sufficient"
   else

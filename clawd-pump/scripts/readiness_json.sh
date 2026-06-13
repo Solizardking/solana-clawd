@@ -84,13 +84,22 @@ smoke_status=1
 run_check /tmp/clawd-pump-readiness-smoke.log ./scripts/smoke_live_gates.sh && smoke_status=0 || true
 
 service_render_status=1
-run_check /tmp/clawd-pump-readiness-service.log ./scripts/render_service.sh launchd copy && service_render_status=0 || true
+run_check /tmp/clawd-pump-readiness-service.log ./scripts/render_service.sh launchd "$MODE" && service_render_status=0 || true
 
 preflight_status=1
-run_check /tmp/clawd-pump-readiness-preflight.log env REQUIRE_FUNDED_WALLET=true ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
+if [[ "$MODE" == "serve" ]]; then
+  run_check /tmp/clawd-pump-readiness-preflight.log ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
+else
+  run_check /tmp/clawd-pump-readiness-preflight.log env REQUIRE_FUNDED_WALLET=true ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
+fi
 
 funding_status=1
-run_check /tmp/clawd-pump-readiness-funding.log ./scripts/wallet_balance_check.sh --json && funding_status=0 || true
+if [[ "$MODE" == "serve" ]]; then
+  printf '{"passed":true,"reason":"not required for serve mode"}\n' >/tmp/clawd-pump-readiness-funding.log
+  funding_status=0
+else
+  run_check /tmp/clawd-pump-readiness-funding.log ./scripts/wallet_balance_check.sh --json && funding_status=0 || true
+fi
 
 ready_to_start=1
 if [[ "$preflight_status" -eq 0 && "$smoke_status" -eq 0 && "$service_render_status" -eq 0 ]]; then

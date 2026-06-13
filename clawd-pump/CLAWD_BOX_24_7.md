@@ -71,7 +71,11 @@ RISK_MANAGEMENT_ENABLED=true
 
 ```bash
 ./scripts/preflight.sh
+./scripts/preflight.sh serve
+./scripts/preflight.sh autobuy
 ```
+
+`copy` mode requires `YELLOWSTONE_GRPC_HTTP`; `serve` and `autobuy` modes do not.
 
 5. Only after preflight passes and you intentionally accept live trading risk, arm live mode:
 
@@ -147,12 +151,16 @@ Full read-only readiness report:
 
 ```bash
 ./scripts/doctor_24_7.sh
+./scripts/doctor_24_7.sh serve
+./scripts/doctor_24_7.sh autobuy
 ```
 
 Machine-readable readiness report for a box supervisor or external monitor:
 
 ```bash
 ./scripts/readiness_json.sh
+./scripts/readiness_json.sh serve
+./scripts/readiness_json.sh autobuy
 ```
 
 The JSON report does not print private keys. `ready_to_start` is only `true` when live preflight, funding verification, gate smoke checks, and service rendering all pass.
@@ -213,6 +221,7 @@ Require both Box credentials and local live trading readiness:
 
 ```bash
 npm run box:pump:preflight:live -- --bootstrap-local-mcp
+npm run box:pump:preflight:live -- --bootstrap-local-mcp --mode serve
 ```
 
 The strict live preflight fails until `./scripts/readiness_json.sh` reports `ready_to_start=true`.

@@ -25,7 +25,11 @@ case "$MODE" in
     ;;
 esac
 
-./scripts/preflight.sh "$MODE"
+if [[ "$MODE" == "serve" ]]; then
+  ./scripts/preflight.sh "$MODE"
+else
+  REQUIRE_FUNDED_WALLET="${REQUIRE_FUNDED_WALLET:-true}" ./scripts/preflight.sh "$MODE"
+fi
 
 printf "Starting clawd-pump 24/7 mode: %s\n" "$MODE"
 log_file="$LOG_DIR/clawd-pump-$MODE.log"
