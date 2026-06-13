@@ -17,6 +17,7 @@ import { BrowserUse } from "browser-use-sdk/v3";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { execFile } from "node:child_process";
+import { createInterface } from "node:readline/promises";
 import { promisify } from "node:util";
 import path from "node:path";
 import process from "node:process";
@@ -55,10 +56,22 @@ type BrowserUseContext = {
   enabled: boolean;
   task: string;
   sessionId?: string | null;
+  profileId?: string | null;
   status?: string;
   liveUrl?: string | null;
+  recordingUrls?: string[];
   output?: string | null;
   error?: string;
+};
+
+type BrowserUseOptions = {
+  task: string;
+  humanInLoop: boolean;
+  humanFollowup: string;
+  proxyCountryCode?: string | null;
+  enableRecording: boolean;
+  profileName?: string;
+  stopSession: boolean;
 };
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -421,6 +434,12 @@ function buildMcpServers(mcpUrl: string): McpServer[] {
   return servers;
 }
 
+function parseProxyCountryCode(value: string | undefined): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === "none" || value === "null" || value === "off" || value === "false") return null;
+  return value.toLowerCase();
+}
+
 function formatBrowserStep(step: Record<string, unknown>): string {
   const number = step.number ?? step.stepNumber ?? step.index ?? "?";
   const type = step.type ? String(step.type) : "";
@@ -433,56 +452,123 @@ function formatBrowserStep(step: Record<string, unknown>): string {
   return parts.join(" ");
 }
 
-async function runBrowserUseTask(task: string): Promise<BrowserUseContext> {
+async function resolveBrowserProfile(client: BrowserUse, profileName: string | undefined): Promise<string | undefined> {
+  if (!profileName) return undefined;
+  const profiles = await client.profiles.list({ query: profileName });
+  const existing = profiles.items.find((profile) => profile.name === profileName) ?? profiles.items[0];
+  if (existing) return existing.id;
+  const created = await client.profiles.create({ name: profileName });
+  return created.id;
+}
+
+function browserRunOptions(options: BrowserUseOptions, sessionId?: string, profileId?: string): Record<string, unknown> {
+  const runOptions: Record<string, unknown> = {
+    timeout: Number(process.env.BROWSER_USE_TIMEOUT_MS ?? 300_000),
+    interval: Number(process.env.BROWSER_USE_INTERVAL_MS ?? 2_000),
+    keepAlive: options.humanInLoop || !options.stopSession,
+    enableRecording: options.enableRecording
+  };
+  if (sessionId) runOptions.sessionId = sessionId;
+  if (profileId) runOptions.profileId = profileId;
+  if (options.proxyCountryCode !== undefined) runOptions.proxyCountryCode = options.proxyCountryCode;
+  return runOptions;
+}
+
+async function runBrowserUseStream(
+  client: BrowserUse,
+  task: string,
+  options: BrowserUseOptions,
+  sessionId?: string,
+  profileId?: string
+): Promise<BrowserUseContext> {
+  const run = client.run(task, browserRunOptions(options, sessionId, profileId));
+
+  let currentSessionId: string | null = sessionId ?? null;
+  for await (const step of run) {
+    currentSessionId = run.sessionId ?? currentSessionId;
+    console.log(formatBrowserStep(step as Record<string, unknown>));
+  }
+
+  const result = run.result ?? await run;
+  const resultRecord = result as Record<string, unknown>;
+  return {
+    enabled: true,
+    task,
+    sessionId: currentSessionId ?? run.sessionId ?? (resultRecord.id as string | undefined) ?? null,
+    profileId,
+    status: String(resultRecord.status ?? "completed"),
+    liveUrl: (resultRecord.liveUrl as string | undefined) ?? null,
+    recordingUrls: Array.isArray(resultRecord.recordingUrls)
+      ? resultRecord.recordingUrls.filter((url): url is string => typeof url === "string")
+      : [],
+    output: typeof result.output === "string" ? result.output : JSON.stringify(result.output)
+  };
+}
+
+async function runBrowserUseTask(options: BrowserUseOptions): Promise<BrowserUseContext> {
   if (!browserUseKeyPresent()) {
     return {
       enabled: false,
-      task,
+      task: options.task,
       error: "BROWSER_USE_API_KEY or BROWSERUSE_API_KEY missing"
     };
   }
 
   console.log("\nBrowser Use task:");
-  console.log(task);
+  console.log(options.task);
 
   const client = new BrowserUse({
     apiKey: process.env.BROWSER_USE_API_KEY ?? process.env.BROWSERUSE_API_KEY
   });
-  const run = client.run(task, {
-    timeout: Number(process.env.BROWSER_USE_TIMEOUT_MS ?? 300_000),
-    interval: Number(process.env.BROWSER_USE_INTERVAL_MS ?? 2_000)
-  });
 
   let sessionId: string | null = null;
+  let profileId: string | undefined;
   try {
-    for await (const step of run) {
-      sessionId = run.sessionId;
-      console.log(formatBrowserStep(step as Record<string, unknown>));
+    profileId = await resolveBrowserProfile(client, options.profileName);
+
+    if (options.humanInLoop) {
+      const session = await client.sessions.create({
+        keepAlive: true,
+        profileId,
+        proxyCountryCode: options.proxyCountryCode as never,
+        enableRecording: options.enableRecording
+      });
+      sessionId = session.id;
+      console.log(`Browser Use live view: ${session.liveUrl}`);
+      console.log(`Browser Use session id: ${session.id}`);
+
+      const first = await runBrowserUseStream(client, options.task, options, session.id, profileId);
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      await rl.question("Press Enter after human browser interaction is complete...");
+      rl.close();
+
+      console.log("\nBrowser Use follow-up task:");
+      console.log(options.humanFollowup);
+      const followup = await runBrowserUseStream(client, options.humanFollowup, options, session.id, profileId);
+      const recordingUrls = options.enableRecording
+        ? await client.sessions.waitForRecording(session.id, { timeout: 15_000, interval: 2_000 }).catch(() => [])
+        : [];
+      if (options.stopSession) await client.sessions.stop(session.id);
+      return {
+        ...followup,
+        task: `${options.task}\nFollow-up: ${options.humanFollowup}`,
+        liveUrl: followup.liveUrl ?? first.liveUrl ?? session.liveUrl,
+        recordingUrls: recordingUrls.length ? recordingUrls : followup.recordingUrls
+      };
     }
 
-    const result = run.result ?? await run;
-    const resultRecord = result as Record<string, unknown>;
-    const session = resultRecord.session as Record<string, unknown> | undefined;
-    const browserSession = resultRecord.browserSession as Record<string, unknown> | undefined;
-    const liveUrl =
-      (resultRecord.liveUrl as string | undefined) ??
-      (session?.liveUrl as string | undefined) ??
-      (browserSession?.liveUrl as string | undefined) ??
-      null;
-
-    return {
-      enabled: true,
-      task,
-      sessionId: sessionId ?? run.sessionId,
-      status: String(resultRecord.status ?? "completed"),
-      liveUrl,
-      output: typeof result.output === "string" ? result.output : JSON.stringify(result.output)
-    };
+    const result = await runBrowserUseStream(client, options.task, options, undefined, profileId);
+    const recordingUrls = options.enableRecording && result.sessionId
+      ? await client.sessions.waitForRecording(result.sessionId, { timeout: 15_000, interval: 2_000 }).catch(() => [])
+      : [];
+    if (options.stopSession && result.sessionId) await client.sessions.stop(result.sessionId);
+    return { ...result, recordingUrls: recordingUrls.length ? recordingUrls : result.recordingUrls };
   } catch (error) {
     return {
       enabled: true,
-      task,
-      sessionId: sessionId ?? run.sessionId,
+      task: options.task,
+      sessionId,
+      profileId,
       error: error instanceof Error ? error.message : String(error)
     };
   }
@@ -500,8 +586,10 @@ function browserUsePromptSummary(context: BrowserUseContext | undefined): string
     "Browser Use:",
     `- requested_task: ${context.task}`,
     `- session_id: ${context.sessionId || "missing"}`,
+    `- profile_id: ${context.profileId || "missing"}`,
     `- status: ${context.status || (context.error ? "failed" : "unknown")}`,
     `- live_url: ${context.liveUrl || "missing"}`,
+    `- recording_urls: ${context.recordingUrls?.length ? context.recordingUrls.join(", ") : "none"}`,
     `- result: ${context.output || context.error || "missing"}`,
     "- The Box env includes BROWSER_USE_API_KEY/BROWSERUSE_API_KEY when present.",
     "- Browser navigation is for observation and site interaction only; do not connect wallets or submit trades unless explicitly authorized."
@@ -583,16 +671,30 @@ async function main(): Promise<void> {
   const requireLiveReady = hasFlag("--require-live-ready");
   const browserUse = hasFlag("--browser-use");
   const browserUseOnly = hasFlag("--browser-use-only");
+  const browserHumanInLoop = hasFlag("--browser-human-in-loop");
+  const browserEnableRecording = hasFlag("--browser-record");
+  const browserStopSession = hasFlag("--browser-stop-session");
   const mode = parseMode(argValue("--mode"));
   const prompt = argValue("--prompt") ?? "Inspect the available Pump MCP tools, verify RPC/API access, and produce a readiness report. Do not trade.";
   const browserTask = argValue("--browser-task") ?? "Open https://pump.fun, confirm the page loads, report the page title/current URL, and do not connect a wallet or trade.";
+  const browserFollowup = argValue("--browser-followup") ?? "Inspect the current page after the human interaction and report the current page title, URL, and visible state. Do not connect a wallet or trade.";
+  const browserProfileName = argValue("--browser-profile-name");
+  const browserProxyCountryCode = parseProxyCountryCode(argValue("--browser-proxy-country"));
   const mcpUrl = argValue("--mcp-url") ?? process.env.PUMP_MCP_URL ?? "http://127.0.0.1:3001/mcp";
 
   const loadedEnvFiles = await loadProjectEnv();
   const pumpReadiness = await loadPumpReadiness(mode).catch(() => undefined);
 
   if (browserUseOnly) {
-    const context = await runBrowserUseTask(browserTask);
+    const context = await runBrowserUseTask({
+      task: browserTask,
+      humanInLoop: browserHumanInLoop,
+      humanFollowup: browserFollowup,
+      proxyCountryCode: browserProxyCountryCode,
+      enableRecording: browserEnableRecording,
+      profileName: browserProfileName,
+      stopSession: browserStopSession
+    });
     console.log("\nBrowser Use result:");
     console.log(browserUsePromptSummary(context));
     return;
@@ -614,7 +716,17 @@ async function main(): Promise<void> {
     throw new Error("Use --bootstrap-local-mcp for localhost MCP, or pass --mcp-url with a reachable HTTPS MCP endpoint");
   }
 
-  const browserUseContext = browserUse ? await runBrowserUseTask(browserTask) : undefined;
+  const browserUseContext = browserUse
+    ? await runBrowserUseTask({
+      task: browserTask,
+      humanInLoop: browserHumanInLoop,
+      humanFollowup: browserFollowup,
+      proxyCountryCode: browserProxyCountryCode,
+      enableRecording: browserEnableRecording,
+      profileName: browserProfileName,
+      stopSession: browserStopSession
+    })
+    : undefined;
 
   const box = await Box.create({
     apiKey: requiredEnv("UPSTASH_BOX_API_KEY"),

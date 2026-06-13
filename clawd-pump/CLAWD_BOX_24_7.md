@@ -285,6 +285,25 @@ Smoke-test Browser Use streaming without creating a Box:
 npm run box:pump -- --browser-use-only --browser-task "Open https://pump.fun and report the current page title. Do not connect a wallet or trade."
 ```
 
+Human-in-the-loop mode creates a Browser Use session, prints the `live_url`, runs the first task, waits for you to interact in the live browser, then sends a follow-up task in the same session:
+
+```bash
+npm run box:pump -- --browser-use-only --browser-human-in-loop \
+  --browser-task "Open https://pump.fun and wait on the home page. Do not connect a wallet or trade." \
+  --browser-followup "After the human interaction, report the current page title, URL, and visible state. Do not connect a wallet or trade."
+```
+
+Useful Browser Use flags:
+
+```bash
+--browser-proxy-country de     # route browser traffic through a country; use "none" to disable proxies
+--browser-record               # request an MP4 recording URL
+--browser-profile-name user-1  # reuse/persist cookies and localStorage through a Browser Use profile
+--browser-stop-session         # explicitly stop the Browser Use session after the run
+```
+
+Browser Use sessions time out after 15 minutes of inactivity and have a 4 hour maximum duration. Send a lightweight follow-up task such as `--browser-followup "wait"` before the inactivity timeout if a human needs more time.
+
 The Box launcher loads `.env`, `.env.local`, and `clawd-pump/.env` into an allowlist before creating the Box, so RPC/API keys can reach the MCP server without printing them. By default the box agent is observation/transaction-builder oriented and does not forward signing keys. Passing a private key into a remote box requires both:
 
 ```bash
