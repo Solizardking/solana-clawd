@@ -12,7 +12,7 @@ venv
 temp
 tmp
 .env
-# dependencies
+clawd-box
 node_modules
 *.log
 /package-lock.json
