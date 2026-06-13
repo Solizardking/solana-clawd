@@ -367,21 +367,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`55e7d235`](../../commit/55e7d235) | Update README.md | Mr. Mojo Risin | Jun 13 |
-| 🥈 | [`daf6fea8`](../../commit/daf6fea8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 🥉 | [`cc81a74f`](../../commit/cc81a74f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 4️⃣ | [`51e3a851`](../../commit/51e3a851) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 5️⃣ | [`eed48e22`](../../commit/eed48e22) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 6️⃣ | [`d0ff3b6b`](../../commit/d0ff3b6b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 7️⃣ | [`97f2b1b1`](../../commit/97f2b1b1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 8️⃣ | [`1acc451f`](../../commit/1acc451f) | fix: remove deprecated xai live search parameter (#20) | Mr. Mojo Risin | Jun 12 |
-| 9️⃣ | [`35ff7bb9`](../../commit/35ff7bb9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 🔟 | [`0532931b`](../../commit/0532931b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🥇 | [`eec1f11e`](../../commit/eec1f11e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 🥈 | [`55e7d235`](../../commit/55e7d235) | Update README.md | Mr. Mojo Risin | Jun 13 |
+| 🥉 | [`daf6fea8`](../../commit/daf6fea8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 4️⃣ | [`cc81a74f`](../../commit/cc81a74f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 5️⃣ | [`51e3a851`](../../commit/51e3a851) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 6️⃣ | [`eed48e22`](../../commit/eed48e22) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 7️⃣ | [`d0ff3b6b`](../../commit/d0ff3b6b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 8️⃣ | [`97f2b1b1`](../../commit/97f2b1b1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 9️⃣ | [`1acc451f`](../../commit/1acc451f) | fix: remove deprecated xai live search parameter (#20) | Mr. Mojo Risin | Jun 12 |
+| 🔟 | [`35ff7bb9`](../../commit/35ff7bb9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| · | [`0532931b`](../../commit/0532931b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
 | · | [`be504ebd`](../../commit/be504ebd) | Fix streamed tool call reducer indexing | Mr. Mojo Risin | Jun 12 |
 | · | [`3d34fc77`](../../commit/3d34fc77) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
 | · | [`45bcf227`](../../commit/45bcf227) | Fix clawd-code install branch references | Mr. Mojo Risin | Jun 12 |
 | · | [`5ac75eca`](../../commit/5ac75eca) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`5a9452c1`](../../commit/5a9452c1) | Release clawd-code open source installer | Mr. Mojo Risin | Jun 12 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
