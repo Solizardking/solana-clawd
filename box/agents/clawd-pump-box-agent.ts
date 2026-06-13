@@ -300,7 +300,7 @@ async function validatePreflight(options: {
 
   try {
     pumpReadiness = await loadPumpReadiness();
-    if (options.requireLiveReady && pumpReadiness.ready_to_start !== true) {
+    if (options.requireLiveReady && pumpReadiness?.ready_to_start !== true) {
       failures.push("local pump readiness is not ready_to_start=true");
     }
   } catch (error) {
