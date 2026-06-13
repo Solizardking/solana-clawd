@@ -9,8 +9,6 @@ LOG_MAX_BYTES="${LOG_MAX_BYTES:-10485760}"
 LOG_KEEP_FILES="${LOG_KEEP_FILES:-5}"
 mkdir -p "$LOG_DIR"
 
-./scripts/preflight.sh
-
 case "$MODE" in
   copy)
     cmd=(cargo run --release)
@@ -26,6 +24,8 @@ case "$MODE" in
     exit 2
     ;;
 esac
+
+./scripts/preflight.sh "$MODE"
 
 printf "Starting clawd-pump 24/7 mode: %s\n" "$MODE"
 log_file="$LOG_DIR/clawd-pump-$MODE.log"

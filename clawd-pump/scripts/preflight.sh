@@ -4,6 +4,15 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 ENV_FILE="${ENV_FILE:-.env}"
+MODE="${PUMP_PREFLIGHT_MODE:-${1:-copy}}"
+
+case "$MODE" in
+  copy|autobuy|serve) ;;
+  *)
+    printf "usage: %s [copy|autobuy|serve]\n" "$0" >&2
+    exit 2
+    ;;
+esac
 
 failures=0
 warns=0
@@ -59,6 +68,7 @@ require_number_le() {
 
 printf "clawd-pump live readiness preflight\n"
 printf "env: %s\n\n" "$ENV_FILE"
+printf "mode: %s\n\n" "$MODE"
 
 if [[ ! -f "$ENV_FILE" ]]; then
   fail "$ENV_FILE does not exist; copy .env.example and fill it locally"
@@ -67,7 +77,15 @@ else
 fi
 
 require_set "RPC_HTTP"
-require_set "YELLOWSTONE_GRPC_HTTP"
+if [[ "$MODE" == "copy" ]]; then
+  require_set "YELLOWSTONE_GRPC_HTTP"
+else
+  if [[ -z "$(env_value "YELLOWSTONE_GRPC_HTTP")" ]]; then
+    warn "YELLOWSTONE_GRPC_HTTP is not set; not required for $MODE mode"
+  else
+    ok "YELLOWSTONE_GRPC_HTTP is set"
+  fi
+fi
 require_set "PRIVATE_KEY"
 require_bool "LIVE_TRADING_ENABLED" "true"
 require_bool "PUMP_DRY_RUN" "false"

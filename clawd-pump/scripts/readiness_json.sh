@@ -5,6 +5,15 @@ cd "$(dirname "$0")/.."
 
 ENV_FILE="${ENV_FILE:-.env}"
 PORT="${PUMP_HTTP_PORT:-8765}"
+MODE="${PUMP_READINESS_MODE:-${1:-copy}}"
+
+case "$MODE" in
+  copy|autobuy|serve) ;;
+  *)
+    printf '{"agent":"clawd-pump","ready_to_start":false,"error":"invalid mode"}\n'
+    exit 2
+    ;;
+esac
 
 json_bool() {
   if [[ "${1:-}" == "0" ]]; then
@@ -78,7 +87,7 @@ service_render_status=1
 run_check /tmp/clawd-pump-readiness-service.log ./scripts/render_service.sh launchd copy && service_render_status=0 || true
 
 preflight_status=1
-run_check /tmp/clawd-pump-readiness-preflight.log env REQUIRE_FUNDED_WALLET=true ./scripts/preflight.sh && preflight_status=0 || true
+run_check /tmp/clawd-pump-readiness-preflight.log env REQUIRE_FUNDED_WALLET=true ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
 
 funding_status=1
 run_check /tmp/clawd-pump-readiness-funding.log ./scripts/wallet_balance_check.sh --json && funding_status=0 || true
@@ -91,6 +100,7 @@ fi
 cat <<JSON
 {
   "agent": "clawd-pump",
+  "mode": $(json_string "$MODE"),
   "env_file": $(json_string "$ENV_FILE"),
   "ready_to_start": $(json_bool "$ready_to_start"),
   "wallet": {

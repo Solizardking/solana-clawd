@@ -3,6 +3,15 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+MODE="${1:-copy}"
+case "$MODE" in
+  copy|autobuy|serve) ;;
+  *)
+    printf "usage: %s [copy|autobuy|serve]\n" "$0" >&2
+    exit 2
+    ;;
+esac
+
 failures=0
 warns=0
 
@@ -39,10 +48,10 @@ run_optional "render launchd service" ./scripts/render_service.sh launchd copy
 run_optional "render systemd service" ./scripts/render_service.sh systemd copy
 
 section "Live Preflight"
-if ./scripts/preflight.sh; then
+if ./scripts/preflight.sh "$MODE"; then
   ok "live preflight passed"
 else
-  warn "live preflight is not ready; this is expected until the hot wallet is funded, Yellowstone is configured, and live mode is armed"
+  warn "live preflight is not ready for $MODE mode; this is expected until required endpoints are configured and live mode is intentionally armed"
 fi
 
 section "Summary"
