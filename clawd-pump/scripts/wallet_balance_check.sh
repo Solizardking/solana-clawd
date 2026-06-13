@@ -105,7 +105,7 @@ if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   fi
 fi
 
-if [[ -z "$balance" ]] && command -v solana >/dev/null 2>&1; then
+if [[ -z "$balance" && "${USE_SOLANA_CLI_BALANCE:-false}" == "true" ]] && command -v solana >/dev/null 2>&1; then
   if solana balance --url "$rpc_http" "$address" >"$balance_output" 2>&1; then
     balance="$(awk '{print $1; exit}' "$balance_output")"
   else
