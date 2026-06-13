@@ -38,6 +38,7 @@ type McpServer = {
 };
 
 type PumpReadiness = {
+  mode?: string;
   ready_to_start?: boolean;
   wallet?: {
     private_key_present?: boolean;
@@ -183,11 +184,16 @@ function maskState(key: string): string {
   return process.env[key] ? "set" : "missing";
 }
 
-async function loadPumpReadiness(): Promise<PumpReadiness | undefined> {
+function parseMode(value: string | undefined): "copy" | "autobuy" | "serve" {
+  if (value === "autobuy" || value === "serve" || value === "copy") return value;
+  return "copy";
+}
+
+async function loadPumpReadiness(mode: "copy" | "autobuy" | "serve"): Promise<PumpReadiness | undefined> {
   const script = path.join(ROOT, "clawd-pump", "scripts", "readiness_json.sh");
   if (!existsSync(script)) return undefined;
 
-  const { stdout } = await execFileAsync(script, {
+  const { stdout } = await execFileAsync(script, [mode], {
     cwd: path.join(ROOT, "clawd-pump"),
     maxBuffer: 1024 * 1024
   });
@@ -203,6 +209,7 @@ function printPumpReadiness(readiness: PumpReadiness | undefined): void {
   }
 
   console.log(`ready_to_start=${readiness.ready_to_start === true}`);
+  console.log(`mode=${readiness.mode || "missing"}`);
   console.log(`wallet_private_key_present=${readiness.wallet?.private_key_present === true}`);
   console.log(`wallet_public_key=${readiness.wallet?.public_key || "missing"}`);
 
@@ -243,6 +250,7 @@ function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
   const endpoints = readiness.endpoints ?? {};
   return [
     "Local pump readiness:",
+    `- mode: ${readiness.mode || "missing"}`,
     `- ready_to_start: ${readiness.ready_to_start === true}`,
     `- wallet_public_key: ${readiness.wallet?.public_key || "missing"}`,
     `- wallet_private_key_present_locally: ${readiness.wallet?.private_key_present === true}`,
@@ -266,6 +274,7 @@ async function validatePreflight(options: {
   mcpUrl: string;
   loadedEnvFiles: string[];
   requireLiveReady: boolean;
+  mode: "copy" | "autobuy" | "serve";
 }): Promise<number> {
   const failures: string[] = [];
   let pumpReadiness: PumpReadiness | undefined;
@@ -300,7 +309,7 @@ async function validatePreflight(options: {
   }
 
   try {
-    pumpReadiness = await loadPumpReadiness();
+    pumpReadiness = await loadPumpReadiness(options.mode);
     if (options.requireLiveReady && pumpReadiness?.ready_to_start !== true) {
       failures.push("local pump readiness is not ready_to_start=true");
     }
@@ -316,6 +325,7 @@ async function validatePreflight(options: {
   console.log(`bootstrap local mcp: ${options.bootstrapLocal}`);
   console.log(`private key forwarded: ${options.includePrivateKey}`);
   console.log(`require live ready: ${options.requireLiveReady}`);
+  console.log(`mode: ${options.mode}`);
   console.log("");
 
   for (const key of [
@@ -445,11 +455,12 @@ async function main(): Promise<void> {
   const bootstrapLocal = hasFlag("--bootstrap-local-mcp");
   const includePrivateKey = hasFlag("--include-private-key");
   const requireLiveReady = hasFlag("--require-live-ready");
+  const mode = parseMode(argValue("--mode"));
   const prompt = argValue("--prompt") ?? "Inspect the available Pump MCP tools, verify RPC/API access, and produce a readiness report. Do not trade.";
   const mcpUrl = argValue("--mcp-url") ?? process.env.PUMP_MCP_URL ?? "http://127.0.0.1:3001/mcp";
 
   const loadedEnvFiles = await loadProjectEnv();
-  const pumpReadiness = await loadPumpReadiness().catch(() => undefined);
+  const pumpReadiness = await loadPumpReadiness(mode).catch(() => undefined);
 
   if (preflight) {
     process.exitCode = await validatePreflight({
@@ -457,7 +468,8 @@ async function main(): Promise<void> {
       bootstrapLocal,
       mcpUrl,
       loadedEnvFiles,
-      requireLiveReady
+      requireLiveReady,
+      mode
     });
     return;
   }
