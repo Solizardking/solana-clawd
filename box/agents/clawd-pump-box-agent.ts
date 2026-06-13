@@ -14,8 +14,12 @@
 import { Agent, Box, BoxApiKey, ClaudeCode } from "@upstash/box";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import path from "node:path";
 import process from "node:process";
+
+const execFileAsync = promisify(execFile);
 
 type BoxLike = Awaited<ReturnType<typeof Box.create>> & {
   files: {
@@ -31,6 +35,17 @@ type McpServer = {
   url?: string;
   package?: string;
   headers?: Record<string, string>;
+};
+
+type PumpReadiness = {
+  ready_to_start?: boolean;
+  wallet?: {
+    private_key_present?: boolean;
+    public_key?: string;
+  };
+  live_gate?: Record<string, string>;
+  endpoints?: Record<string, boolean | string>;
+  checks?: Record<string, { passed?: boolean }>;
 };
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -76,6 +91,9 @@ function agentApiKey(): string | BoxApiKey {
   const mode = process.env.CLAWD_BOX_AGENT_API_KEY;
   if (mode === BoxApiKey.UpstashKey || mode === BoxApiKey.StoredKey) return mode;
   if (process.env.CLAWD_BOX_USE_UPSTASH_MODEL_KEY === "true") return BoxApiKey.UpstashKey;
+  if (!process.env.CLAUDE_KEY && !process.env.ANTHROPIC_API_KEY && process.env.UPSTASH_BOX_API_KEY) {
+    return BoxApiKey.UpstashKey;
+  }
   return process.env.CLAUDE_KEY ?? process.env.ANTHROPIC_API_KEY ?? requiredEnv("CLAUDE_KEY");
 }
 
@@ -165,17 +183,96 @@ function maskState(key: string): string {
   return process.env[key] ? "set" : "missing";
 }
 
-function validatePreflight(options: {
+async function loadPumpReadiness(): Promise<PumpReadiness | undefined> {
+  const script = path.join(ROOT, "clawd-pump", "scripts", "readiness_json.sh");
+  if (!existsSync(script)) return undefined;
+
+  const { stdout } = await execFileAsync(script, {
+    cwd: path.join(ROOT, "clawd-pump"),
+    maxBuffer: 1024 * 1024
+  });
+
+  return JSON.parse(stdout) as PumpReadiness;
+}
+
+function printPumpReadiness(readiness: PumpReadiness | undefined): void {
+  console.log("\nlocal pump readiness:");
+  if (!readiness) {
+    console.log("readiness_json.sh=missing");
+    return;
+  }
+
+  console.log(`ready_to_start=${readiness.ready_to_start === true}`);
+  console.log(`wallet_private_key_present=${readiness.wallet?.private_key_present === true}`);
+  console.log(`wallet_public_key=${readiness.wallet?.public_key || "missing"}`);
+
+  const liveGate = readiness.live_gate ?? {};
+  for (const key of [
+    "live_trading_enabled",
+    "pump_dry_run",
+    "max_trade_sol",
+    "auto_buy_amount_sol",
+    "counter_limit",
+    "risk_management_enabled"
+  ]) {
+    console.log(`${key}=${liveGate[key] || "missing"}`);
+  }
+
+  const endpoints = readiness.endpoints ?? {};
+  for (const key of [
+    "rpc_http_present",
+    "yellowstone_grpc_http_present",
+    "yellowstone_grpc_token_present",
+    "http_health_available"
+  ]) {
+    console.log(`${key}=${endpoints[key] === true}`);
+  }
+
+  const checks = readiness.checks ?? {};
+  for (const key of ["wallet_address", "smoke_live_gates", "service_render", "preflight"]) {
+    console.log(`${key}=${checks[key]?.passed === true}`);
+  }
+}
+
+function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
+  if (!readiness) {
+    return "Local pump readiness: unavailable.";
+  }
+
+  const checks = readiness.checks ?? {};
+  const endpoints = readiness.endpoints ?? {};
+  return [
+    "Local pump readiness:",
+    `- ready_to_start: ${readiness.ready_to_start === true}`,
+    `- wallet_public_key: ${readiness.wallet?.public_key || "missing"}`,
+    `- wallet_private_key_present_locally: ${readiness.wallet?.private_key_present === true}`,
+    `- rpc_http_present: ${endpoints.rpc_http_present === true}`,
+    `- yellowstone_grpc_http_present: ${endpoints.yellowstone_grpc_http_present === true}`,
+    `- live_trading_enabled: ${readiness.live_gate?.live_trading_enabled || "missing"}`,
+    `- pump_dry_run: ${readiness.live_gate?.pump_dry_run || "missing"}`,
+    `- max_trade_sol: ${readiness.live_gate?.max_trade_sol || "missing"}`,
+    `- risk_management_enabled: ${readiness.live_gate?.risk_management_enabled || "missing"}`,
+    `- wallet_address_check: ${checks.wallet_address?.passed === true}`,
+    `- smoke_live_gates_check: ${checks.smoke_live_gates?.passed === true}`,
+    `- service_render_check: ${checks.service_render?.passed === true}`,
+    `- live_preflight_check: ${checks.preflight?.passed === true}`
+  ].join("\n");
+}
+
+async function validatePreflight(options: {
   includePrivateKey: boolean;
   bootstrapLocal: boolean;
   mcpUrl: string;
   loadedEnvFiles: string[];
-}): number {
+  requireLiveReady: boolean;
+}): Promise<number> {
   const failures: string[] = [];
+  let pumpReadiness: PumpReadiness | undefined;
   const managedAgentKey =
     process.env.CLAWD_BOX_AGENT_API_KEY === BoxApiKey.UpstashKey ||
     process.env.CLAWD_BOX_AGENT_API_KEY === BoxApiKey.StoredKey ||
-    process.env.CLAWD_BOX_USE_UPSTASH_MODEL_KEY === "true";
+    process.env.CLAWD_BOX_USE_UPSTASH_MODEL_KEY === "true" ||
+    Boolean(process.env.UPSTASH_BOX_API_KEY);
   const agentKeyPresent = managedAgentKey || Boolean(process.env.CLAUDE_KEY || process.env.ANTHROPIC_API_KEY);
   const rpcPresent = Boolean(process.env.SOLANA_RPC_URL || process.env.SOLANA_RPC_URLS || process.env.RPC_HTTP);
 
@@ -201,11 +298,23 @@ function validatePreflight(options: {
     }
   }
 
+  try {
+    pumpReadiness = await loadPumpReadiness();
+    if (options.requireLiveReady && pumpReadiness.ready_to_start !== true) {
+      failures.push("local pump readiness is not ready_to_start=true");
+    }
+  } catch (error) {
+    failures.push(
+      `local pump readiness failed: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+
   console.log("clawd-pump Box preflight");
   console.log(`loaded env files: ${options.loadedEnvFiles.length ? options.loadedEnvFiles.join(", ") : "none"}`);
   console.log(`mcp url: ${options.mcpUrl}`);
   console.log(`bootstrap local mcp: ${options.bootstrapLocal}`);
   console.log(`private key forwarded: ${options.includePrivateKey}`);
+  console.log(`require live ready: ${options.requireLiveReady}`);
   console.log("");
 
   for (const key of [
@@ -230,6 +339,8 @@ function validatePreflight(options: {
   ]) {
     console.log(`${key}=${maskState(key)}`);
   }
+
+  printPumpReadiness(pumpReadiness);
 
   if (failures.length) {
     console.log("\nfailures:");
@@ -302,10 +413,17 @@ async function bootstrapLocalMcp(box: BoxLike): Promise<void> {
   );
 }
 
-function buildPrompt(userPrompt: string, mcpUrl: string, includePrivateKey: boolean): string {
+function buildPrompt(
+  userPrompt: string,
+  mcpUrl: string,
+  includePrivateKey: boolean,
+  readiness: PumpReadiness | undefined
+): string {
   return `You are Clawd Pump running in an Upstash Box.
 
 Use the solana-clawd-pump MCP server at ${mcpUrl} for Pump SDK transaction-building, quotes, token metadata, fee, AMM, and analytics workflows.
+
+${readinessPromptSummary(readiness)}
 
 Operational policy:
 - Observe and build transaction plans by default.
@@ -325,13 +443,21 @@ async function main(): Promise<void> {
   const noDelete = hasFlag("--no-delete") || keepAlive;
   const bootstrapLocal = hasFlag("--bootstrap-local-mcp");
   const includePrivateKey = hasFlag("--include-private-key");
+  const requireLiveReady = hasFlag("--require-live-ready");
   const prompt = argValue("--prompt") ?? "Inspect the available Pump MCP tools, verify RPC/API access, and produce a readiness report. Do not trade.";
   const mcpUrl = argValue("--mcp-url") ?? process.env.PUMP_MCP_URL ?? "http://127.0.0.1:3001/mcp";
 
   const loadedEnvFiles = await loadProjectEnv();
+  const pumpReadiness = await loadPumpReadiness().catch(() => undefined);
 
   if (preflight) {
-    process.exitCode = validatePreflight({ includePrivateKey, bootstrapLocal, mcpUrl, loadedEnvFiles });
+    process.exitCode = await validatePreflight({
+      includePrivateKey,
+      bootstrapLocal,
+      mcpUrl,
+      loadedEnvFiles,
+      requireLiveReady
+    });
     return;
   }
 
@@ -363,7 +489,7 @@ async function main(): Promise<void> {
     }
 
     const run = await box.agent.stream({
-      prompt: buildPrompt(prompt, mcpUrl, includePrivateKey)
+      prompt: buildPrompt(prompt, mcpUrl, includePrivateKey, pumpReadiness)
     });
 
     for await (const chunk of run) {

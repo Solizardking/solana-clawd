@@ -110,6 +110,7 @@ Root package shortcuts:
 ```bash
 npm run pump:preflight
 npm run pump:doctor
+npm run pump:readiness
 npm run pump:status
 npm run pump:control -- status
 npm run pump:smoke
@@ -145,6 +146,14 @@ Full read-only readiness report:
 ```bash
 ./scripts/doctor_24_7.sh
 ```
+
+Machine-readable readiness report for a box supervisor or external monitor:
+
+```bash
+./scripts/readiness_json.sh
+```
+
+The JSON report does not print private keys. `ready_to_start` is only `true` when live preflight, gate smoke checks, and service rendering all pass.
 
 ## Box Service Install
 
@@ -187,6 +196,14 @@ Preflight Box credentials and MCP wiring without printing secret values or creat
 ```bash
 npm run box:pump:preflight -- --bootstrap-local-mcp
 ```
+
+Require both Box credentials and local live trading readiness:
+
+```bash
+npm run box:pump:preflight:live -- --bootstrap-local-mcp
+```
+
+The strict live preflight fails until `./scripts/readiness_json.sh` reports `ready_to_start=true`.
 
 Model authentication can use either a direct model key:
 
@@ -243,6 +260,7 @@ Do not put more SOL in the hot wallet than the max loss you accept for unattende
 - The runner restarts after process exit with a 10 second delay.
 - `cargo check` must pass before each supervised start.
 - `scripts/doctor_24_7.sh` runs the wallet, status, smoke, service render, and preflight checks without funding, arming, installing, or starting the bot.
+- `scripts/readiness_json.sh` emits a machine-readable readiness summary for box supervisors without printing secret values.
 - `scripts/smoke_live_gates.sh` verifies unarmed live commands stop before wallet/RPC runtime initialization.
 - HTTP trading endpoints are blocked while `PUMP_DRY_RUN=true` or `LIVE_TRADING_ENABLED` is not `true`.
 - `scripts/status.sh` reports live gate state, process state, optional HTTP health, and recent log files without printing private keys.

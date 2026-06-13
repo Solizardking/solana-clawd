@@ -6,6 +6,7 @@
   "scripts": {
     "agent:pump": "tsx agents/clawd-pump-box-agent.ts",
     "pump:preflight": "tsx agents/clawd-pump-box-agent.ts --preflight",
+    "pump:preflight:live": "tsx agents/clawd-pump-box-agent.ts --preflight --require-live-ready",
     "agent:perps": "tsx agents/clawd-perps-box-agent.ts",
     "agent:screener": "tsx agents/clawd-pump-screener.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
