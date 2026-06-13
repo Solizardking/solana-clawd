@@ -313,6 +313,15 @@ async function validatePreflight(options: {
     if (options.requireLiveReady && pumpReadiness?.ready_to_start !== true) {
       failures.push("local pump readiness is not ready_to_start=true");
     }
+    if (
+      options.requireLiveReady &&
+      (
+        pumpReadiness?.live_gate?.live_trading_enabled !== "true" ||
+        pumpReadiness?.live_gate?.pump_dry_run !== "false"
+      )
+    ) {
+      failures.push("live trading gates are not armed: require LIVE_TRADING_ENABLED=true and PUMP_DRY_RUN=false");
+    }
   } catch (error) {
     failures.push(
       `local pump readiness failed: ${error instanceof Error ? error.message : String(error)}`

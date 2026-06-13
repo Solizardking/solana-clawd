@@ -225,6 +225,7 @@ npm run box:pump:preflight:live -- --bootstrap-local-mcp --mode serve
 ```
 
 The strict live preflight fails until `./scripts/readiness_json.sh` reports `ready_to_start=true`.
+For `serve` mode, `ready_to_start=true` only means the HTTP health/control server can start; strict Box live preflight also requires `LIVE_TRADING_ENABLED=true` and `PUMP_DRY_RUN=false` before any trade endpoint is considered live-ready.
 
 Model authentication can use either a direct model key:
 
