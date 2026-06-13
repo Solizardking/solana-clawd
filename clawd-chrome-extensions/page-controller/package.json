@@ -39,6 +39,7 @@
         "ai-motion": "^0.4.8"
     },
     "devDependencies": {
+        "@microsoft/api-extractor": "^7.58.9",
         "@types/node": "^25.5.0",
         "typescript": "^6.0.2",
         "unplugin-dts": "^1.0.0-beta.6",

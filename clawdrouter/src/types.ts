@@ -201,6 +201,9 @@ export type ModelProvider =
   | "nvidia"
   | "moonshot"
   | "minimax"
+  | "sourceful"
+  | "qwen"
+  | "nex-agi"
   | "zai"
   | "redpill"
   | "solrouter"
@@ -545,6 +548,7 @@ export interface ClawdRouterConfig {
   openRouterSiteUrl: string;
   openRouterCategories: string[];
   openRouterEnabled: boolean;
+  openRouterModelAliases: Record<string, string>;
 
   // ── x402 Payment Config
   x402PayTo: string;
@@ -563,6 +567,7 @@ export interface ClawdRouterConfig {
   authMode: "local" | "platform";
   validationUrl: string;
   internalSecret: string;
+  apiKeyStorePath: string;
 
   // ── Privacy / TEE Routing
   redpillApiKey: string;

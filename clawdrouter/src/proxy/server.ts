@@ -32,6 +32,13 @@ import {
   type ClawdHolderTier,
 } from "../token/clawd-gate.js";
 import { extractApiKey, isPlatformAuthEnabled, validatePlatformApiKey } from "../auth/platform.js";
+import {
+  issueLocalApiKey,
+  listLocalApiKeys,
+  recordLocalApiKeyUsage,
+  validateLocalApiKey,
+  type LocalApiKeyRecord,
+} from "../auth/api-keys.js";
 import { buildPerpsRelay, buildRelaySnapshot, buildSolanaRelay, buildX402ApiRelay } from "../relay/aggregator.js";
 
 type ChatAuthContext = {
@@ -40,6 +47,7 @@ type ChatAuthContext = {
   holderTier: ClawdHolderTier;
   clawdBalance: number;
   maxRequestsPerHour: number;
+  localApiKeyId?: string;
   apiKeyPrefix?: string;
   userId?: string;
   walletAddress?: string | null;
@@ -123,7 +131,7 @@ export class ClawdRouterProxy {
   private async handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Payment, X-Clawd-Wallet, X-OpenRouter-Cache, X-OpenRouter-Experimental-Metadata");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key, X-Payment, X-Clawd-Wallet, X-ClawdRouter-Internal-Secret, X-OpenRouter-Cache, X-OpenRouter-Experimental-Metadata");
 
     if (req.method === "OPTIONS") {
       res.writeHead(204);
@@ -134,8 +142,11 @@ export class ClawdRouterProxy {
     const url = req.url ?? "/";
     if (url === "/" || url === "/health") return this.handleHealth(res);
     if (url === "/v1/models" || url === "/models") return this.handleModels(req, res);
+    if (url === "/admin" || url === "/admin/") return this.handleAdminApp(res);
     if (url === "/v1/chat/completions" || url === "/chat/completions") return this.handleChatCompletion(req, res);
     if (url === "/v1/stats" || url === "/stats") return this.handleStats(res);
+    if (url === "/v1/usage" || url === "/usage") return this.handleUsage(req, res);
+    if (url === "/v1/api-keys" || url === "/api-keys") return this.handleApiKeys(req, res);
     if (url === "/v1/clawd/status" || url === "/clawd/status") return this.handleClawdStatus(res);
     if (url === "/v1/clawd/access" || url === "/clawd/access") return this.handleAccessCheck(req, res);
     if (url === "/v1/relay" || url === "/relay") return this.handleRelay(res);
@@ -175,6 +186,7 @@ export class ClawdRouterProxy {
       openRouter: {
         enabled: this.config.openRouterEnabled,
         configured: !!this.config.openRouterApiKey,
+        models: this.config.openRouterModelAliases,
       },
       controlPlane: {
         authMode: this.config.authMode,
@@ -241,6 +253,17 @@ export class ClawdRouterProxy {
         totalModels: models.length,
       },
     });
+  }
+
+  private handleAdminApp(res: ServerResponse): void {
+    const html = renderAdminApp();
+    res.writeHead(200, {
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": Buffer.byteLength(html),
+      "Cache-Control": "no-store",
+      "X-Robots-Tag": "noindex, nofollow",
+    });
+    res.end(html);
   }
 
   // ── Chat Completions ──────────────────────────────────────────────
@@ -338,7 +361,7 @@ export class ClawdRouterProxy {
         console.log(`  → ${model.name} (${model.id})${fallback ? " [fallback]" : ""}`);
       }
     } else {
-      const resolved = resolveModelAlias(requestedModel) ?? requestedModel;
+      const resolved = this.resolveConfiguredOpenRouterModel(resolveModelAlias(requestedModel) ?? requestedModel);
       const model = getModel(resolved);
       routedModel = model?.id ?? resolved;
 
@@ -364,6 +387,17 @@ export class ClawdRouterProxy {
       }
     }
 
+    if (this.config.openRouterEnabled && this.config.openRouterApiKey && !this.canUseOpenRouter(auth.context)) {
+      sendJSON(res, 403, {
+        error: {
+          message: "OpenRouter-backed routing is restricted to registered users or $CLAWD holders.",
+          type: "forbidden",
+          x_clawd: { holderTier: auth.context.holderTier, authMode: auth.context.mode },
+        },
+      });
+      return;
+    }
+
     if (this.isPrivacyRoute(routedModel)) {
       return this.forwardToPrivacy(request, routedModel, routingMeta, auth.context, res);
     }
@@ -381,6 +415,32 @@ export class ClawdRouterProxy {
     | { ok: true; context: ChatAuthContext }
     | { ok: false; status: number; message: string; type: string; reason?: string }
   > {
+    const apiKey = extractApiKey(req.headers);
+
+    if (apiKey?.startsWith("clawd_sk_")) {
+      const localRecord = await validateLocalApiKey(
+        this.config.apiKeyStorePath,
+        apiKey,
+        ["inference:write"],
+        this.config.internalSecret,
+      );
+      if (localRecord) {
+        return {
+          ok: true,
+          context: {
+            mode: "local",
+            rateLimitKey: localRecord.id,
+            holderTier: localRecord.holderTier,
+            clawdBalance: 0,
+            maxRequestsPerHour: normalizeRateLimit(tierLimit(localRecord.holderTier)),
+            localApiKeyId: localRecord.id,
+            apiKeyPrefix: localRecord.keyPrefix,
+            walletAddress: localRecord.walletAddress,
+          },
+        };
+      }
+    }
+
     if (!isPlatformAuthEnabled(this.config)) {
       const status = this.holderStatus;
       return {
@@ -396,7 +456,6 @@ export class ClawdRouterProxy {
       };
     }
 
-    const apiKey = extractApiKey(req.headers);
     if (!apiKey || !apiKey.startsWith("clawd_sk_")) {
       return {
         ok: false,
@@ -415,6 +474,16 @@ export class ClawdRouterProxy {
         message: validation.result.error,
         type: validation.status === 403 ? "forbidden" : "authentication_error",
         reason: validation.result.reason,
+      };
+    }
+
+    if (!validation.result.clawd.serviceAccess) {
+      return {
+        ok: false,
+        status: 403,
+        message: "This registered user is not allowed to use ClawdRouter.",
+        type: "forbidden",
+        reason: "service_access_denied",
       };
     }
 
@@ -484,6 +553,7 @@ export class ClawdRouterProxy {
 
       // Non-streaming
       this.updateStats(routingMeta, upstreamResponse.usage);
+      await this.updateApiKeyUsage(auth, routingMeta, upstreamResponse.usage);
 
       res.setHeader("X-ClawdRouter-Model", routedModel);
       res.setHeader("X-ClawdRouter-Tier", routingMeta.tier);
@@ -678,6 +748,75 @@ export class ClawdRouterProxy {
     });
   }
 
+  private async handleUsage(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    const auth = await this.authenticateReadRequest(req);
+    if (!auth.ok) {
+      sendJSON(res, auth.status, { error: { message: auth.message, type: auth.type } });
+      return;
+    }
+
+    const keys = await listLocalApiKeys(this.config.apiKeyStorePath);
+    sendJSON(res, 200, {
+      usage: this.stats,
+      apiKey: auth.context.apiKeyPrefix ? withRemaining(keys.find((key) => key.keyPrefix === auth.context.apiKeyPrefix) ?? null) : null,
+      localKeys: auth.admin ? keys.map(withRemaining) : undefined,
+    });
+  }
+
+  private async handleApiKeys(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    if (!this.hasAdminSecret(req)) {
+      sendJSON(res, 401, { error: { message: "X-ClawdRouter-Internal-Secret is required.", type: "authentication_required" } });
+      return;
+    }
+
+    if (req.method === "GET") {
+      sendJSON(res, 200, { object: "list", data: await listLocalApiKeys(this.config.apiKeyStorePath) });
+      return;
+    }
+
+    if (req.method !== "POST") {
+      sendJSON(res, 405, { error: { message: "Method not allowed", type: "invalid_request" } });
+      return;
+    }
+
+    const payload = await readJsonBody(req);
+    const walletAddress = String(payload.walletAddress ?? payload.wallet ?? "").trim();
+    if (!walletAddress) {
+      sendJSON(res, 400, { error: { message: "walletAddress is required.", type: "invalid_request" } });
+      return;
+    }
+
+    const status = await checkHolderStatusCached(
+      walletAddress,
+      this.config.solanaRpcUrl,
+      this.config.heliusApiKey || undefined,
+      this.config.holderThresholds,
+    );
+
+    if (status.tier === "FREE") {
+      sendJSON(res, 403, { error: { message: "API keys can only be issued to $CLAWD holders.", type: "forbidden" } });
+      return;
+    }
+
+    const issued = await issueLocalApiKey(this.config.apiKeyStorePath, {
+      name: String(payload.name ?? "ClawdRouter key"),
+      walletAddress,
+      ownerUserId: typeof payload.ownerUserId === "string" ? payload.ownerUserId : null,
+      ownerAuthProvider: typeof payload.ownerAuthProvider === "string" ? payload.ownerAuthProvider : null,
+      ownerTokenType: typeof payload.ownerTokenType === "string" ? payload.ownerTokenType : null,
+      holderTier: status.tier,
+      scopes: Array.isArray(payload.scopes) ? payload.scopes.map(String) : undefined,
+      signingSecret: this.config.internalSecret,
+      monthlyLimitUSDC: parseOptionalNumber(payload.monthlyLimitUSDC ?? payload.limitUSDC),
+    });
+
+    sendJSON(res, 201, {
+      apiKey: issued.apiKey,
+      key: issued.record,
+      warning: "Store this key now. Only its hash is retained by ClawdRouter.",
+    });
+  }
+
   // ── Relay ─────────────────────────────────────────────────────────
 
   private async handleRelay(res: ServerResponse): Promise<void> {
@@ -740,6 +879,7 @@ export class ClawdRouterProxy {
   }
 
   private isPrivacyRoute(modelId: string): boolean {
+    if (Object.values(this.config.openRouterModelAliases).includes(modelId)) return false;
     if (this.config.profile === "private") return true;
     const privacyPrefixes = [
       "solrouter/",
@@ -754,6 +894,66 @@ export class ClawdRouterProxy {
       "minimax/minimax-m",
     ];
     return privacyPrefixes.some((prefix) => modelId.startsWith(prefix));
+  }
+
+  private resolveConfiguredOpenRouterModel(model: string): string {
+    const normalized = model.toLowerCase().replace(/^openrouter[/:]/, "").replace(/-/g, "_");
+    return this.config.openRouterModelAliases[normalized] ?? model;
+  }
+
+  private canUseOpenRouter(auth: ChatAuthContext): boolean {
+    return auth.mode === "platform" || auth.holderTier !== "FREE" || Boolean(auth.localApiKeyId);
+  }
+
+  private async authenticateReadRequest(req: IncomingMessage): Promise<
+    | { ok: true; context: ChatAuthContext; admin: boolean }
+    | { ok: false; status: number; message: string; type: string }
+  > {
+    if (this.hasAdminSecret(req)) {
+      return {
+        ok: true,
+        admin: true,
+        context: {
+          mode: "local",
+          rateLimitKey: "admin",
+          holderTier: "WHALE",
+          clawdBalance: 0,
+          maxRequestsPerHour: Infinity,
+        },
+      };
+    }
+
+    const auth = await this.authenticateChatRequest(req);
+    if (!auth.ok) return auth;
+    return { ok: true, admin: false, context: auth.context };
+  }
+
+  private hasAdminSecret(req: IncomingMessage): boolean {
+    const provided = req.headers["x-clawdrouter-internal-secret"];
+    const secret = Array.isArray(provided) ? provided[0] : provided;
+    return Boolean(this.config.internalSecret && secret && secret === this.config.internalSecret);
+  }
+
+  private async updateApiKeyUsage(
+    auth: ChatAuthContext,
+    meta: RoutingMeta,
+    usage?: { prompt_tokens?: number; completion_tokens?: number },
+  ): Promise<void> {
+    if (!auth.localApiKeyId) return;
+    await recordLocalApiKeyUsage(this.config.apiKeyStorePath, auth.localApiKeyId, {
+      inputTokens: usage?.prompt_tokens ?? 0,
+      outputTokens: usage?.completion_tokens ?? 0,
+      costUSDC: meta.estimatedCost,
+    }, {
+      keyPrefix: auth.apiKeyPrefix ?? auth.localApiKeyId,
+      walletAddress: auth.walletAddress ?? "",
+      ownerUserId: auth.userId ?? null,
+      ownerAuthProvider: auth.mode,
+      ownerTokenType: null,
+      holderTier: auth.holderTier,
+      scopes: ["inference:write", "usage:read"],
+      monthlyLimitUSDC: null,
+    });
   }
 
   private async forwardToPrivacy(
@@ -925,10 +1125,50 @@ function readBody(req: IncomingMessage): Promise<string> {
   });
 }
 
+async function readJsonBody(req: IncomingMessage): Promise<Record<string, unknown>> {
+  const body = await readBody(req);
+  if (!body.trim()) return {};
+  return JSON.parse(body) as Record<string, unknown>;
+}
+
 function normalizeRateLimit(value: number | null | undefined): number {
   if (value === null || value === undefined || value === Infinity) return Infinity;
   if (!Number.isFinite(value) || value <= 0) return 20;
   return Math.floor(value);
+}
+
+function parseOptionalNumber(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function withRemaining<T extends Omit<LocalApiKeyRecord, "keyHash"> | null>(record: T): T extends null ? null : T & {
+  remainingUSDC: number | null;
+  usagePercent: number | null;
+} {
+  if (!record) return null as T extends null ? null : never;
+  const limit = record.monthlyLimitUSDC ?? null;
+  const used = record.usage.costUSDC;
+  const remainingUSDC = limit === null ? null : Math.max(0, limit - used);
+  const usagePercent = limit && limit > 0 ? Math.min(100, (used / limit) * 100) : null;
+  return { ...record, remainingUSDC, usagePercent } as T extends null ? null : T & {
+    remainingUSDC: number | null;
+    usagePercent: number | null;
+  };
+}
+
+function tierLimit(tier: ClawdHolderTier): number {
+  switch (tier) {
+    case "WHALE":
+      return Infinity;
+    case "DIAMOND":
+      return 500;
+    case "HOLDER":
+      return 100;
+    case "FREE":
+      return 20;
+  }
 }
 
 function createEmptyStats(): UsageStats {
@@ -945,4 +1185,191 @@ function createEmptyStats(): UsageStats {
     cacheMisses: 0,
     serverToolCalls: 0,
   };
+}
+
+function renderAdminApp(): string {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ClawdRouter Admin</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0d1117; --panel:#151b23; --line:#30363d; --text:#e6edf3; --muted:#8b949e; --accent:#2f81f7; --ok:#3fb950; --warn:#d29922; --bad:#f85149; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    header { border-bottom:1px solid var(--line); padding:18px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    h1 { margin:0; font-size:18px; font-weight:650; letter-spacing:0; }
+    main { max-width:1180px; margin:0 auto; padding:24px; display:grid; gap:18px; }
+    .grid { display:grid; grid-template-columns: 360px 1fr; gap:18px; align-items:start; }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; }
+    .panel h2 { margin:0 0 14px; font-size:14px; font-weight:650; color:#f0f6fc; }
+    label { display:block; margin:12px 0 6px; color:var(--muted); font-size:12px; }
+    input { width:100%; border:1px solid var(--line); border-radius:6px; background:#0d1117; color:var(--text); padding:10px 11px; font:inherit; }
+    button { border:1px solid #1f6feb; background:var(--accent); color:white; border-radius:6px; padding:9px 12px; font-weight:650; cursor:pointer; }
+    button.secondary { background:#21262d; border-color:var(--line); }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .row > * { flex:1; }
+    .status { color:var(--muted); min-height:20px; }
+    .secret { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break:break-all; background:#0d1117; border:1px solid var(--line); border-radius:6px; padding:10px; display:none; }
+    .cards { display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:12px; }
+    .metric { background:#0d1117; border:1px solid var(--line); border-radius:8px; padding:12px; }
+    .metric span { display:block; color:var(--muted); font-size:12px; }
+    .metric strong { display:block; margin-top:4px; font-size:20px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { text-align:left; border-bottom:1px solid var(--line); padding:10px 8px; vertical-align:top; }
+    th { color:var(--muted); font-size:12px; font-weight:600; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color:#c9d1d9; }
+    .bar { height:8px; border-radius:999px; background:#30363d; overflow:hidden; margin-top:6px; }
+    .bar > i { display:block; height:100%; background:var(--ok); width:0%; }
+    .muted { color:var(--muted); }
+    .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:2px 8px; font-size:12px; }
+    @media (max-width: 880px) { .grid, .cards { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ClawdRouter Admin</h1>
+    <div class="row" style="max-width:520px">
+      <input id="adminSecret" type="password" autocomplete="off" placeholder="Internal admin secret">
+      <button id="saveSecret" class="secondary">Unlock</button>
+    </div>
+  </header>
+  <main>
+    <section class="cards">
+      <div class="metric"><span>Total requests</span><strong id="totalRequests">-</strong></div>
+      <div class="metric"><span>Input tokens</span><strong id="inputTokens">-</strong></div>
+      <div class="metric"><span>Output tokens</span><strong id="outputTokens">-</strong></div>
+      <div class="metric"><span>Estimated USDC</span><strong id="totalCost">-</strong></div>
+    </section>
+    <section class="grid">
+      <form id="issueForm" class="panel">
+        <h2>Issue Holder API Key</h2>
+        <label for="name">Label</label>
+        <input id="name" name="name" placeholder="trading desk, user email, customer id">
+        <label for="walletAddress">Holder wallet</label>
+        <input id="walletAddress" name="walletAddress" required placeholder="Solana wallet address">
+        <label for="monthlyLimitUSDC">Monthly limit, USDC</label>
+        <input id="monthlyLimitUSDC" name="monthlyLimitUSDC" type="number" min="0" step="0.01" placeholder="optional">
+        <div class="row" style="margin-top:14px">
+          <button id="issueButton" type="submit">Issue key</button>
+          <button id="refreshButton" type="button" class="secondary">Refresh</button>
+        </div>
+        <p id="status" class="status"></p>
+        <div id="newKey" class="secret"></div>
+      </form>
+      <section class="panel">
+        <h2>Issued Keys & Usage</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Recipient</th>
+              <th>Wallet</th>
+              <th>Tier</th>
+              <th>Usage</th>
+              <th>Remaining</th>
+            </tr>
+          </thead>
+          <tbody id="keyRows">
+            <tr><td colspan="5" class="muted">Enter the admin secret to load usage.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+  </main>
+  <script>
+    const secretInput = document.getElementById('adminSecret');
+    const saveSecret = document.getElementById('saveSecret');
+    const form = document.getElementById('issueForm');
+    const statusEl = document.getElementById('status');
+    const newKeyEl = document.getElementById('newKey');
+    const refreshButton = document.getElementById('refreshButton');
+    const rows = document.getElementById('keyRows');
+    secretInput.value = sessionStorage.getItem('clawdrouter_admin_secret') || '';
+
+    function headers() {
+      return {
+        'Content-Type': 'application/json',
+        'X-ClawdRouter-Internal-Secret': secretInput.value
+      };
+    }
+    function fmt(n, digits = 4) {
+      return Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: digits });
+    }
+    function dollars(n) {
+      return '$' + fmt(n, 6);
+    }
+    function setStatus(text) {
+      statusEl.textContent = text;
+    }
+    async function refresh() {
+      if (!secretInput.value) {
+        setStatus('Admin secret required.');
+        return;
+      }
+      sessionStorage.setItem('clawdrouter_admin_secret', secretInput.value);
+      setStatus('Loading usage...');
+      const res = await fetch('/v1/usage', { headers: headers() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || 'Usage request failed');
+      document.getElementById('totalRequests').textContent = fmt(data.usage.totalRequests, 0);
+      document.getElementById('inputTokens').textContent = fmt(data.usage.totalInputTokens, 0);
+      document.getElementById('outputTokens').textContent = fmt(data.usage.totalOutputTokens, 0);
+      document.getElementById('totalCost').textContent = dollars(data.usage.totalCostUSDC);
+      renderRows(data.localKeys || []);
+      setStatus('Loaded.');
+    }
+    function renderRows(keys) {
+      if (!keys.length) {
+        rows.innerHTML = '<tr><td colspan="5" class="muted">No issued local keys yet.</td></tr>';
+        return;
+      }
+      rows.innerHTML = keys.map((key) => {
+        const limit = key.monthlyLimitUSDC == null ? null : Number(key.monthlyLimitUSDC);
+        const used = Number(key.usage?.costUSDC || 0);
+        const pct = limit && limit > 0 ? Math.min(100, used / limit * 100) : 0;
+        const remaining = limit == null ? 'unlimited' : dollars(Math.max(0, limit - used));
+        return '<tr>' +
+          '<td><strong>' + escapeHtml(key.name || key.id) + '</strong><br><code>' + escapeHtml(key.keyPrefix) + '...</code><br><span class="muted">' + escapeHtml(key.createdAt || '') + '</span></td>' +
+          '<td><code>' + escapeHtml(key.walletAddress || '-') + '</code></td>' +
+          '<td><span class="pill">' + escapeHtml(key.holderTier || '-') + '</span></td>' +
+          '<td>' + fmt(key.usage?.requests || 0, 0) + ' req<br>' + fmt(key.usage?.inputTokens || 0, 0) + ' in / ' + fmt(key.usage?.outputTokens || 0, 0) + ' out<br>' + dollars(used) + '<div class="bar"><i style="width:' + pct + '%"></i></div></td>' +
+          '<td>' + remaining + '<br><span class="muted">' + (limit == null ? 'no cap' : dollars(limit) + ' cap') + '</span></td>' +
+        '</tr>';
+      }).join('');
+    }
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (ch) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+    }
+    saveSecret.addEventListener('click', refresh);
+    refreshButton.addEventListener('click', refresh);
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!secretInput.value) {
+        setStatus('Admin secret required.');
+        return;
+      }
+      newKeyEl.style.display = 'none';
+      setStatus('Checking holder and issuing key...');
+      const body = {
+        name: document.getElementById('name').value || 'ClawdRouter key',
+        walletAddress: document.getElementById('walletAddress').value,
+        monthlyLimitUSDC: document.getElementById('monthlyLimitUSDC').value || null
+      };
+      const res = await fetch('/v1/api-keys', { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus(data.error?.message || 'Failed to issue key.');
+        return;
+      }
+      newKeyEl.textContent = data.apiKey;
+      newKeyEl.style.display = 'block';
+      setStatus('Key issued. Copy it now; only the hash is stored.');
+      await refresh();
+    });
+  </script>
+</body>
+</html>`;
 }

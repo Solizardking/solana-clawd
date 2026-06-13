@@ -11,7 +11,7 @@ xAI Grok powered Solana agentic tools with 31 MCP tools.
 ## Installation
 
 ```bash
-cd nemoclawd-mcp
+cd nemo-clawd/nemo-clawd-mcp
 npm install
 npm run build
 ```
@@ -26,7 +26,7 @@ Add to your MCP config:
 {
   "nemoclawd": {
     "command": "node",
-    "args": ["/path/to/nemoClawd/nemoclawd-mcp/dist/index.js"]
+    "args": ["/path/to/solana-clawd/nemo-clawd/nemo-clawd-mcp/dist/index.js"]
   }
 }
 ```
@@ -112,7 +112,7 @@ Connect via:
 ## Deploy to Fly.io
 
 ```bash
-cd nemoclawd-mcp
+cd nemo-clawd/nemo-clawd-mcp
 fly launch --config fly.toml
 fly secrets set XAI_API_KEY=your-key HELIUS_API_KEY=your-key
 fly volumes extend vol_xxx -s 1

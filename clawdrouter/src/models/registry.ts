@@ -236,6 +236,27 @@ const BUDGET_MODELS: ModelEntry[] = [
     contextWindow: 262_000, features: ['reasoning', 'vision', 'agentic', 'tools'], tier: 'budget',
     qualityScore: 75, speedMs: 500, enabled: true, free: false,
   },
+  {
+    id: 'nex-agi/nex-n2-pro:free',
+    provider: 'nex-agi', name: 'Nex N2 Pro Free',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 131_000, features: ['reasoning', 'tools'], tier: 'budget',
+    qualityScore: 68, speedMs: 700, enabled: true, free: true,
+  },
+  {
+    id: 'nvidia/nemotron-3.5-content-safety:free',
+    provider: 'nvidia', name: 'Nemotron 3.5 Content Safety Free',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 131_000, features: ['reasoning'], tier: 'budget',
+    qualityScore: 64, speedMs: 650, enabled: true, free: true,
+  },
+  {
+    id: 'nvidia/nemotron-3-ultra-550b-a55b:free',
+    provider: 'nvidia', name: 'Nemotron 3 Ultra 550B Free',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 131_000, features: ['reasoning'], tier: 'budget',
+    qualityScore: 78, speedMs: 1300, enabled: true, free: true,
+  },
 ];
 
 // ── Mid-Range Models ($0.001–$0.01/request) ─────────────────────────
@@ -360,6 +381,34 @@ const MID_MODELS: ModelEntry[] = [
     contextWindow: 400_000, features: ['reasoning', 'vision', 'agentic', 'tools'], tier: 'mid',
     qualityScore: 93, speedMs: 550, enabled: true, free: false,
   },
+  {
+    id: 'moonshotai/kimi-k2.7-code',
+    provider: 'moonshot', name: 'Kimi K2.7 Code',
+    inputPricePerM: 1.00, outputPricePerM: 5.00,
+    contextWindow: 262_000, features: ['code', 'agentic', 'tools'], tier: 'mid',
+    qualityScore: 86, speedMs: 550, enabled: true, free: false,
+  },
+  {
+    id: 'sourceful/riverflow-v2.5-fast',
+    provider: 'sourceful', name: 'Riverflow v2.5 Fast',
+    inputPricePerM: 0.80, outputPricePerM: 3.00,
+    contextWindow: 131_000, features: ['agentic', 'tools'], tier: 'mid',
+    qualityScore: 80, speedMs: 350, enabled: true, free: false,
+  },
+  {
+    id: 'qwen/qwen3.7-plus',
+    provider: 'qwen', name: 'Qwen 3.7 Plus',
+    inputPricePerM: 1.20, outputPricePerM: 4.80,
+    contextWindow: 131_000, features: ['reasoning', 'code', 'tools'], tier: 'mid',
+    qualityScore: 84, speedMs: 450, enabled: true, free: false,
+  },
+  {
+    id: 'minimax/minimax-m3',
+    provider: 'minimax', name: 'MiniMax M3',
+    inputPricePerM: 1.00, outputPricePerM: 4.00,
+    contextWindow: 205_000, features: ['reasoning', 'agentic', 'tools'], tier: 'mid',
+    qualityScore: 82, speedMs: 500, enabled: true, free: false,
+  },
 ];
 
 // ── Premium Models ($0.01+/request) ─────────────────────────────────
@@ -385,6 +434,20 @@ const PREMIUM_MODELS: ModelEntry[] = [
     inputPricePerM: 5.00, outputPricePerM: 25.00,
     contextWindow: 200_000, features: ['reasoning', 'vision', 'agentic', 'tools', 'solana'], tier: 'premium',
     qualityScore: 97, speedMs: 800, enabled: true, free: false,
+  },
+  {
+    id: '~anthropic/claude-fable-latest',
+    provider: 'anthropic', name: 'Claude Fable Latest',
+    inputPricePerM: 5.00, outputPricePerM: 25.00,
+    contextWindow: 200_000, features: ['reasoning', 'agentic', 'tools'], tier: 'premium',
+    qualityScore: 96, speedMs: 800, enabled: true, free: false,
+  },
+  {
+    id: 'sourceful/riverflow-v2.5-pro',
+    provider: 'sourceful', name: 'Riverflow v2.5 Pro',
+    inputPricePerM: 3.00, outputPricePerM: 12.00,
+    contextWindow: 131_000, features: ['reasoning', 'agentic', 'tools'], tier: 'premium',
+    qualityScore: 90, speedMs: 650, enabled: true, free: false,
   },
   {
     id: 'google/gemini-3.5-flash',
@@ -676,6 +739,17 @@ export function resolveModelAlias(alias: string): string | null {
     'gemini': 'google/gemini-2.5-pro',
     'flash': 'google/gemini-2.5-flash',
     'kimi': 'moonshot/kimi-k2.5',
+    'openrouter/fable': '~anthropic/claude-fable-latest',
+    'openrouter/kimi': 'moonshotai/kimi-k2.7-code',
+    'openrouter/nx-free': 'nex-agi/nex-n2-pro:free',
+    'openrouter/source': 'sourceful/riverflow-v2.5-pro',
+    'openrouter/source-fast': 'sourceful/riverflow-v2.5-fast',
+    'openrouter/nemo-free': 'nvidia/nemotron-3.5-content-safety:free',
+    'openrouter/nemo-ultra': 'nvidia/nemotron-3-ultra-550b-a55b:free',
+    'openrouter/qwen': 'qwen/qwen3.7-plus',
+    'openrouter/mini': 'minimax/minimax-m3',
+    'fable': '~anthropic/claude-fable-latest',
+    'riverflow': 'sourceful/riverflow-v2.5-pro',
     'br-sonnet': 'anthropic/claude-sonnet-4.6',
     'br-opus': 'anthropic/claude-opus-4.6',
   };

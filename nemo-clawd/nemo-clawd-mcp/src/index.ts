@@ -6,6 +6,7 @@
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -17,6 +18,7 @@ import {
 const XAI_API_KEY = process.env.XAI_API_KEY || "";
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY || "";
 const HELIUS_RPC_URL = process.env.HELIUS_RPC_URL || `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
+const BIRDEYE_API_KEY = process.env.BIRDEYE_API_KEY || "";
 
 // Grok API base
 const GROK_API_BASE = "https://api.x.ai/v1";
@@ -850,16 +852,9 @@ server.setRequestHandler(ListPromptsRequestSchema, async () => {
   return { prompts: [] };
 });
 
-// Start server
-const transport = process.argv.includes("--http")
-  ? { type: "http" as const }
-  : { type: "stdio" as const };
-
-server.connect(transport.type === "http"
-  ? new (await import("@modelcontextprotocol/sdk/server/http.js")).HttpServer(server, { port: 3000 })
-  : new (await import("@modelcontextprotocol/sdk/server/stdio.js")).StdioServer(server)
-);
-
-console.error("nemoClawd MCP Server running...");
+// Start STDIO server (default entry point)
+const transport = new StdioServerTransport();
+await server.connect(transport);
+console.error("nemoClawd MCP Server running (stdio)");
 
 export { server };

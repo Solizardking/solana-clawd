@@ -1,3 +1,4 @@
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -9,7 +10,7 @@ const CORS_HEADERS = {
   "Access-Control-Expose-Headers": "MCP-Protocol-Version",
 };
 
-export function middleware(request: NextRequest) {
+export default clerkMiddleware((_auth, request: NextRequest) => {
   if (request.method === "OPTIONS") {
     return new NextResponse(null, {
       status: 204,
@@ -22,8 +23,12 @@ export function middleware(request: NextRequest) {
     response.headers.set(key, value);
   }
   return response;
-}
+});
 
 export const config = {
-  matcher: ["/api/:path*", "/.well-known/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon.svg|opengraph-image).*)",
+    "/api/:path*",
+    "/.well-known/:path*",
+  ],
 };

@@ -14,7 +14,10 @@ export default defineConfig({
 	clearScreen: false,
 	plugins: [
 		dts({ tsconfigPath: './tsconfig.dts.json', bundleTypes: true }),
-		cssInjectedByJsPlugin({ relativeCSSInjection: true }),
+		// relativeCSSInjection:false injects ALL CSS into the main entry chunk —
+		// needed because SimulatorMask is lazy-loaded (dynamic import) and the
+		// relative mode can't trace CSS from dynamic chunks, leaving it orphaned.
+		cssInjectedByJsPlugin({ relativeCSSInjection: false }),
 	],
 	publicDir: false,
 	esbuild: {
@@ -37,7 +40,7 @@ export default defineConfig({
 		},
 		minify: false,
 		sourcemap: true,
-		cssCodeSplit: true,
+		cssCodeSplit: false,
 	},
 	define: {
 		'process.env.NODE_ENV': '"production"',
