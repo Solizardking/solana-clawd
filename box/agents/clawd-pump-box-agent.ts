@@ -315,6 +315,7 @@ async function validatePreflight(options: {
     }
     if (
       options.requireLiveReady &&
+      options.mode !== "serve" &&
       (
         pumpReadiness?.live_gate?.live_trading_enabled !== "true" ||
         pumpReadiness?.live_gate?.pump_dry_run !== "false"

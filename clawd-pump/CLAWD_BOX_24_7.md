@@ -163,7 +163,7 @@ Machine-readable readiness report for a box supervisor or external monitor:
 ./scripts/readiness_json.sh autobuy
 ```
 
-The JSON report does not print private keys. `ready_to_start` is only `true` when live preflight, funding verification, gate smoke checks, and service rendering all pass.
+The JSON report does not print private keys. For `copy` and `autobuy`, `ready_to_start` is only `true` when live preflight, funding verification, gate smoke checks, and service rendering all pass. For `serve`, it proves the HTTP health/control server can start safely while trade endpoints remain blocked unless live gates are intentionally armed.
 
 Funding verification:
 
@@ -171,7 +171,7 @@ Funding verification:
 ./scripts/wallet_balance_check.sh
 ```
 
-The funding check uses the public funding address and `RPC_HTTP` through the Solana CLI. It requires enough SOL for `MIN_RESERVE_SOL` plus the larger of `MAX_TRADE_SOL` and `AUTO_BUY_AMOUNT_SOL`.
+The funding check uses the public funding address and JSON-RPC balance calls. It requires enough SOL for `MIN_RESERVE_SOL` plus the larger of `MAX_TRADE_SOL` and `AUTO_BUY_AMOUNT_SOL`.
 
 ## Box Service Install
 
@@ -224,8 +224,7 @@ npm run box:pump:preflight:live -- --bootstrap-local-mcp
 npm run box:pump:preflight:live -- --bootstrap-local-mcp --mode serve
 ```
 
-The strict live preflight fails until `./scripts/readiness_json.sh` reports `ready_to_start=true`.
-For `serve` mode, `ready_to_start=true` only means the HTTP health/control server can start; strict Box live preflight also requires `LIVE_TRADING_ENABLED=true` and `PUMP_DRY_RUN=false` before any trade endpoint is considered live-ready.
+The strict preflight fails until `./scripts/readiness_json.sh <mode>` reports `ready_to_start=true`. For `serve` mode, `ready_to_start=true` means the HTTP health/control server can start while trade endpoints remain blocked by the live gates.
 
 Model authentication can use either a direct model key:
 
