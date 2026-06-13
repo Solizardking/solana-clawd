@@ -20,10 +20,12 @@ mkdir -p deploy/generated logs
 
 render_systemd() {
   local out="deploy/generated/clawd-pump-${mode}.service"
+  local description="clawd-pump 24/7 ${mode} agent"
   local user group
   user="$(id -un)"
   group="$(id -gn)"
   sed \
+    -e "s#Description=.*#Description=${description}#" \
     -e "s#WorkingDirectory=.*#WorkingDirectory=${repo_dir}#" \
     -e "s#Environment=LOG_DIR=.*#Environment=LOG_DIR=${log_dir}#" \
     -e "s#ExecStart=.*#ExecStart=${repo_dir}/scripts/run_24_7.sh ${mode}#" \
@@ -37,6 +39,7 @@ render_systemd() {
 render_launchd() {
   local out="deploy/generated/com.openclawd.clawd-pump.${mode}.plist"
   sed \
+    -e "s#<string>com.openclawd.clawd-pump</string>#<string>com.openclawd.clawd-pump.${mode}</string>#" \
     -e "s#<string>/Users/8bit/Downloads/solana-clawd/clawd-pump</string>#<string>${repo_dir}</string>#g" \
     -e "s#<string>/Users/8bit/Downloads/solana-clawd/clawd-pump/scripts/run_24_7.sh</string>#<string>${repo_dir}/scripts/run_24_7.sh</string>#" \
     -e "s#<string>copy</string>#<string>${mode}</string>#" \

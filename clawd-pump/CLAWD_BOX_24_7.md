@@ -127,6 +127,10 @@ npm run pump:service:systemd
 npm run pump:service:launchd
 npm run pump:service:install:systemd
 npm run pump:service:install:launchd
+npm run pump:service:serve:launchd
+npm run pump:service:serve:start
+npm run pump:service:serve:status
+npm run pump:service:serve:logs
 npm run pump:24x7
 npm run pump:24x7:autobuy
 npm run pump:serve
@@ -199,7 +203,7 @@ That prints the commands it would run. To actually install the service without s
 ./scripts/service_control.sh install launchd copy --apply
 ```
 
-Both service templates call `scripts/run_24_7.sh`, which runs preflight before starting the trading process. The service control helper does not start the service; start it only after `./scripts/preflight.sh` passes.
+Both service templates call `scripts/run_24_7.sh`, which runs the matching mode preflight before starting. Services are mode-specific, for example `com.openclawd.clawd-pump.serve` on launchd and `clawd-pump-serve` on systemd. The control helper supports `install`, `start`, `stop`, `restart`, `status`, `logs`, and `uninstall`; it prints dry-run commands unless `--apply` is provided.
 
 ## Upstash Box Agent
 

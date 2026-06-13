@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@upstash/box": "^0.5.0",
-    "zod": "^3.22.0"
+    "browser-use-sdk": "^3.8.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
