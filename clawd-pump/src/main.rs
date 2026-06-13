@@ -708,6 +708,28 @@ fn require_live_trading(action: &str) -> Result<(), String> {
     }
 }
 
+fn live_action_for_args(args: &[String]) -> Option<&'static str> {
+    if args.contains(&"--wrap".to_string()) {
+        Some("wrap")
+    } else if args.contains(&"--unwrap".to_string()) {
+        Some("unwrap")
+    } else if args.contains(&"--close".to_string()) {
+        Some("close token accounts")
+    } else if args.contains(&"--launch".to_string()) {
+        Some("launch token")
+    } else if args.contains(&"--buy".to_string()) {
+        Some("buy")
+    } else if args.contains(&"--balance".to_string()) {
+        Some("balance rebalance")
+    } else if args.contains(&"--risk-check".to_string()) {
+        Some("risk-check sell path")
+    } else if args.contains(&"--autobuy".to_string()) {
+        Some("autobuy")
+    } else {
+        None
+    }
+}
+
 fn require_trade_amount_within_limit(amount_sol: f64, action: &str) -> Result<(), String> {
     let max_trade_sol = env_f64("MAX_TRADE_SOL", 0.01);
     if amount_sol <= 0.0 {
@@ -872,6 +894,45 @@ async fn main() {
             eprintln!("{}", e);
         }
         return;
+    }
+
+    dotenv().ok();
+
+    if args.contains(&"--serve".to_string()) {
+        // Start HTTP control server (default port 8765, or PUMP_HTTP_PORT). HTTP
+        // trade endpoints enforce live gates per request, so serving health/read
+        // endpoints does not require wallet/RPC initialization.
+        let binary = std::env::current_exe()
+            .ok()
+            .map(|p| p.to_string_lossy().to_string())
+            .unwrap_or_else(|| "cargo run --".to_string());
+        let cwd = std::env::current_dir()
+            .ok()
+            .map(|p| p.to_string_lossy().to_string())
+            .unwrap_or_else(|| ".".to_string());
+        if let Err(e) = http_server::serve(binary, cwd).await {
+            eprintln!("HTTP server error: {}", e);
+        }
+        return;
+    }
+
+    if let Some(action) = live_action_for_args(&args) {
+        if let Err(e) = require_live_trading(action) {
+            eprintln!("{}", e);
+            return;
+        }
+    } else if args.len() == 1 {
+        if let Err(e) = require_live_trading("copy trading loop") {
+            eprintln!("{}", e);
+            return;
+        }
+    }
+
+    if env_flag("AUTO_BUY_ENABLED", false) {
+        if let Err(e) = require_live_trading("AUTO_BUY_ENABLED") {
+            eprintln!("{}", e);
+            return;
+        }
     }
 
     /* Initial Settings */

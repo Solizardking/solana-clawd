@@ -232,6 +232,8 @@
     "pump:start": "cd clawd-pump && cargo run --release",
     "pump:autobuy": "cd clawd-pump && cargo run --release -- --autobuy",
     "pump:check": "cd clawd-pump && cargo check",
+    "pump:doctor": "cd clawd-pump && ./scripts/doctor_24_7.sh",
+    "pump:smoke": "cd clawd-pump && ./scripts/smoke_live_gates.sh",
     "pump:wallet": "cd clawd-pump && ./scripts/funding_address.sh",
     "pump:preflight": "cd clawd-pump && ./scripts/preflight.sh",
     "pump:status": "cd clawd-pump && ./scripts/status.sh",

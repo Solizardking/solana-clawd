@@ -27,6 +27,7 @@ The code also enforces `MAX_TRADE_SOL` for direct buys, launch dev buys, and aut
 ```bash
 cargo check
 cargo build --release
+./scripts/smoke_live_gates.sh
 ```
 
 2. Create a dedicated hot wallet outside this repo using Solana tooling, then fund it with only the amount you are prepared to lose.
@@ -108,7 +109,9 @@ Root package shortcuts:
 
 ```bash
 npm run pump:preflight
+npm run pump:doctor
 npm run pump:status
+npm run pump:smoke
 npm run pump:wallet
 npm run pump:arm
 npm run pump:disarm
@@ -123,6 +126,12 @@ Status check:
 
 ```bash
 ./scripts/status.sh
+```
+
+Full read-only readiness report:
+
+```bash
+./scripts/doctor_24_7.sh
 ```
 
 ## Box Service Install
@@ -208,6 +217,8 @@ Do not put more SOL in the hot wallet than the max loss you accept for unattende
 - Logs are written under `logs/`.
 - The runner restarts after process exit with a 10 second delay.
 - `cargo check` must pass before each supervised start.
+- `scripts/doctor_24_7.sh` runs the wallet, status, smoke, service render, and preflight checks without funding, arming, installing, or starting the bot.
+- `scripts/smoke_live_gates.sh` verifies unarmed live commands stop before wallet/RPC runtime initialization.
 - HTTP trading endpoints are blocked while `PUMP_DRY_RUN=true` or `LIVE_TRADING_ENABLED` is not `true`.
 - `scripts/status.sh` reports live gate state, process state, optional HTTP health, and recent log files without printing private keys.
 - `scripts/arm_live.sh` and `scripts/disarm_live.sh` only update non-secret live gate and risk-control keys, and create a timestamped `.env` backup before editing.
