@@ -237,6 +237,7 @@
     "pump:readiness": "cd clawd-pump && ./scripts/readiness_json.sh",
     "pump:smoke": "cd clawd-pump && ./scripts/smoke_live_gates.sh",
     "pump:wallet": "cd clawd-pump && ./scripts/funding_address.sh",
+    "pump:wallet:funding": "cd clawd-pump && ./scripts/wallet_balance_check.sh",
     "pump:preflight": "cd clawd-pump && ./scripts/preflight.sh",
     "pump:status": "cd clawd-pump && ./scripts/status.sh",
     "pump:control": "cd clawd-pump && ./scripts/bot_control.sh",

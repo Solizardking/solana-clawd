@@ -78,7 +78,10 @@ service_render_status=1
 run_check /tmp/clawd-pump-readiness-service.log ./scripts/render_service.sh launchd copy && service_render_status=0 || true
 
 preflight_status=1
-run_check /tmp/clawd-pump-readiness-preflight.log ./scripts/preflight.sh && preflight_status=0 || true
+run_check /tmp/clawd-pump-readiness-preflight.log env REQUIRE_FUNDED_WALLET=true ./scripts/preflight.sh && preflight_status=0 || true
+
+funding_status=1
+run_check /tmp/clawd-pump-readiness-funding.log ./scripts/wallet_balance_check.sh --json && funding_status=0 || true
 
 ready_to_start=1
 if [[ "$preflight_status" -eq 0 && "$smoke_status" -eq 0 && "$service_render_status" -eq 0 ]]; then
@@ -128,6 +131,10 @@ cat <<JSON
     "preflight": {
       "passed": $(json_bool "$preflight_status"),
       "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-preflight.log)
+    },
+    "funding": {
+      "passed": $(json_bool "$funding_status"),
+      "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-funding.log)
     }
   }
 }

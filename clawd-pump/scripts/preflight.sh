@@ -105,6 +105,16 @@ else
   warn "PUMP_HTTP_PORT is missing or not numeric; default 8765 will be used"
 fi
 
+if [[ "${REQUIRE_FUNDED_WALLET:-false}" == "true" ]]; then
+  if ./scripts/wallet_balance_check.sh >/tmp/clawd-pump-wallet-balance-check.log 2>&1; then
+    ok "hot wallet funding is sufficient"
+  else
+    fail "hot wallet funding is insufficient or could not be verified; see /tmp/clawd-pump-wallet-balance-check.log"
+  fi
+else
+  warn "hot wallet funding check skipped; set REQUIRE_FUNDED_WALLET=true to require balance verification"
+fi
+
 printf "\nRunning cargo check...\n"
 cargo check >/tmp/clawd-pump-cargo-check.log 2>&1 \
   && ok "cargo check passed" \

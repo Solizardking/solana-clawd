@@ -115,6 +115,7 @@ npm run pump:status
 npm run pump:control -- status
 npm run pump:smoke
 npm run pump:wallet
+npm run pump:wallet:funding
 npm run pump:arm
 npm run pump:disarm
 npm run pump:service:systemd
@@ -154,6 +155,14 @@ Machine-readable readiness report for a box supervisor or external monitor:
 ```
 
 The JSON report does not print private keys. `ready_to_start` is only `true` when live preflight, gate smoke checks, and service rendering all pass.
+
+Funding verification:
+
+```bash
+./scripts/wallet_balance_check.sh
+```
+
+The funding check uses the public funding address and `RPC_HTTP` through the Solana CLI. It requires enough SOL for `MIN_RESERVE_SOL` plus the larger of `MAX_TRADE_SOL` and `AUTO_BUY_AMOUNT_SOL`.
 
 ## Box Service Install
 
@@ -260,7 +269,8 @@ Do not put more SOL in the hot wallet than the max loss you accept for unattende
 - The runner restarts after process exit with a 10 second delay.
 - `cargo check` must pass before each supervised start.
 - `scripts/doctor_24_7.sh` runs the wallet, status, smoke, service render, and preflight checks without funding, arming, installing, or starting the bot.
-- `scripts/readiness_json.sh` emits a machine-readable readiness summary for box supervisors without printing secret values.
+- `scripts/readiness_json.sh` emits a machine-readable readiness summary for box supervisors without printing secret values. It requires funding verification for `ready_to_start=true`.
+- `scripts/wallet_balance_check.sh` verifies the public hot-wallet SOL balance against `MIN_RESERVE_SOL` plus the largest configured single trade amount.
 - `scripts/smoke_live_gates.sh` verifies unarmed live commands stop before wallet/RPC runtime initialization.
 - HTTP trading endpoints are blocked while `PUMP_DRY_RUN=true` or `LIVE_TRADING_ENABLED` is not `true`.
 - `scripts/status.sh` reports live gate state, process state, optional HTTP health, and recent log files without printing private keys.
