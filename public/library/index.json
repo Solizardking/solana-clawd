@@ -3,7 +3,7 @@
   "apiVersion": "1.0",
   "homepage": "https://x402.wtf/library",
   "baseUrl": "https://x402.wtf/library",
-  "generatedAt": "2026-06-11T06:50:08.113Z",
+  "generatedAt": "2026-06-13T21:48:23.477Z",
   "source": "lobster-library",
   "author": "x402agent",
   "stats": {
@@ -1639,13 +1639,16 @@
     {
       "identifier": "solana-perpetuals-trader",
       "title": "Perpetuals Trading Strategist",
-      "description": "Expert in Solana perpetual futures on Drift, Zeta, Flash Trade, and Jupiter Perps",
+      "description": "Expert in live Solana perpetual futures using Phoenix/Vulcan plus Birdeye perps HTTP and websocket data",
       "avatar": "📊",
       "category": "trading",
       "author": "x402agent",
       "createdAt": "2026-03-15",
       "tags": [
         "perpetuals",
+        "phoenix",
+        "vulcan",
+        "birdeye",
         "drift",
         "zeta",
         "leverage",

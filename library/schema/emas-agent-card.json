@@ -26,10 +26,10 @@
     {
       "id": "perpetuals-trading",
       "name": "Perpetuals Trader",
-      "description": "Phoenix perpetuals strategy and execution via Vulcan CLI/MCP with preflight checks, margin management, paper/dry-run/confirm-each/auto modes, and RISE SDK market data.",
+      "description": "Phoenix perpetuals strategy and execution via live Vulcan CLI/MCP and Birdeye perps data with preflight checks, margin management, dry-run/confirm-each/auto modes, and RISE SDK market data.",
       "tags": ["solana", "perps", "phoenix", "vulcan", "risk", "autonomous"],
       "examples": [
-        "Generate a strategy.md for SOL perps in paper mode",
+        "Review live SOL perps conditions before drafting a strategy.md",
         "Run a Phoenix preflight before opening a position",
         "Execute a confirm_each limit order on SOL-PERP"
       ]

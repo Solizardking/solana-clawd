@@ -149,6 +149,111 @@
       }
     },
     {
+      "name": "fetch_birdeye_perps_snapshot",
+      "description": "Fetch live Birdeye Perps Data API HTTP snapshots for Global Fees Paid, Perps Token List, Token Overview, Token Open Positions, Token Liquidation Map, Perps Wallet, or x402 pay-per-request access.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "resource": {
+            "type": "string",
+            "enum": [
+              "global_fees_paid",
+              "perps_token_list",
+              "perps_token_overview",
+              "perps_token_open_positions",
+              "perps_token_liquidation_map",
+              "perps_wallet",
+              "x402_pay_per_request"
+            ],
+            "description": "Birdeye HTTP resource to request. Token overview maps to GET https://public-api.birdeye.so/perps/v1/token/overview."
+          },
+          "token": {
+            "type": "string",
+            "description": "Uppercase token symbol for token resources, for example SOL, BTC, or ETH. Required for perps_token_overview, perps_token_open_positions, and perps_token_liquidation_map."
+          },
+          "wallet": {
+            "type": "string",
+            "description": "Wallet address for wallet-scoped perps data. Required for perps_wallet."
+          },
+          "exchange": {
+            "type": "string",
+            "enum": ["hyperliquid"],
+            "default": "hyperliquid",
+            "description": "Perpetuals exchange passed in the x-perp header."
+          },
+          "sortBy": {
+            "type": "string",
+            "enum": ["position_value", "open_time"],
+            "default": "open_time",
+            "description": "Optional sort field for Perps Token Open Positions."
+          },
+          "sortType": {
+            "type": "string",
+            "enum": ["desc"],
+            "default": "desc",
+            "description": "Optional sort order for Perps Token Open Positions."
+          }
+        },
+        "required": ["resource"]
+      },
+      "annotations": {
+        "title": "Fetch Birdeye Perps Snapshot",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "subscribe_birdeye_websocket_stream",
+      "description": "Subscribe to a live Birdeye WebSocket stream: Token/Pair OHLCV, Token/Pair Transactions, Base-Quote OHLCV, New Token Listing, New Pair, Track Large Transactions, Wallet Transactions, Token Stats, Meme Stats, or Transfer.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "stream": {
+            "type": "string",
+            "enum": [
+              "token_pair_ohlcv",
+              "token_pair_transactions",
+              "base_quote_ohlcv",
+              "new_token_listing",
+              "new_pair",
+              "track_large_transactions",
+              "wallet_transactions",
+              "token_stats",
+              "meme_stats",
+              "transfer"
+            ],
+            "description": "Birdeye WebSocket stream to subscribe to."
+          },
+          "token": {
+            "type": "string",
+            "description": "Optional token symbol or mint, depending on the selected stream."
+          },
+          "pair": {
+            "type": "string",
+            "description": "Optional pair address or token pair identifier, depending on the selected stream."
+          },
+          "wallet": {
+            "type": "string",
+            "description": "Wallet address for wallet_transactions streams."
+          },
+          "minUsd": {
+            "type": "number",
+            "description": "Minimum USD threshold for track_large_transactions streams."
+          }
+        },
+        "required": ["stream"]
+      },
+      "annotations": {
+        "title": "Subscribe Birdeye WebSocket Stream",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
       "name": "track_whale_wallets",
       "description": "Monitor large on-chain Solana wallets for accumulation, distribution, and coordinated move patterns using Helius and Birdeye data.",
       "inputSchema": {
