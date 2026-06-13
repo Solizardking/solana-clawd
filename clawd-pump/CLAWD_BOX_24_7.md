@@ -154,7 +154,7 @@ Machine-readable readiness report for a box supervisor or external monitor:
 ./scripts/readiness_json.sh
 ```
 
-The JSON report does not print private keys. `ready_to_start` is only `true` when live preflight, gate smoke checks, and service rendering all pass.
+The JSON report does not print private keys. `ready_to_start` is only `true` when live preflight, funding verification, gate smoke checks, and service rendering all pass.
 
 Funding verification:
 

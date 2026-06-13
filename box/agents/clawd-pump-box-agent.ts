@@ -229,7 +229,7 @@ function printPumpReadiness(readiness: PumpReadiness | undefined): void {
   }
 
   const checks = readiness.checks ?? {};
-  for (const key of ["wallet_address", "smoke_live_gates", "service_render", "preflight"]) {
+  for (const key of ["wallet_address", "smoke_live_gates", "service_render", "funding", "preflight"]) {
     console.log(`${key}=${checks[key]?.passed === true}`);
   }
 }
@@ -255,6 +255,7 @@ function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
     `- wallet_address_check: ${checks.wallet_address?.passed === true}`,
     `- smoke_live_gates_check: ${checks.smoke_live_gates?.passed === true}`,
     `- service_render_check: ${checks.service_render?.passed === true}`,
+    `- funding_check: ${checks.funding?.passed === true}`,
     `- live_preflight_check: ${checks.preflight?.passed === true}`
   ].join("\n");
 }
