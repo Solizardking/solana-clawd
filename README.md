@@ -367,21 +367,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`cde6297a`](../../commit/cde6297a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 🥈 | [`30f1f997`](../../commit/30f1f997) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 🥉 | [`eec1f11e`](../../commit/eec1f11e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 4️⃣ | [`55e7d235`](../../commit/55e7d235) | Update README.md | Mr. Mojo Risin | Jun 13 |
-| 5️⃣ | [`daf6fea8`](../../commit/daf6fea8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 6️⃣ | [`cc81a74f`](../../commit/cc81a74f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 7️⃣ | [`51e3a851`](../../commit/51e3a851) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 8️⃣ | [`eed48e22`](../../commit/eed48e22) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 9️⃣ | [`d0ff3b6b`](../../commit/d0ff3b6b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| 🔟 | [`97f2b1b1`](../../commit/97f2b1b1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| · | [`1acc451f`](../../commit/1acc451f) | fix: remove deprecated xai live search parameter (#20) | Mr. Mojo Risin | Jun 12 |
-| · | [`35ff7bb9`](../../commit/35ff7bb9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
-| · | [`0532931b`](../../commit/0532931b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`be504ebd`](../../commit/be504ebd) | Fix streamed tool call reducer indexing | Mr. Mojo Risin | Jun 12 |
-| · | [`3d34fc77`](../../commit/3d34fc77) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
+| 🥇 | [`c57f224a`](../../commit/c57f224a) | asasd | solizardking | Jun 13 |
+| 🥈 | [`68790656`](../../commit/68790656) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 13 |
+| 🥉 | [`b2190c15`](../../commit/b2190c15) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 4️⃣ | [`2b3bbca4`](../../commit/2b3bbca4) | faddsaf | solizardking | Jun 13 |
+| 5️⃣ | [`cde6297a`](../../commit/cde6297a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 6️⃣ | [`30f1f997`](../../commit/30f1f997) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 7️⃣ | [`eec1f11e`](../../commit/eec1f11e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| 8️⃣ | [`55e7d235`](../../commit/55e7d235) | Update README.md | Mr. Mojo Risin | Jun 13 |
+| 9️⃣ | [`c78cc8d5`](../../commit/c78cc8d5) | adffdfdsdf | solizardking | Jun 13 |
+| 🔟 | [`daf6fea8`](../../commit/daf6fea8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| · | [`cc81a74f`](../../commit/cc81a74f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| · | [`51e3a851`](../../commit/51e3a851) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| · | [`eed48e22`](../../commit/eed48e22) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 13 |
+| · | [`207869ac`](../../commit/207869ac) | fassfas | solizardking | Jun 13 |
+| · | [`b4387916`](../../commit/b4387916) | fsfs | solizardking | Jun 13 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
