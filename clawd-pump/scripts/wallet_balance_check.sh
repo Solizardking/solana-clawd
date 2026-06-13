@@ -83,18 +83,20 @@ required="$(
 balance_output="/tmp/clawd-pump-solana-balance.log"
 balance=""
 query_error=""
-rpc_candidates=()
+declare -a rpc_candidates=()
 
 add_rpc_candidate() {
   local candidate="$1"
   if [[ -z "$candidate" ]]; then
     return
   fi
-  for existing in "${rpc_candidates[@]}"; do
-    if [[ "$existing" == "$candidate" ]]; then
-      return
-    fi
-  done
+  if [[ "${#rpc_candidates[@]}" -gt 0 ]]; then
+    for existing in "${rpc_candidates[@]}"; do
+      if [[ "$existing" == "$candidate" ]]; then
+        return
+      fi
+    done
+  fi
   rpc_candidates+=("$candidate")
 }
 
@@ -125,13 +127,16 @@ if command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
   done
 fi
 
-if [[ -z "$balance" && "${USE_SOLANA_CLI_BALANCE:-false}" == "true" ]] && command -v solana >/dev/null 2>&1; then
-  if solana balance --url "$primary_rpc" "$address" >"$balance_output" 2>&1; then
-    balance="$(awk '{print $1; exit}' "$balance_output")"
-  else
-    cli_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-120)"
-    query_error="${query_error:+${query_error}; }${cli_error}"
-  fi
+if [[ -z "$balance" ]] && command -v solana >/dev/null 2>&1; then
+  for rpc_url in "${rpc_candidates[@]}"; do
+    if solana balance --url "$rpc_url" "$address" >"$balance_output" 2>&1; then
+      balance="$(awk '{print $1; exit}' "$balance_output")"
+      break
+    else
+      cli_error="$(sed -E 's#https://[^ ]+#<rpc-url>#g; s#api-key=[^ )]+#api-key=<redacted>#g' "$balance_output" | tr '\n' ' ' | cut -c1-120)"
+      query_error="${query_error:+${query_error}; }${cli_error}"
+    fi
+  done
 fi
 
 if [[ -z "$balance" ]]; then
