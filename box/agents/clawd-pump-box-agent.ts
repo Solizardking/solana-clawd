@@ -9,9 +9,11 @@
  *   npm run box:pump -- --prompt "Review pump wallet health"
  *   npm run box:pump -- --mcp-url https://your-mcp.example.com/mcp --keep-alive
  *   npm run box:pump -- --bootstrap-local-mcp --keep-alive --no-delete
+ *   npm run box:pump -- --browser-use-only --browser-task "Open https://pump.fun and report the page title"
  */
 
 import { Agent, Box, BoxApiKey, ClaudeCode } from "@upstash/box";
+import { BrowserUse } from "browser-use-sdk/v3";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { execFile } from "node:child_process";
@@ -47,6 +49,16 @@ type PumpReadiness = {
   live_gate?: Record<string, string>;
   endpoints?: Record<string, boolean | string>;
   checks?: Record<string, { passed?: boolean }>;
+};
+
+type BrowserUseContext = {
+  enabled: boolean;
+  task: string;
+  sessionId?: string | null;
+  status?: string;
+  liveUrl?: string | null;
+  output?: string | null;
+  error?: string;
 };
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
@@ -137,6 +149,12 @@ async function loadProjectEnv(): Promise<string[]> {
   if (!process.env.RPC_HTTP && process.env.RPC_URL) {
     process.env.RPC_HTTP = process.env.RPC_URL;
   }
+  if (!process.env.BROWSER_USE_API_KEY && process.env.BROWSERUSE_API_KEY) {
+    process.env.BROWSER_USE_API_KEY = process.env.BROWSERUSE_API_KEY;
+  }
+  if (!process.env.BROWSERUSE_API_KEY && process.env.BROWSER_USE_API_KEY) {
+    process.env.BROWSERUSE_API_KEY = process.env.BROWSER_USE_API_KEY;
+  }
 
   return loaded;
 }
@@ -163,7 +181,9 @@ function buildBoxEnv(includePrivateKey: boolean): Record<string, string> {
     "MIN_RESERVE_SOL",
     "AUTO_BUY_AMOUNT_SOL",
     "AUTO_BUY_INTERVAL_SECONDS",
-    "AUTO_BUY_MAX_BUYS"
+    "AUTO_BUY_MAX_BUYS",
+    "BROWSER_USE_API_KEY",
+    "BROWSERUSE_API_KEY"
   ]);
 
   if (includePrivateKey) {
@@ -178,6 +198,10 @@ function buildBoxEnv(includePrivateKey: boolean): Record<string, string> {
 
   env.PUMP_MCP_MODE = "transaction-builder";
   return env;
+}
+
+function browserUseKeyPresent(): boolean {
+  return Boolean(process.env.BROWSER_USE_API_KEY || process.env.BROWSERUSE_API_KEY);
 }
 
 function maskState(key: string): string {
@@ -356,7 +380,9 @@ async function validatePreflight(options: {
     "LIVE_TRADING_ENABLED",
     "PUMP_DRY_RUN",
     "MAX_TRADE_SOL",
-    "PRIVATE_KEY"
+    "PRIVATE_KEY",
+    "BROWSER_USE_API_KEY",
+    "BROWSERUSE_API_KEY"
   ]) {
     console.log(`${key}=${maskState(key)}`);
   }
@@ -393,6 +419,93 @@ function buildMcpServers(mcpUrl: string): McpServer[] {
   }
 
   return servers;
+}
+
+function formatBrowserStep(step: Record<string, unknown>): string {
+  const number = step.number ?? step.stepNumber ?? step.index ?? "?";
+  const type = step.type ? String(step.type) : "";
+  const goal = step.summary ?? step.nextGoal ?? step.goal ?? step.action ?? step.status ?? step.data ?? "";
+  const url = step.url ?? step.currentUrl ?? "";
+  const prefix = type ? `[browser-use:${type}]` : `[browser-use:${number}]`;
+  const parts = [prefix];
+  if (goal) parts.push(String(goal));
+  if (url) parts.push(`url=${url}`);
+  return parts.join(" ");
+}
+
+async function runBrowserUseTask(task: string): Promise<BrowserUseContext> {
+  if (!browserUseKeyPresent()) {
+    return {
+      enabled: false,
+      task,
+      error: "BROWSER_USE_API_KEY or BROWSERUSE_API_KEY missing"
+    };
+  }
+
+  console.log("\nBrowser Use task:");
+  console.log(task);
+
+  const client = new BrowserUse({
+    apiKey: process.env.BROWSER_USE_API_KEY ?? process.env.BROWSERUSE_API_KEY
+  });
+  const run = client.run(task, {
+    timeout: Number(process.env.BROWSER_USE_TIMEOUT_MS ?? 300_000),
+    interval: Number(process.env.BROWSER_USE_INTERVAL_MS ?? 2_000)
+  });
+
+  let sessionId: string | null = null;
+  try {
+    for await (const step of run) {
+      sessionId = run.sessionId;
+      console.log(formatBrowserStep(step as Record<string, unknown>));
+    }
+
+    const result = run.result ?? await run;
+    const resultRecord = result as Record<string, unknown>;
+    const session = resultRecord.session as Record<string, unknown> | undefined;
+    const browserSession = resultRecord.browserSession as Record<string, unknown> | undefined;
+    const liveUrl =
+      (resultRecord.liveUrl as string | undefined) ??
+      (session?.liveUrl as string | undefined) ??
+      (browserSession?.liveUrl as string | undefined) ??
+      null;
+
+    return {
+      enabled: true,
+      task,
+      sessionId: sessionId ?? run.sessionId,
+      status: String(resultRecord.status ?? "completed"),
+      liveUrl,
+      output: typeof result.output === "string" ? result.output : JSON.stringify(result.output)
+    };
+  } catch (error) {
+    return {
+      enabled: true,
+      task,
+      sessionId: sessionId ?? run.sessionId,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
+
+function browserUsePromptSummary(context: BrowserUseContext | undefined): string {
+  if (!context) {
+    return "Browser Use: not requested.";
+  }
+  if (!context.enabled) {
+    return `Browser Use: unavailable (${context.error}).`;
+  }
+
+  return [
+    "Browser Use:",
+    `- requested_task: ${context.task}`,
+    `- session_id: ${context.sessionId || "missing"}`,
+    `- status: ${context.status || (context.error ? "failed" : "unknown")}`,
+    `- live_url: ${context.liveUrl || "missing"}`,
+    `- result: ${context.output || context.error || "missing"}`,
+    "- The Box env includes BROWSER_USE_API_KEY/BROWSERUSE_API_KEY when present.",
+    "- Browser navigation is for observation and site interaction only; do not connect wallets or submit trades unless explicitly authorized."
+  ].join("\n");
 }
 
 async function writeBoxFile(box: BoxLike, filePath: string, content: string): Promise<void> {
@@ -438,13 +551,16 @@ function buildPrompt(
   userPrompt: string,
   mcpUrl: string,
   includePrivateKey: boolean,
-  readiness: PumpReadiness | undefined
+  readiness: PumpReadiness | undefined,
+  browserUse: BrowserUseContext | undefined
 ): string {
   return `You are Clawd Pump running in an Upstash Box.
 
 Use the solana-clawd-pump MCP server at ${mcpUrl} for Pump SDK transaction-building, quotes, token metadata, fee, AMM, and analytics workflows.
 
 ${readinessPromptSummary(readiness)}
+
+${browserUsePromptSummary(browserUse)}
 
 Operational policy:
 - Observe and build transaction plans by default.
@@ -465,12 +581,22 @@ async function main(): Promise<void> {
   const bootstrapLocal = hasFlag("--bootstrap-local-mcp");
   const includePrivateKey = hasFlag("--include-private-key");
   const requireLiveReady = hasFlag("--require-live-ready");
+  const browserUse = hasFlag("--browser-use");
+  const browserUseOnly = hasFlag("--browser-use-only");
   const mode = parseMode(argValue("--mode"));
   const prompt = argValue("--prompt") ?? "Inspect the available Pump MCP tools, verify RPC/API access, and produce a readiness report. Do not trade.";
+  const browserTask = argValue("--browser-task") ?? "Open https://pump.fun, confirm the page loads, report the page title/current URL, and do not connect a wallet or trade.";
   const mcpUrl = argValue("--mcp-url") ?? process.env.PUMP_MCP_URL ?? "http://127.0.0.1:3001/mcp";
 
   const loadedEnvFiles = await loadProjectEnv();
   const pumpReadiness = await loadPumpReadiness(mode).catch(() => undefined);
+
+  if (browserUseOnly) {
+    const context = await runBrowserUseTask(browserTask);
+    console.log("\nBrowser Use result:");
+    console.log(browserUsePromptSummary(context));
+    return;
+  }
 
   if (preflight) {
     process.exitCode = await validatePreflight({
@@ -487,6 +613,8 @@ async function main(): Promise<void> {
   if (!bootstrapLocal && mcpUrl.includes("127.0.0.1")) {
     throw new Error("Use --bootstrap-local-mcp for localhost MCP, or pass --mcp-url with a reachable HTTPS MCP endpoint");
   }
+
+  const browserUseContext = browserUse ? await runBrowserUseTask(browserTask) : undefined;
 
   const box = await Box.create({
     apiKey: requiredEnv("UPSTASH_BOX_API_KEY"),
@@ -512,7 +640,7 @@ async function main(): Promise<void> {
     }
 
     const run = await box.agent.stream({
-      prompt: buildPrompt(prompt, mcpUrl, includePrivateKey, pumpReadiness)
+      prompt: buildPrompt(prompt, mcpUrl, includePrivateKey, pumpReadiness, browserUseContext)
     });
 
     for await (const chunk of run) {

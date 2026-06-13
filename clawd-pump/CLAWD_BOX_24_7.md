@@ -128,6 +128,7 @@ npm run pump:service:launchd
 npm run pump:service:install:systemd
 npm run pump:service:install:launchd
 npm run pump:service:serve:launchd
+npm run pump:service:serve:bundle
 npm run pump:service:serve:start
 npm run pump:service:serve:status
 npm run pump:service:serve:logs
@@ -205,6 +206,14 @@ That prints the commands it would run. To actually install the service without s
 
 Both service templates call `scripts/run_24_7.sh`, which runs the matching mode preflight before starting. Services are mode-specific, for example `com.openclawd.clawd-pump.serve` on launchd and `clawd-pump-serve` on systemd. The control helper supports `install`, `start`, `stop`, `restart`, `status`, `logs`, and `uninstall`; it prints dry-run commands unless `--apply` is provided.
 
+On macOS, if launchd cannot execute from a repo under `Downloads`, install the serve bundle instead:
+
+```bash
+./scripts/install_launchd_serve_bundle.sh --apply
+```
+
+The bundle copies the release binary and local `.env` into `~/Library/Application Support/clawd-pump-serve` and runs safe `--serve` mode from there. Live trading endpoints remain blocked unless the copied `.env` is intentionally armed.
+
 ## Upstash Box Agent
 
 The repo also exposes a Clawd box adapter from the root package:
@@ -254,6 +263,26 @@ Or bootstrap this repo's MCP server inside the Box:
 
 ```bash
 npm run box:pump -- --bootstrap-local-mcp --keep-alive --no-delete
+```
+
+Add Browser Use cloud browsing to the same Box run:
+
+```bash
+npm run box:pump -- --bootstrap-local-mcp --browser-use --keep-alive --no-delete
+```
+
+`BROWSERUSE_API_KEY` and `BROWSER_USE_API_KEY` are both accepted; the launcher normalizes either name and forwards both into the Box env when present. The default browser task opens `https://pump.fun`, confirms it loaded, and does not connect a wallet or trade. Override it with:
+
+```bash
+npm run box:pump -- --bootstrap-local-mcp --browser-use --browser-task "Open https://pump.fun and report the current page title. Do not connect a wallet or trade."
+```
+
+Browser Use streams progress to stdout and returns the Browser Use `session_id`, `live_url`, status, and result to the Box agent prompt. This gives the Box agent page-observation context while the existing trading gates still control whether any trade can be submitted.
+
+Smoke-test Browser Use streaming without creating a Box:
+
+```bash
+npm run box:pump -- --browser-use-only --browser-task "Open https://pump.fun and report the current page title. Do not connect a wallet or trade."
 ```
 
 The Box launcher loads `.env`, `.env.local`, and `clawd-pump/.env` into an allowlist before creating the Box, so RPC/API keys can reach the MCP server without printing them. By default the box agent is observation/transaction-builder oriented and does not forward signing keys. Passing a private key into a remote box requires both:
