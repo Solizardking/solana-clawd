@@ -5,6 +5,8 @@ cd "$(dirname "$0")/.."
 
 ENV_FILE="${ENV_FILE:-.env}"
 PORT="${PUMP_HTTP_PORT:-8765}"
+BUNDLE_DIR="${CLAWD_PUMP_SERVE_BUNDLE_DIR:-${HOME}/Library/Application Support/clawd-pump-serve}"
+LAUNCHD_LABEL="gui/$(id -u)/com.openclawd.clawd-pump.serve"
 
 env_value() {
   local key="$1"
@@ -45,20 +47,40 @@ else
 fi
 
 printf "\nprocess:\n"
-if pgrep -fl "solana-vntr-sniper|run_24_7.sh" >/tmp/clawd-pump-pgrep.txt 2>/dev/null; then
+if pgrep -fl "solana-vntr-sniper|run_24_7.sh|run_serve_24_7.sh" >/tmp/clawd-pump-pgrep.txt 2>/dev/null; then
   sed 's/^/  /' /tmp/clawd-pump-pgrep.txt
 else
   printf "  not running\n"
 fi
 
+printf "\nlaunchd serve service:\n"
+if command -v launchctl >/dev/null 2>&1; then
+  if launchctl print "$LAUNCHD_LABEL" >/tmp/clawd-pump-launchd-status.txt 2>/tmp/clawd-pump-launchd-status.err; then
+    grep -E "^\s*(state|pid|runs|path|program|working directory) =" /tmp/clawd-pump-launchd-status.txt \
+      | sed 's/^/  /' || true
+  else
+    printf "  not loaded\n"
+  fi
+else
+  printf "  launchctl unavailable\n"
+fi
+
 printf "\nhttp health:\n"
 if command -v curl >/dev/null 2>&1; then
-  if curl -fsS "http://127.0.0.1:${PORT}/health" >/tmp/clawd-pump-health.json 2>/tmp/clawd-pump-health.err; then
-    sed 's/^/  /' /tmp/clawd-pump-health.json
-    printf "\n"
-  else
-    printf "  unavailable on 127.0.0.1:%s\n" "$PORT"
-  fi
+  health_ok=false
+  for _ in 1 2 3; do
+    if curl -fsS "http://127.0.0.1:${PORT}/health" >/tmp/clawd-pump-health.json 2>/tmp/clawd-pump-health.err; then
+      health_ok=true
+      break
+    fi
+    sleep 1
+  done
+  if [[ "$health_ok" == "true" ]]; then
+      sed 's/^/  /' /tmp/clawd-pump-health.json
+      printf "\n"
+    else
+      printf "  unavailable on 127.0.0.1:%s\n" "$PORT"
+    fi
 else
   printf "  curl unavailable\n"
 fi
@@ -71,4 +93,14 @@ if [[ -d logs ]]; then
   find logs -maxdepth 1 -type f -name '*.log.*' -print | sort | tail -5 | sed 's/^/  /'
 else
   printf "  no logs directory\n"
+fi
+
+printf "\nbundle:\n"
+if [[ -d "$BUNDLE_DIR" ]]; then
+  printf "  path=%s\n" "$BUNDLE_DIR"
+  if [[ -d "$BUNDLE_DIR/logs" ]]; then
+    find "$BUNDLE_DIR/logs" -maxdepth 1 -type f -name '*.log' -print | sort | tail -5 | sed 's/^/  /'
+  fi
+else
+  printf "  not installed\n"
 fi
