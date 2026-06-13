@@ -65,7 +65,10 @@ fi
 
 printf "\nlogs:\n"
 if [[ -d logs ]]; then
+  printf "  LOG_MAX_BYTES=%s\n" "${LOG_MAX_BYTES:-10485760}"
+  printf "  LOG_KEEP_FILES=%s\n" "${LOG_KEEP_FILES:-5}"
   find logs -maxdepth 1 -type f -name '*.log' -print | sort | tail -5 | sed 's/^/  /'
+  find logs -maxdepth 1 -type f -name '*.log.*' -print | sort | tail -5 | sed 's/^/  /'
 else
   printf "  no logs directory\n"
 fi

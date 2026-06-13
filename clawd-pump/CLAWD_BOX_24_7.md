@@ -239,6 +239,7 @@ Do not put more SOL in the hot wallet than the max loss you accept for unattende
 ## Operations
 
 - Logs are written under `logs/`.
+- Active runner logs rotate when they reach `LOG_MAX_BYTES`, default `10485760`, and keep `LOG_KEEP_FILES`, default `5`, rotated files per mode.
 - The runner restarts after process exit with a 10 second delay.
 - `cargo check` must pass before each supervised start.
 - `scripts/doctor_24_7.sh` runs the wallet, status, smoke, service render, and preflight checks without funding, arming, installing, or starting the bot.

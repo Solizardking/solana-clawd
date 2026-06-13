@@ -34,7 +34,11 @@ type McpServer = {
 };
 
 const ROOT = path.resolve(import.meta.dirname, "../..");
-const PUMP_ENV_FILE = path.join(ROOT, "clawd-pump", ".env");
+const ENV_FILES = [
+  path.join(ROOT, ".env"),
+  path.join(ROOT, ".env.local"),
+  path.join(ROOT, "clawd-pump", ".env")
+];
 const LOCAL_MCP_FILES = [
   "package.json",
   "package-lock.json",
@@ -95,14 +99,27 @@ function parseEnvContent(content: string): Record<string, string> {
   return values;
 }
 
-async function loadPumpEnv(): Promise<void> {
-  if (!existsSync(PUMP_ENV_FILE)) return;
-  const values = parseEnvContent(await readFile(PUMP_ENV_FILE, "utf8"));
-  for (const [key, value] of Object.entries(values)) {
-    if (process.env[key] === undefined && value !== "") {
-      process.env[key] = value;
+async function loadProjectEnv(): Promise<string[]> {
+  const loaded: string[] = [];
+  for (const file of ENV_FILES) {
+    if (!existsSync(file)) continue;
+    const values = parseEnvContent(await readFile(file, "utf8"));
+    for (const [key, value] of Object.entries(values)) {
+      if (process.env[key] === undefined && value !== "") {
+        process.env[key] = value;
+      }
     }
+    loaded.push(path.relative(ROOT, file));
   }
+
+  if (!process.env.UPSTASH_BOX_API_KEY && process.env.BOX_KEY) {
+    process.env.UPSTASH_BOX_API_KEY = process.env.BOX_KEY;
+  }
+  if (!process.env.RPC_HTTP && process.env.RPC_URL) {
+    process.env.RPC_HTTP = process.env.RPC_URL;
+  }
+
+  return loaded;
 }
 
 function buildBoxEnv(includePrivateKey: boolean): Record<string, string> {
@@ -152,6 +169,7 @@ function validatePreflight(options: {
   includePrivateKey: boolean;
   bootstrapLocal: boolean;
   mcpUrl: string;
+  loadedEnvFiles: string[];
 }): number {
   const failures: string[] = [];
   const managedAgentKey =
@@ -184,7 +202,7 @@ function validatePreflight(options: {
   }
 
   console.log("clawd-pump Box preflight");
-  console.log(`loaded env file: ${existsSync(PUMP_ENV_FILE) ? "clawd-pump/.env" : "none"}`);
+  console.log(`loaded env files: ${options.loadedEnvFiles.length ? options.loadedEnvFiles.join(", ") : "none"}`);
   console.log(`mcp url: ${options.mcpUrl}`);
   console.log(`bootstrap local mcp: ${options.bootstrapLocal}`);
   console.log(`private key forwarded: ${options.includePrivateKey}`);
@@ -192,6 +210,7 @@ function validatePreflight(options: {
 
   for (const key of [
     "UPSTASH_BOX_API_KEY",
+    "BOX_KEY",
     "UPSTASH_BOX_BASE_URL",
     "CLAUDE_KEY",
     "ANTHROPIC_API_KEY",
@@ -309,10 +328,10 @@ async function main(): Promise<void> {
   const prompt = argValue("--prompt") ?? "Inspect the available Pump MCP tools, verify RPC/API access, and produce a readiness report. Do not trade.";
   const mcpUrl = argValue("--mcp-url") ?? process.env.PUMP_MCP_URL ?? "http://127.0.0.1:3001/mcp";
 
-  await loadPumpEnv();
+  const loadedEnvFiles = await loadProjectEnv();
 
   if (preflight) {
-    process.exitCode = validatePreflight({ includePrivateKey, bootstrapLocal, mcpUrl });
+    process.exitCode = validatePreflight({ includePrivateKey, bootstrapLocal, mcpUrl, loadedEnvFiles });
     return;
   }
 
