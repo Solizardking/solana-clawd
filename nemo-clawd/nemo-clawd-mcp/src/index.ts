@@ -23,6 +23,16 @@ const BIRDEYE_API_KEY = process.env.BIRDEYE_API_KEY || "";
 // Grok API base
 const GROK_API_BASE = "https://api.x.ai/v1";
 
+type JsonObject = Record<string, unknown>;
+
+function asJsonObject(value: unknown): JsonObject {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as JsonObject : {};
+}
+
+function getJsonObject(value: unknown, key: string): JsonObject {
+  return asJsonObject(asJsonObject(value)[key]);
+}
+
 // Create server
 const server = new Server(
   {
@@ -428,8 +438,8 @@ async function heliusRpc<T = unknown>(
       params,
     }),
   });
-  const data = await response.json();
-  return data.result;
+  const data = asJsonObject(await response.json());
+  return data.result as T;
 }
 
 async function grokChat(
@@ -450,8 +460,15 @@ async function grokChat(
     body: JSON.stringify({ model, messages, stream }),
   });
 
-  const data = await response.json();
-  return stream ? data : data.choices[0]?.message?.content || "";
+  const data = asJsonObject(await response.json());
+  if (stream) {
+    return JSON.stringify(data);
+  }
+  const choices = Array.isArray(data.choices) ? data.choices : [];
+  const firstChoice = asJsonObject(choices[0]);
+  const message = getJsonObject(firstChoice, "message");
+  const content = message.content;
+  return typeof content === "string" ? content : "";
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -466,12 +483,14 @@ async function handleToolCall(name: string, args: Record<string, unknown>) {
       const response = await fetch(
         `https://api.birdeye.so/public/v1/token/${token}?api_key=${BIRDEYE_API_KEY || ""}`
       );
-      const data = await response.json();
+      const data = asJsonObject(await response.json());
+      const value = getJsonObject(getJsonObject(data, "data"), "value");
+      const price = value.price;
       return {
         content: [
           {
             type: "text",
-            text: `Price: $${data.data?.value?.price || "unavailable"}`,
+            text: `Price: $${typeof price === "number" || typeof price === "string" ? price : "unavailable"}`,
           },
         ],
       };
@@ -548,12 +567,14 @@ async function handleToolCall(name: string, args: Record<string, unknown>) {
       const response = await fetch(
         "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
       );
-      const data = await response.json();
+      const data = asJsonObject(await response.json());
+      const solana = getJsonObject(data, "solana");
+      const usd = solana.usd;
       return {
         content: [
           {
             type: "text",
-            text: `SOL: $${data.solana?.usd || "unavailable"}`,
+            text: `SOL: $${typeof usd === "number" || typeof usd === "string" ? usd : "unavailable"}`,
           },
         ],
       };
