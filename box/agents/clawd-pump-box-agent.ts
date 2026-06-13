@@ -11,7 +11,7 @@
  *   npm run box:pump -- --bootstrap-local-mcp --keep-alive --no-delete
  */
 
-import { Agent, Box, ClaudeCode } from "@upstash/box";
+import { Agent, Box, BoxApiKey, ClaudeCode } from "@upstash/box";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -68,7 +68,10 @@ function optionalEnv(keys: string[]): Record<string, string> {
   return env;
 }
 
-function agentApiKey(): string {
+function agentApiKey(): string | BoxApiKey {
+  const mode = process.env.CLAWD_BOX_AGENT_API_KEY;
+  if (mode === BoxApiKey.UpstashKey || mode === BoxApiKey.StoredKey) return mode;
+  if (process.env.CLAWD_BOX_USE_UPSTASH_MODEL_KEY === "true") return BoxApiKey.UpstashKey;
   return process.env.CLAUDE_KEY ?? process.env.ANTHROPIC_API_KEY ?? requiredEnv("CLAUDE_KEY");
 }
 
@@ -151,11 +154,17 @@ function validatePreflight(options: {
   mcpUrl: string;
 }): number {
   const failures: string[] = [];
-  const agentKeyPresent = Boolean(process.env.CLAUDE_KEY || process.env.ANTHROPIC_API_KEY);
+  const managedAgentKey =
+    process.env.CLAWD_BOX_AGENT_API_KEY === BoxApiKey.UpstashKey ||
+    process.env.CLAWD_BOX_AGENT_API_KEY === BoxApiKey.StoredKey ||
+    process.env.CLAWD_BOX_USE_UPSTASH_MODEL_KEY === "true";
+  const agentKeyPresent = managedAgentKey || Boolean(process.env.CLAUDE_KEY || process.env.ANTHROPIC_API_KEY);
   const rpcPresent = Boolean(process.env.SOLANA_RPC_URL || process.env.SOLANA_RPC_URLS || process.env.RPC_HTTP);
 
   if (!process.env.UPSTASH_BOX_API_KEY) failures.push("UPSTASH_BOX_API_KEY missing");
-  if (!agentKeyPresent) failures.push("CLAUDE_KEY or ANTHROPIC_API_KEY missing");
+  if (!agentKeyPresent) {
+    failures.push("CLAUDE_KEY or ANTHROPIC_API_KEY missing, or set CLAWD_BOX_AGENT_API_KEY=UPSTASH_KEY/STORED_KEY");
+  }
   if (!rpcPresent) failures.push("SOLANA_RPC_URL, SOLANA_RPC_URLS, or RPC_HTTP missing");
   if (options.includePrivateKey && process.env.ALLOW_BOX_PRIVATE_KEY !== "true") {
     failures.push("ALLOW_BOX_PRIVATE_KEY must be true when --include-private-key is used");
@@ -186,6 +195,8 @@ function validatePreflight(options: {
     "UPSTASH_BOX_BASE_URL",
     "CLAUDE_KEY",
     "ANTHROPIC_API_KEY",
+    "CLAWD_BOX_AGENT_API_KEY",
+    "CLAWD_BOX_USE_UPSTASH_MODEL_KEY",
     "SOLANA_RPC_URL",
     "SOLANA_RPC_URLS",
     "RPC_HTTP",

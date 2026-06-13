@@ -111,12 +111,15 @@ Root package shortcuts:
 npm run pump:preflight
 npm run pump:doctor
 npm run pump:status
+npm run pump:control -- status
 npm run pump:smoke
 npm run pump:wallet
 npm run pump:arm
 npm run pump:disarm
 npm run pump:service:systemd
 npm run pump:service:launchd
+npm run pump:service:install:systemd
+npm run pump:service:install:launchd
 npm run pump:24x7
 npm run pump:24x7:autobuy
 npm run pump:serve
@@ -126,6 +129,15 @@ Status check:
 
 ```bash
 ./scripts/status.sh
+```
+
+Runtime control file:
+
+```bash
+./scripts/bot_control.sh status
+./scripts/bot_control.sh pause
+./scripts/bot_control.sh resume
+./scripts/bot_control.sh volume 0.005 10 5 60
 ```
 
 Full read-only readiness report:
@@ -139,30 +151,28 @@ Full read-only readiness report:
 Linux systemd template:
 
 ```bash
-./scripts/render_service.sh systemd copy
-sudo cp deploy/generated/clawd-pump-copy.service /etc/systemd/system/clawd-pump.service
+./scripts/service_control.sh install systemd copy
 ```
 
-The renderer fills the current repo path, user, group, log directory, and run mode. Then:
+That prints the commands it would run. To actually install and enable the service without starting it:
 
 ```bash
-sudo systemctl daemon-reload
-sudo systemctl enable clawd-pump
-sudo systemctl start clawd-pump
-sudo systemctl status clawd-pump
+./scripts/service_control.sh install systemd copy --apply
 ```
 
 macOS launchd template:
 
 ```bash
-./scripts/render_service.sh launchd copy
-mkdir -p ~/Library/LaunchAgents
-cp deploy/generated/com.openclawd.clawd-pump.copy.plist ~/Library/LaunchAgents/com.openclawd.clawd-pump.plist
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.openclawd.clawd-pump.plist
-launchctl kickstart -k gui/$(id -u)/com.openclawd.clawd-pump
+./scripts/service_control.sh install launchd copy
 ```
 
-Both service templates call `scripts/run_24_7.sh`, which runs preflight before starting the trading process.
+That prints the commands it would run. To actually install the service without starting it:
+
+```bash
+./scripts/service_control.sh install launchd copy --apply
+```
+
+Both service templates call `scripts/run_24_7.sh`, which runs preflight before starting the trading process. The service control helper does not start the service; start it only after `./scripts/preflight.sh` passes.
 
 ## Upstash Box Agent
 
@@ -176,6 +186,20 @@ Preflight Box credentials and MCP wiring without printing secret values or creat
 
 ```bash
 npm run box:pump:preflight -- --bootstrap-local-mcp
+```
+
+Model authentication can use either a direct model key:
+
+```bash
+CLAUDE_KEY=...
+```
+
+or an Upstash-managed key:
+
+```bash
+CLAWD_BOX_AGENT_API_KEY=UPSTASH_KEY
+# or:
+CLAWD_BOX_AGENT_API_KEY=STORED_KEY
 ```
 
 Use an externally reachable MCP endpoint:
@@ -221,6 +245,7 @@ Do not put more SOL in the hot wallet than the max loss you accept for unattende
 - `scripts/smoke_live_gates.sh` verifies unarmed live commands stop before wallet/RPC runtime initialization.
 - HTTP trading endpoints are blocked while `PUMP_DRY_RUN=true` or `LIVE_TRADING_ENABLED` is not `true`.
 - `scripts/status.sh` reports live gate state, process state, optional HTTP health, and recent log files without printing private keys.
+- `scripts/bot_control.sh` writes the autobuy control file read by the running process. `pause` sets `mode=stopped`; `resume` returns to `normal`; `volume` sets burst parameters.
 - `scripts/arm_live.sh` and `scripts/disarm_live.sh` only update non-secret live gate and risk-control keys, and create a timestamped `.env` backup before editing.
 
 ## Emergency Stop
