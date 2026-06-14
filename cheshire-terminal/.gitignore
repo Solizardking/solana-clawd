@@ -1,42 +1,59 @@
-# Gitignore for ClawdOS
-################################################################
-agent-wallet.json
-# general
-.DS_Store
-.idea
-.vscode
-.history
-.temp
-.env.local
-venv
-temp
-tmp
-.env
-clawd-box
 node_modules
-*.log
-/package-lock.json
-tunnel.md
-# ci
-.coverage
-.eslintcache
-.stylelintcache
-node_modules
-.next
-.env.local
-.env
-.vercel
-# ----------------------------------------------------------------------------
-.clawd
-# ----------------------------------------------------------------------------
-# Env files (any name pattern, any depth)
+# Dependencies
+node_modules/
+**/node_modules/
+.venv/
+**/.venv/
+.pnp
+.pnp.js
+yarn.lock
+bun.lock
+
+# Build outputs
+.next/
+.next-dev-*/
+dist/
+build/
+target/
+.anchor/
+*.tsbuildinfo
+
+# Local tool state
+.playwright-mcp/
+.vercel/
+.vercel-static/
+.wrangler/
+.clawd/
+.convex/
+.pay/
+.pnpm-store/
+.mypy_cache/
+
+# Environment files
 .env
 .env.*
+.env.local
+.env.*.local
 !.env.example
 !.env.template
 !.env.sample
+!.env.vercel.example
 
-# Private keys / certs / wallets
+# Local private key material
+wallets/arena-agents/
+wallet.json
+*-wallet.json
+keypair.json
+*-keypair.json
+*_keypair.json
+keypair*.json
+solana-keygen.json
+phantom-export.json
+id.json
+*.b58
+*.b64.key
+
+# Private keys, certificates, and cloud credentials
 *.pem
 *.key
 *.p12
@@ -45,392 +62,98 @@ node_modules
 *.jks
 *.asc
 *.gpg
+*.ppk
 id_rsa
 id_rsa.*
 id_ed25519
 id_ed25519.*
 id_ecdsa
 id_ecdsa.*
-*.ppk
-known_hosts
-
-# Wallet / keypair files
-wallet.json
-*-wallet.json
-keypair.json
-*-keypair.json
-solana-keygen.json
-phantom-export.json
-
-# Service account / cloud credentials
 service-account*.json
 gcp-credentials*.json
 google-credentials*.json
 firebase-adminsdk*.json
 aws-credentials
 credentials.json
-config.env
-# Coinbase / CDP specific
+client_secret*.json
+google-services.json
 cdp_private_key.pem
 cdp_*.pem
 
-# Privy / other secret files seen in this repo
-privy-private-key.pem
-fly.toml.local
-*api_key*.txt
-*secret*.txt
+# Public repo excludes local nested research drops and copied projects.
+/Agent-Trading-Arena/
+/Agent-Trading-Arena-main/
+/TradingView-API-main/
+/agent-minter/
+/attached_assets/
+/better-auth-main/
+/candy/
+/caveman-agent/
+/cheshire-terminal/
+/convex-helpers-main/
+/Discord/
+/dynamic-bonding-curve-main/
+/gfx/
+/library/
+/livekit-agent/
+/m/
+/magicblock-engine-examples-main/
+/magicblock-gacha/
+/programs/
+/pump-public-docs-main/
+/solanastreaming/
+/staking/
+/wallets/
 
-# ----------------------------------------------------------------------------
-# Node / pnpm / bun
-# ----------------------------------------------------------------------------
-node_modules/
-.pnpm-store/
-.pnp.*
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
+# Root scratch notes, generated reports, and screenshots.
+/db.txt
+/dex-mobile-snapshot.md
+/llm.txt
+/pool.txt
+/search.txt
+/style.txt
+/swap.txt
+/*.png
+/bundle-stats.json
+/package-lock.json
 
-# ----------------------------------------------------------------------------
-# Python (clawd-operator etc.)
-# ----------------------------------------------------------------------------
-operator/
-.venv/
-venv/
-env/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.egg-info/
-.Python
-pip-log.txt
-pip-delete-this-directory.txt
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# ----------------------------------------------------------------------------
-# Build / dist artifacts
-# ----------------------------------------------------------------------------
-dist/
-dist-web/
-build/
-!src/app/build/
-!src/app/build/**
-!src/app/api/build/
-!src/app/api/build/**
-out/
-.next/
-.next*/
-.turbo/
-.cache/
-.parcel-cache/
-.swc/
-.tsbuildinfo
-*.tsbuildinfo
-coverage/
-.nyc_output/
-
-# ----------------------------------------------------------------------------
-# Mobile / iOS / Android
-# ----------------------------------------------------------------------------
-# iOS
-*.xcuserstate
-xcuserdata/
-DerivedData/
-Pods/
-*.mobileprovision
-*.p8
-*.ipa
-*.dSYM.zip
-
-# Android
-.gradle/
-local.properties
-*.apk
-*.aab
-*.iml
-captures/
-google-services.json
-
-# Expo / React Native
-.expo/
-.expo-shared/
-
-# ----------------------------------------------------------------------------
-# macOS / Windows / Linux junk
-# ----------------------------------------------------------------------------
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-Desktop.ini
-
-# ----------------------------------------------------------------------------
-# Editors / IDEs
-# ----------------------------------------------------------------------------
-.vscode/
-!.vscode/extensions.json
-.idea/
-*.swp
-*.swo
-*~
-.project
-.classpath
-.settings/
-
-# ----------------------------------------------------------------------------
-# Logs / runtime / temp
-# ----------------------------------------------------------------------------
-*.log
-logs/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-.npm/
-.eslintcache
-.stylelintcache
-*.pid
-*.seed
-*.pid.lock
-
-# ----------------------------------------------------------------------------
-# Test / generated data
-# ----------------------------------------------------------------------------
-generated/
-tmp/
-temp/
-.tmp/
-.env
-.env.local
-.env.*
-!.env.example
-!**/.env.example
-# ----------------------------------------------------------------------------
-# Repo-specific
-# ----------------------------------------------------------------------------
-# Old/duplicate working folders — keep on disk but exclude from git
-extensions copy/
-agent-kit/
-.env.local
-.env
-# Local sessions / user state
-.clawdbot/
-sessions/
-*.session
-
-# Sentry / sourcemaps
-.sentryclirc
-
-# Claude Code / agent local state
-.claude/
-.cursor/
-
-# clawd-guard GitHub App secrets
-packages/clawd-guard/.env
-packages/clawd-guard/private-key.pem
-packages/clawd-guard/*.pem
-.playwright-mcp/
-playwright-report/
-test-results/
-
-# production
-dist
-es
-logs
-test-output
-
-# umi
-.umi
-.umi-production
-.umi-test
-.dumi/tmp*
-
-# husky
-.husky/prepare-commit-msg
-
-# misc
-# add other ignore file below
-.env
-# extracted archives
-clawd-ai-agents 2/
-
-# macOS
-.DS_Store
-__MACOSX
-
-.vercel
-
-# ============================================================================
-# SOLANA FINANCE SAFETY — never commit these, no exceptions
-# ============================================================================
-
-# Solana keypairs — any format, any name
-*.json.bak
-solana-wallet*.json
-my-wallet*.json
-default-wallet*.json
-dev-wallet*.json
-test-wallet*.json
-deploy-wallet*.json
-*_keypair.json
-*-keypair.json
-keypair*.json
-id.json
-# Anchor / solana-test-validator
-.anchor/
-test-ledger/
-# Any raw base58 or base64 key dumps
-*.b58
-*.b64.key
-
-# ============================================================================
-# CLAWD AGENT RUNTIME — generated locally, never version-controlled
-# ============================================================================
-
-# TA strategy configs generated by `clawd-agents optimize --ta-config`
-ema-cross-*.json
-rsi-reversion-*.json
-macd-trend-*.json
-*-strategy-config.json
-ta-config-*.json
-
-# Harness config if generated inside the repo
-harness.json
-.clawd-harness.json
-clawd-harness.json
-
-# Context packs generated by `clawd-agents pack`
-*.pack.md
-perps-pack.md
-*-pack.md
-*-context.md
-clawd-context-*.md
-
-# Vulcan strategy state (runs/ledgers normally live in ~/.vulcan/ but guard locally too)
+# Agent runtime state
 .vulcan/
 vulcan-runs/
-strategy-runs/
-*.ledger.json
-*.tick-log.json
-
-# Paper trading state
 paper-state.json
 paper-balance.json
 .paper/
-
-# Imperial / perps agent session caches
-imperial-session*.json
 .imperial/
-perps-session*.json
-.perps/
-
-# Clawd agent memory / session logs
-agent-memory*.json
-session-state*.json
+imperial-session*.json
 .agent-sessions/
 *.session.json
+agent-memory*.json
+session-state*.json
+.clawdbot/
+sessions/
 
-# Goals / trade records generated locally
-goals-*.json
-trade-record-*.json
-imp-*.json
+# OS files
+.DS_Store
+Thumbs.db
 
-# ============================================================================
-# API KEYS & TOKENS — belt-and-suspenders beyond .env patterns
-# ============================================================================
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Specific secret file patterns (avoid broad *token* which matches code files)
-*-secret.json
-*.secret.json
-auth-token*.json
-access-token*.json
-bearer-token*.json
-refresh-token*.json
-oauth-token*.json
-*-apikey.json
-*-api-key.json
-*-private-key.json
-*-privatekey.json
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Helius / RPC / provider keys
-helius*.json
-helius*.env
-rpc-config*.json
+# Coverage
+coverage/
+.nyc_output/
 
-# ClawdRouter provisioned keys
-clawd-key*.json
-agent-key*.json
-*-agent-key.txt
-
-# ============================================================================
-# DATABASE & PERSISTENT STORAGE — local only
-# ============================================================================
-*.sqlite
-*.sqlite3
-*.db
-*.db-journal
-*.db-wal
-*.db-shm
-# Convex local state
-.convex/
-
-# ============================================================================
-# GENERATED ASSETS & REPORTS
-# ============================================================================
-# Token launch images staged locally
-launch-image-*.png
-launch-image-*.jpg
-launch-image-*.gif
-
-# Audit reports / scan results with potentially sensitive paths
-audit-report-*.json
-scan-result-*.json
-security-scan-*.txt
-
-# pnpm lock is tracked at root; sub-package locks are noise
-packages/*/pnpm-lock.yaml
-agents/*/pnpm-lock.yaml
-
-# ============================================================================
-# RUST / ANCHOR BUILD ARTIFACTS
-# NOTE: programs/programs/target/ has ~3000 tracked files that should be
-# untracked. Run: git rm -r --cached programs/programs/target/ && git commit
-# ============================================================================
-programs/programs/target/
-programs/target/
-**/target/deps/
-**/target/debug/
-**/target/release/
-**/target/sbpf-solana-solana/
-.anchor/target/
-
-# ============================================================================
-# HUGGING FACE — homebase build dir + token belt-and-suspenders
-# The hf/ dir holds local copies of Space repos pushed to huggingface.co.
-# Keep it out of the public GitHub mirror entirely.
-# ============================================================================
-hf/
-.huggingface/
-huggingface_token*
-hf_token*
-# Never commit raw HF user access tokens (hf_xxxx...)
-**/stored_tokens
-
-# Local-only nested repo / state tree
-.solana/
-clawd-grok
-!agents/clawd-grok
-clawd-grok
-.solana
-clawd-box
-
-# Accidental OS/editor copies of config files
-*.gitignore copy
-.gitignore copy
+# Temp
+tmp/
+temp/
+.vercel
+.env*

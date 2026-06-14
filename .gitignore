@@ -17,7 +17,7 @@ node_modules
 *.log
 /package-lock.json
 tunnel.md
-# ci
+cheshire-terminal
 .coverage
 .eslintcache
 .stylelintcache

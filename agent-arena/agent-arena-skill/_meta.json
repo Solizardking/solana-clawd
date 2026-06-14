@@ -1,0 +1,17 @@
+{
+  "owner": "cheshireterminal",
+  "slug": "agent-arena-skill",
+  "displayName": "Cheshire Terminal Agent Registry — On-Chain Solana Agent Identity",
+  "latest": {
+    "version": "2.0.0",
+    "publishedAt": 1771831265874,
+    "commit": "https://github.com/cheshireterminal/skills/commit/svm-metaplex-registry"
+  },
+  "history": [
+    {
+      "version": "0.1.0",
+      "publishedAt": 1771831265874,
+      "commit": "original-evm-erc8004-version"
+    }
+  ]
+}
