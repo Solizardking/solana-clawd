@@ -161,7 +161,7 @@ if [[ "$preflight_status" -eq 0 && "$smoke_status" -eq 0 && "$service_render_sta
 fi
 
 blockers=()
-if [[ "$MODE" == "copy" && ! is_set "YELLOWSTONE_GRPC_HTTP" ]]; then
+if [[ "$MODE" == "copy" ]] && ! is_set "YELLOWSTONE_GRPC_HTTP"; then
   blockers+=("YELLOWSTONE_GRPC_HTTP is required for copy mode")
 fi
 if [[ "$MODE" != "serve" && "$(env_value "LIVE_TRADING_ENABLED")" != "true" ]]; then
