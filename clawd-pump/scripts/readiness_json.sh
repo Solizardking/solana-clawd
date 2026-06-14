@@ -6,6 +6,8 @@ cd "$(dirname "$0")/.."
 ENV_FILE="${ENV_FILE:-.env}"
 PORT="${PUMP_HTTP_PORT:-8765}"
 MODE="${PUMP_READINESS_MODE:-${1:-copy}}"
+BUNDLE_DIR="${CLAWD_PUMP_SERVE_BUNDLE_DIR:-${HOME}/Library/Application Support/clawd-pump-serve}"
+LAUNCHD_LABEL="gui/$(id -u)/com.openclawd.clawd-pump.serve"
 
 case "$MODE" in
   copy|autobuy|serve) ;;
@@ -80,6 +82,28 @@ if command -v curl >/dev/null 2>&1; then
     || true
 fi
 
+launchd_loaded=1
+launchd_running=1
+launchd_pid=""
+launchd_path=""
+launchd_program=""
+if [[ "$MODE" == "serve" ]] && command -v launchctl >/dev/null 2>&1; then
+  if launchctl print "$LAUNCHD_LABEL" >/tmp/clawd-pump-readiness-launchd.txt 2>/tmp/clawd-pump-readiness-launchd.err; then
+    launchd_loaded=0
+    if grep -Eq "^\s*state = running" /tmp/clawd-pump-readiness-launchd.txt; then
+      launchd_running=0
+    fi
+    launchd_pid="$(awk -F'= ' '/^[[:space:]]*pid = / { print $2; exit }' /tmp/clawd-pump-readiness-launchd.txt)"
+    launchd_path="$(awk -F'= ' '/^[[:space:]]*path = / { print $2; exit }' /tmp/clawd-pump-readiness-launchd.txt)"
+    launchd_program="$(awk -F'= ' '/^[[:space:]]*program = / { print $2; exit }' /tmp/clawd-pump-readiness-launchd.txt)"
+  fi
+fi
+
+bundle_installed=1
+if [[ "$MODE" == "serve" && -d "$BUNDLE_DIR" && -x "$BUNDLE_DIR/solana-vntr-sniper" ]]; then
+  bundle_installed=0
+fi
+
 smoke_status=1
 run_check /tmp/clawd-pump-readiness-smoke.log ./scripts/smoke_live_gates.sh && smoke_status=0 || true
 
@@ -133,6 +157,17 @@ cat <<JSON
   },
   "process": {
     "running": $(json_bool "$process_running")
+  },
+  "service": {
+    "launchd_label": $(json_string "$LAUNCHD_LABEL"),
+    "launchd_loaded": $(json_bool "$launchd_loaded"),
+    "launchd_running": $(json_bool "$launchd_running"),
+    "launchd_pid": $(json_string "$launchd_pid"),
+    "launchd_path": $(json_string "$launchd_path"),
+    "launchd_program": $(json_string "$launchd_program"),
+    "bundle_path": $(json_string "$BUNDLE_DIR"),
+    "bundle_installed": $(json_bool "$bundle_installed"),
+    "bundle_log": $(json_string "$BUNDLE_DIR/logs/clawd-pump-serve.log")
   },
   "checks": {
     "wallet_address": {
