@@ -12,6 +12,7 @@
 //!   GET  /tokens     — tracked token status
 //!   POST /risk-check {}
 //!   GET  /health     — server liveness
+//!   GET  /status     — secret-safe live gate/status summary
 
 use axum::{
     extract::State,
@@ -47,6 +48,23 @@ pub struct BuyRequest {
 #[derive(Deserialize)]
 pub struct WrapRequest {
     pub sol: Option<f64>,
+}
+
+#[derive(Serialize)]
+pub struct StatusResponse {
+    pub service: &'static str,
+    pub live_trading_enabled: bool,
+    pub pump_dry_run: bool,
+    pub live_http_enabled: bool,
+    pub max_trade_sol: Option<String>,
+    pub auto_buy_amount_sol: Option<String>,
+    pub counter_limit: Option<String>,
+    pub risk_management_enabled: bool,
+    pub rpc_http_present: bool,
+    pub yellowstone_grpc_http_present: bool,
+    pub yellowstone_grpc_token_present: bool,
+    pub private_key_present: bool,
+    pub pump_http_port: String,
 }
 
 // ---------------------------------------------------------------------------
@@ -103,6 +121,37 @@ fn blocked_live_response(action: &str) -> ApiResponse {
 
 async fn health() -> Json<serde_json::Value> {
     Json(serde_json::json!({ "status": "ok", "service": "clawd-pump" }))
+}
+
+fn env_present(key: &str) -> bool {
+    std::env::var(key)
+        .ok()
+        .map(|v| !v.trim().is_empty())
+        .unwrap_or(false)
+}
+
+fn env_string(key: &str) -> Option<String> {
+    std::env::var(key)
+        .ok()
+        .filter(|v| !v.trim().is_empty())
+}
+
+async fn status() -> Json<StatusResponse> {
+    Json(StatusResponse {
+        service: "clawd-pump",
+        live_trading_enabled: env_flag("LIVE_TRADING_ENABLED", false),
+        pump_dry_run: env_flag("PUMP_DRY_RUN", true),
+        live_http_enabled: live_http_enabled(),
+        max_trade_sol: env_string("MAX_TRADE_SOL"),
+        auto_buy_amount_sol: env_string("AUTO_BUY_AMOUNT_SOL"),
+        counter_limit: env_string("COUNTER_LIMIT"),
+        risk_management_enabled: env_flag("RISK_MANAGEMENT_ENABLED", false),
+        rpc_http_present: env_present("RPC_HTTP"),
+        yellowstone_grpc_http_present: env_present("YELLOWSTONE_GRPC_HTTP"),
+        yellowstone_grpc_token_present: env_present("YELLOWSTONE_GRPC_TOKEN"),
+        private_key_present: env_present("PRIVATE_KEY"),
+        pump_http_port: std::env::var("PUMP_HTTP_PORT").unwrap_or_else(|_| "8765".to_string()),
+    })
 }
 
 async fn buy(
@@ -180,6 +229,7 @@ pub async fn serve(binary_path: String, cwd: String) -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/health", get(health))
+        .route("/status", get(status))
         .route("/buy", post(buy))
         .route("/balance", post(balance))
         .route("/wrap", post(wrap))
