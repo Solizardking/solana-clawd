@@ -52,6 +52,10 @@ function secretKeyFromEnv() {
   return Uint8Array.from(JSON.parse(raw) as number[]);
 }
 
+function hasSecretKeyEnv() {
+  return Boolean(process.env.SOLANA_SECRET_KEY ?? process.env.SOLANA_PRIVATE_KEY ?? process.env.WALLET_PRIVATE_KEY);
+}
+
 export function createSvmA2AUmi(network: SvmNetwork = DEFAULT_NETWORK, secretKey = secretKeyFromEnv()) {
   const umi = createUmi(rpcUrlForNetwork(network)).use(mplAgentIdentity());
   if (secretKey) {
@@ -97,6 +101,10 @@ export async function mintAgentCard(input: MintAgentCardInput): Promise<MintAgen
       agentMetadata,
       note: "Pass --live with SOLANA_SECRET_KEY as a JSON byte array to mint through the Metaplex Agent API."
     };
+  }
+
+  if (!input.umi && !hasSecretKeyEnv()) {
+    throw new Error("SVM-A2A live mint requires SOLANA_SECRET_KEY, SOLANA_PRIVATE_KEY, or WALLET_PRIVATE_KEY as a JSON byte array.");
   }
 
   const umi = input.umi ?? createSvmA2AUmi(network);

@@ -1,12 +1,12 @@
-# @page-agent/mcp
+# @solana-clawd/browser-mcp
 
-MCP server that lets AI agent clients (Clawd Desktop, Copilot, etc.) control your browser through the [Page Agent](https://github.com/alibaba/page-agent) extension.
+MCP server that lets AI agent clients control your browser through the Clawd pAGENT extension.
 
 ## Prerequisites
 
 - Node.js >= 20
-- [Page Agent Extension](https://chromewebstore.google.com/detail/page-agent-ext/akldabonmimlicnjlflnapfeklbfemhj) installed in Chrome
-- An LLM API key (OpenAI-compatible)
+- Clawd pAGENT extension installed in Chrome, Brave, or Edge
+- One LLM API key: `XAI_API_KEY`, `GOOGLE_API_KEY`, `OPENROUTER_API_KEY`, or generic `LLM_API_KEY`
 
 ## Installation
 
@@ -19,11 +19,10 @@ Add to `~/Library/Application Support/Clawd/clawd_desktop_config.json`:
     "mcpServers": {
         "page-agent": {
             "command": "npx",
-            "args": ["-y", "@page-agent/mcp"],
+            "args": ["-y", "@solana-clawd/browser-mcp"],
             "env": {
-                "LLM_BASE_URL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-                "LLM_API_KEY": "sk-xxx",
-                "LLM_MODEL_NAME": "qwen3.5-plus"
+                "XAI_API_KEY": "xai-...",
+                "XAI_MODEL_NAME": "grok-4.3"
             }
         }
     }
@@ -49,13 +48,18 @@ Same format — add the config to the MCP settings of your client.
 | `LLM_BASE_URL`   | —       | LLM API base URL      |
 | `LLM_API_KEY`    | —       | LLM API key           |
 | `LLM_MODEL_NAME` | —       | Model name            |
+| `XAI_API_KEY`    | —       | xAI API key for Grok vision-capable inference |
+| `XAI_MODEL_NAME` | `grok-4.3` | xAI model override |
+| `GOOGLE_API_KEY` | —       | Google Gemini API key |
+| `GOOGLE_MODEL_NAME` | `gemini-2.5-flash` | Gemini model override |
+| `OPENROUTER_API_KEY` | —    | OpenRouter API key |
 | `PORT`           | `38401` | HTTP + WebSocket port |
 
 ## How It Works
 
 ```
 ┌──────────────┐  stdio   ┌──────────────────┐  WebSocket   ┌──────────────┐
-│ Clawd /     │◄────────►│ @page-agent/mcp  │◄────────────►│ Hub tab      │
+│ Clawd /     │◄────────►│ Clawd pAGENT MCP │◄────────────►│ Hub tab      │
 │ Copilot      │  (MCP)   │ (Node.js)        │  (localhost) │ (extension)  │
 └──────────────┘          └──────────────────┘              └──────┬───────┘
                                    │                               │
@@ -67,7 +71,7 @@ Same format — add the config to the MCP settings of your client.
                           └──────────────────┘              └──────────────┘
 ```
 
-1. Agent client starts the MCP server via stdio (`npx @page-agent/mcp`).
+1. Agent client starts the MCP server via stdio (`npx @solana-clawd/browser-mcp`).
 2. Server starts HTTP + WS on `localhost:PORT`, opens the launcher page in browser.
 3. Launcher page triggers the extension to open a **hub tab** (`hub.html?ws=PORT`).
 4. Hub connects to the WS server. MCP tools now proxy tasks to the hub.

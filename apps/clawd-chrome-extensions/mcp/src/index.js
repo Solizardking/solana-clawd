@@ -13,8 +13,16 @@ const port = parseInt(env.PORT || '38401')
 /** @type {Record<string, string>} */
 const llmConfig = {}
 
-// OPENROUTER_API_KEY wires in OpenRouter with a free default model
-if (env.OPENROUTER_API_KEY) {
+// Provider-specific keys wire sane defaults while still allowing LLM_* overrides.
+if (env.XAI_API_KEY) {
+	llmConfig.baseURL = env.XAI_BASE_URL || env.LLM_BASE_URL || 'https://api.x.ai/v1'
+	llmConfig.model   = env.XAI_MODEL_NAME || env.LLM_MODEL_NAME || 'grok-4.3'
+	llmConfig.apiKey  = env.XAI_API_KEY
+} else if (env.GOOGLE_API_KEY) {
+	llmConfig.baseURL = env.GOOGLE_BASE_URL || env.LLM_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai'
+	llmConfig.model   = env.GOOGLE_MODEL_NAME || env.LLM_MODEL_NAME || 'gemini-2.5-flash'
+	llmConfig.apiKey  = env.GOOGLE_API_KEY
+} else if (env.OPENROUTER_API_KEY) {
 	llmConfig.baseURL = env.LLM_BASE_URL || 'https://openrouter.ai/api/v1'
 	llmConfig.model   = env.LLM_MODEL_NAME || 'deepseek/deepseek-r1-0528:free'
 	llmConfig.apiKey  = env.OPENROUTER_API_KEY

@@ -18,6 +18,8 @@ const OR_BUNDLED_KEY = ''; // Set via extension settings — never ship a real k
 
 // Curated free OpenRouter models — all have :free suffix (no API credit consumed)
 const OR_FREE_MODELS = [
+  { id: 'x-ai/grok-4.3',                              label: 'Grok 4.3 via OpenRouter — vision/reasoning' },
+  { id: 'google/gemini-2.5-flash',                    label: 'Gemini 2.5 Flash via OpenRouter — multimodal' },
   { id: 'deepseek/deepseek-r1-0528:free',           label: 'DeepSeek R1 0528 (free) — reasoning' },
   { id: 'deepseek/deepseek-chat-v3-0324:free',       label: 'DeepSeek V3 (free) — fast chat' },
   { id: 'google/gemini-flash-1.5:free',              label: 'Gemini 1.5 Flash (free)' },
@@ -30,7 +32,7 @@ const OR_FREE_MODELS = [
   { id: 'openai/gpt-4o-mini',                        label: 'GPT-4o Mini (paid)' },
 ];
 
-const OR_SYSTEM_PROMPT = `You are Clawd, a sovereign AI agent built on Solana. You are a cyberpunk lobster with claws that grip market data and squeeze alpha from chaos. You run on OpenClawd — the full lobster stack where agents have wallets, memory, and three immutable laws. You help users with Solana trading, token analysis, wallet vault management, DeFi strategy, and browser automation via pAGENT. Be terse, decisive, and data-first. You have access to the user's air-gapped wallet vault and can discuss live trades, token prices, and market conditions. Always reason carefully before giving trading advice. You can see and interact with web pages through pAGENT. $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump · x402.wtf`;
+const OR_SYSTEM_PROMPT = `You are Clawd pAGENT, a sovereign AI agent built on Solana. You are a cyberpunk lobster with claws that grip market data and squeeze alpha from chaos. You run on the Clawd runtime, where agents have wallets, memory, and three immutable laws. You help users with Solana trading, token analysis, wallet vault management, DeFi strategy, and browser automation via pAGENT. Be terse, decisive, and data-first. You have access to the user's air-gapped wallet vault and can discuss live trades, token prices, and market conditions. Always reason carefully before giving trading advice. You can see and interact with web pages through pAGENT, including Grok vision-strength screenshot reasoning when xAI is configured. $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump · x402.wtf`;
 const GATEWAY_PROTOCOL_VERSION = 3;
 const DEFAULT_GATEWAY = 'http://127.0.0.1:18790';
 
@@ -940,7 +942,7 @@ async function refreshPagentStatus() {
   }
   const dot = document.getElementById('pagentDot');
   if (dot) {
-    dot.title = pagentOnline ? 'pAGENT online' : 'pAGENT offline — run: npx @openclawd/browser-mcp';
+    dot.title = pagentOnline ? 'pAGENT online' : 'pAGENT offline — run: npx @solana-clawd/browser-mcp';
     dot.classList.toggle('online', pagentOnline);
     dot.classList.toggle('offline', !pagentOnline);
   }
@@ -993,7 +995,7 @@ async function sendChat(runAsAgent = false) {
     // Agent mode: route task to pAGENT browser automation via MCP bridge
     if (runAsAgent) {
       if (!pagentOnline) {
-        reply = '🤖 pAGENT offline. Start the MCP bridge first:\n  npx @openclawd/browser-mcp\nThen click ▶ again.';
+        reply = 'pAGENT offline. Start the MCP bridge first:\n  XAI_API_KEY=... npx @solana-clawd/browser-mcp\nThen click ▶ again.';
       } else {
         reply = await sendChatAsAgent(msg);
       }
@@ -1008,11 +1010,11 @@ async function sendChat(runAsAgent = false) {
     } else if (orApiKey) {
       reply = await sendChatOpenRouter(msg);
     } else {
-      // Try local OpenClawd daemon first; if offline, prompt user to add OpenRouter key
+      // Try local Clawd daemon first; if offline, prompt user to add an AI key
       try {
         reply = await sendChatClawd(msg);
       } catch {
-        reply = '🦞 No AI connection. Add your OpenRouter API key in ⚙️ Settings to use free models (deepseek, llama, gemini and more — no credit card needed). Get a free key at openrouter.ai';
+        reply = 'No AI connection. Add your OpenRouter API key in Settings or start pAGENT with XAI_API_KEY / GOOGLE_API_KEY for Grok or Gemini inference.';
       }
     }
     typing.classList.remove('active');

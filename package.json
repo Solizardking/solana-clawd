@@ -160,6 +160,7 @@
     "a2a:build": "npm --prefix a2a run build",
     "a2a:check": "npm --prefix a2a run check",
     "a2a:mint": "npm --prefix a2a run mint",
+    "a2a:mint:dry": "npm --prefix a2a run mint:dry",
     "a2a:mint:live": "npm --prefix a2a run mint:live",
     "a2a:register": "npm --prefix a2a run register",
     "a2a:register:live": "npm --prefix a2a run register:live",

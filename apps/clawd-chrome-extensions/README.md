@@ -1,4 +1,4 @@
-# OpenClawd — pAGENT Browser
+# Clawd pAGENT Browser
 
 **The autonomous AI browser agent — your keys never leave your machine.**
 
@@ -8,7 +8,7 @@
 [![License MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![$CLAWD](https://img.shields.io/badge/%24CLAWD-pump.fun-ff69b4)](https://pump.fun/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 
-> **The Hermes of Web3** — AI agent browser with wallet, trading, and harness integration.
+> **The Hermes of Web3** — AI agent browser with wallet, trading, Grok vision, Gemini, and Clawd pAGENT harness integration.
 
 ---
 
@@ -19,8 +19,8 @@
 3. [Communication Map](#communication-map)
 4. [Six Tabs](#six-tabs)
 5. [pAGENT — Browser Automation](#pagent--browser-automation)
-6. [OpenRouter Free Models](#openrouter-free-models)
-7. [OpenClawd Pro — Hold $CLAWD](#openclawd-pro--hold-clawd)
+6. [Grok, Gemini, and OpenRouter Models](#grok-gemini-and-openrouter-models)
+7. [Clawd Pro — Hold $CLAWD](#clawd-pro--hold-clawd)
 8. [MCP HTTP API](#mcp-http-api)
 9. [Agent Wallet Vault](#agent-wallet-vault)
 10. [Local Port Map](#local-port-map)
@@ -36,7 +36,7 @@
 ### Option A — One-Shot Installer (Recommended)
 
 ```bash
-bash install-openclawd.sh
+XAI_API_KEY=... bash install-openclawd.sh
 ```
 
 Builds the extension, starts the MCP bridge on port 38401, and prints load-unpacked instructions.
@@ -71,13 +71,13 @@ This directory is a monorepo. Every sub-directory is an npm package that feeds i
 
 | Package | npm name | Version | Role |
 |---|---|---|---|
-| `./` | `@openclawd/chrome-extension` | 3.0.0 | Root scripts for tests, package builds, CWS zip, MCP launcher |
+| `./` | `@solana-clawd/chrome-extension` | 3.0.0 | Root scripts for tests, package builds, CWS zip, MCP launcher |
 | `core/` | `@page-agent/core` | 1.6.2 | ReAct agent loop (observe → think → act) |
 | `llms/` | `@page-agent/llms` | 1.6.2 | LLM provider adapters (OpenRouter, OpenAI-compat) |
 | `page-controller/` | `@page-agent/page-controller` | 1.6.2 | DOM state capture + element interactions |
 | `page-agent/` | `page-agent` | 1.6.2 | High-level wrapper — composes core + page-controller |
 | `ui/` | `@page-agent/ui` | 1.6.2 | Side-panel stub and overlay components |
-| `mcp/` | `@openclawd/browser-mcp` | 2.0.0 | MCP stdio server + HTTP/WS hub bridge (port 38401) |
+| `mcp/` | `@solana-clawd/browser-mcp` | 2.0.0 | MCP stdio server + HTTP/WS hub bridge (port 38401) |
 | `clawd-agent/` | *(prebuilt bundle)* | — | Prebuilt extension bundle (load alongside main) |
 
 All TypeScript packages share the repository root config at `../../../tsconfig.base.json` from each package directory.
@@ -160,7 +160,7 @@ node src/index.js
 Or via npx once published:
 
 ```bash
-npx @openclawd/browser-mcp
+XAI_API_KEY=... npx @solana-clawd/browser-mcp
 ```
 
 You can also drive pAGENT from any page's console:
@@ -176,9 +176,19 @@ await window.PAGENT.execute("Find the cheapest SOL to USDC route on Jupiter and 
 
 ---
 
-## OpenRouter Free Models
+## Grok, Gemini, and OpenRouter Models
 
-The Chat tab uses OpenRouter by default. Add your key in Settings. No credit card required — the extension ships with a curated `:free` model list:
+The Chat tab can use OpenRouter from Settings. The pAGENT MCP bridge also accepts provider-native keys from the environment:
+
+```bash
+XAI_API_KEY=... XAI_MODEL_NAME=grok-4.3 npm run mcp
+GOOGLE_API_KEY=... GOOGLE_MODEL_NAME=gemini-2.5-flash npm run mcp
+OPENROUTER_API_KEY=... npm run mcp
+```
+
+`XAI_API_KEY` takes precedence over `GOOGLE_API_KEY`, then `OPENROUTER_API_KEY`, then generic `LLM_*` variables. The xAI default is `grok-4.3`, which the current xAI docs recommend for general use and document as image-input capable.
+
+OpenRouter Settings include paid Grok/Gemini routes plus curated free models:
 
 | Model ID | Notes |
 |---|---|
@@ -202,15 +212,15 @@ X-Title: Clawd pAGENT
 
 ---
 
-## OpenClawd Pro — Hold $CLAWD
+## Clawd Pro — Hold $CLAWD
 
 | Tier | Hold | Daily Runs | Models | Features |
 |---|---|---|---|---|
 | **Free** | 0 $CLAWD | 5 | All free models | Core 6 tabs |
 | **Bronze** | 1+ $CLAWD | 20 | + Gemini 3 Flash, DeepSeek R1 | Price alerts, watchlist |
 | **Silver** | 1,000+ $CLAWD | 50 | + Claude Sonnet 4.6 | OODA autopilot, Telegram |
-| **Gold** | 10,000+ $CLAWD | 100 | + Claude Opus 4.8, Grok 4 | Multi-agent (4), X feed |
-| **Diamond** | 100,000+ $CLAWD | 250 | + Grok multi-agent 16 | Sniper, MEV routing |
+| **Gold** | 10,000+ $CLAWD | 100 | + Claude Opus, Grok 4.3 | Multi-agent (4), X feed |
+| **Diamond** | 100,000+ $CLAWD | 250 | + Grok vision / multi-agent 16 | Sniper, MEV routing |
 
 [**Buy $CLAWD on pump.fun**](https://pump.fun/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 
@@ -363,13 +373,13 @@ Click the settings gear in the popup header.
 
 | Setting | Description | Default |
 |---|---|---|
-| OpenClawd Server URL | Local daemon API endpoint | `http://127.0.0.1:7777` |
+| Clawd Server URL | Local daemon API endpoint | `http://127.0.0.1:7777` |
 | Setup Code Import | Paste connect bundle from daemon | — |
 | Gateway Secret | Bearer token for auth | — |
 | Network | Mainnet or Devnet | Mainnet |
 | MawdAxe Server URL | Mining fleet API | `http://127.0.0.1:8420` |
-| OpenRouter API Key | AI chat and pAGENT inference | — |
-| AI Model | Default chat model (dropdown of free models) | `deepseek/deepseek-r1-0528:free` |
+| OpenRouter API Key | Popup chat inference through OpenRouter | — |
+| AI Model | Default popup chat model, including Grok/Gemini OpenRouter routes | `deepseek/deepseek-r1-0528:free` |
 
 `OR_BUNDLED_KEY` in `popup.js` is always an empty string — keys are never shipped with the extension.
 
@@ -387,7 +397,7 @@ clawd-chrome-extensions/
 ├── popup.js               Popup controller — wallet, chat, pAGENT wiring, OpenRouter
 ├── popup.css              Glassmorphism + cyberpunk theme — pagent-status-dot styles
 ├── icons/                 16 / 32 / 48 / 128 px PNG icons
-├── install-openclawd.sh   One-shot installer
+├── install-openclawd.sh   One-shot Clawd pAGENT installer
 ├── build-cws.sh           Builds Chrome Web Store zip
 ├── CWS-LISTING.md         Paste-ready store listing copy
 │
@@ -415,10 +425,10 @@ clawd-chrome-extensions/
 │
 ├── ui/                    @page-agent/ui — side panel stub
 │
-├── mcp/                   @openclawd/browser-mcp v2.0.0
+├── mcp/                   @solana-clawd/browser-mcp v2.0.0
 │   ├── package.json       npm start/test scripts
 │   └── src/
-│       ├── index.js       MCP stdio server — reads OPENROUTER_API_KEY env var
+│       ├── index.js       MCP stdio server — reads XAI_API_KEY, GOOGLE_API_KEY, OPENROUTER_API_KEY, or LLM_* env vars
 │       ├── hub-bridge.js  HTTP server (:38401) — /status /execute /stop
 │       └── launcher.html  Hub launcher page
 │

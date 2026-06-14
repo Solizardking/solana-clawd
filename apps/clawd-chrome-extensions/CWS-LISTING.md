@@ -63,9 +63,9 @@ Clawd ships with a curated list of OpenRouter free models (:free tier). Get a fr
 
 PAGENT BROWSER AUTOMATION
 
-Type any task in the chat box and click ▶ to execute it in your browser via the pAGENT MCP bridge. The extension communicates with the local @openclawd/browser-mcp server, which drives a Chrome tab using the page-agent loop (observe → reason → act). No remote API calls — everything runs locally.
+Type any task in the chat box and click ▶ to execute it in your browser via the pAGENT MCP bridge. The extension communicates with the local @solana-clawd/browser-mcp server, which drives a Chrome tab using the page-agent loop (observe → reason → act). Bring `XAI_API_KEY` for Grok vision, `GOOGLE_API_KEY` for Gemini, or `OPENROUTER_API_KEY` for OpenRouter.
 
-Start the bridge with: npx @openclawd/browser-mcp
+Start the bridge with: XAI_API_KEY=... npx @solana-clawd/browser-mcp
 
 CLAWD PRO — HOLD $CLAWD, UNLOCK EVERYTHING
 
@@ -88,7 +88,7 @@ REQUIREMENTS
 
 • Clawd daemon running locally (one-shot install at x402.wtf or github.com/Solizardking/solana-clawd)
 • OpenRouter API key for AI chat — get a free one at openrouter.ai (no credit card required for free models)
-• Optional: @openclawd/browser-mcp for the ▶ pAGENT browser automation button
+• Optional: @solana-clawd/browser-mcp for the ▶ pAGENT browser automation button
 • Optional: agentwallet-vault running on port 9099 for the Vault tab
 
 LINKS
@@ -165,5 +165,5 @@ Before publishing:
 - [ ] Screenshots captured at 1280×800
 - [ ] Privacy policy URL added in the dashboard (required for extensions that handle wallet data)
 - [ ] Tested on Chrome, Brave, and Edge with `Load unpacked`
-- [ ] pAGENT ▶ button tested with `npx @openclawd/browser-mcp` running
+- [ ] pAGENT ▶ button tested with `XAI_API_KEY=... npx @solana-clawd/browser-mcp` running
 - [ ] `clawd-agent/` sub-extension loaded alongside main extension for full pAGENT functionality

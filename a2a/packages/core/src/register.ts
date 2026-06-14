@@ -29,6 +29,10 @@ export async function registerAgentIdentity(input: RegisterAgentIdentityInput) {
     throw new Error("registerAgentIdentity live mode requires an MPL Core asset address.");
   }
 
+  if (!input.umi && !process.env.SOLANA_SECRET_KEY && !process.env.SOLANA_PRIVATE_KEY && !process.env.WALLET_PRIVATE_KEY) {
+    throw new Error("registerAgentIdentity live mode requires SOLANA_SECRET_KEY, SOLANA_PRIVATE_KEY, or WALLET_PRIVATE_KEY.");
+  }
+
   const umi = input.umi ?? createSvmA2AUmi();
   const result = await registerIdentityV1(umi, {
     asset: typeof input.asset === "string" ? publicKey(input.asset) : input.asset,

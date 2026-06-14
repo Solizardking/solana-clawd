@@ -11,7 +11,8 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "dev": "tsx scripts/dev.ts",
     "deploy": "wrangler deploy",
-    "mint": "tsx packages/core/src/mint.ts",
+    "mint": "tsx packages/core/src/mint.ts --live",
+    "mint:dry": "tsx packages/core/src/mint.ts",
     "mint:live": "tsx packages/core/src/mint.ts --live",
     "register": "tsx packages/core/src/register.ts",
     "register:live": "tsx packages/core/src/register.ts --live"
