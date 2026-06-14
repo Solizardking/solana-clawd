@@ -217,8 +217,8 @@ The CLI auto-detects the calling environment and sets HTTP headers for observabi
 | Header | Values | Purpose |
 |--------|--------|---------|
 | `X-Dflow-Caller` | `human`, `agent`, `unknown` | Identifies caller type |
-| `X-Dflow-Agent` | `cursor`, `claude-code`, `openclaw`, `github-actions`, `ci`, custom | Detected agent tool |
-| `X-Dflow-Model` | e.g. `claude-sonnet-4.6`, `gpt-4o` | Registered via `dflow agent --model` |
+| `X-Dflow-Agent` | `cursor`, `clawd-code`, `clawd`, `github-actions`, `ci`, custom | Detected agent tool |
+| `X-Dflow-Model` | e.g. `clawd-code`, `gpt-4o` | Registered via `dflow agent --model` |
 
 Override detection with environment variable: `DFLOW_AGENT=my-bot dflow trade 500000 USDC SOL`
 

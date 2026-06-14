@@ -498,7 +498,7 @@ dflow guardrails set max_daily_volume_usd 50000000
 dflow guardrails set allowed_tokens SOL,USDC,BONK
 
 # 4. Register the agent model (optional, for attribution)
-dflow agent --model claude-sonnet-4.6
+dflow agent --model clawd-code
 ```
 
 ### Agent Workflow

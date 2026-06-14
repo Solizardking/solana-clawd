@@ -1,4 +1,4 @@
-# Clawd Code Plugin for Claude Code
+# Clawd Code Plugin for Clawd Code
 
 Build on Solana with Clawd Code — one install gives you live blockchain tools, expert coding patterns, perpetuals trading, x402 payments, and autonomous agent commerce.
 

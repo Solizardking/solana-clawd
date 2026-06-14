@@ -18,7 +18,7 @@ export interface ToolResult {
   error?: string;
 }
 
-/** Semantic JSONL events for headless --format json (OpenCode-style) */
+/** Semantic JSONL events for headless --format json (Clawd headless style) */
 export type HeadlessJsonEvent =
   | { type: "step_start"; sessionID?: string; stepNumber: number; timestamp: number }
   | { type: "text"; sessionID?: string; stepNumber: number; text: string; timestamp: number }
