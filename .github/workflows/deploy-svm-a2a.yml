@@ -40,11 +40,21 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint 2>&1 || echo "⚠ lint script not found"
+      - name: Root build
+        run: pnpm run build
 
-      - name: Typecheck (arena + tournament)
-        run: npx tsc --noEmit --pretty src/arena/ArenaTypes.ts src/arena/TournamentEngine.ts 2>&1
+      - name: Typecheck SVM-A2A
+        run: npm --prefix a2a run check
+
+      - name: Build SVM-A2A
+        run: npm --prefix a2a run build
+
+      - name: Validate SVM-A2A mint metadata
+        run: npm --prefix a2a run mint:dry
+
+      - name: Validate Cloudflare Worker bundle
+        run: npx wrangler deploy --dry-run
+        working-directory: a2a
 
   deploy:
     name: Deploy SVM-A2A framework
@@ -66,12 +76,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build production bundles
-        run: pnpm run build 2>&1
+      - name: Build SVM-A2A package
+        run: npm --prefix a2a run build
 
-      - name: Build dist-web (Vite frontend)
-        run: npx vite build
-        working-directory: ${{ github.workspace }}
+      - name: Validate SVM-A2A deploy plan
+        run: bash scripts/deploy-svm-a2a.sh --network devnet --dry-run
 
       - name: Run deployment script
         run: bash scripts/deploy-svm-a2a.sh --network devnet
@@ -83,22 +92,8 @@ jobs:
           curl -s https://api.svm-a2a.ai/.well-known/agent-card.json | head -5
           echo "✓ Agent card accessible"
 
-      - name: Upload build artifacts
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload SVM-A2A dist artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: dist-web
-
-  deploy-pages:
-    name: Deploy frontend to GitHub Pages
-    needs: deploy
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          name: svm-a2a-dist
+          path: a2a/dist

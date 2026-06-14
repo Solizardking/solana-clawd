@@ -10,7 +10,7 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "dev": "tsx scripts/dev.ts",
-    "deploy": "wrangler deploy",
+    "deploy": "npx wrangler deploy",
     "mint": "tsx packages/core/src/mint.ts --live",
     "mint:dry": "tsx packages/core/src/mint.ts",
     "mint:live": "tsx packages/core/src/mint.ts --live",
