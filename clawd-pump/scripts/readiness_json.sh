@@ -8,6 +8,8 @@ PORT="${PUMP_HTTP_PORT:-8765}"
 MODE="${PUMP_READINESS_MODE:-${1:-copy}}"
 BUNDLE_DIR="${CLAWD_PUMP_SERVE_BUNDLE_DIR:-${HOME}/Library/Application Support/clawd-pump-serve}"
 LAUNCHD_LABEL="gui/$(id -u)/com.openclawd.clawd-pump.serve"
+TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/clawd-pump-readiness.XXXXXX")"
+trap 'rm -rf "$TMP_DIR"' EXIT
 
 case "$MODE" in
   copy|autobuy|serve) ;;
@@ -61,8 +63,12 @@ last_lines_json() {
   fi
 }
 
+json_array() {
+  jq -n '$ARGS.positional' --args "$@"
+}
+
 public_key=""
-wallet_output="/tmp/clawd-pump-readiness-wallet.log"
+wallet_output="$TMP_DIR/wallet.log"
 if run_check "$wallet_output" ./scripts/funding_address.sh; then
   public_key="$(grep -Ei "^(funding address|public key|wallet):" "$wallet_output" | tail -1 | awk -F': ' '{print $2}' || true)"
   if [[ -z "$public_key" ]]; then
@@ -71,13 +77,13 @@ if run_check "$wallet_output" ./scripts/funding_address.sh; then
 fi
 
 process_running=1
-if pgrep -fl "solana-vntr-sniper|run_24_7.sh" >/tmp/clawd-pump-readiness-pgrep.log 2>/dev/null; then
+if pgrep -fl "solana-vntr-sniper|run_24_7.sh" >"$TMP_DIR/pgrep.log" 2>/dev/null; then
   process_running=0
 fi
 
 http_health=1
 if command -v curl >/dev/null 2>&1; then
-  curl -fsS "http://127.0.0.1:${PORT}/health" >/tmp/clawd-pump-readiness-health.json 2>/tmp/clawd-pump-readiness-health.err \
+  curl -fsS "http://127.0.0.1:${PORT}/health" >"$TMP_DIR/health.json" 2>"$TMP_DIR/health.err" \
     && http_health=0 \
     || true
 fi
@@ -88,14 +94,15 @@ launchd_pid=""
 launchd_path=""
 launchd_program=""
 if [[ "$MODE" == "serve" ]] && command -v launchctl >/dev/null 2>&1; then
-  if launchctl print "$LAUNCHD_LABEL" >/tmp/clawd-pump-readiness-launchd.txt 2>/tmp/clawd-pump-readiness-launchd.err; then
+  launchd_output="$TMP_DIR/launchd.txt"
+  if launchctl print "$LAUNCHD_LABEL" >"$launchd_output" 2>"$TMP_DIR/launchd.err"; then
     launchd_loaded=0
-    if grep -Eq "^\s*state = running" /tmp/clawd-pump-readiness-launchd.txt; then
+    if grep -Eq "^\s*state = running" "$launchd_output"; then
       launchd_running=0
     fi
-    launchd_pid="$(awk -F'= ' '/^[[:space:]]*pid = / { print $2; exit }' /tmp/clawd-pump-readiness-launchd.txt)"
-    launchd_path="$(awk -F'= ' '/^[[:space:]]*path = / { print $2; exit }' /tmp/clawd-pump-readiness-launchd.txt)"
-    launchd_program="$(awk -F'= ' '/^[[:space:]]*program = / { print $2; exit }' /tmp/clawd-pump-readiness-launchd.txt)"
+    launchd_pid="$(awk -F'= ' '/^[[:space:]]*pid = / { print $2; exit }' "$launchd_output")"
+    launchd_path="$(awk -F'= ' '/^[[:space:]]*path = / { print $2; exit }' "$launchd_output")"
+    launchd_program="$(awk -F'= ' '/^[[:space:]]*program = / { print $2; exit }' "$launchd_output")"
   fi
 fi
 
@@ -107,44 +114,76 @@ fi
 bundle_binary_in_sync=""
 bundle_env_in_sync=""
 if [[ "$MODE" == "serve" && -x ./scripts/bundle_status.sh ]]; then
-  if ./scripts/bundle_status.sh >/tmp/clawd-pump-readiness-bundle.json 2>/tmp/clawd-pump-readiness-bundle.err; then
-    bundle_binary_in_sync="$(jq -r '.binary_in_sync // empty' /tmp/clawd-pump-readiness-bundle.json)"
-    bundle_env_in_sync="$(jq -r '.env_in_sync // empty' /tmp/clawd-pump-readiness-bundle.json)"
+  bundle_status_json="$TMP_DIR/bundle.json"
+  if ./scripts/bundle_status.sh >"$bundle_status_json" 2>"$TMP_DIR/bundle.err"; then
+    bundle_binary_in_sync="$(jq -r '.binary_in_sync // empty' "$bundle_status_json")"
+    bundle_env_in_sync="$(jq -r '.env_in_sync // empty' "$bundle_status_json")"
   fi
 fi
 
 smoke_status=1
-run_check /tmp/clawd-pump-readiness-smoke.log ./scripts/smoke_live_gates.sh && smoke_status=0 || true
+smoke_log="$TMP_DIR/smoke.log"
+run_check "$smoke_log" ./scripts/smoke_live_gates.sh && smoke_status=0 || true
 
 http_control_status=0
+http_control_log="$TMP_DIR/http-control.log"
 if [[ "$MODE" == "serve" ]]; then
   http_control_status=1
-  run_check /tmp/clawd-pump-readiness-http-control.log ./scripts/smoke_http_control.sh && http_control_status=0 || true
+  run_check "$http_control_log" ./scripts/smoke_http_control.sh && http_control_status=0 || true
 else
-  printf "not required for %s mode\n" "$MODE" >/tmp/clawd-pump-readiness-http-control.log
+  printf "not required for %s mode\n" "$MODE" >"$http_control_log"
 fi
 
 service_render_status=1
-run_check /tmp/clawd-pump-readiness-service.log ./scripts/render_service.sh launchd "$MODE" && service_render_status=0 || true
+service_log="$TMP_DIR/service.log"
+run_check "$service_log" ./scripts/render_service.sh launchd "$MODE" && service_render_status=0 || true
 
 preflight_status=1
+preflight_log="$TMP_DIR/preflight.log"
 if [[ "$MODE" == "serve" ]]; then
-  run_check /tmp/clawd-pump-readiness-preflight.log ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
+  run_check "$preflight_log" ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
 else
-  run_check /tmp/clawd-pump-readiness-preflight.log env REQUIRE_FUNDED_WALLET=true ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
+  run_check "$preflight_log" env REQUIRE_FUNDED_WALLET=true ./scripts/preflight.sh "$MODE" && preflight_status=0 || true
 fi
 
 funding_status=1
+funding_log="$TMP_DIR/funding.log"
 if [[ "$MODE" == "serve" ]]; then
-  printf '{"passed":true,"reason":"not required for serve mode"}\n' >/tmp/clawd-pump-readiness-funding.log
+  printf '{"passed":true,"reason":"not required for serve mode"}\n' >"$funding_log"
   funding_status=0
 else
-  run_check /tmp/clawd-pump-readiness-funding.log ./scripts/wallet_balance_check.sh --json && funding_status=0 || true
+  run_check "$funding_log" ./scripts/wallet_balance_check.sh --json && funding_status=0 || true
 fi
 
 ready_to_start=1
 if [[ "$preflight_status" -eq 0 && "$smoke_status" -eq 0 && "$service_render_status" -eq 0 && "$http_control_status" -eq 0 ]]; then
   ready_to_start=0
+fi
+
+blockers=()
+if [[ "$MODE" == "copy" && ! is_set "YELLOWSTONE_GRPC_HTTP" ]]; then
+  blockers+=("YELLOWSTONE_GRPC_HTTP is required for copy mode")
+fi
+if [[ "$MODE" != "serve" && "$(env_value "LIVE_TRADING_ENABLED")" != "true" ]]; then
+  blockers+=("LIVE_TRADING_ENABLED must be true for live 24/7 mode")
+fi
+if [[ "$MODE" != "serve" && "$(env_value "PUMP_DRY_RUN")" != "false" ]]; then
+  blockers+=("PUMP_DRY_RUN must be false for live 24/7 mode")
+fi
+if [[ "$funding_status" -ne 0 ]]; then
+  blockers+=("hot wallet funding check failed")
+fi
+if [[ "$preflight_status" -ne 0 && "${#blockers[@]}" -eq 0 ]]; then
+  blockers+=("preflight check failed")
+fi
+if [[ "$smoke_status" -ne 0 ]]; then
+  blockers+=("live gate smoke check failed")
+fi
+if [[ "$service_render_status" -ne 0 ]]; then
+  blockers+=("service render check failed")
+fi
+if [[ "$http_control_status" -ne 0 ]]; then
+  blockers+=("HTTP control smoke check failed")
 fi
 
 cat <<JSON
@@ -153,6 +192,7 @@ cat <<JSON
   "mode": $(json_string "$MODE"),
   "env_file": $(json_string "$ENV_FILE"),
   "ready_to_start": $(json_bool "$ready_to_start"),
+  "blockers": $(json_array "${blockers[@]}"),
   "wallet": {
     "private_key_present": $(is_set "PRIVATE_KEY" && printf "true" || printf "false"),
     "public_key": $(json_string "$public_key")
@@ -195,23 +235,23 @@ cat <<JSON
     },
     "smoke_live_gates": {
       "passed": $(json_bool "$smoke_status"),
-      "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-smoke.log)
+      "log_tail": $(last_lines_json "$smoke_log")
     },
     "http_control": {
       "passed": $(json_bool "$http_control_status"),
-      "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-http-control.log)
+      "log_tail": $(last_lines_json "$http_control_log")
     },
     "service_render": {
       "passed": $(json_bool "$service_render_status"),
-      "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-service.log)
+      "log_tail": $(last_lines_json "$service_log")
     },
     "preflight": {
       "passed": $(json_bool "$preflight_status"),
-      "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-preflight.log)
+      "log_tail": $(last_lines_json "$preflight_log")
     },
     "funding": {
       "passed": $(json_bool "$funding_status"),
-      "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-funding.log)
+      "log_tail": $(last_lines_json "$funding_log")
     }
   }
 }

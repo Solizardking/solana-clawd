@@ -43,6 +43,7 @@ type McpServer = {
 type PumpReadiness = {
   mode?: string;
   ready_to_start?: boolean;
+  blockers?: string[];
   wallet?: {
     private_key_present?: boolean;
     public_key?: string;
@@ -248,6 +249,11 @@ function printPumpReadiness(readiness: PumpReadiness | undefined): void {
 
   console.log(`ready_to_start=${readiness.ready_to_start === true}`);
   console.log(`mode=${readiness.mode || "missing"}`);
+  if (readiness.blockers?.length) {
+    for (const blocker of readiness.blockers) console.log(`blocker=${blocker}`);
+  } else {
+    console.log("blockers=none");
+  }
   console.log(`wallet_private_key_present=${readiness.wallet?.private_key_present === true}`);
   console.log(`wallet_public_key=${readiness.wallet?.public_key || "missing"}`);
 
@@ -301,6 +307,7 @@ function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
     "Local pump readiness:",
     `- mode: ${readiness.mode || "missing"}`,
     `- ready_to_start: ${readiness.ready_to_start === true}`,
+    `- blockers: ${readiness.blockers?.length ? readiness.blockers.join("; ") : "none"}`,
     `- wallet_public_key: ${readiness.wallet?.public_key || "missing"}`,
     `- wallet_private_key_present_locally: ${readiness.wallet?.private_key_present === true}`,
     `- rpc_http_present: ${endpoints.rpc_http_present === true}`,
@@ -368,6 +375,7 @@ async function validatePreflight(options: {
     pumpReadiness = await loadPumpReadiness(options.mode);
     if (options.requireLiveReady && pumpReadiness?.ready_to_start !== true) {
       failures.push("local pump readiness is not ready_to_start=true");
+      for (const blocker of pumpReadiness?.blockers ?? []) failures.push(`pump blocker: ${blocker}`);
     }
     if (
       options.requireLiveReady &&

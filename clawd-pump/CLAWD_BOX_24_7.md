@@ -181,7 +181,7 @@ curl http://127.0.0.1:8765/readiness
 npm run pump:http:smoke
 ```
 
-`/status` and `/readiness` report live gates, limits, and endpoint/key presence booleans only. They do not return secret values or private-key presence. `pump:http:smoke` verifies `/health`, `/status`, `/readiness`, and that `/balance` remains blocked while live HTTP control is disarmed.
+`/status` and `/readiness` report live gates, limits, and endpoint/key presence booleans only. They do not return secret values; `private_key_present` is only a boolean. `pump:http:smoke` verifies `/health`, `/status`, `/readiness`, and that `/balance` remains blocked while live HTTP control is disarmed.
 
 Funding verification:
 
