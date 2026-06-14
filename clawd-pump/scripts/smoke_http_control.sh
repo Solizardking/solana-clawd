@@ -61,6 +61,8 @@ health_json="/tmp/clawd-pump-http-health.json"
 health_err="/tmp/clawd-pump-http-health.err"
 status_json="/tmp/clawd-pump-http-status.json"
 status_err="/tmp/clawd-pump-http-status.err"
+readiness_json="/tmp/clawd-pump-http-readiness.json"
+readiness_err="/tmp/clawd-pump-http-readiness.err"
 balance_json="/tmp/clawd-pump-http-balance.json"
 balance_err="/tmp/clawd-pump-http-balance.err"
 
@@ -76,7 +78,13 @@ if fetch_json "status" "GET" "$base_url/status" "$status_json" "$status_err"; th
   assert_jq "$status_json" '.live_http_enabled == false' "live HTTP control is disarmed"
   assert_jq "$status_json" '.live_trading_enabled == false' "live trading flag is false"
   assert_jq "$status_json" '.pump_dry_run == true' "dry-run flag is true"
-  assert_jq "$status_json" '.private_key_present | type == "boolean"' "private key presence is boolean only"
+  assert_jq "$status_json" 'has("private_key_present") | not' "status does not expose private key presence"
+fi
+
+if fetch_json "readiness" "GET" "$base_url/readiness" "$readiness_json" "$readiness_err"; then
+  assert_jq "$readiness_json" '.service == "clawd-pump"' "readiness identifies clawd-pump"
+  assert_jq "$readiness_json" '.live_http_enabled == false' "readiness reports live HTTP disarmed"
+  assert_jq "$readiness_json" 'has("private_key_present") | not' "readiness does not expose private key presence"
 fi
 
 if fetch_json "balance block" "POST" "$base_url/balance" "$balance_json" "$balance_err"; then

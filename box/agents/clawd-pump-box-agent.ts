@@ -277,6 +277,7 @@ function printPumpReadiness(readiness: PumpReadiness | undefined): void {
   for (const key of ["wallet_address", "smoke_live_gates", "service_render", "funding", "preflight"]) {
     console.log(`${key}=${checks[key]?.passed === true}`);
   }
+  console.log(`http_control=${checks.http_control?.passed === true}`);
 
   const service = readiness.service ?? {};
   for (const key of ["launchd_loaded", "launchd_running", "bundle_installed"]) {
@@ -310,6 +311,7 @@ function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
     `- risk_management_enabled: ${readiness.live_gate?.risk_management_enabled || "missing"}`,
     `- wallet_address_check: ${checks.wallet_address?.passed === true}`,
     `- smoke_live_gates_check: ${checks.smoke_live_gates?.passed === true}`,
+    `- http_control_check: ${checks.http_control?.passed === true}`,
     `- service_render_check: ${checks.service_render?.passed === true}`,
     `- funding_check: ${checks.funding?.passed === true}`,
     `- live_preflight_check: ${checks.preflight?.passed === true}`,

@@ -43,6 +43,11 @@ section "Status"
 section "Live Gate Smoke"
 run_optional "unarmed live gates block before runtime init" ./scripts/smoke_live_gates.sh
 
+if [[ "$MODE" == "serve" ]]; then
+  section "HTTP Control Smoke"
+  run_optional "HTTP control is healthy and disarmed" ./scripts/smoke_http_control.sh
+fi
+
 section "Service Render"
 run_optional "render launchd service" ./scripts/render_service.sh launchd copy
 run_optional "render systemd service" ./scripts/render_service.sh systemd copy

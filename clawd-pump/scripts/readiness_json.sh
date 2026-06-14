@@ -116,6 +116,14 @@ fi
 smoke_status=1
 run_check /tmp/clawd-pump-readiness-smoke.log ./scripts/smoke_live_gates.sh && smoke_status=0 || true
 
+http_control_status=0
+if [[ "$MODE" == "serve" ]]; then
+  http_control_status=1
+  run_check /tmp/clawd-pump-readiness-http-control.log ./scripts/smoke_http_control.sh && http_control_status=0 || true
+else
+  printf "not required for %s mode\n" "$MODE" >/tmp/clawd-pump-readiness-http-control.log
+fi
+
 service_render_status=1
 run_check /tmp/clawd-pump-readiness-service.log ./scripts/render_service.sh launchd "$MODE" && service_render_status=0 || true
 
@@ -135,7 +143,7 @@ else
 fi
 
 ready_to_start=1
-if [[ "$preflight_status" -eq 0 && "$smoke_status" -eq 0 && "$service_render_status" -eq 0 ]]; then
+if [[ "$preflight_status" -eq 0 && "$smoke_status" -eq 0 && "$service_render_status" -eq 0 && "$http_control_status" -eq 0 ]]; then
   ready_to_start=0
 fi
 
@@ -188,6 +196,10 @@ cat <<JSON
     "smoke_live_gates": {
       "passed": $(json_bool "$smoke_status"),
       "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-smoke.log)
+    },
+    "http_control": {
+      "passed": $(json_bool "$http_control_status"),
+      "log_tail": $(last_lines_json /tmp/clawd-pump-readiness-http-control.log)
     },
     "service_render": {
       "passed": $(json_bool "$service_render_status"),

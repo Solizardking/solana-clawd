@@ -70,7 +70,6 @@ pub struct StatusResponse {
     pub jupiter_api_key_present: bool,
     pub yellowstone_grpc_http_present: bool,
     pub yellowstone_grpc_token_present: bool,
-    pub private_key_present: bool,
     pub pump_http_port: String,
 }
 
@@ -162,7 +161,6 @@ async fn status() -> Json<StatusResponse> {
         jupiter_api_key_present: env_present("JUPITER_API_KEY") || env_present("JUP_SWAP_V1_API_KEY"),
         yellowstone_grpc_http_present: env_present("YELLOWSTONE_GRPC_HTTP"),
         yellowstone_grpc_token_present: env_present("YELLOWSTONE_GRPC_TOKEN"),
-        private_key_present: env_present("PRIVATE_KEY"),
         pump_http_port: std::env::var("PUMP_HTTP_PORT").unwrap_or_else(|_| "8765".to_string()),
     })
 }
