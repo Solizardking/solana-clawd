@@ -258,7 +258,7 @@ The extension exposes a Chrome `externally_connectable` bridge for trusted Clawd
 - `http://localhost:*/*`
 - `http://127.0.0.1:*/*`
 
-Those pages can use `chrome.runtime.sendMessage(EXTENSION_ID, message, callback)` to communicate with the installed extension. The background service worker verifies the sender origin before doing any work.
+Those pages get a content-script bridge at `document_start` and can communicate through `window.postMessage`. Pages that already know the extension ID can also call `chrome.runtime.sendMessage(EXTENSION_ID, message, callback)` directly. The background service worker verifies the sender origin before doing any work.
 
 | Message type | Purpose |
 |---|---|
@@ -272,27 +272,46 @@ Those pages can use `chrome.runtime.sendMessage(EXTENSION_ID, message, callback)
 Example:
 
 ```js
-const EXTENSION_ID = "ccalceefjldibjloiknckgbkajmjfokd";
+function sendClawdExtension(message, timeoutMs = 30000) {
+  const id = crypto.randomUUID();
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      window.removeEventListener("message", onMessage);
+      reject(new Error("Clawd extension bridge timeout"));
+    }, timeoutMs);
 
-chrome.runtime.sendMessage(
-  EXTENSION_ID,
-  { type: "CLAWD_EXTENSION_STATUS" },
-  (status) => console.log(status)
-);
+    function onMessage(event) {
+      if (event.source !== window) return;
+      const data = event.data;
+      if (!data || data.__clawdExtensionBridge !== true) return;
+      if (data.direction !== "response" || data.id !== id) return;
+      clearTimeout(timeout);
+      window.removeEventListener("message", onMessage);
+      resolve(data.response);
+    }
 
-chrome.runtime.sendMessage(
-  EXTENSION_ID,
+    window.addEventListener("message", onMessage);
+    window.postMessage({
+      __clawdExtensionBridge: true,
+      direction: "request",
+      id,
+      message,
+    }, window.location.origin);
+  });
+}
+
+const status = await sendClawdExtension({ type: "CLAWD_EXTENSION_STATUS" });
+
+const trade = await sendClawdExtension(
   {
     type: "CLAWD_PROXY_API",
     method: "POST",
     path: "/api/trade",
     body: { command: "quote SOL to USDC" }
-  },
-  (response) => console.log(response)
+  }
 );
 
-chrome.runtime.sendMessage(
-  EXTENSION_ID,
+await sendClawdExtension(
   {
     type: "CLAWD_OPEN_PHANTOM",
     url: "https://x402.wtf/telegram"

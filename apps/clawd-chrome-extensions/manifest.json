@@ -46,6 +46,20 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x402.wtf/*",
+        "https://*.x402.wtf/*",
+        "https://cheshireterminal.ai/*",
+        "https://*.cheshireterminal.ai/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": ["site-bridge.js"],
+      "run_at": "document_start"
+    }
+  ],
   "externally_connectable": {
     "matches": [
       "https://x402.wtf/*",

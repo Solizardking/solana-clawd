@@ -391,6 +391,12 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 // Handle messages from popup
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type === 'CLAWD_BRIDGE_FROM_PAGE') {
+    handleExternalMessage(msg.payload, sender)
+      .then(sendResponse)
+      .catch(err => sendResponse({ ok: false, error: err.message || 'page bridge failed' }));
+    return true;
+  }
   if (msg.type === 'CHECK_STATUS') {
     refreshAllStatus().then(() => sendResponse({ ok: true }));
     return true;
