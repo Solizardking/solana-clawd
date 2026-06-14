@@ -171,6 +171,15 @@ Machine-readable readiness report for a box supervisor or external monitor:
 
 The JSON report does not print private keys. For `copy` and `autobuy`, `ready_to_start` is only `true` when live preflight, funding verification, gate smoke checks, and service rendering all pass. For `serve`, it proves the HTTP health/control server can start safely while trade endpoints remain blocked unless live gates are intentionally armed.
 
+HTTP status endpoints exposed by `serve` mode:
+
+```bash
+curl http://127.0.0.1:8765/health
+curl http://127.0.0.1:8765/status
+```
+
+`/status` reports live gates, limits, and endpoint/key presence booleans only. It does not return secret values.
+
 Funding verification:
 
 ```bash

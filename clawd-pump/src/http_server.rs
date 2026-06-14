@@ -13,6 +13,7 @@
 //!   POST /risk-check {}
 //!   GET  /health     — server liveness
 //!   GET  /status     — secret-safe live gate/status summary
+//!   GET  /readiness  — alias for /status
 
 use axum::{
     extract::State,
@@ -57,13 +58,18 @@ pub struct StatusResponse {
     pub pump_dry_run: bool,
     pub live_http_enabled: bool,
     pub max_trade_sol: Option<String>,
+    pub min_reserve_sol: Option<String>,
     pub auto_buy_amount_sol: Option<String>,
+    pub auto_buy_interval_seconds: Option<String>,
+    pub auto_buy_max_buys: Option<String>,
     pub counter_limit: Option<String>,
     pub risk_management_enabled: bool,
     pub rpc_http_present: bool,
+    pub solana_rpc_url_present: bool,
+    pub birdeye_api_key_present: bool,
+    pub jupiter_api_key_present: bool,
     pub yellowstone_grpc_http_present: bool,
     pub yellowstone_grpc_token_present: bool,
-    pub private_key_present: bool,
     pub pump_http_port: String,
 }
 
@@ -143,13 +149,18 @@ async fn status() -> Json<StatusResponse> {
         pump_dry_run: env_flag("PUMP_DRY_RUN", true),
         live_http_enabled: live_http_enabled(),
         max_trade_sol: env_string("MAX_TRADE_SOL"),
+        min_reserve_sol: env_string("MIN_RESERVE_SOL"),
         auto_buy_amount_sol: env_string("AUTO_BUY_AMOUNT_SOL"),
+        auto_buy_interval_seconds: env_string("AUTO_BUY_INTERVAL_SECONDS"),
+        auto_buy_max_buys: env_string("AUTO_BUY_MAX_BUYS"),
         counter_limit: env_string("COUNTER_LIMIT"),
         risk_management_enabled: env_flag("RISK_MANAGEMENT_ENABLED", false),
         rpc_http_present: env_present("RPC_HTTP"),
+        solana_rpc_url_present: env_present("SOLANA_RPC_URL"),
+        birdeye_api_key_present: env_present("BIRDEYE_API_KEY"),
+        jupiter_api_key_present: env_present("JUPITER_API_KEY") || env_present("JUP_SWAP_V1_API_KEY"),
         yellowstone_grpc_http_present: env_present("YELLOWSTONE_GRPC_HTTP"),
         yellowstone_grpc_token_present: env_present("YELLOWSTONE_GRPC_TOKEN"),
-        private_key_present: env_present("PRIVATE_KEY"),
         pump_http_port: std::env::var("PUMP_HTTP_PORT").unwrap_or_else(|_| "8765".to_string()),
     })
 }
@@ -230,6 +241,7 @@ pub async fn serve(binary_path: String, cwd: String) -> anyhow::Result<()> {
     let app = Router::new()
         .route("/health", get(health))
         .route("/status", get(status))
+        .route("/readiness", get(status))
         .route("/buy", post(buy))
         .route("/balance", post(balance))
         .route("/wrap", post(wrap))
