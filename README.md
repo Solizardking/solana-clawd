@@ -384,21 +384,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`16c49b34`](../../commit/16c49b34) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
-| 🥈 | [`d044ab55`](../../commit/d044ab55) | sdffdsdfs | solizardking | Jun 14 |
-| 🥉 | [`a03b9e71`](../../commit/a03b9e71) | fsdfdsafdfdsadf | solizardking | Jun 14 |
-| 4️⃣ | [`32d0c68b`](../../commit/32d0c68b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| 5️⃣ | [`4f826200`](../../commit/4f826200) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
-| 6️⃣ | [`432fe6af`](../../commit/432fe6af) | dsaffdsaffda | solizardking | Jun 14 |
-| 7️⃣ | [`e7d7c509`](../../commit/e7d7c509) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| 8️⃣ | [`91cf7394`](../../commit/91cf7394) | dsdssd | solizardking | Jun 14 |
-| 9️⃣ | [`b9e48858`](../../commit/b9e48858) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| 🔟 | [`c712d65c`](../../commit/c712d65c) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
+| 🥇 | [`ddfa942a`](../../commit/ddfa942a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| 🥈 | [`2ede2165`](../../commit/2ede2165) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
+| 🥉 | [`a51239d3`](../../commit/a51239d3) | fsffdfs | solizardking | Jun 14 |
+| 4️⃣ | [`1d6cedcf`](../../commit/1d6cedcf) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| 5️⃣ | [`16c49b34`](../../commit/16c49b34) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
+| 6️⃣ | [`d044ab55`](../../commit/d044ab55) | sdffdsdfs | solizardking | Jun 14 |
+| 7️⃣ | [`a03b9e71`](../../commit/a03b9e71) | fsdfdsafdfdsadf | solizardking | Jun 14 |
+| 8️⃣ | [`32d0c68b`](../../commit/32d0c68b) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| 9️⃣ | [`4f826200`](../../commit/4f826200) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
+| 🔟 | [`432fe6af`](../../commit/432fe6af) | dsaffdsaffda | solizardking | Jun 14 |
+| · | [`e7d7c509`](../../commit/e7d7c509) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| · | [`91cf7394`](../../commit/91cf7394) | dsdssd | solizardking | Jun 14 |
+| · | [`b9e48858`](../../commit/b9e48858) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| · | [`c712d65c`](../../commit/c712d65c) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
 | · | [`44636027`](../../commit/44636027) | fdsdsf | solizardking | Jun 14 |
-| · | [`431b4c3d`](../../commit/431b4c3d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| · | [`ff34d743`](../../commit/ff34d743) | dsfdsf | solizardking | Jun 14 |
-| · | [`a1ba223e`](../../commit/a1ba223e) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
-| · | [`e073a2ab`](../../commit/e073a2ab) | sfddsfdfs | solizardking | Jun 14 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
