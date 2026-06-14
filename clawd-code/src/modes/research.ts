@@ -1,119 +1,202 @@
 /**
  * Clawd Code — RESEARCH MODE
- * Multi-agent deep research with grok-4.20-multi-agent
+ * Multi-agent deep research: grok-4.20-multi-agent | Claude | DeepSeek
+ * Streaming-first for Anthropic + OpenRouter; blocking for xAI responses API.
  */
 
-import { createXaiClient, type XaiTextResponse } from '../xai.js';
+import { createAnthropicClient, DEFAULT_CLAUDE_MODEL, isClaudeModel } from '../anthropic.js';
 import { createDeepSeekClient } from '../deepseek.js';
+import { loadClawdEnv } from '../env.js';
+import { createOpenRouterClient } from '../openrouter.js';
+import { createXaiClient, type XaiTextResponse } from '../xai.js';
+
+interface ResearchConfig {
+  provider?: string;
+  model?: string;
+  stream?: boolean;
+  agentCount?: 4 | 16;
+  xaiApiKey?: string;
+  anthropicApiKey?: string;
+  deepSeekApiKey?: string;
+  deepSeekBaseUrl?: string;
+}
+
+const RESEARCH_SYSTEM = `You are Clawd Research — a precise, source-aware technical researcher. Synthesize findings across sources. Cite evidence. Flag what requires live verification. Be concise and structured.`;
 
 export class ResearchMode {
-  constructor(private config: any) {}
+  constructor(private config: ResearchConfig) {}
 
   async run(args: string[]): Promise<void> {
-    const query = args.filter(a => !a.startsWith('--')).join(' ');
-    
-    console.log('\n[RESEARCH MODE] Initiating multi-agent research...\n');
-    console.log(`[RESEARCH MODE] Model: ${this.config.model}`);
-    console.log(`[RESEARCH MODE] Agent Count: ${this.config.agentCount}`);
-    console.log(`[RESEARCH MODE] Query: ${query}`);
-    
-    if (!this.hasConfiguredProvider()) {
-      console.error('\n[RESEARCH MODE] ERROR: No API key configured for selected provider');
-      console.error('[RESEARCH MODE] Set XAI_API_KEY or DEEPSEEK_API_KEY in ~/.clawd-code/.env or ./clawd-code/.env');
+    const query = args.filter((a) => !a.startsWith('--')).join(' ');
+
+    if (!query.trim()) {
+      console.error('[RESEARCH MODE] No query given. Usage: clawd-code research "AI agent frameworks 2025"');
       return;
     }
 
-    console.log('\n[RESEARCH MODE] Spinning up grok-4.20-multi-agent with ' + this.config.agentCount + ' sub-agents...');
-    console.log('[RESEARCH MODE] Tools enabled: web_search, x_search, code_execution');
-    console.log('[RESEARCH MODE] Leader agent synthesizing findings...\n');
+    const provider = this.resolveProvider();
+    const agentCount = this.config.agentCount ?? 4;
 
-    const results = await this.runMultiAgentResearch(query);
+    console.log('\n[RESEARCH MODE] Initiating multi-agent research...\n');
+    console.log(`[RESEARCH MODE] Provider: ${provider} | Agents: ${agentCount}`);
+    console.log(`[RESEARCH MODE] Query: ${query}\n`);
 
-    console.log('\n╔═══════════════════════════════════════════════════════════════╗');
-    console.log('║  RESEARCH RESULTS — grok-4.20-multi-agent                        ║');
-    console.log('╠═══════════════════════════════════════════════════════════════╣');
-    console.log('║  TOPIC: ' + query.substring(0, 50).padEnd(53) + '║');
-    console.log('╠═══════════════════════════════════════════════════════════════╣');
-    console.log('║  STATUS: complete | Agents requested: ' + String(this.config.agentCount).padEnd(25) + '║');
-    console.log('╚═══════════════════════════════════════════════════════════════╝');
+    this.printHeader(query, agentCount);
 
-    console.log('\n' + (results.content || 'No research output returned.'));
-    if (results.citations.length > 0) {
-      console.log('\nCitations:');
-      for (const citation of results.citations) {
-        console.log(`- ${citation}`);
+    if (this.config.stream && (provider === 'anthropic' || provider === 'openrouter')) {
+      await this.runStreaming(query, provider);
+    } else {
+      const result = await this.runBlocking(query, provider, agentCount);
+      console.log('\n' + (result.content || 'No research output returned.'));
+      if (result.citations.length > 0) {
+        console.log('\nCitations:');
+        for (const c of result.citations) console.log(`  - ${c}`);
       }
     }
-    
+
     console.log('\n[RESEARCH MODE] Research complete. Say "code" to generate implementation.');
   }
 
-  private async runMultiAgentResearch(query: string): Promise<XaiTextResponse> {
+  private resolveProvider(): string {
+    const p = this.config.provider ?? 'xai';
+    if (p === 'anthropic' || isClaudeModel(this.config.model ?? '')) return 'anthropic';
+    if (p === 'deepseek' || String(this.config.model ?? '').startsWith('deepseek-')) return 'deepseek';
+    if (p === 'openrouter') return 'openrouter';
+    return 'xai';
+  }
+
+  private printHeader(query: string, agentCount: number): void {
+    const label = `grok-4.20-multi-agent · ${agentCount} agents`;
+    const q = query.substring(0, 52).padEnd(52);
+    console.log('╔══════════════════════════════════════════════════════════════╗');
+    console.log('║  RESEARCH MODE — ' + label.padEnd(45) + '║');
+    console.log('╠══════════════════════════════════════════════════════════════╣');
+    console.log(`║  ${q}  ║`);
+    console.log('╚══════════════════════════════════════════════════════════════╝\n');
+  }
+
+  private async runStreaming(query: string, provider: string): Promise<void> {
+    process.stdout.write('[RESEARCH MODE] Streaming findings:\n\n');
+
     try {
-      if (this.shouldUseDeepSeek()) {
-        const client = createDeepSeekClient(this.config.deepSeekApiKey, this.config.deepSeekBaseUrl);
+      if (provider === 'anthropic') {
+        const client = createAnthropicClient(this.config.anthropicApiKey);
         if (!client) {
-          return { content: 'Research unavailable: DEEPSEEK_API_KEY is not set.', citations: [] };
+          console.error('[RESEARCH MODE] ANTHROPIC_API_KEY not set.');
+          return;
         }
+        const model = isClaudeModel(this.config.model ?? '') ? this.config.model! : DEFAULT_CLAUDE_MODEL;
+        for await (const chunk of client.stream({
+          model,
+          system: RESEARCH_SYSTEM,
+          messages: [{ role: 'user', content: query }],
+          maxTokens: 8096,
+        })) {
+          if (chunk.text) process.stdout.write(chunk.text);
+        }
+        process.stdout.write('\n');
+        return;
+      }
 
-        const response = await client.chat({
-          model: this.getDeepSeekModel(),
-          reasoningEffort: this.config.agentCount === 16 ? 'high' : 'medium',
-          thinking: true,
+      if (provider === 'openrouter') {
+        const env = loadClawdEnv();
+        const client = createOpenRouterClient(env);
+        if (!client) {
+          console.error('[RESEARCH MODE] OPENROUTER_API_KEY not set.');
+          return;
+        }
+        for await (const chunk of client.stream({
+          model: this.config.model ?? client.getDefaultModel(),
           messages: [
-            {
-              role: 'system',
-              content: 'You are Clawd Research. Produce concise, source-aware technical research. If live data is needed, say what must be verified externally.',
-            },
-            {
-              role: 'user',
-              content: query,
-            },
+            { role: 'system', content: RESEARCH_SYSTEM },
+            { role: 'user', content: query },
           ],
-          maxTokens: 6000,
-          temperature: 0.2,
-        });
-
-        return { content: response.content, citations: [] };
+          max_tokens: 8096,
+        })) {
+          if (chunk.content) process.stdout.write(chunk.content);
+        }
+        process.stdout.write('\n');
       }
-
-      const client = createXaiClient(this.config.xaiApiKey);
-      if (!client) {
-        return { content: 'Multi-agent research unavailable: XAI_API_KEY is not set.', citations: [] };
-      }
-
-      return await client.responses({
-        model: this.config.model || 'grok-4.20-multi-agent',
-        reasoning: { effort: this.config.agentCount === 16 ? 'high' : 'low' },
-        input: [
-          {
-            role: 'user',
-            content: query,
-          },
-        ],
-        tools: [
-          { type: 'web_search' },
-          { type: 'x_search' },
-          { type: 'code_interpreter' },
-        ],
-      });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return { content: `Multi-agent research unavailable: ${message}`, citations: [] };
+      const msg = error instanceof Error ? error.message : String(error);
+      console.log(`\n[RESEARCH MODE] Streaming error: ${msg}`);
     }
   }
 
-  private hasConfiguredProvider(): boolean {
-    if (this.shouldUseDeepSeek()) return Boolean(this.config.deepSeekApiKey);
-    return Boolean(this.config.xaiApiKey);
-  }
+  private async runBlocking(
+    query: string,
+    provider: string,
+    agentCount: 4 | 16,
+  ): Promise<XaiTextResponse> {
+    try {
+      if (provider === 'anthropic') {
+        const client = createAnthropicClient(this.config.anthropicApiKey);
+        if (!client) return { content: 'ANTHROPIC_API_KEY not set.', citations: [] };
 
-  private shouldUseDeepSeek(): boolean {
-    return this.config.provider === 'deepseek' || String(this.config.model || '').startsWith('deepseek-');
-  }
+        const model = isClaudeModel(this.config.model ?? '') ? this.config.model! : DEFAULT_CLAUDE_MODEL;
+        console.log(`[RESEARCH MODE] Running with ${model}...`);
+        const response = await client.chat({
+          model,
+          system: RESEARCH_SYSTEM,
+          messages: [{ role: 'user', content: query }],
+          maxTokens: 8096,
+          temperature: 0.2,
+        });
+        return { content: response.content, citations: [] };
+      }
 
-  private getDeepSeekModel(): string {
-    const model = String(this.config.model || '');
-    return model.startsWith('deepseek-') ? model : 'deepseek-v4-pro';
+      if (provider === 'deepseek') {
+        const client = createDeepSeekClient(this.config.deepSeekApiKey, this.config.deepSeekBaseUrl);
+        if (!client) return { content: 'DEEPSEEK_API_KEY not set.', citations: [] };
+
+        const model = String(this.config.model ?? '').startsWith('deepseek-')
+          ? this.config.model!
+          : 'deepseek-v4-pro';
+        console.log(`[RESEARCH MODE] Running DeepSeek ${model} (effort: ${agentCount === 16 ? 'high' : 'medium'})...`);
+        const response = await client.chat({
+          model,
+          reasoningEffort: agentCount === 16 ? 'high' : 'medium',
+          thinking: true,
+          messages: [
+            { role: 'system', content: RESEARCH_SYSTEM },
+            { role: 'user', content: query },
+          ],
+          maxTokens: 8096,
+          temperature: 0.2,
+        });
+        return { content: response.content, citations: [] };
+      }
+
+      if (provider === 'openrouter') {
+        const env = loadClawdEnv();
+        const client = createOpenRouterClient(env);
+        if (!client) return { content: 'OPENROUTER_API_KEY not set.', citations: [] };
+
+        const model = this.config.model ?? client.getDefaultModel();
+        console.log(`[RESEARCH MODE] Running OpenRouter/${model}...`);
+        const result = await client.prompt(query, {
+          model,
+          systemPrompt: RESEARCH_SYSTEM,
+          maxTokens: 8096,
+        });
+        return { content: result.content, citations: [] };
+      }
+
+      // xAI — use responses API with web_search + x_search tools
+      const client = createXaiClient(this.config.xaiApiKey);
+      if (!client) return { content: 'XAI_API_KEY not set.', citations: [] };
+
+      const model = this.config.model ?? 'grok-4.20-multi-agent';
+      console.log(`[RESEARCH MODE] Running ${model} with ${agentCount} agents, web_search + x_search...`);
+      return await client.responses({
+        model,
+        reasoning: { effort: agentCount === 16 ? 'high' : 'low' },
+        input: [{ role: 'user', content: query }],
+        tools: [{ type: 'web_search' }, { type: 'x_search' }, { type: 'code_interpreter' }],
+      });
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      return { content: `Research unavailable (${provider}): ${msg}`, citations: [] };
+    }
   }
 }
