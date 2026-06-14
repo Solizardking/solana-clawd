@@ -49,6 +49,7 @@ type PumpReadiness = {
   };
   live_gate?: Record<string, string>;
   endpoints?: Record<string, boolean | string>;
+  service?: Record<string, boolean | string>;
   checks?: Record<string, { passed?: boolean }>;
 };
 
@@ -276,6 +277,12 @@ function printPumpReadiness(readiness: PumpReadiness | undefined): void {
   for (const key of ["wallet_address", "smoke_live_gates", "service_render", "funding", "preflight"]) {
     console.log(`${key}=${checks[key]?.passed === true}`);
   }
+
+  const service = readiness.service ?? {};
+  for (const key of ["launchd_loaded", "launchd_running", "bundle_installed"]) {
+    console.log(`${key}=${service[key] === true}`);
+  }
+  if (service.bundle_path) console.log(`bundle_path=${service.bundle_path}`);
 }
 
 function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
@@ -285,6 +292,7 @@ function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
 
   const checks = readiness.checks ?? {};
   const endpoints = readiness.endpoints ?? {};
+  const service = readiness.service ?? {};
   return [
     "Local pump readiness:",
     `- mode: ${readiness.mode || "missing"}`,
@@ -301,7 +309,11 @@ function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
     `- smoke_live_gates_check: ${checks.smoke_live_gates?.passed === true}`,
     `- service_render_check: ${checks.service_render?.passed === true}`,
     `- funding_check: ${checks.funding?.passed === true}`,
-    `- live_preflight_check: ${checks.preflight?.passed === true}`
+    `- live_preflight_check: ${checks.preflight?.passed === true}`,
+    `- launchd_loaded: ${service.launchd_loaded === true}`,
+    `- launchd_running: ${service.launchd_running === true}`,
+    `- bundle_installed: ${service.bundle_installed === true}`,
+    `- bundle_path: ${service.bundle_path || "missing"}`
   ].join("\n");
 }
 
