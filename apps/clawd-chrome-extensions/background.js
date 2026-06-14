@@ -11,6 +11,32 @@ const LOCAL_API_CANDIDATES = [
 const LEGACY_APIS = new Set([
   'https://nanobot-backend-production.up.railway.app',
 ]);
+const TRUSTED_EXTERNAL_ORIGIN_PATTERNS = [
+  /^https:\/\/(?:[^/]+\.)?x402\.wtf$/,
+  /^https:\/\/(?:[^/]+\.)?cheshireterminal\.ai$/,
+  /^http:\/\/localhost(?::\d+)?$/,
+  /^http:\/\/127\.0\.0\.1(?::\d+)?$/,
+];
+const EXTERNAL_PROXY_PATHS = new Set([
+  '/api/status',
+  '/api/chat',
+  '/api/run',
+  '/api/trade',
+  '/api/agents',
+  '/api/wallet',
+  '/api/wallet/send',
+  '/api/wallet/swap',
+  '/api/wallet/portfolio',
+  '/api/wallet/tokens',
+  '/api/wallet/history',
+  '/api/telegram/status',
+  '/api/telegram/session',
+  '/api/telegram/register',
+  '/api/telegram/config',
+]);
+const EXTERNAL_PROXY_METHODS = new Set(['GET', 'POST']);
+const MAX_EXTERNAL_PROXY_BODY_BYTES = 64 * 1024;
+const SITE_ORIGIN = 'https://x402.wtf';
 
 function normalizeSecret(value) {
   return String(value || '').trim();
@@ -23,6 +49,182 @@ function gatewayAuthHeaders(secret) {
     'Authorization': `Bearer ${trimmed}`,
     'X-Clawd-Secret': trimmed,
   };
+}
+
+function trustedExternalOrigin(origin) {
+  const value = String(origin || '').replace(/\/+$/, '');
+  return TRUSTED_EXTERNAL_ORIGIN_PATTERNS.some(pattern => pattern.test(value));
+}
+
+function senderOrigin(sender) {
+  if (sender?.origin) return sender.origin;
+  if (sender?.url) {
+    try {
+      return new URL(sender.url).origin;
+    } catch {}
+  }
+  return '';
+}
+
+function normalizeProxyPath(path) {
+  const raw = String(path || '').trim();
+  if (!raw.startsWith('/')) return '';
+  try {
+    const parsed = new URL(raw, DEFAULT_API);
+    return parsed.pathname + parsed.search;
+  } catch {
+    return '';
+  }
+}
+
+function proxyPathAllowed(path) {
+  const normalized = normalizeProxyPath(path);
+  if (!normalized) return false;
+  const pathname = normalized.split('?')[0];
+  return EXTERNAL_PROXY_PATHS.has(pathname);
+}
+
+function phantomBrowseUrl(targetUrl, refUrl = SITE_ORIGIN) {
+  const target = String(targetUrl || SITE_ORIGIN).trim();
+  let parsedTarget;
+  try {
+    parsedTarget = new URL(target);
+  } catch {
+    parsedTarget = new URL(SITE_ORIGIN);
+  }
+
+  if (!['https:', 'http:'].includes(parsedTarget.protocol)) {
+    parsedTarget = new URL(SITE_ORIGIN);
+  }
+
+  let parsedRef;
+  try {
+    parsedRef = new URL(String(refUrl || SITE_ORIGIN));
+  } catch {
+    parsedRef = new URL(SITE_ORIGIN);
+  }
+
+  const query = new URLSearchParams({ ref: parsedRef.origin });
+  return `https://phantom.app/ul/browse/${encodeURIComponent(parsedTarget.href)}?${query.toString()}`;
+}
+
+async function externalStatus() {
+  const { url, secret } = await getNanobotUrl();
+  const [daemon, pagent] = await Promise.allSettled([
+    resolveReachableApi(url, secret).then(async api => {
+      const r = await fetch(api + '/api/status', {
+        signal: AbortSignal.timeout(2500),
+        headers: gatewayAuthHeaders(secret),
+      });
+      return { api, ok: r.ok, status: r.status, data: r.ok ? await r.json() : null };
+    }),
+    checkPagentStatus(),
+  ]);
+
+  return {
+    ok: true,
+    extension: {
+      id: chrome.runtime.id,
+      version: chrome.runtime.getManifest().version,
+    },
+    clawd: daemon.status === 'fulfilled'
+      ? { online: daemon.value.ok, url: daemon.value.api, status: daemon.value.status, data: daemon.value.data }
+      : { online: false, error: daemon.reason?.message || 'offline' },
+    pagent: pagent.status === 'fulfilled' ? pagent.value : { online: false },
+  };
+}
+
+async function proxyClawdApi(msg) {
+  const method = String(msg.method || 'GET').toUpperCase();
+  const path = normalizeProxyPath(msg.path);
+  if (!EXTERNAL_PROXY_METHODS.has(method)) {
+    throw new Error('method not allowed');
+  }
+  if (!proxyPathAllowed(path)) {
+    throw new Error('path not allowed');
+  }
+
+  const body = msg.body == null ? null : JSON.stringify(msg.body);
+  if (body && body.length > MAX_EXTERNAL_PROXY_BODY_BYTES) {
+    throw new Error('body too large');
+  }
+
+  const { url: savedApi, secret } = await getNanobotUrl();
+  const api = await resolveReachableApi(savedApi, secret);
+  const headers = gatewayAuthHeaders(secret);
+  if (body) headers['Content-Type'] = 'application/json';
+
+  const response = await fetch(api + path, {
+    method,
+    headers,
+    body,
+    signal: AbortSignal.timeout(Number(msg.timeoutMs) || 30000),
+  });
+  const text = await response.text();
+  let data = text;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {}
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    url: api,
+    data,
+  };
+}
+
+async function openPhantom(msg, origin) {
+  const url = phantomBrowseUrl(msg.url, origin || SITE_ORIGIN);
+  await chrome.tabs.create({ url });
+  return { ok: true, url };
+}
+
+async function handleExternalMessage(msg, sender) {
+  const origin = senderOrigin(sender);
+  if (!trustedExternalOrigin(origin)) {
+    return { ok: false, error: 'origin not allowed' };
+  }
+
+  switch (msg?.type) {
+    case 'CLAWD_EXTENSION_STATUS':
+      return externalStatus();
+    case 'CLAWD_PROXY_API':
+      return proxyClawdApi(msg);
+    case 'CLAWD_EXECUTE_AGENT_TASK':
+      return executeAgentTask(msg.task).then(result => ({ ok: true, result }));
+    case 'CLAWD_STOP_AGENT_TASK':
+      await fetch(`${MCP_BRIDGE_URL}/stop`, { method: 'POST', signal: AbortSignal.timeout(3000) });
+      return { ok: true };
+    case 'CLAWD_OPEN_PHANTOM':
+      return openPhantom(msg, origin);
+    case 'CLAWD_SAVE_CONNECT_BUNDLE':
+      await saveExternalConnectBundle(msg.bundle || msg.data || {});
+      return { ok: true };
+    default:
+      return { ok: false, error: 'unknown message type' };
+  }
+}
+
+async function saveExternalConnectBundle(bundle) {
+  const data = typeof bundle === 'string' ? JSON.parse(bundle) : bundle;
+  const updates = {};
+  const apiUrl = data?.extension?.apiUrl || data?.control?.apiUrl || data?.apiUrl;
+  const gatewayUrl = data?.gateway?.url || data?.macos?.gatewayUrl || data?.gatewayUrl;
+  const secret = data?.extension?.secret || data?.gateway?.secret || data?.macos?.secret || data?.secret;
+  const authMode = String(data?.gateway?.authMode || data?.authMode || '').trim().toLowerCase();
+
+  if (apiUrl) updates.nanobotUrl = normalizeApi(String(apiUrl));
+  if (gatewayUrl) updates.seekerGatewayUrl = String(gatewayUrl).trim().replace(/\/+$/, '');
+  if (secret) {
+    updates.clawdGatewaySecret = normalizeSecret(secret);
+    updates.seekerGatewayToken = normalizeSecret(secret);
+  }
+  if (authMode === 'token' || authMode === 'password') {
+    updates.seekerGatewayAuthMode = authMode;
+  }
+
+  await new Promise(resolve => chrome.storage.local.set(updates, resolve));
 }
 
 async function migrateSettings() {
@@ -227,4 +429,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       .catch(err => sendResponse({ ok: false, error: err.message }));
     return true;
   }
+});
+
+chrome.runtime.onMessageExternal.addListener((msg, sender, sendResponse) => {
+  handleExternalMessage(msg, sender)
+    .then(sendResponse)
+    .catch(err => sendResponse({ ok: false, error: err.message || 'external message failed' }));
+  return true;
 });

@@ -247,6 +247,63 @@ The background also handles these `chrome.runtime.sendMessage` types:
 
 ---
 
+## Site, Terminal, Telegram, and Mobile Bridge
+
+The extension exposes a Chrome `externally_connectable` bridge for trusted Clawd surfaces:
+
+- `https://x402.wtf/*`
+- `https://*.x402.wtf/*`
+- `https://cheshireterminal.ai/*`
+- `https://*.cheshireterminal.ai/*`
+- `http://localhost:*/*`
+- `http://127.0.0.1:*/*`
+
+Those pages can use `chrome.runtime.sendMessage(EXTENSION_ID, message, callback)` to communicate with the installed extension. The background service worker verifies the sender origin before doing any work.
+
+| Message type | Purpose |
+|---|---|
+| `CLAWD_EXTENSION_STATUS` | Returns extension version, Clawd daemon status, and pAGENT MCP status |
+| `CLAWD_PROXY_API` | Proxies allowlisted local Clawd API paths such as `/api/status`, `/api/chat`, `/api/run`, `/api/trade`, `/api/agents`, wallet endpoints, and Telegram session endpoints |
+| `CLAWD_EXECUTE_AGENT_TASK` | Runs a browser automation task through the local pAGENT MCP bridge |
+| `CLAWD_STOP_AGENT_TASK` | Stops the current pAGENT task |
+| `CLAWD_OPEN_PHANTOM` | Opens a Phantom mobile browse deeplink for wallet signing from Telegram/mobile web |
+| `CLAWD_SAVE_CONNECT_BUNDLE` | Saves a Clawd connect bundle into extension storage for Control API + Seeker gateway pairing |
+
+Example:
+
+```js
+const EXTENSION_ID = "ccalceefjldibjloiknckgbkajmjfokd";
+
+chrome.runtime.sendMessage(
+  EXTENSION_ID,
+  { type: "CLAWD_EXTENSION_STATUS" },
+  (status) => console.log(status)
+);
+
+chrome.runtime.sendMessage(
+  EXTENSION_ID,
+  {
+    type: "CLAWD_PROXY_API",
+    method: "POST",
+    path: "/api/trade",
+    body: { command: "quote SOL to USDC" }
+  },
+  (response) => console.log(response)
+);
+
+chrome.runtime.sendMessage(
+  EXTENSION_ID,
+  {
+    type: "CLAWD_OPEN_PHANTOM",
+    url: "https://x402.wtf/telegram"
+  }
+);
+```
+
+The proxy intentionally rejects arbitrary URLs and only forwards a fixed set of Clawd API paths to the locally discovered daemon (`127.0.0.1:7777` or `127.0.0.1:18800`). This lets the website, terminal UI, Telegram mini-app, and mobile wallet handoff communicate with the same local agent and trading runtime without granting broad localhost access.
+
+---
+
 ## Agent Wallet Vault
 
 Local-only vault on port 9099:

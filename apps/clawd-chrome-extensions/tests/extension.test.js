@@ -17,6 +17,15 @@ test('manifest declares the MV3 popup, service worker, icons, and localhost host
   assert.equal(manifest.background.service_worker, 'background.js')
   assert.equal(manifest.permissions.includes('storage'), true)
   assert.equal(manifest.permissions.includes('alarms'), true)
+  assert.equal(manifest.permissions.includes('tabs'), true)
+  assert.deepEqual(manifest.externally_connectable.matches, [
+    'https://x402.wtf/*',
+    'https://*.x402.wtf/*',
+    'https://cheshireterminal.ai/*',
+    'https://*.cheshireterminal.ai/*',
+    'http://localhost:*/*',
+    'http://127.0.0.1:*/*',
+  ])
 
   for (const size of ['16', '32', '48', '128']) {
     assert.equal(manifest.icons[size], `icons/icon${size}.png`)
@@ -64,6 +73,8 @@ test('background service worker registers one alarm listener and handles core me
   const storage = new Map()
   const alarmListeners = []
   let messageListener
+  let externalMessageListener
+  const createdTabs = []
 
   const chrome = {
     action: {
@@ -75,9 +86,18 @@ test('background service worker registers one alarm listener and handles core me
       onAlarm: { addListener(listener) { alarmListeners.push(listener) } },
     },
     runtime: {
+      id: 'test-extension-id',
+      getManifest: () => ({ version: '3.0.0' }),
       onInstalled: { addListener() {} },
       onStartup: { addListener() {} },
       onMessage: { addListener(listener) { messageListener = listener } },
+      onMessageExternal: { addListener(listener) { externalMessageListener = listener } },
+    },
+    tabs: {
+      create(tab) {
+        createdTabs.push(tab)
+        return Promise.resolve(tab)
+      },
     },
     storage: {
       local: {
@@ -102,15 +122,19 @@ test('background service worker registers one alarm listener and handles core me
     Promise,
     Set,
     String,
+    Number,
     Date,
     Error,
     JSON,
+    URL,
+    URLSearchParams,
   }
 
   vm.runInNewContext(source, context)
 
   assert.equal(alarmListeners.length, 1)
   assert.equal(typeof messageListener, 'function')
+  assert.equal(typeof externalMessageListener, 'function')
 
   const settingsResponse = await new Promise((resolve) => {
     const asyncResponse = messageListener({ type: 'GET_SETTINGS' }, {}, resolve)
@@ -126,4 +150,36 @@ test('background service worker registers one alarm listener and handles core me
   })
   assert.equal(saveResponse.ok, true)
   assert.equal(storage.get('network'), 'devnet')
+
+  const externalStatus = await new Promise((resolve) => {
+    const asyncResponse = externalMessageListener(
+      { type: 'CLAWD_EXTENSION_STATUS' },
+      { origin: 'https://x402.wtf' },
+      resolve
+    )
+    assert.equal(asyncResponse, true)
+  })
+  assert.equal(externalStatus.ok, true)
+  assert.equal(externalStatus.extension.id, 'test-extension-id')
+
+  const externalDenied = await new Promise((resolve) => {
+    externalMessageListener(
+      { type: 'CLAWD_EXTENSION_STATUS' },
+      { origin: 'https://evil.example' },
+      resolve
+    )
+  })
+  assert.equal(externalDenied.ok, false)
+  assert.equal(externalDenied.error, 'origin not allowed')
+
+  const phantomResponse = await new Promise((resolve) => {
+    externalMessageListener(
+      { type: 'CLAWD_OPEN_PHANTOM', url: 'https://x402.wtf/telegram' },
+      { origin: 'https://x402.wtf' },
+      resolve
+    )
+  })
+  assert.equal(phantomResponse.ok, true)
+  assert.equal(createdTabs.length, 1)
+  assert.match(createdTabs[0].url, /^https:\/\/phantom\.app\/ul\/browse\//)
 })
