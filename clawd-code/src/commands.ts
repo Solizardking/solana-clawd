@@ -1,8 +1,12 @@
 /**
  * Clawd Code — Solana CLI Commands
- * /perps /wallet /send /price /balance /goal /positions /strategies /agents /funding /scan /signals
+ * /perps /wallet /send /price /balance /goal /positions /strategies /agents /funding /scan /signals /arena
  */
 
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+import { arena, CLAWD_MINT } from './arena.js';
 import { loadClawdEnv } from './env.js';
 import { createWallet, listWallets } from './wallet.js';
 
