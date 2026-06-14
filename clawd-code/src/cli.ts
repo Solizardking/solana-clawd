@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Clawd Code — CLI Entry Point
- * World's first headless Grok × Codex × Claude Code hybrid
+ * Headless lobster-native AI coding agent for the Clawd ecosystem
  */
 
 import { MODELS, printModelsTable, normalizeModelId, DEFAULT_MODEL } from './grok-models.js';
@@ -96,7 +96,7 @@ function printBanner(): void {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║  🦞 CLAWD CODE                                           ║
-║  Grok × Codex × Claude Code — Headless Hybrid            ║
+║  Lobster-native headless AI coding agent                  ║
 ║  Solana-native AI agent with perpetuals & realtime AI     ║
 ╚═══════════════════════════════════════════════════════════╝
 `);
