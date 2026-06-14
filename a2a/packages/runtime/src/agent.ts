@@ -1,4 +1,4 @@
-import type { SvmA2ATask, SvmA2ATaskInput } from "./types";
+import type { SvmA2ATask, SvmA2ATaskInput } from "./types.js";
 
 export default class SvmA2AAgent {
   async handleTask(input: SvmA2ATaskInput): Promise<SvmA2ATask> {

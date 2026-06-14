@@ -1,26 +1,26 @@
-import { Hono } from "hono";
+import { json, SvmRouter } from "../../runtime/src/router.js";
 
-export const auth = new Hono();
+export const auth = new SvmRouter();
 
-auth.get("/", (c) => c.json({
+auth.get("/", () => json({
   protocol: "Clawd CAAP",
   status: "available",
   methods: ["SIWS", "NFT-Ownership", "CLAWD-Tier"]
 }));
 
-auth.get("/challenge", (c) => c.json({
+auth.get("/challenge", () => json({
   message: "Sign in with Solana to access SVM-A2A delegated capabilities.",
   nonce: crypto.randomUUID()
 }));
 
-auth.post("/verify", async (c) => {
-  const body = await c.req.json().catch(() => ({}));
-  return c.json({
+auth.post("/verify", async (request) => {
+  const body = await request.json().catch(() => ({}));
+  return json({
     ok: false,
     status: "verification-not-configured",
     received: Object.keys(body),
     required: ["wallet", "signature", "message"]
-  }, 501);
+  }, { status: 501 });
 });
 
 export default auth;

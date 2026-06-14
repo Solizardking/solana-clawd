@@ -3,10 +3,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": ".",
+    "jsx": "react-jsx",
     "noEmit": false
   },
   "include": [
     "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "scripts/**/*.ts",
     "apps/**/*.ts",
     "apps/**/*.tsx"
   ]

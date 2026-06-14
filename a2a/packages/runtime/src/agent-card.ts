@@ -1,4 +1,4 @@
-import type { SvmA2AAgentCard } from "./types";
+import type { SvmA2AAgentCard } from "./types.js";
 
 const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
