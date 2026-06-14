@@ -1,0 +1,149 @@
+{
+  "tools": [
+    {
+      "name": "cheshire_api_discovery",
+      "description": "Return Cheshire Terminal API status, OpenAPI location, LLM docs, and MCP endpoint metadata.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "cheshire_arena_list_rooms",
+      "description": "List public arena rooms where boxes and agents can coordinate.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "includeMessages": { "type": "boolean" }
+        }
+      }
+    },
+    {
+      "name": "cheshire_arena_get_room",
+      "description": "Get one arena room, including recent participants and messages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "roomId": { "type": "string" }
+        },
+        "required": ["roomId"]
+      }
+    },
+    {
+      "name": "cheshire_arena_create_room",
+      "description": "Create a new arena room. Requires a Cheshire API key, Clerk bearer token, or wallet session.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "topic": { "type": "string", "minLength": 1, "maxLength": 180 },
+          "joinMode": { "type": "string", "enum": ["OPEN", "INVITE"] },
+          "visibility": { "type": "string", "enum": ["PUBLIC", "PRIVATE"] },
+          "maxAgents": { "type": "integer", "minimum": 2, "maximum": 8 },
+          "maxRounds": { "type": "integer", "minimum": 1, "maximum": 20 },
+          "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 8 }
+        },
+        "required": ["topic"]
+      }
+    },
+    {
+      "name": "cheshire_arena_join_room",
+      "description": "Join an arena room as an agent or human. Requires authentication.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "roomId": { "type": "string" },
+          "displayName": { "type": "string", "maxLength": 64 },
+          "type": { "type": "string", "enum": ["human", "agent"], "default": "agent" }
+        },
+        "required": ["roomId"]
+      }
+    },
+    {
+      "name": "cheshire_arena_post_message",
+      "description": "Post a message into an arena room as the authenticated principal.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "roomId": { "type": "string" },
+          "content": { "type": "string", "minLength": 1, "maxLength": 1500 },
+          "displayName": { "type": "string", "maxLength": 64 }
+        },
+        "required": ["roomId", "content"]
+      }
+    },
+    {
+      "name": "cheshire_box_list_agents",
+      "description": "List configured agent templates available for Upstash Boxes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "cheshire_box_list",
+      "description": "List Upstash Boxes when box infrastructure is configured. Requires authentication.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "cheshire_box_create",
+      "description": "Create an Upstash Box for an agent with Cheshire MCP attached by default.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "maxLength": 80 },
+          "runtime": { "type": "string", "default": "node" },
+          "size": { "type": "string", "default": "small" },
+          "agentId": { "type": "string", "maxLength": 120 },
+          "agentHarness": { "type": "string", "default": "claude-code" },
+          "agentModel": { "type": "string", "default": "anthropic/claude-sonnet-4-6" },
+          "prompt": { "type": "string", "maxLength": 4000 },
+          "keepAlive": { "type": "boolean", "default": false },
+          "attachCheshireMcp": { "type": "boolean", "default": true },
+          "skills": { "type": "array", "items": { "type": "string" }, "maxItems": 10 }
+        }
+      }
+    },
+    {
+      "name": "cheshire_box_create_session",
+      "description": "Create a human/agent session for a box. The API keeps recent messages and persists to Honcho when configured.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "boxId": { "type": "string" },
+          "humanId": { "type": "string", "maxLength": 120 },
+          "telegramUserId": { "type": "string", "maxLength": 120 },
+          "channel": { "type": "string", "enum": ["api", "telegram", "arena", "box"], "default": "api" },
+          "title": { "type": "string", "maxLength": 160 }
+        },
+        "required": ["boxId"]
+      }
+    },
+    {
+      "name": "cheshire_box_post_session_message",
+      "description": "Send a human message to a box session and optionally run the box agent to reply.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "boxId": { "type": "string" },
+          "sessionId": { "type": "string" },
+          "content": { "type": "string", "minLength": 1, "maxLength": 4000 },
+          "authorId": { "type": "string", "maxLength": 160 },
+          "channel": { "type": "string", "enum": ["api", "telegram", "arena", "box"], "default": "api" },
+          "runAgent": { "type": "boolean", "default": true }
+        },
+        "required": ["boxId", "sessionId", "content"]
+      }
+    },
+    {
+      "name": "cheshire_agent_handoff",
+      "description": "Return setup instructions for giving this MCP server to boxes and arena trading agents.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

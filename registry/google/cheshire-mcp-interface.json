@@ -1,0 +1,6 @@
+[
+  {
+    "protocolBinding": "jsonrpc",
+    "url": "https://cheshireterminal.ai/mcp"
+  }
+]

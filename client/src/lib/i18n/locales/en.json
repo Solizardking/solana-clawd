@@ -1,0 +1,28 @@
+{
+  "common": {
+    "connectWallet": "Connect Wallet",
+    "createToken": "Create Token",
+    "yourLaunches": "Your Launches",
+    "launchToken": "Launch Token",
+    "launching": "Launching...",
+    "viewChart": "View Chart",
+    "noTokensLaunched": "No tokens launched yet. Create your first token to get started!"
+  },
+  "token": {
+    "name": "Name",
+    "symbol": "Symbol",
+    "description": "Description",
+    "artPrompt": "Art prompt",
+    "price": "Price",
+    "volume": "24h Volume"
+  },
+  "trending": {
+    "title": "Trending Tokens",
+    "viewAll": "View All"
+  },
+  "launched": {
+    "title": "Recently Launched Tokens",
+    "viewAll": "View All",
+    "noTokens": "No tokens have been launched yet. Be the first to launch!"
+  }
+}

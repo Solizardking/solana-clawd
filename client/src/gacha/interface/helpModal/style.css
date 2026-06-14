@@ -1,0 +1,126 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 31, 40, 0.78);
+  backdrop-filter: blur(6px);
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 0;
+}
+
+/* Higher specificity than bare `button` rule — no !important needed */
+.modal-box .modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.12);
+  color: #666;
+  font-size: 13px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+.modal-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  width: min(80vw, 450px);
+  height: fit-content;
+  padding: 2vh min(8vw, 30px);
+  border-radius: 40px;
+  z-index: 3;
+  text-align: center;
+  box-shadow: 0 0 20px #ffffff;
+}
+
+.modal-text {
+  font-weight: 500;
+  margin: 1vh 0;
+  text-align: left;
+  font-size: min(3.5vw, 15px);
+  text-align: center;
+  max-width: 30ch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-image {
+  width: min(5vw, 30px);
+  margin: min(0.1em, 4px);
+}
+
+.modal-source {
+  font-size: min(2.75vw, 14px);
+}
+
+span {
+  font-size: min(6vw, 20px);
+  margin: 0 5px;
+}
+
+#paytable {
+  margin: 1em 0;
+}
+
+button {
+  color: #ffffff;
+  background-color: #3b0873;
+  border: none;
+  width: 150px;
+  height: 50px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 1.2em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+a,
+a:active,
+a:visited {
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+}
+
+.modeal-link {
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#source {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#source > * {
+  margin: 0 0.2em;
+}
