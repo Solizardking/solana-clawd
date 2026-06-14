@@ -104,6 +104,15 @@ if [[ "$MODE" == "serve" && -d "$BUNDLE_DIR" && -x "$BUNDLE_DIR/solana-vntr-snip
   bundle_installed=0
 fi
 
+bundle_binary_in_sync=""
+bundle_env_in_sync=""
+if [[ "$MODE" == "serve" && -x ./scripts/bundle_status.sh ]]; then
+  if ./scripts/bundle_status.sh >/tmp/clawd-pump-readiness-bundle.json 2>/tmp/clawd-pump-readiness-bundle.err; then
+    bundle_binary_in_sync="$(jq -r '.binary_in_sync // empty' /tmp/clawd-pump-readiness-bundle.json)"
+    bundle_env_in_sync="$(jq -r '.env_in_sync // empty' /tmp/clawd-pump-readiness-bundle.json)"
+  fi
+fi
+
 smoke_status=1
 run_check /tmp/clawd-pump-readiness-smoke.log ./scripts/smoke_live_gates.sh && smoke_status=0 || true
 
@@ -167,6 +176,8 @@ cat <<JSON
     "launchd_program": $(json_string "$launchd_program"),
     "bundle_path": $(json_string "$BUNDLE_DIR"),
     "bundle_installed": $(json_bool "$bundle_installed"),
+    "bundle_binary_in_sync": $(if [[ "$bundle_binary_in_sync" == "true" ]]; then printf "true"; else printf "false"; fi),
+    "bundle_env_in_sync": $(if [[ "$bundle_env_in_sync" == "true" ]]; then printf "true"; else printf "false"; fi),
     "bundle_log": $(json_string "$BUNDLE_DIR/logs/clawd-pump-serve.log")
   },
   "checks": {

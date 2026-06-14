@@ -258,6 +258,7 @@
     "pump:service:status:launchd": "cd clawd-pump && ./scripts/service_control.sh status launchd copy",
     "pump:service:serve:launchd": "cd clawd-pump && ./scripts/service_control.sh install launchd serve",
     "pump:service:serve:bundle": "cd clawd-pump && ./scripts/install_launchd_serve_bundle.sh",
+    "pump:service:serve:bundle:status": "cd clawd-pump && ./scripts/bundle_status.sh",
     "pump:service:serve:start": "cd clawd-pump && ./scripts/service_control.sh start launchd serve",
     "pump:service:serve:status": "cd clawd-pump && ./scripts/service_control.sh status launchd serve",
     "pump:service:serve:logs": "cd clawd-pump && ./scripts/service_control.sh logs launchd serve",

@@ -129,6 +129,7 @@ npm run pump:service:install:systemd
 npm run pump:service:install:launchd
 npm run pump:service:serve:launchd
 npm run pump:service:serve:bundle
+npm run pump:service:serve:bundle:status
 npm run pump:service:serve:start
 npm run pump:service:serve:status
 npm run pump:service:serve:logs
@@ -213,6 +214,12 @@ On macOS, if launchd cannot execute from a repo under `Downloads`, install the s
 ```
 
 The bundle copies the release binary and local `.env` into `~/Library/Application Support/clawd-pump-serve` and runs safe `--serve` mode from there. Live trading endpoints remain blocked unless the copied `.env` is intentionally armed.
+
+Check whether the installed bundle is in sync with the repo without printing `.env` values:
+
+```bash
+./scripts/bundle_status.sh
+```
 
 ## Upstash Box Agent
 
