@@ -79,7 +79,8 @@ if command -v curl >/dev/null 2>&1; then
       sed 's/^/  /' /tmp/clawd-pump-health.json
       printf "\n"
     else
-      printf "  unavailable on 127.0.0.1:%s\n" "$PORT"
+      printf "  unavailable from this shell on 127.0.0.1:%s\n" "$PORT"
+      printf "  note: if launchd state is running, retry outside sandbox or check bundle logs\n"
     fi
 else
   printf "  curl unavailable\n"
