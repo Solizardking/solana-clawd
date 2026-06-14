@@ -47,7 +47,7 @@ export class ResearchMode {
       await this.runStreaming(query, provider);
     } else {
       const result = await this.runBlocking(query, provider, agentCount);
-      console.log('\n' + (result.content || 'No research output returned.'));
+      console.log(`\n${result.content || 'No research output returned.'}`);
       if (result.citations.length > 0) {
         console.log('\nCitations:');
         for (const c of result.citations) console.log(`  - ${c}`);
@@ -69,7 +69,7 @@ export class ResearchMode {
     const label = `grok-4.20-multi-agent · ${agentCount} agents`;
     const q = query.substring(0, 52).padEnd(52);
     console.log('╔══════════════════════════════════════════════════════════════╗');
-    console.log('║  RESEARCH MODE — ' + label.padEnd(45) + '║');
+    console.log(`║  RESEARCH MODE — ${label.padEnd(45)}║`);
     console.log('╠══════════════════════════════════════════════════════════════╣');
     console.log(`║  ${q}  ║`);
     console.log('╚══════════════════════════════════════════════════════════════╝\n');
@@ -85,7 +85,7 @@ export class ResearchMode {
           console.error('[RESEARCH MODE] ANTHROPIC_API_KEY not set.');
           return;
         }
-        const model = isClaudeModel(this.config.model ?? '') ? this.config.model! : DEFAULT_CLAUDE_MODEL;
+        const model = isClaudeModel(this.config.model ?? '') ? (this.config.model ?? DEFAULT_CLAUDE_MODEL) : DEFAULT_CLAUDE_MODEL;
         for await (const chunk of client.stream({
           model,
           system: RESEARCH_SYSTEM,
@@ -133,7 +133,7 @@ export class ResearchMode {
         const client = createAnthropicClient(this.config.anthropicApiKey);
         if (!client) return { content: 'ANTHROPIC_API_KEY not set.', citations: [] };
 
-        const model = isClaudeModel(this.config.model ?? '') ? this.config.model! : DEFAULT_CLAUDE_MODEL;
+        const model = isClaudeModel(this.config.model ?? '') ? (this.config.model ?? DEFAULT_CLAUDE_MODEL) : DEFAULT_CLAUDE_MODEL;
         console.log(`[RESEARCH MODE] Running with ${model}...`);
         const response = await client.chat({
           model,
@@ -150,7 +150,7 @@ export class ResearchMode {
         if (!client) return { content: 'DEEPSEEK_API_KEY not set.', citations: [] };
 
         const model = String(this.config.model ?? '').startsWith('deepseek-')
-          ? this.config.model!
+          ? (this.config.model ?? 'deepseek-v4-pro')
           : 'deepseek-v4-pro';
         console.log(`[RESEARCH MODE] Running DeepSeek ${model} (effort: ${agentCount === 16 ? 'high' : 'medium'})...`);
         const response = await client.chat({
