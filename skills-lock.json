@@ -1,11 +1,23 @@
 {
   "version": 1,
   "skills": {
-    "pay": {
-      "source": "solana-foundation/pay",
+    "ask-mcp": {
+      "source": "Lightprotocol/skills",
       "sourceType": "github",
-      "skillPath": "skills/pay/SKILL.md",
-      "computedHash": "ab360f7398ee4c1a1f404cb4795921a49855e72e356099f91a7390b3d27f71a3"
+      "skillPath": "skills/ask-mcp/SKILL.md",
+      "computedHash": "e099d45e00d063547779e2eefd88bbc34fb9f139482aa9aa4f44fa62ccdbe0fd"
+    },
+    "compressed-pda": {
+      "source": "Lightprotocol/skills",
+      "sourceType": "github",
+      "skillPath": "skills/compressed-pda/SKILL.md",
+      "computedHash": "567a54eb19a311916d36f38e9f454cce3790f2f861003c59f37e981c54c4b341"
+    },
+    "compressed-token": {
+      "source": "Lightprotocol/skills",
+      "sourceType": "github",
+      "skillPath": "skills/compressed-token/SKILL.md",
+      "computedHash": "27f57c41ea113c384a3dada92d39f4d555e237ac83fea9ea68911bf4f7ee7e95"
     },
     "greptile": {
       "source": "greptile/greptile-docs",
@@ -13,6 +25,24 @@
       "sourceUrl": "https://www.greptile.com/docs/llms.txt",
       "skillPath": "skills/greptile/SKILL.md",
       "computedHash": "3f1068a7b9e0cf2d4c1a24f6e8d9b05c7a31e2d4f9c6a8b1e5d7f3c2a4b6e8d9"
+    },
+    "pay": {
+      "source": "solana-foundation/pay",
+      "sourceType": "github",
+      "skillPath": "skills/pay/SKILL.md",
+      "computedHash": "ab360f7398ee4c1a1f404cb4795921a49855e72e356099f91a7390b3d27f71a3"
+    },
+    "testing": {
+      "source": "Lightprotocol/skills",
+      "sourceType": "github",
+      "skillPath": "skills/testing/SKILL.md",
+      "computedHash": "f00cf8444f494873d7a715bbc3500f24ef8416b19f1f8e7237d806873f4863bb"
+    },
+    "zk": {
+      "source": "Lightprotocol/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zk/SKILL.md",
+      "computedHash": "13ceeaf9e5d8f4aa1fe132485d5219b8aa26fb2eb1ad67ce139496e8ec5a8da3"
     }
   }
 }
