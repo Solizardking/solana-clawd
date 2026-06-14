@@ -10,6 +10,7 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "dev": "tsx scripts/dev.ts",
+    "deploy": "wrangler deploy",
     "mint": "tsx packages/core/src/mint.ts"
   },
   "dependencies": {
