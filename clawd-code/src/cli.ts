@@ -68,32 +68,32 @@ function normalizeProvider(provider: string): 'xai' | 'openrouter' | 'deepseek' 
 
 async function runCodeMode(args: string[], config: ClawdCodeConfig): Promise<void> {
   const { CodeMode } = await import('./modes/code.js');
-  const mode = new CodeMode(config);
-  await mode.run(args);
+  await new CodeMode(config).run(args);
 }
 
 async function runTradeMode(args: string[], config: ClawdCodeConfig): Promise<void> {
   const { TradeMode } = await import('./modes/trade.js');
-  const mode = new TradeMode(config);
-  await mode.run(args);
+  await new TradeMode(config).run(args);
 }
 
 async function runResearchMode(args: string[], config: ClawdCodeConfig): Promise<void> {
   const { ResearchMode } = await import('./modes/research.js');
-  const mode = new ResearchMode(config);
-  await mode.run(args);
+  await new ResearchMode(config).run(args);
 }
 
 async function runImageMode(args: string[], config: ClawdCodeConfig): Promise<void> {
   const { ImageMode } = await import('./modes/image.js');
-  const mode = new ImageMode(config);
-  await mode.run(args);
+  await new ImageMode(config).run(args);
 }
 
 async function runVoiceMode(args: string[], config: ClawdCodeConfig): Promise<void> {
   const { VoiceMode } = await import('./modes/voice.js');
-  const mode = new VoiceMode(config);
-  await mode.run(args);
+  await new VoiceMode(config).run(args);
+}
+
+async function runReplMode(config: ClawdCodeConfig): Promise<void> {
+  const { ReplMode } = await import('./modes/repl.js');
+  await new ReplMode(config).run();
 }
 
 function printBanner(): void {
@@ -101,7 +101,7 @@ function printBanner(): void {
 ╔═══════════════════════════════════════════════════════════╗
 ║  🦞 CLAWD CODE                                           ║
 ║  Lobster-native headless AI coding agent                  ║
-║  Solana-native AI agent with perpetuals & realtime AI     ║
+║  xAI · Anthropic · DeepSeek · Solana · Phoenix · Vulcan  ║
 ╚═══════════════════════════════════════════════════════════╝
 `);
 }
@@ -113,18 +113,19 @@ USAGE:
   clawd-code [mode] [command] [options]
 
 MODES:
-  code       Write, review, and ship production code
+  code       Write, review, and ship production code (streaming)
   trade      Perpetuals trading with Phoenix Rise + Vulcan MCP
   research   Multi-agent deep research with grok-4.20-multi-agent
   image      Generate images via DALL-E or Gemini
   voice      Text-to-speech and voice synthesis
+  repl       Interactive multi-turn conversation REPL
 
 GLOBAL COMMANDS:
   /verify                 Run preflight checks
-  /models                 List all available Grok models
-  /models <id>           Switch to a specific model
-  /provider              Show current AI provider
-  /provider <name>       Switch to xai, openrouter, or deepseek
+  /models                 List all available models (Grok + Claude + DeepSeek)
+  /models <id>            Switch to a specific model
+  /provider               Show current AI provider + API key status
+  /provider <name>        Switch provider: xai | anthropic | openrouter | deepseek
 
 COMMANDS:
   clawd-code code "Build a Jupiter swap bot"
@@ -132,37 +133,41 @@ COMMANDS:
   clawd-code research "AI agent frameworks 2025"
   clawd-code image "cyberpunk Solana trading desk"
   clawd-code voice "Hello from Clawd Code"
+  clawd-code repl
 
 OPTIONS:
-  --mode <mode>          Set mode (code|trade|research|image|voice)
+  --mode <mode>          Set mode (code|trade|research|image|voice|repl)
   --agents <n>           Number of agents for research (4|16)
   --live                 Enable live trading (requires ARM flags)
   --paper                Paper trading mode (default)
-  --model <model>        Override model
+  --model <model>        Override model (grok-4.3 | claude-sonnet-4-6 | ...)
+  --provider <name>      Override provider for this session
+  --stream               Stream output token-by-token (code + research modes)
   --format <fmt>         Output format: text (default) | json (JSONL)
 
 EXAMPLES:
   clawd-code trade "short SOL $100"
   clawd-code research --agents 16 "Solana perps funding arb"
-  clawd-code code "Build an Anchor program for staking"
-  clawd-code image "neon Solana claw logo"
-  clawd-code voice "Clawd Code is operational"
+  clawd-code code --stream --model claude-sonnet-4-6 "Build an Anchor staking program"
+  clawd-code code --provider anthropic "Review this TypeScript for bugs"
+  clawd-code repl
 
 ENVIRONMENT:
   SOLANA_RPC_URL         Solana RPC endpoint (default: Helius)
-  XAI_API_KEY            xAI API key for Grok
+  XAI_API_KEY            xAI API key for Grok models
+  ANTHROPIC_API_KEY      Anthropic API key for Claude models
   DEEPSEEK_API_KEY       DeepSeek API key for deepseek-v4-pro/flash
   DEEPSEEK_BASE_URL      Default: https://api.deepseek.com
   OPENROUTER_API_KEY     OpenRouter API key (free models supported)
   OPENROUTER_FREE_MODEL  Default: nex-agi/nex-n2-pro:free
-  CLAWD_PROVIDER         xai (default) | openrouter | deepseek
+  CLAWD_PROVIDER         xai (default) | anthropic | openrouter | deepseek
+  CLAWD_STREAM           true to enable streaming by default
   HELIUS_API_KEY         Helius API key for DAS
   PHOENIX_RISE_URL       Phoenix Rise endpoint
   VULCAN_MCP_URL         Vulcan MCP server URL
   LIVE_TRADING           Enable live trading (true|false)
   OPERATOR_CONFIRMED     Operator confirmed (true|false)
-  PERPS_SIM_ONLY         Simulation only (true|false)
-  CLAWD_MODE             Default mode (code|trade|research|image|voice)
+  CLAWD_MODE             Default mode (code|trade|research|image|voice|repl)
   CLAWD_AGENT_COUNT      Agent count for research (4|16)
 
 First run: cp .env.example ~/.clawd-code/.env
@@ -205,31 +210,35 @@ async function main(): Promise<void> {
     const current = normalizeProvider(env.CLAWD_PROVIDER || 'xai');
     if (args[1]) {
       const normalized = normalizeProvider(args[1]);
-      if (['xai', 'openrouter', 'deepseek'].includes(normalized)) {
+      const valid = ['xai', 'anthropic', 'openrouter', 'deepseek'];
+      if (valid.includes(normalized)) {
         console.log(`\n[CLAWD CODE] Switched provider: ${current} -> ${normalized}`);
         console.log(`Set CLAWD_PROVIDER=${normalized} in ~/.clawd-code/.env to persist.`);
-        if (normalized === 'deepseek') {
+        if (normalized === 'anthropic') {
+          console.log('Set ANTHROPIC_API_KEY=<key> and CLAWD_MODEL=claude-sonnet-4-6 (or opus/haiku).');
+        } else if (normalized === 'deepseek') {
           console.log('Set DEEPSEEK_API_KEY=<key> and CLAWD_MODEL=deepseek-v4-pro or deepseek-v4-flash.');
         }
       } else {
         console.log(`\n[CLAWD CODE] Unknown provider: ${args[1]}`);
-        console.log('Available: xai, openrouter (or), deepseek (ds)');
+        console.log('Available: xai, anthropic (claude), openrouter (or), deepseek (ds)');
       }
     } else {
-      console.log('\n╔════════════════════════════════════════════════════════╗');
-      console.log('║  CLAWD CODE — AI PROVIDERS                              ║');
-      console.log('╠════════════════════════════════════════════════════════╣');
-      console.log(`║  Current: ${current.padEnd(45)}║`);
-      console.log('╠════════════════════════════════════════════════════════╣');
-      console.log('║  xai         (default)  xAI Grok models                 ║');
-      console.log('║  openrouter  (alt)      Free models via OpenRouter      ║');
-      console.log('║  deepseek    (alt)      deepseek-v4-pro / v4-flash      ║');
-      console.log('╚════════════════════════════════════════════════════════╝');
-      console.log(`\n  grok       key=${maskSecret(env.XAI_API_KEY)}`);
-      console.log(`  deepseek   key=${maskSecret(env.DEEPSEEK_API_KEY)} baseURL=${env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com'}`);
-      console.log(`  openrouter key=${maskSecret(env.OPENROUTER_API_KEY)} baseURL=${env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1'}`);
-      console.log(`\n  Default OpenRouter free model: ${DEFAULT_FREE_MODEL}`);
-      console.log('  Switch: clawd-code /provider deepseek');
+      console.log('\n╔═════════════════════════════════════════════════════════════╗');
+      console.log('║  CLAWD CODE — AI PROVIDERS                                  ║');
+      console.log('╠═════════════════════════════════════════════════════════════╣');
+      console.log(`║  Current: ${current.padEnd(50)}║`);
+      console.log('╠═════════════════════════════════════════════════════════════╣');
+      console.log('║  xai         xAI Grok 4.x models (default)                 ║');
+      console.log('║  anthropic   Claude Sonnet/Opus/Haiku — streaming native    ║');
+      console.log('║  openrouter  Free + paid models via OpenRouter              ║');
+      console.log('║  deepseek    deepseek-v4-pro / v4-flash                     ║');
+      console.log('╚═════════════════════════════════════════════════════════════╝');
+      console.log(`\n  xai        key=${maskSecret(env.XAI_API_KEY)}`);
+      console.log(`  anthropic  key=${maskSecret(env.ANTHROPIC_API_KEY)}`);
+      console.log(`  deepseek   key=${maskSecret(env.DEEPSEEK_API_KEY)}`);
+      console.log(`  openrouter key=${maskSecret(env.OPENROUTER_API_KEY)}  free model: ${DEFAULT_FREE_MODEL}`);
+      console.log('\n  Switch: clawd-code /provider anthropic');
     }
     process.exit(0);
   }
@@ -276,28 +285,31 @@ async function main(): Promise<void> {
 
   const config = loadConfig();
   const modeArg = args[0].toLowerCase();
-  if (['code', 'trade', 'research', 'image', 'voice'].includes(modeArg)) {
+  if (['code', 'trade', 'research', 'image', 'voice', 'repl'].includes(modeArg)) {
     config.mode = modeArg.toUpperCase() as Mode;
   }
 
   // Parse global flags
-  if (args.includes('--live')) {
-    config.liveTrading = true;
-  }
-  if (args.includes('--paper')) {
-    config.liveTrading = false;
-  }
+  if (args.includes('--live')) config.liveTrading = true;
+  if (args.includes('--paper')) config.liveTrading = false;
+  if (args.includes('--stream')) config.stream = true;
+
   if (args.includes('--agents')) {
     const idx = args.indexOf('--agents');
-    config.agentCount = parseInt(args[idx + 1]) as 4 | 16;
+    config.agentCount = parseInt(args[idx + 1], 10) as 4 | 16;
   }
   if (args.includes('--model')) {
     const idx = args.indexOf('--model');
     config.model = args[idx + 1];
   }
+  if (args.includes('--provider')) {
+    const idx = args.indexOf('--provider');
+    config.provider = normalizeProvider(args[idx + 1]);
+  }
 
   printBanner();
-  console.log(`[CLAWD CODE] Mode: ${config.mode} | Live: ${config.liveTrading} | Agents: ${config.agentCount}\n`);
+  const streamLabel = config.stream ? ' | stream: on' : '';
+  console.log(`[CLAWD CODE] Mode: ${config.mode} | Provider: ${config.provider} | Model: ${config.model}${streamLabel}\n`);
 
   try {
     switch (modeArg) {
@@ -315,6 +327,9 @@ async function main(): Promise<void> {
         break;
       case 'voice':
         await runVoiceMode(args.slice(1), config);
+        break;
+      case 'repl':
+        await runReplMode(config);
         break;
       default:
         await runCodeMode(args, config);
