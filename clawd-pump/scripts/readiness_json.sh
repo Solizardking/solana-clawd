@@ -185,6 +185,10 @@ fi
 if [[ "$http_control_status" -ne 0 ]]; then
   blockers+=("HTTP control smoke check failed")
 fi
+blockers_json="[]"
+if [[ "${#blockers[@]}" -gt 0 ]]; then
+  blockers_json="$(json_array "${blockers[@]}")"
+fi
 
 cat <<JSON
 {
@@ -192,7 +196,7 @@ cat <<JSON
   "mode": $(json_string "$MODE"),
   "env_file": $(json_string "$ENV_FILE"),
   "ready_to_start": $(json_bool "$ready_to_start"),
-  "blockers": $(json_array "${blockers[@]}"),
+  "blockers": $blockers_json,
   "wallet": {
     "private_key_present": $(is_set "PRIVATE_KEY" && printf "true" || printf "false"),
     "public_key": $(json_string "$public_key")
