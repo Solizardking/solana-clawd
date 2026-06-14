@@ -26,7 +26,7 @@ homepage: https://x402.wtf/skills/solana-clawd
 
 # solana-clawd — The Agentic Engine Solana Deserves
 
-**Repo**: [github.com/x402agent/solana-clawd](https://github.com/x402agent/solana-clawd)
+**Repo**: [github.com/Solizardking/solana-clawd](https://github.com/Solizardking/solana-clawd)
 **Live**: [x402.wtf](https://x402.wtf)
 **npm**: `solana-clawd` (v1.6.0)
 **Token**: `$CLAWD` — `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
@@ -48,7 +48,7 @@ homepage: https://x402.wtf/skills/solana-clawd
 ## One-Shot Install
 
 ```bash
-git clone https://github.com/x402agent/solana-clawd
+git clone https://github.com/Solizardking/solana-clawd
 cd solana-clawd
 npm run setup
 ```
@@ -70,13 +70,13 @@ npm run spinners
 Install only the master `solana-clawd` skill:
 
 ```bash
-npx skills add x402agent/solana-clawd --path skill/solana-clawd
+npx skills add Solizardking/solana-clawd --path skill/solana-clawd
 ```
 
 Install the full Solana-clawd skill pack from this repo:
 
 ```bash
-npx skills add x402agent/solana-clawd
+npx skills add Solizardking/solana-clawd
 ```
 
 ## MCP Setup

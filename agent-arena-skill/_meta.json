@@ -1,17 +1,17 @@
 {
-  "owner": "cheshireterminal",
+  "owner": "Solizardking",
   "slug": "agent-arena-skill",
   "displayName": "Cheshire Terminal Agent Registry — On-Chain Solana Agent Identity",
   "latest": {
     "version": "2.0.0",
     "publishedAt": 1771831265874,
-    "commit": "https://github.com/cheshireterminal/skills/commit/svm-metaplex-registry"
+    "commit": "https://github.com/Solizardking/solana-clawd/tree/newnew/agent-arena/agent-arena-skill"
   },
   "history": [
     {
       "version": "0.1.0",
       "publishedAt": 1771831265874,
-      "commit": "original-evm-erc8004-version"
+      "commit": "https://github.com/Solizardking/solana-clawd/tree/newnew/agent-arena/agent-arena-skill"
     }
   ]
 }
