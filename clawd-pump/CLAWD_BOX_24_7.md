@@ -205,7 +205,7 @@ That prints the commands it would run. To actually install the service without s
 ./scripts/service_control.sh install launchd copy --apply
 ```
 
-Both service templates call `scripts/run_24_7.sh`, which runs the matching mode preflight before starting. Services are mode-specific, for example `com.openclawd.clawd-pump.serve` on launchd and `clawd-pump-serve` on systemd. The control helper supports `install`, `start`, `stop`, `restart`, `status`, `logs`, and `uninstall`; it prints dry-run commands unless `--apply` is provided.
+Both service templates call `scripts/run_24_7.sh`, which runs the matching mode preflight before starting. Services are mode-specific, for example `com.openclawd.clawd-pump.serve` on launchd and `clawd-pump-serve` on systemd. The control helper supports `install`, `start`, `stop`, `restart`, `status`, `logs`, and `uninstall`; it prints dry-run commands unless `--apply` is provided. For bundle-backed `serve`, `service_control.sh logs launchd serve --apply` reads logs from `~/Library/Application Support/clawd-pump-serve/logs`.
 
 On macOS, if launchd cannot execute from a repo under `Downloads`, install the serve bundle instead:
 

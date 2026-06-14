@@ -51,6 +51,15 @@ launchd_plist="${HOME}/Library/LaunchAgents/${launchd_name}.plist"
 launchd_label="gui/$(id -u)/${launchd_name}"
 systemd_service="/etc/systemd/system/${service_name}.service"
 log_dir="$(pwd)/logs"
+bundle_dir="${CLAWD_PUMP_SERVE_BUNDLE_DIR:-${HOME}/Library/Application Support/clawd-pump-serve}"
+
+launchd_log_dir() {
+  if [[ "$mode" == "serve" && -d "$bundle_dir/logs" ]]; then
+    printf "%s/logs\n" "$bundle_dir"
+  else
+    printf "%s\n" "$log_dir"
+  fi
+}
 
 if [[ "$action" == "install" ]]; then
   ./scripts/render_service.sh "$kind" "$mode"
@@ -81,10 +90,21 @@ case "${action}:${kind}" in
     run_or_print launchctl print "$launchd_label"
     ;;
   logs:launchd)
-    printf "stdout: %s/launchd-%s.out.log\n" "$log_dir" "$mode"
-    printf "stderr: %s/launchd-%s.err.log\n" "$log_dir" "$mode"
-    run_or_print tail -n 80 "$log_dir/launchd-${mode}.out.log"
-    run_or_print tail -n 80 "$log_dir/launchd-${mode}.err.log"
+    actual_log_dir="$(launchd_log_dir)"
+    printf "log dir: %s\n" "$actual_log_dir"
+    if [[ "$mode" == "serve" && "$actual_log_dir" == "$bundle_dir/logs" ]]; then
+      printf "serve log: %s/clawd-pump-serve.log\n" "$actual_log_dir"
+      printf "stdout: %s/launchd.out.log\n" "$actual_log_dir"
+      printf "stderr: %s/launchd.err.log\n" "$actual_log_dir"
+      run_or_print tail -n 80 "$actual_log_dir/clawd-pump-serve.log"
+      run_or_print tail -n 80 "$actual_log_dir/launchd.out.log"
+      run_or_print tail -n 80 "$actual_log_dir/launchd.err.log"
+    else
+      printf "stdout: %s/launchd-%s.out.log\n" "$actual_log_dir" "$mode"
+      printf "stderr: %s/launchd-%s.err.log\n" "$actual_log_dir" "$mode"
+      run_or_print tail -n 80 "$actual_log_dir/launchd-${mode}.out.log"
+      run_or_print tail -n 80 "$actual_log_dir/launchd-${mode}.err.log"
+    fi
     ;;
   install:systemd)
     rendered="deploy/generated/clawd-pump-${mode}.service"
