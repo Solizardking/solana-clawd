@@ -65,58 +65,9 @@ This is a conservative signal, not proof of safe removal. Packages can be used b
 
 Root manifest dependency count: `184`
 
-Root dependencies with at least one obvious source reference: `140`
+An initial broad scan found `44` packages without obvious static imports, but that scan intentionally over-reported because it included type packages, tooling, and packages used through dynamic imports or config references. The repeatable helper below is the current source of truth for this audit.
 
-Root dependencies with no obvious source reference in this scan: `44`
-
-Likely expected false positives or tool/config dependencies:
-
-- `@types/bn.js`
-- `@types/canvas-confetti`
-- `@types/compression`
-- `@types/connect-pg-simple`
-- `@types/cors`
-- `@types/crypto-js`
-- `@types/express`
-- `@types/express-session`
-- `@types/multer`
-- `@types/node`
-- `@types/passport`
-- `@types/passport-local`
-- `@types/pg`
-- `@types/react`
-- `@types/react-dom`
-- `@types/three`
-- `@types/uuid`
-- `@types/ws`
-- `autoprefixer`
-- `esbuild`
-- `postcss`
-- `tsx`
-- `typescript`
-- `vercel`
-
-Needs package-specific verification before removal:
-
-- `@anthropic-ai/sdk`
-- `@better-auth/core`
-- `@better-auth/sso`
-- `@emotion/react`
-- `@emotion/styled`
-- `@fal-ai/client`
-- `@jridgewell/trace-mapping`
-- `@mui/material`
-- `@replit/object-storage`
-- `borsh`
-- `bufferutil`
-- `connect-pg-simple`
-- `memorystore`
-- `passport`
-- `passport-local`
-- `stream-browserify`
-- `zod-validation-error`
-
-Do not remove any dependency from `package.json` based on this scan alone. The next safe step would be targeted verification for each package in the second list, including configs, scripts, generated code, and runtime string usage.
+Do not remove any dependency from `package.json` based on this scan alone. The next safe step would be targeted verification for each package in the candidate list, including configs, scripts, generated code, peer dependencies, lockfile impact, and a clean build/typecheck.
 
 Repeatable helper:
 
@@ -232,3 +183,49 @@ Deletion requires the explicit `--apply` flag and should only be run after appro
 ```sh
 node scripts/cleanup-audit.mjs --apply generated
 ```
+
+## Approval Checklist
+
+No deletion should happen until one of these exact approvals is given.
+
+Approve generated dependency installs only:
+
+```text
+Approved: run node scripts/cleanup-audit.mjs --apply deps
+```
+
+Approve Rust/Anchor build outputs only:
+
+```text
+Approved: run node scripts/cleanup-audit.mjs --apply targets
+```
+
+Approve local caches/build metadata only:
+
+```text
+Approved: run node scripts/cleanup-audit.mjs --apply caches
+```
+
+Approve scratch/log files only:
+
+```text
+Approved: run node scripts/cleanup-audit.mjs --apply logs
+```
+
+Approve all safest generated cleanup candidates:
+
+```text
+Approved: run node scripts/cleanup-audit.mjs --apply generated
+```
+
+Not currently recommended without a separate canonical-source decision:
+
+```text
+Approved: remove project copy m
+Approved: remove project copy cheshire-terminal
+Approved: remove project copy staking
+Approved: remove project copy magicblock-gacha
+Approved: remove project copy dynamic-bonding-curve-main
+```
+
+Dependency removals should be approved separately package-by-package after a build/typecheck verification plan is agreed.
