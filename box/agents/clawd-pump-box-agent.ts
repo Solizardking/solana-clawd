@@ -282,6 +282,9 @@ function printPumpReadiness(readiness: PumpReadiness | undefined): void {
   for (const key of ["launchd_loaded", "launchd_running", "bundle_installed"]) {
     console.log(`${key}=${service[key] === true}`);
   }
+  for (const key of ["bundle_binary_in_sync", "bundle_env_in_sync"]) {
+    console.log(`${key}=${service[key] === true}`);
+  }
   if (service.bundle_path) console.log(`bundle_path=${service.bundle_path}`);
 }
 
@@ -313,6 +316,8 @@ function readinessPromptSummary(readiness: PumpReadiness | undefined): string {
     `- launchd_loaded: ${service.launchd_loaded === true}`,
     `- launchd_running: ${service.launchd_running === true}`,
     `- bundle_installed: ${service.bundle_installed === true}`,
+    `- bundle_binary_in_sync: ${service.bundle_binary_in_sync === true}`,
+    `- bundle_env_in_sync: ${service.bundle_env_in_sync === true}`,
     `- bundle_path: ${service.bundle_path || "missing"}`
   ].join("\n");
 }
