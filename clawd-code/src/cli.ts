@@ -263,6 +263,8 @@ async function main(): Promise<void> {
     'signals':     C.cmdSignals,
     '/strategies': C.cmdStrategies,
     'strategies':  C.cmdStrategies,
+    '/arena':      C.cmdArena,
+    'arena':       C.cmdArena,
     '/agents':     C.cmdAgents,
     'agents':      C.cmdAgents,
     '/goal':       C.cmdGoal,

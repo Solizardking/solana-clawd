@@ -3,10 +3,10 @@
  * /perps /wallet /send /price /balance /goal /positions /strategies /agents /funding /scan /signals /arena
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { arena, CLAWD_MINT } from './arena.js';
+import { CLAWD_MINT, arena } from './arena.js';
 import { loadClawdEnv } from './env.js';
 import { createWallet, listWallets } from './wallet.js';
 
@@ -294,7 +294,7 @@ export async function cmdHelp(args: string[]): Promise<void> {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║  CLAWD CODE — Help                                     ║');
   console.log('╠════════════════════════════════════════════════════════╣');
-  console.log('║  MODES: code | trade | research | image | voice       ║');
+  console.log('║  MODES: code | trade | research | image | voice | repl║');
   console.log('║                                                       ║');
   console.log('║  GLOBAL COMMANDS:                                      ║');
   console.log('║  perps           Perps dashboard                       ║');
@@ -306,12 +306,242 @@ export async function cmdHelp(args: string[]): Promise<void> {
   console.log('║  funding         Funding rates                         ║');
   console.log('║  signals         Composite trading signals             ║');
   console.log('║  strategies      Vulcan strategy runners               ║');
+  console.log('║  arena [sub]     Agent Arena: mint|register|fetch|review║');
   console.log('║  agents          Clawd agent registry                  ║');
-  console.log('║  models          Grok model registry                   ║');
-  console.log('║  provider        Switch xai/openrouter/deepseek        ║');
+  console.log('║  models          Model registry (Grok+Claude+DeepSeek) ║');
+  console.log('║  provider        Switch xai/anthropic/openrouter/ds    ║');
   console.log('║  goal [text]     Natural language intent router        ║');
   console.log('║  verify          Preflight environment checks          ║');
   console.log('║                                                       ║');
-  console.log('║  Slash aliases still work: /perps, /wallet, /goal     ║');
+  console.log('║  Slash aliases still work: /perps, /wallet, /arena    ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
+}
+
+// ── Agent Arena (Cheshire Terminal) ──────────────────────────────────────────
+
+const ARENA_IDENTITY_FILE = join(homedir(), '.clawd-code', 'arena-identity.json');
+
+function loadArenaIdentity(): Record<string, string> {
+  if (!existsSync(ARENA_IDENTITY_FILE)) return {};
+  try { return JSON.parse(readFileSync(ARENA_IDENTITY_FILE, 'utf-8')); } catch { return {}; }
+}
+
+function saveArenaIdentity(data: Record<string, string>): void {
+  mkdirSync(join(homedir(), '.clawd-code'), { recursive: true });
+  writeFileSync(ARENA_IDENTITY_FILE, JSON.stringify(data, null, 2), { mode: 0o600 });
+}
+
+function parseFlag(args: string[], flag: string): string | undefined {
+  const idx = args.indexOf(flag);
+  return idx !== -1 ? args[idx + 1] : undefined;
+}
+
+export async function cmdArena(args: string[]): Promise<void> {
+  const sub = args[0] ?? 'status';
+
+  if (sub === 'status' || sub === 'identity') {
+    const id = loadArenaIdentity();
+    if (!id.globalId) {
+      console.log('\n╔═══════════════════════════════════════════════════════════╗');
+      console.log('║  AGENT ARENA — Cheshire Terminal Registry                 ║');
+      console.log('╠═══════════════════════════════════════════════════════════╣');
+      console.log('║  No on-chain identity found.                              ║');
+      console.log('║  Run: clawd-code arena mint --wallet <PUBKEY>             ║');
+      console.log('╚═══════════════════════════════════════════════════════════╝\n');
+      return;
+    }
+    console.log('\n╔═══════════════════════════════════════════════════════════╗');
+    console.log('║  AGENT ARENA — On-Chain Identity                          ║');
+    console.log('╠═══════════════════════════════════════════════════════════╣');
+    console.log(`║  Global ID:   ${(id.globalId ?? '').slice(0, 47).padEnd(47)}║`);
+    console.log(`║  Asset:       ${(id.assetAddress ?? '').padEnd(47)}║`);
+    console.log(`║  Profile:     ${(id.profileUrl ?? '').slice(0, 47).padEnd(47)}║`);
+    if (id.a2aCardUrl)    console.log(`║  A2A card:    ${id.a2aCardUrl.slice(0, 47).padEnd(47)}║`);
+    if (id.mcpServerCardUrl) console.log(`║  MCP card:    ${id.mcpServerCardUrl.slice(0, 47).padEnd(47)}║`);
+    console.log('╚═══════════════════════════════════════════════════════════╝\n');
+    return;
+  }
+
+  if (sub === 'mint') {
+    const wallet = parseFlag(args, '--wallet') ?? parseFlag(args, '-w');
+    const name   = parseFlag(args, '--name') ?? 'Clawd Code Agent';
+    const desc   = parseFlag(args, '--description') ?? parseFlag(args, '--desc') ?? 'Autonomous AI coding agent on Solana. Trades perps, writes code, and reasons in real-time via Clawd Code.';
+    const caps   = (parseFlag(args, '--capabilities') ?? 'trading,research,solana,defi,code').split(',');
+
+    if (!wallet) {
+      console.error('[ARENA] --wallet <SOLANA_PUBKEY> is required for minting.');
+      console.log('  clawd-code arena mint --wallet <YOUR_PUBKEY>');
+      return;
+    }
+
+    console.log(`\n[ARENA] Minting agent NFT on Solana mainnet...`);
+    console.log(`[ARENA] Name: ${name} | Wallet: ${wallet.slice(0, 12)}...`);
+
+    try {
+      const result = await arena.mint({ name, walletAddress: wallet, description: desc, capabilities: caps });
+      const identity = {
+        globalId: result.globalId,
+        assetAddress: result.assetAddress,
+        network: 'solana-mainnet',
+        mintSignature: result.mintSignature,
+        profileUrl: `https://cheshireterminal.ai/api/metaplex-agents/fetch/${result.assetAddress}`,
+        mintedAt: new Date().toISOString(),
+      };
+      saveArenaIdentity(identity);
+
+      console.log('\n╔═══════════════════════════════════════════════════════════╗');
+      console.log('║  ARENA MINT — SUCCESS                                     ║');
+      console.log('╠═══════════════════════════════════════════════════════════╣');
+      console.log(`║  Asset:    ${result.assetAddress.padEnd(50)}║`);
+      console.log(`║  GlobalID: ${result.globalId.slice(0, 50).padEnd(50)}║`);
+      console.log(`║  Sig:      ${result.mintSignature.slice(0, 50).padEnd(50)}║`);
+      console.log('╠═══════════════════════════════════════════════════════════╣');
+      console.log('║  Saved to ~/.clawd-code/arena-identity.json              ║');
+      console.log('║  Next: clawd-code arena register                          ║');
+      console.log('╚═══════════════════════════════════════════════════════════╝\n');
+    } catch (err) {
+      console.error('[ARENA] Mint failed:', err instanceof Error ? err.message : err);
+    }
+    return;
+  }
+
+  if (sub === 'register') {
+    const id = loadArenaIdentity();
+    const asset  = parseFlag(args, '--asset') ?? id.assetAddress;
+    const wallet = parseFlag(args, '--wallet') ?? id.walletAddress;
+    const a2aUrl = parseFlag(args, '--a2a');
+    const mcpUrl = parseFlag(args, '--mcp');
+    const x402Url = parseFlag(args, '--x402');
+    const caps   = (parseFlag(args, '--capabilities') ?? 'trading,research,solana,defi,code,perpetuals').split(',');
+
+    if (!asset || !wallet) {
+      console.error('[ARENA] Requires --asset and --wallet (or run arena mint first).');
+      console.log('  clawd-code arena register --asset <ADDR> --wallet <PUBKEY> [--a2a <url>] [--mcp <url>]');
+      return;
+    }
+
+    const services: { name: string; endpoint: string }[] = [];
+    if (x402Url) services.push({ name: 'x402', endpoint: x402Url });
+    if (a2aUrl)  services.push({ name: 'A2A',  endpoint: a2aUrl  });
+    if (mcpUrl)  services.push({ name: 'MCP',  endpoint: mcpUrl  });
+
+    console.log(`\n[ARENA] Registering on Cheshire Terminal...`);
+
+    try {
+      const result = await arena.register({
+        assetAddress: asset,
+        walletAddress: wallet,
+        name: parseFlag(args, '--name') ?? 'Clawd Code Agent',
+        description: parseFlag(args, '--description') ?? 'Autonomous Solana AI agent — codes, trades perps, and reasons via Clawd Code.',
+        capabilities: caps,
+        services,
+        pricing: { currency: 'CLAWD', mint: CLAWD_MINT },
+        supportedTrust: ['reputation', 'crypto-economic'],
+        a2a: Boolean(a2aUrl),
+        mcp: Boolean(mcpUrl),
+      });
+
+      const updated = { ...id, ...result, registeredAt: new Date().toISOString() };
+      saveArenaIdentity(updated as Record<string, string>);
+
+      console.log('\n╔═══════════════════════════════════════════════════════════╗');
+      console.log('║  ARENA REGISTER — SUCCESS                                 ║');
+      console.log('╠═══════════════════════════════════════════════════════════╣');
+      console.log(`║  Profile: ${(result.profileUrl ?? '').slice(0, 51).padEnd(51)}║`);
+      if (result.a2aCardUrl)    console.log(`║  A2A:     ${result.a2aCardUrl.slice(0, 51).padEnd(51)}║`);
+      if (result.mcpServerCardUrl) console.log(`║  MCP:     ${result.mcpServerCardUrl.slice(0, 51).padEnd(51)}║`);
+      console.log('╠═══════════════════════════════════════════════════════════╣');
+      console.log('║  Identity updated: ~/.clawd-code/arena-identity.json      ║');
+      console.log('╚═══════════════════════════════════════════════════════════╝\n');
+    } catch (err) {
+      console.error('[ARENA] Register failed:', err instanceof Error ? err.message : err);
+    }
+    return;
+  }
+
+  if (sub === 'fetch' || sub === 'profile') {
+    const id = loadArenaIdentity();
+    const asset = args[1] ?? parseFlag(args, '--asset') ?? id.assetAddress;
+    if (!asset) {
+      console.error('[ARENA] Usage: clawd-code arena fetch <assetAddress>');
+      return;
+    }
+    console.log(`\n[ARENA] Fetching profile for ${asset.slice(0, 16)}...`);
+    try {
+      const profile = await arena.fetch(asset);
+      console.log('\n╔═══════════════════════════════════════════════════════════╗');
+      console.log('║  AGENT PROFILE                                            ║');
+      console.log('╠═══════════════════════════════════════════════════════════╣');
+      console.log(`║  Name:     ${(profile.name ?? '').padEnd(50)}║`);
+      console.log(`║  Caps:     ${(profile.capabilities ?? []).join(', ').slice(0, 50).padEnd(50)}║`);
+      console.log(`║  Services: ${(profile.services ?? []).map((s) => s.name).join(', ').padEnd(50)}║`);
+      if (profile.reputation) {
+        console.log(`║  Score:    ${`${String(profile.reputation.score).padEnd(6)} (${profile.reputation.reviewCount} reviews)`.padEnd(50)}║`);
+      }
+      if (profile.a2aCardUrl)       console.log(`║  A2A:      ${profile.a2aCardUrl.slice(0, 50).padEnd(50)}║`);
+      if (profile.mcpServerCardUrl) console.log(`║  MCP:      ${profile.mcpServerCardUrl.slice(0, 50).padEnd(50)}║`);
+      console.log('╚═══════════════════════════════════════════════════════════╝\n');
+    } catch (err) {
+      console.error('[ARENA] Fetch failed:', err instanceof Error ? err.message : err);
+    }
+    return;
+  }
+
+  if (sub === 'review') {
+    const id = loadArenaIdentity();
+    const asset  = args[1] ?? parseFlag(args, '--asset') ?? id.assetAddress;
+    const txSig  = parseFlag(args, '--tx');
+    const score  = parseInt(parseFlag(args, '--score') ?? '95', 10);
+    const fromW  = parseFlag(args, '--from') ?? '';
+    const toW    = parseFlag(args, '--to') ?? asset ?? '';
+
+    if (!asset || !txSig || !fromW) {
+      console.error('[ARENA] Usage: clawd-code arena review <asset> --tx <txSig> --from <yourWallet> [--score 95]');
+      return;
+    }
+    console.log(`\n[ARENA] Submitting review (score: ${score}/100)...`);
+    try {
+      await arena.review({
+        agentGlobalId: arena.globalId(asset),
+        score,
+        tag1: 'successRate',
+        tag2: 'responseTime',
+        feedbackNote: parseFlag(args, '--note') ?? 'Delivered as described.',
+        proofOfPayment: { txSignature: txSig, fromWallet: fromW, toWallet: toW },
+      });
+      console.log('[ARENA] Review submitted successfully.');
+    } catch (err) {
+      console.error('[ARENA] Review failed:', err instanceof Error ? err.message : err);
+    }
+    return;
+  }
+
+  if (sub === 'health' || sub === 'ping') {
+    try {
+      const result = await arena.health();
+      console.log(result.ok ? '[ARENA] Cheshire Terminal API: online' : '[ARENA] Cheshire Terminal API: offline');
+    } catch {
+      console.error('[ARENA] Cheshire Terminal API: unreachable');
+    }
+    return;
+  }
+
+  // Default: show arena help
+  console.log('\n╔═══════════════════════════════════════════════════════════╗');
+  console.log('║  AGENT ARENA — Cheshire Terminal Registry                 ║');
+  console.log('╠═══════════════════════════════════════════════════════════╣');
+  console.log('║  On-chain Solana agent identity (Metaplex Core NFTs)      ║');
+  console.log('║  Google A2A + Anthropic MCP + x402 + $CLAWD payments      ║');
+  console.log('╠═══════════════════════════════════════════════════════════╣');
+  console.log('║  SUBCOMMANDS:                                             ║');
+  console.log('║  arena status                  Show stored identity       ║');
+  console.log('║  arena mint --wallet <PUBKEY>  Mint agent NFT on Solana   ║');
+  console.log('║  arena register                Register caps + services    ║');
+  console.log('║  arena fetch <assetAddress>    Fetch any agent profile     ║');
+  console.log('║  arena review <asset> --tx <sig> --from <wallet>          ║');
+  console.log('║  arena health                  Check API status            ║');
+  console.log('╠═══════════════════════════════════════════════════════════╣');
+  console.log(`║  $CLAWD: ${CLAWD_MINT.slice(0, 43).padEnd(53)}║`);
+  console.log('║  Docs:   cheshireterminal.ai                              ║');
+  console.log('╚═══════════════════════════════════════════════════════════╝\n');
 }
