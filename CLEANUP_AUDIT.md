@@ -148,6 +148,42 @@ This makes `m` a strong duplicate candidate, but not a deletion target without e
 
 Do not delete `cheshire-terminal` as a simple duplicate of root. It needs a canonical-source decision first.
 
+## Canonical Copy Decision Checklist
+
+Use this before approving deletion of any copied project directory such as `m`, `cheshire-terminal`, `staking`, `magicblock-gacha`, or `dynamic-bonding-curve-main`.
+
+1. Confirm whether the directory is a nested git repository:
+
+```sh
+find <path> -maxdepth 1 -name .git -print
+```
+
+2. Confirm whether it has uncommitted changes:
+
+```sh
+git -C <path> status --short
+```
+
+3. Confirm whether the root project references that path:
+
+```sh
+rg --fixed-strings '<path>' --glob '!node_modules/**' --glob '!**/node_modules/**' .
+```
+
+4. Compare it against the intended canonical copy, excluding generated folders:
+
+```sh
+diff -qr -x node_modules -x target -x .git -x dist -x .vercel <path> <canonical-path>
+```
+
+5. Only approve deletion if the canonical copy is known and the directory is not needed as a checkpoint, vendor source, local fork, or deployment source.
+
+Current evidence:
+
+- `m` is the strongest duplicate-copy candidate relative to `cheshire-terminal`, but at least `scripts/pay.sh` differs.
+- `cheshire-terminal` is not a simple duplicate of root.
+- `staking`, `magicblock-gacha`, and `dynamic-bonding-curve-main` are project/source directories, not generated cleanup targets.
+
 ## Approval Sets
 
 Recommended first pass:
@@ -229,3 +265,55 @@ Approved: remove project copy dynamic-bonding-curve-main
 ```
 
 Dependency removals should be approved separately package-by-package after a build/typecheck verification plan is agreed.
+
+## Dependency Removal Verification Plan
+
+Use this only after approving package-level cleanup. Do not batch-remove all 16 candidates at once.
+
+For each candidate package:
+
+1. Re-run the repeatable dependency audit:
+
+```sh
+node scripts/dependency-audit.mjs --summary
+```
+
+2. Search for exact source/config references outside manifests:
+
+```sh
+rg --fixed-strings '<package-name>' --glob '!node_modules/**' --glob '!**/node_modules/**' --glob '!target/**' --glob '!**/target/**'
+```
+
+3. Remove exactly one approved package from `package.json`.
+
+4. Update the lockfile using the project package manager (`packageManager` is `pnpm@10.4.1`):
+
+```sh
+pnpm install
+```
+
+5. Run the minimum verification gates:
+
+```sh
+pnpm run check
+pnpm run build
+```
+
+6. If either gate fails, restore that package and lockfile change before trying another candidate.
+
+Recommended first dependency candidates to verify, because current source evidence is strongest:
+
+- `@fal-ai/client`: FAL route uses raw HTTP `fetch`.
+- `connect-pg-simple`: current session middleware uses `connect-redis`.
+- `memorystore`: no current source/config reference found.
+- `passport`: no current source/config reference found.
+- `passport-local`: no current source/config reference found.
+- `zod-validation-error`: no current source/config reference found.
+
+Candidates requiring more caution:
+
+- `@mui/material`, `@emotion/react`, `@emotion/styled`: no direct app import found, but `@mui/x-charts` may rely on MUI/Emotion peer dependencies.
+- `bufferutil`: optional dependency for `ws`; removing may be safe but can affect runtime performance or native optional install behavior.
+- `@anthropic-ai/sdk`: no package import found, but Anthropic model/provider configuration exists.
+- `@better-auth/core`, `@better-auth/sso`: no direct app import found, but Better Auth plugins may depend on them indirectly.
+- `@jridgewell/trace-mapping`, `stream-browserify`, `@replit/object-storage`: verify lockfile and build impact before removal.
