@@ -35,7 +35,7 @@ node_modules
 !.env.example
 !.env.template
 !.env.sample
-client_secret_2_1013652097839-o9prcoaccqaet6akkqb4regfgffo9bsm.apps.googleusercontent.com
+
 # Private keys / certs / wallets
 *.pem
 *.key
