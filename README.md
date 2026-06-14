@@ -367,21 +367,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`0a2892b3`](../../commit/0a2892b3) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
-| 🥈 | [`501e9d05`](../../commit/501e9d05) | afsfas | solizardking | Jun 14 |
-| 🥉 | [`98bf04cf`](../../commit/98bf04cf) | fasfsa | solizardking | Jun 14 |
-| 4️⃣ | [`2df3aba4`](../../commit/2df3aba4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| 5️⃣ | [`e70e1396`](../../commit/e70e1396) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
-| 6️⃣ | [`44942e18`](../../commit/44942e18) | afsdfsa | solizardking | Jun 14 |
-| 7️⃣ | [`fde87d21`](../../commit/fde87d21) | fasafsdsad | solizardking | Jun 14 |
-| 8️⃣ | [`ebc2f3c4`](../../commit/ebc2f3c4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| 9️⃣ | [`6f67fb37`](../../commit/6f67fb37) | afsdfsdadfs | solizardking | Jun 14 |
-| 🔟 | [`6bc0add9`](../../commit/6bc0add9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| 🥇 | [`3de9a0b9`](../../commit/3de9a0b9) | fadsfdsa | solizardking | Jun 14 |
+| 🥈 | [`544a6309`](../../commit/544a6309) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| 🥉 | [`0a2892b3`](../../commit/0a2892b3) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
+| 4️⃣ | [`501e9d05`](../../commit/501e9d05) | afsfas | solizardking | Jun 14 |
+| 5️⃣ | [`98bf04cf`](../../commit/98bf04cf) | fasfsa | solizardking | Jun 14 |
+| 6️⃣ | [`2df3aba4`](../../commit/2df3aba4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| 7️⃣ | [`e70e1396`](../../commit/e70e1396) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 14 |
+| 8️⃣ | [`44942e18`](../../commit/44942e18) | afsdfsa | solizardking | Jun 14 |
+| 9️⃣ | [`fde87d21`](../../commit/fde87d21) | fasafsdsad | solizardking | Jun 14 |
+| 🔟 | [`ebc2f3c4`](../../commit/ebc2f3c4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
+| · | [`6f67fb37`](../../commit/6f67fb37) | afsdfsdadfs | solizardking | Jun 14 |
+| · | [`6bc0add9`](../../commit/6bc0add9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
 | · | [`4620f7f1`](../../commit/4620f7f1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
 | · | [`427d3b39`](../../commit/427d3b39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
 | · | [`485b2dcb`](../../commit/485b2dcb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| · | [`578e6ecd`](../../commit/578e6ecd) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 14 |
-| · | [`79478e7c`](../../commit/79478e7c) | fsf | solizardking | Jun 13 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
