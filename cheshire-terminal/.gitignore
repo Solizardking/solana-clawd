@@ -34,6 +34,7 @@ target/
 .env.*
 .env.local
 .env.*.local
+.envrc
 !.env.example
 !.env.template
 !.env.sample
@@ -156,4 +157,3 @@ coverage/
 tmp/
 temp/
 .vercel
-.env*

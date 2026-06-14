@@ -1,0 +1,28 @@
+{
+  "common": {
+    "connectWallet": "Conectar Billetera",
+    "createToken": "Crear Token",
+    "yourLaunches": "Tus Lanzamientos",
+    "launchToken": "Lanzar Token",
+    "launching": "Lanzando...",
+    "viewChart": "Ver Gráfico",
+    "noTokensLaunched": "Aún no hay tokens lanzados. ¡Crea tu primer token para comenzar!"
+  },
+  "token": {
+    "name": "Nombre",
+    "symbol": "Símbolo",
+    "description": "Descripción",
+    "artPrompt": "Prompt de arte",
+    "price": "Precio",
+    "volume": "Volumen 24h"
+  },
+  "trending": {
+    "title": "Tokens Tendencia",
+    "viewAll": "Ver Todos"
+  },
+  "launched": {
+    "title": "Tokens Lanzados Recientemente",
+    "viewAll": "Ver Todos",
+    "noTokens": "Aún no se han lanzado tokens. ¡Sé el primero en lanzar!"
+  }
+}

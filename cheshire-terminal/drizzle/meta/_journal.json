@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1776228431503,
+      "tag": "0000_aspiring_blacklash",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776277520000,
+      "tag": "0006_add_telegram_link_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776526124226,
+      "tag": "0002_previous_wolverine",
+      "breakpoints": true
+    }
+  ]
+}

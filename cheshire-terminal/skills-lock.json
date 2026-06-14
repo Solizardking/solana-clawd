@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "skills": {
+    "convex": {
+      "source": "get-convex/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/convex/SKILL.md",
+      "computedHash": "c5f3622c64ef550aac27d1dbc041f0c7c40d9119863c9fb8bac180b0498ee8ed"
+    },
+    "convex-create-component": {
+      "source": "get-convex/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/convex-create-component/SKILL.md",
+      "computedHash": "25b6f56cc6afa4237aa191f5bfa5b86f68b70dc7f1195b86d027bd85346cff41"
+    },
+    "convex-migration-helper": {
+      "source": "get-convex/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/convex-migration-helper/SKILL.md",
+      "computedHash": "47ad936c1977eecca736211fe4efb171b53c412b49cffc42267095276a8df36d"
+    },
+    "convex-performance-audit": {
+      "source": "get-convex/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/convex-performance-audit/SKILL.md",
+      "computedHash": "d4f372ad6bed01b3a83983f5e8386017606e1bf8a97833c016af07f277157f96"
+    },
+    "convex-quickstart": {
+      "source": "get-convex/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/convex-quickstart/SKILL.md",
+      "computedHash": "54e5271d5d613cc4c0068baa250613b5abb6e4533df1e67adc26d2e0c7d68ded"
+    },
+    "convex-setup-auth": {
+      "source": "get-convex/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/convex-setup-auth/SKILL.md",
+      "computedHash": "b1a940758751c5b2fdc6ced105b19927a1655f0c1d4bd2fd5536dc3264202c00"
+    },
+    "dflow-kalshi-market-data": {
+      "source": "DFlowProtocol/dflow-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dflow-kalshi-market-data/SKILL.md",
+      "computedHash": "a96fa817c5b9d99655859c9082ea8feb400ba9bdd08dc707d1d63c0fc7de1cfe"
+    },
+    "dflow-kalshi-market-scanner": {
+      "source": "DFlowProtocol/dflow-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dflow-kalshi-market-scanner/SKILL.md",
+      "computedHash": "940a5a7ac9ca40fb81879d4eab0630ad19a0844c0b757375da0eccff21fca099"
+    },
+    "dflow-kalshi-portfolio": {
+      "source": "DFlowProtocol/dflow-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dflow-kalshi-portfolio/SKILL.md",
+      "computedHash": "abd60b9fc3778102aa753f3dc0ada4d33484b99c5db7c23bdf717de294f855d0"
+    },
+    "dflow-kalshi-trading": {
+      "source": "DFlowProtocol/dflow-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dflow-kalshi-trading/SKILL.md",
+      "computedHash": "02e70568d24c37e5677257ed2ddb2dbc3cbfed0671d8f17fb221a0b43e1df0a5"
+    },
+    "dflow-platform-fees": {
+      "source": "DFlowProtocol/dflow-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dflow-platform-fees/SKILL.md",
+      "computedHash": "420a2e6fe8b07152f56e0591948ae457fe194f293290c633d81891d4ec69eb37"
+    },
+    "dflow-proof-kyc": {
+      "source": "DFlowProtocol/dflow-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dflow-proof-kyc/SKILL.md",
+      "computedHash": "0cf3953a50539a230771bc29e70c6b22bf6e836758506e94e134cd3ce25b8f78"
+    },
+    "dflow-spot-trading": {
+      "source": "DFlowProtocol/dflow-skills",
+      "sourceType": "github",
+      "skillPath": "skills/dflow-spot-trading/SKILL.md",
+      "computedHash": "3296ce5b34687c4c56880d9ffc99690a1c54aa0ce8655372ea990264628e81c2"
+    },
+    "magicblock": {
+      "source": "magicblock-labs/magicblock-dev-skill",
+      "sourceType": "github",
+      "skillPath": "skill/SKILL.md",
+      "computedHash": "9ff608c3f6c82d2e8203c3ba7d44b1a19ad51ee625070e812718cd3292d6f549"
+    },
+    "pay": {
+      "source": "solana-foundation/pay",
+      "sourceType": "github",
+      "skillPath": "skills/pay/SKILL.md",
+      "computedHash": "ab360f7398ee4c1a1f404cb4795921a49855e72e356099f91a7390b3d27f71a3"
+    }
+  }
+}

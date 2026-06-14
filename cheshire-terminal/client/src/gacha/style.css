@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+/* ── Global keyframes ──────────────────────────────────────────────────── */
+
+@keyframes bg-drift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes bubble-rise {
+  0%   { transform: translateY(0) scale(1);   opacity: 0.6; }
+  50%  { transform: translateY(-40vh) scale(1.1); opacity: 0.3; }
+  100% { transform: translateY(-90vh) scale(0.8); opacity: 0; }
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes flicker {
+  0%, 95%, 100% { opacity: 1; }
+  96%            { opacity: 0.7; }
+  97%            { opacity: 1; }
+  98%            { opacity: 0.6; }
+}
+
+html,
+body,
+#root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  /* Animated multi-stop gradient */
+  background:
+    radial-gradient(ellipse at 68% 38%, rgba(255, 55, 35, 0.28), transparent 38%),
+    radial-gradient(ellipse at 28% 62%, rgba(42, 212, 255, 0.18), transparent 36%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 55, 35, 0.14), transparent 50%),
+    linear-gradient(160deg, #050e18 0%, #0d1f28 45%, #1a0608 100%);
+
+  animation: flicker 8s infinite;
+}
+
+/* ── Animated bubble particles ─────────────────────────────────────────── */
+
+#root::before,
+#root::after {
+  content: '🦞';
+  position: fixed;
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  animation: bubble-rise 12s ease-in infinite;
+}
+
+#root::before {
+  left: 12%;
+  bottom: -40px;
+  animation-delay: 0s;
+  animation-duration: 14s;
+}
+
+#root::after {
+  left: 82%;
+  bottom: -40px;
+  animation-delay: 6s;
+  animation-duration: 11s;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 14, 24, 0.92), rgba(5, 14, 24, 0.06) 50%, rgba(5, 14, 24, 0.75)),
+    linear-gradient(180deg, rgba(5, 14, 24, 0.15), rgba(5, 14, 24, 0.82));
+}
+
+/* Scanline sweep */
+#overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(transparent, rgba(114, 246, 255, 0.06), transparent);
+  animation: scanline 6s linear infinite;
+  pointer-events: none;
+}
+
+canvas {
+  cursor: grab;
+}
+
+canvas:active {
+  cursor: grabbing;
+}

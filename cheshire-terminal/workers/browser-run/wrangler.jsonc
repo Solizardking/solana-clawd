@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "cheshire-browser-run",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-13",
+  "compatibility_flags": ["nodejs_compat"],
+  "browser": {
+    "binding": "BROWSER"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "BROWSER_CACHE",
+      "id": "21413a901c2a4898b349ef15260c92ea",
+      "preview_id": "replace-with-preview-kv-id"
+    }
+  ],
+  "vars": {
+    "CACHE_TTL_SECONDS": "86400",
+    "MAX_NAVIGATION_MS": "30000"
+  }
+}
