@@ -1,7 +1,6 @@
 /**
- * Clawd Code — Grok Model Registry
- * xAI Grok model definitions, pricing, and capabilities
- * (Adapted from clawd-grok/src/grok/models.ts)
+ * Clawd Code — Model Registry
+ * xAI Grok + Anthropic Claude + DeepSeek model definitions
  */
 
 export interface ModelDefinition {
@@ -17,11 +16,53 @@ export interface ModelDefinition {
   supportsClientTools?: boolean;
   reasoningEfforts?: string[];
   aliases?: string[];
+  provider?: 'xai' | 'anthropic' | 'deepseek' | 'openrouter';
+  streaming?: boolean;
 }
 
 export const DEFAULT_MODEL = "grok-4.3";
 
 export const MODELS: ModelDefinition[] = [
+  // ── Anthropic Claude ──────────────────────────────────────────────────
+  {
+    id: "claude-sonnet-4-6",
+    name: "Claude Sonnet 4.6",
+    description: "Anthropic flagship — best for code, reasoning, and agent tasks",
+    contextWindow: 200_000,
+    inputPrice: 3.0,
+    outputPrice: 15.0,
+    reasoning: true,
+    supportsClientTools: true,
+    streaming: true,
+    provider: 'anthropic',
+    aliases: ["sonnet", "claude-sonnet", "sonnet-4-6"],
+  },
+  {
+    id: "claude-opus-4-8",
+    name: "Claude Opus 4.8",
+    description: "Anthropic most capable — deep reasoning, complex synthesis",
+    contextWindow: 200_000,
+    inputPrice: 15.0,
+    outputPrice: 75.0,
+    reasoning: true,
+    supportsClientTools: true,
+    streaming: true,
+    provider: 'anthropic',
+    aliases: ["opus", "claude-opus", "opus-4-8"],
+  },
+  {
+    id: "claude-haiku-4-5-20251001",
+    name: "Claude Haiku 4.5",
+    description: "Anthropic fastest model — low latency, high throughput",
+    contextWindow: 200_000,
+    inputPrice: 0.8,
+    outputPrice: 4.0,
+    supportsClientTools: true,
+    streaming: true,
+    provider: 'anthropic',
+    aliases: ["haiku", "claude-haiku", "haiku-4-5"],
+  },
+  // ── DeepSeek ──────────────────────────────────────────────────────────
   {
     id: "deepseek-v4-pro",
     name: "DeepSeek V4 Pro",
@@ -166,19 +207,36 @@ export function isResponsesOnlyModel(id: string): boolean {
 }
 
 export function printModelsTable(): void {
-  console.log('\n╔════════════════════════════════════════════════════════════════════╗');
-  console.log('║  CLAWD CODE — GROK MODEL REGISTRY                                    ║');
-  console.log('╠════════════════════════════════════════════════════════════════════╣');
-  console.log('║  ID                          │  Ctx     │  $/1M in/out  │  Mode  ║');
-  console.log('╠════════════════════════════════════════════════════════════════════╣');
-  
-  for (const m of MODELS) {
-    const ctx = (m.contextWindow / 1000).toFixed(0) + 'K';
-    const price = `$${m.inputPrice}/$${m.outputPrice}`;
-    const mode = m.multiAgent ? 'multi' : (m.reasoning ? 'reason' : 'fast');
-    console.log(`║  ${(m.id.padEnd(28))} │  ${ctx.padStart(7)} │  ${price.padStart(12)}  │  ${mode.padEnd(5)}║`);
+  const providers = ['anthropic', 'xai', 'deepseek', 'openrouter'] as const;
+  const labels: Record<string, string> = {
+    anthropic: 'Anthropic Claude',
+    xai: 'xAI Grok',
+    deepseek: 'DeepSeek',
+    openrouter: 'OpenRouter',
+  };
+
+  console.log('\n╔══════════════════════════════════════════════════════════════════════════╗');
+  console.log('║  CLAWD CODE — MODEL REGISTRY                                             ║');
+  console.log('╠══════════════════════════════════════════════════════════════════════════╣');
+  console.log('║  ID                           │  Provider   │  Ctx   │  $/1M in/out  ║');
+  console.log('╠══════════════════════════════════════════════════════════════════════════╣');
+
+  for (const provider of providers) {
+    const group = MODELS.filter((m) => (m.provider ?? 'xai') === provider);
+    if (group.length === 0) continue;
+    console.log(`║  ── ${labels[provider].padEnd(67)}║`);
+    for (const m of group) {
+      const ctx = m.contextWindow >= 1_000_000
+        ? `${(m.contextWindow / 1_000_000).toFixed(0)}M`
+        : `${(m.contextWindow / 1000).toFixed(0)}K`;
+      const price = `$${m.inputPrice}/$${m.outputPrice}`;
+      const stream = m.streaming ? '~' : ' ';
+      console.log(`║  ${stream}${(m.id.padEnd(29))} │  ${(provider.padEnd(10))} │  ${ctx.padStart(5)} │  ${price.padStart(12)}  ║`);
+    }
   }
-  console.log('╚════════════════════════════════════════════════════════════════════╝');
-  console.log(`\nDefault model: ${DEFAULT_MODEL}`);
-  console.log('Set CLAWD_MODEL=<id> in ~/.clawd-code/.env to override.');
+
+  console.log('╚══════════════════════════════════════════════════════════════════════════╝');
+  console.log(`  ~ = streaming supported`);
+  console.log(`\n  Default: ${DEFAULT_MODEL}  (CLAWD_MODEL=<id> to override)`);
+  console.log('  Provider env: XAI_API_KEY | ANTHROPIC_API_KEY | DEEPSEEK_API_KEY | OPENROUTER_API_KEY');
 }
