@@ -143,7 +143,7 @@ step "Checking prerequisites"
 
 command -v node &>/dev/null || die "Node.js not found. Install v20+ from https://nodejs.org"
 NODE_MAJOR=$(node --version | sed 's/v//' | cut -d. -f1)
-[ "${NODE_MAJOR}" -ge 20 ] || die "Node.js v20+ required (found v${NODE_MAJOR})"
+[ "${NODE_MAJOR}" -ge 20 ] && [ "${NODE_MAJOR}" -lt 25 ] || die "Node.js v20-24 required (found $(node --version))"
 ok "Node.js $(node --version)"
 
 command -v npm &>/dev/null || die "npm not found"

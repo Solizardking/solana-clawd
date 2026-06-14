@@ -46,7 +46,7 @@ printf "${RESET}"
 step "Checking prerequisites"
 command -v node >/dev/null 2>&1 || die "Node.js v20+ is required"
 NODE_MAJOR="$(node --version | sed 's/v//' | cut -d. -f1)"
-[ "${NODE_MAJOR}" -ge 20 ] || die "Node.js v20+ required (found $(node --version))"
+[ "${NODE_MAJOR}" -ge 20 ] && [ "${NODE_MAJOR}" -lt 25 ] || die "Node.js v20-24 required (found $(node --version))"
 ok "Node.js $(node --version)"
 
 command -v npm >/dev/null 2>&1 || die "npm is required"
