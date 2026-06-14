@@ -68,11 +68,13 @@ Runtime configuration lives in `~/.clawd-code/.env`. Start from
 
 | Variable | Description | Default |
 | --- | --- | --- |
-| `CLAWD_PROVIDER` | AI provider: `xai`, `openrouter`, or `deepseek` | `xai` |
+| `CLAWD_PROVIDER` | AI provider: `xai`, `anthropic`, `openrouter`, or `deepseek` | `xai` |
 | `CLAWD_MODEL` | Model used by the selected provider | `grok-4.20-multi-agent` |
 | `XAI_API_KEY` | xAI API key for Grok modes | empty |
+| `ANTHROPIC_API_KEY` | Anthropic API key for Claude models (streaming) | empty |
 | `DEEPSEEK_API_KEY` | DeepSeek API key | empty |
-| `OPENROUTER_API_KEY` | OpenRouter API key | empty |
+| `OPENROUTER_API_KEY` | OpenRouter API key (free models supported) | empty |
+| `CLAWD_STREAM` | Enable streaming output by default | `false` |
 | `SOLANA_RPC_URL` | Solana RPC endpoint | mainnet-beta |
 | `HELIUS_API_KEY` | Optional Helius key for RPC/DAS workflows | empty |
 | `VULCAN_MCP_URL` | Vulcan MCP server URL | `http://localhost:3001` |
@@ -109,6 +111,94 @@ PERPS_SIM_ONLY=false
 The trade mode also applies local preflight constraints such as allowed symbols,
 maximum notional, maximum leverage, and maximum spread. Review the code and your
 configuration before enabling live execution.
+
+## AI Providers
+
+Clawd Code supports four AI providers with unified streaming:
+
+| Provider | Alias | Models | Streaming |
+| --- | --- | --- | --- |
+| `xai` | *(default)* | `grok-4.3`, `grok-4.20-multi-agent` | blocking |
+| `anthropic` | `claude`, `ant` | `claude-sonnet-4-6`, `claude-opus-4-8`, `claude-haiku-4-5-20251001` | native SSE |
+| `openrouter` | `or` | `nex-agi/nex-n2-pro:free` + any OR model | native SSE |
+| `deepseek` | `ds` | `deepseek-v4-pro`, `deepseek-v4-flash` | blocking |
+
+```bash
+# Stream code generation with Claude
+clawd-code code --provider anthropic --stream "Build an Anchor staking program"
+
+# Use free OpenRouter model
+clawd-code code --provider openrouter "Review this TypeScript"
+
+# Switch provider for session
+clawd-code /provider anthropic
+
+# List all models
+clawd-code /models
+```
+
+## Interactive REPL
+
+```bash
+clawd-code repl
+```
+
+An interactive multi-turn conversation session. Dot commands:
+
+| Command | Action |
+| --- | --- |
+| `.mode code\|research\|trade\|general` | Switch conversation mode |
+| `.provider xai\|anthropic\|openrouter\|deepseek` | Switch AI provider |
+| `.model <id>` | Switch model mid-session |
+| `.clear` | Clear message history |
+| `.history` | Print conversation history |
+| `.help` | Show all dot commands |
+| `.exit` / `.quit` | End session |
+
+## Agent Arena
+
+Clawd Code integrates the [Cheshire Terminal](https://cheshireterminal.ai) Agent Arena — on-chain AI agent identity via Metaplex Core NFTs on Solana with ATOM reputation, Google A2A + Anthropic MCP discovery cards, and $CLAWD payment verification.
+
+```bash
+# Check API health
+clawd-code arena health
+
+# Mint your agent NFT (costs ~0.01 SOL in tx fees)
+clawd-code arena mint --wallet <YOUR_SOLANA_PUBKEY> --name "My Agent"
+
+# Register capabilities, A2A and MCP cards
+clawd-code arena register \
+  --wallet <YOUR_PUBKEY> \
+  --a2a https://my-agent.com/a2a \
+  --mcp https://my-agent.com/mcp \
+  --capabilities trading,research,solana
+
+# Fetch any agent's profile
+clawd-code arena fetch <assetAddress>
+
+# Submit a verified review (requires $CLAWD payment proof)
+clawd-code arena review <assetAddress> \
+  --tx <txSignature> \
+  --from <yourWallet> \
+  --score 95
+
+# View stored on-chain identity
+clawd-code arena status
+```
+
+| Subcommand | Description |
+| --- | --- |
+| `arena health` / `arena ping` | Check Cheshire Terminal API health |
+| `arena mint` | Mint agent NFT on Solana mainnet |
+| `arena register` | Register capabilities + A2A/MCP discovery cards |
+| `arena fetch <addr>` | Fetch any agent's on-chain profile |
+| `arena review <addr>` | Submit a verified ATOM reputation review |
+| `arena status` / `arena identity` | Show your stored on-chain identity |
+
+After minting, identity is saved to `~/.clawd-code/arena-identity.json` with `0600`
+permissions. Identity scheme: `svm://solana-mainnet/<metaplex-core-asset-address>`.
+
+$CLAWD mint: `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
 
 ## Development
 
