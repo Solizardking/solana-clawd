@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "helius": {
+      "command": "npx",
+      "args": ["helius-mcp@latest"]
+    },
+    "clawd-code": {
+      "command": "npx",
+      "args": ["@solana-clawd/clawd-code@latest"]
+    },
+    "phoenix-rise": {
+      "type": "http",
+      "url": "https://api.phoenix.gg/enclave"
+    },
+    "DFlow": {
+      "type": "http",
+      "url": "https://pond.dflow.net/mcp"
+    }
+  }
+}
