@@ -240,6 +240,7 @@
     "pump:readiness:serve": "cd clawd-pump && ./scripts/readiness_json.sh serve",
     "pump:readiness:autobuy": "cd clawd-pump && ./scripts/readiness_json.sh autobuy",
     "pump:smoke": "cd clawd-pump && ./scripts/smoke_live_gates.sh",
+    "pump:http:smoke": "cd clawd-pump && ./scripts/smoke_http_control.sh",
     "pump:wallet": "cd clawd-pump && ./scripts/funding_address.sh",
     "pump:wallet:funding": "cd clawd-pump && ./scripts/wallet_balance_check.sh",
     "pump:preflight": "cd clawd-pump && ./scripts/preflight.sh",

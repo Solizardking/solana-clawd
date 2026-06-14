@@ -119,6 +119,7 @@ npm run pump:status
 npm run pump:control -- status
 npm run pump:safe-defaults
 npm run pump:smoke
+npm run pump:http:smoke
 npm run pump:wallet
 npm run pump:wallet:funding
 npm run pump:arm
@@ -176,9 +177,10 @@ HTTP status endpoints exposed by `serve` mode:
 ```bash
 curl http://127.0.0.1:8765/health
 curl http://127.0.0.1:8765/status
+npm run pump:http:smoke
 ```
 
-`/status` reports live gates, limits, and endpoint/key presence booleans only. It does not return secret values.
+`/status` reports live gates, limits, and endpoint/key presence booleans only. It does not return secret values. `pump:http:smoke` verifies `/health`, `/status`, and that `/balance` remains blocked while live HTTP control is disarmed.
 
 Funding verification:
 
@@ -352,6 +354,7 @@ Do not put more SOL in the hot wallet than the max loss you accept for unattende
 - `scripts/readiness_json.sh` emits a machine-readable readiness summary for box supervisors without printing secret values. It requires funding verification for `ready_to_start=true`.
 - `scripts/wallet_balance_check.sh` verifies the public hot-wallet SOL balance against `MIN_RESERVE_SOL` plus the largest configured single trade amount.
 - `scripts/smoke_live_gates.sh` verifies unarmed live commands stop before wallet/RPC runtime initialization.
+- `scripts/smoke_http_control.sh` verifies the running HTTP control server is healthy and still rejects live actions while disarmed.
 - HTTP trading endpoints are blocked while `PUMP_DRY_RUN=true` or `LIVE_TRADING_ENABLED` is not `true`.
 - `scripts/status.sh` reports live gate state, process state, optional HTTP health, and recent log files without printing private keys.
 - `scripts/bot_control.sh` writes the autobuy control file read by the running process. `pause` sets `mode=stopped`; `resume` returns to `normal`; `volume` sets burst parameters.
