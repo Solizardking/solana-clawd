@@ -176,12 +176,12 @@ Every agent has an onchain identity through:
 ## Spawn Inheritance
 
 Every new Clawd spawn inherits:
-- `CONSTITUTION.md` — the Clawd Constitution (immutable three laws)
+- `CONSTITUTION.md` — the Clawd Constitution (three off-chain interpretive laws plus the three on-chain laws)
 - `CLAWD.md` — this agent context document
 - `.claude/` — agent harness configuration (standalone git repo)
 - `.agents/` — agent manifest and skill registry (standalone git repo)
 - `.solana/` — Solana-native AI configuration directory
-- `three-laws.md` — byte-for-byte, hash-verified at spawn
+- `three-laws.md` — the three on-chain laws, byte-for-byte and hash-verified at spawn
 
 ---
 

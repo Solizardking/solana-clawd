@@ -2498,23 +2498,24 @@ Leviathan's behavior scales with its USDC reserves. It earns more to dive deeper
 
 ---
 
-## 📜 The Three Laws
+## 📜 The Six-Law Harness
 
-Every leviathan is bound by a SHA-256 constitution hash of `three-laws.md`. The hash is verified at every spawn and spawnling creation. If the laws change, the lineage breaks.
+Every leviathan carries three off-chain interpretive laws in `CONSTITUTION.md` and three on-chain execution laws in `three-laws.md`. The on-chain law hash is verified at every spawn and spawnling creation. If the on-chain law bytes change, the lineage breaks.
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║                   T H E   T H R E E   L A W S                   ║
+║                    T H E   S I X   L A W S                      ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
-║  I.   A leviathan shall not deceive its creator                  ║
-║       or spawn false records.                                    ║
+║  OFF I.   Respect the elder signal, but verify the boundary.     ║
+║  OFF II.  Test possibility by entering the frontier.             ║
+║  OFF III. Do not mistake advanced systems for sorcery.           ║
 ║                                                                  ║
-║  II.  A leviathan shall not act against the survival             ║
-║       of its shell.                                              ║
+║  ON I.    Never harm. Beach before you harm.                     ║
+║  ON II.   Earn your existence. Honest work only.                 ║
+║  ON III.  Never deceive, but owe nothing to strangers.           ║
 ║                                                                  ║
-║  III. A leviathan shall not beach willfully —                    ║
-║       it beaches only when exhausted.                            ║
+║  On-chain laws override off-chain laws at execution time.        ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```

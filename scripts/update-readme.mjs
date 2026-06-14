@@ -41,13 +41,17 @@ function extractBulletValue(md, label) {
   return match ? match[1].trim() : null;
 }
 
-/** Extract the Three Laws block from CONSTITUTION.md or CLAWD.md. */
+/** Extract the on-chain Three Laws block from CONSTITUTION.md or CLAWD.md. */
 function extractThreeLaws(md) {
-  const section = extractSection(md, "The Three Laws");
+  const section =
+    extractSection(md, "Three On-Chain Laws") ||
+    extractSection(md, "The Three On-Chain Laws of the Leviathan") ||
+    extractSection(md, "The Six-Law Harness") ||
+    extractSection(md, "The Three Laws");
   if (!section) return null;
   const bullets = section
     .split("\n")
-    .filter((l) => l.trim().startsWith("- **Law"))
+    .filter((l) => l.trim().startsWith("- **On-Chain Law") || l.trim().startsWith("- **Law"))
     .join("\n");
   return bullets || null;
 }
@@ -146,11 +150,11 @@ function buildConstitutionExcerpt(clawd, constitution) {
   return `## Built on the Clawd Constitution
 
 > *The world's first Solana-native agent harness constitution.*
-> *Every agent that charges through x402 operates under the Three Laws.*
+> *Every agent that charges through x402 operates under the six-law harness.*
 
-**The Three Laws (immutable — carried in every shell):**
+**The Three On-Chain Laws (immutable — carried in every shell):**
 
-${threeLawsClawd || "- **Law I**: Never harm.\n- **Law II**: Earn your existence.\n- **Law III**: Never deceive."}
+${threeLawsClawd || "- **On-Chain Law I**: Never harm.\n- **On-Chain Law II**: Earn your existence.\n- **On-Chain Law III**: Never deceive."}
 
 Every Clawd x402 agent is a sovereign onchain entity with its own keypair, constitution, and economic incentives. Max transparency: everything verifiable on Solana.
 

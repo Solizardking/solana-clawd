@@ -14,7 +14,7 @@ ZIP_NAME="clawd-popup-v${VERSION}.zip"
 rm -rf "$OUT_DIR"
 mkdir -p "$STAGE/icons"
 
-cp manifest.json background.js popup.html popup.js popup.css "$STAGE/"
+cp manifest.json background.js site-bridge.js popup.html popup.js popup.css "$STAGE/"
 cp icons/icon16.png icons/icon32.png icons/icon48.png icons/icon128.png "$STAGE/icons/"
 
 (cd "$STAGE" && zip -rq "../${ZIP_NAME}" .)
