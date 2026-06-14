@@ -15,8 +15,18 @@ import { createXaiClient } from '../xai.js';
 
 const CODE_SYSTEM = `You are Clawd Code. Ship production TypeScript/Solana code only. No prose. Just code with brief inline comments. Include imports, types, error handling. Format for .ts files.`;
 
+interface CodeConfig {
+  provider?: string;
+  model?: string;
+  stream?: boolean;
+  xaiApiKey?: string;
+  anthropicApiKey?: string;
+  deepSeekApiKey?: string;
+  deepSeekBaseUrl?: string;
+}
+
 export class CodeMode {
-  constructor(private config: any) {}
+  constructor(private config: CodeConfig) {}
 
   async run(args: string[]): Promise<void> {
     const command = args.filter((a) => !a.startsWith('--')).join(' ');
