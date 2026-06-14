@@ -42,3 +42,16 @@ export async function registerAgentIdentity(input: RegisterAgentIdentityInput) {
     signature: Buffer.from(result.signature).toString("base64")
   };
 }
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const live = process.argv.includes("--live");
+  const assetArg = process.argv.find((arg) => arg.startsWith("--asset="));
+  const endpointArg = process.argv.find((arg) => arg.startsWith("--endpoint="));
+  const didArg = process.argv.find((arg) => arg.startsWith("--did="));
+  const args = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
+  const agentId = args[0] ?? "svm-a2a-production-agent";
+  const endpoint = endpointArg?.split("=")[1] ?? "https://api.svm-a2a.ai";
+  const did = didArg?.split("=")[1];
+  const asset = assetArg?.split("=")[1];
+  console.log(JSON.stringify(await registerAgentIdentity({ agentId, endpoint, did, asset, live }), null, 2));
+}
