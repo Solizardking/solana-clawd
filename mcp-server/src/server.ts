@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { createServer as createHttpServer } from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { createServer as createHttpServer } from "node:http";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -22,7 +22,7 @@ export class SolanaWalletMCPServer {
 
     this.server = new Server(
       {
-        name: "pump-fun-mcp-server",
+        name: "solana-clawd-mcp-server",
         version: "1.0.0",
       },
       {

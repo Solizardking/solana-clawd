@@ -81,7 +81,7 @@ export class CodeMode {
         const client = createAnthropicClient(this.config.anthropicApiKey);
         if (!client) return this.fallbackCode(prompt, 'ANTHROPIC_API_KEY not set');
 
-        const model = isClaudeModel(this.config.model ?? '') ? this.config.model : DEFAULT_CLAUDE_MODEL;
+        const model = isClaudeModel(this.config.model ?? '') ? (this.config.model ?? DEFAULT_CLAUDE_MODEL) : DEFAULT_CLAUDE_MODEL;
         for await (const chunk of client.stream({
           model,
           system: CODE_SYSTEM,
@@ -133,7 +133,7 @@ export class CodeMode {
         const client = createAnthropicClient(this.config.anthropicApiKey);
         if (!client) return this.fallbackCode(prompt, 'ANTHROPIC_API_KEY not set');
 
-        const model = isClaudeModel(this.config.model ?? '') ? this.config.model : DEFAULT_CLAUDE_MODEL;
+        const model = isClaudeModel(this.config.model ?? '') ? (this.config.model ?? DEFAULT_CLAUDE_MODEL) : DEFAULT_CLAUDE_MODEL;
         console.log(`[CODE MODE] Generating with ${model}...`);
         const response = await client.chat({
           model,
@@ -149,7 +149,7 @@ export class CodeMode {
         if (!client) return this.fallbackCode(prompt, 'DEEPSEEK_API_KEY not set');
 
         const model = String(this.config.model ?? '').startsWith('deepseek-')
-          ? this.config.model
+          ? (this.config.model ?? 'deepseek-v4-pro')
           : 'deepseek-v4-pro';
         console.log(`[CODE MODE] Generating with ${model}...`);
         const response = await client.chat({

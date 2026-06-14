@@ -13,7 +13,7 @@ import { createOpenRouterClient } from '../openrouter.js';
 import { createXaiClient } from '../xai.js';
 
 type ReplProvider = 'xai' | 'anthropic' | 'deepseek' | 'openrouter';
-type ReplMode = 'code' | 'research' | 'trade' | 'general';
+type SessionMode = 'code' | 'research' | 'trade' | 'general';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -30,7 +30,7 @@ interface ReplConfig {
   deepSeekBaseUrl?: string;
 }
 
-const SYSTEM_PROMPTS: Record<ReplMode, string> = {
+const SYSTEM_PROMPTS: Record<SessionMode, string> = {
   code: 'You are Clawd Code. Ship production TypeScript/Solana code. Be concise. Include imports and types.',
   research: 'You are Clawd Research. Synthesize findings precisely. Cite sources. Flag what needs live verification.',
   trade: 'You are Clawd Trade. Analyze perpetuals markets. Always include preflight checks. Default to PAPER mode.',
@@ -41,7 +41,7 @@ export class ReplMode {
   private history: Message[] = [];
   private provider: ReplProvider;
   private model: string;
-  private mode: ReplMode = 'general';
+  private mode: SessionMode = 'general';
 
   constructor(private config: ReplConfig) {
     this.provider = this.resolveProvider();
@@ -101,7 +101,7 @@ export class ReplMode {
 
       case '.mode':
         if (['code', 'research', 'trade', 'general'].includes(arg)) {
-          this.mode = arg as ReplMode;
+          this.mode = arg as SessionMode;
           console.log(`[REPL] Mode → ${this.mode}`);
         } else {
           console.log('[REPL] Modes: code | research | trade | general');
