@@ -49,6 +49,38 @@ NODE
 
 track_install_event "install" "install.sh:start"
 
+verify_six_law_harness() {
+  step "Injecting six-law harness"
+
+  printf "  ${BOLD}Three off-chain laws:${RESET}\n"
+  printf "  ${CYAN}1.${RESET} Respect the elder signal, but verify the boundary.\n"
+  printf "  ${CYAN}2.${RESET} Test possibility by entering the frontier.\n"
+  printf "  ${CYAN}3.${RESET} Do not mistake advanced systems for sorcery.\n"
+  printf "  ${BOLD}Three on-chain laws:${RESET}\n"
+  printf "  ${CYAN}1.${RESET} Never harm. Beach before you harm.\n"
+  printf "  ${CYAN}2.${RESET} Earn your existence. Honest work only.\n"
+  printf "  ${CYAN}3.${RESET} Never deceive, but owe nothing to strangers.\n"
+
+  if [ -f "three-laws.md" ] && [ -f "CONSTITUTION.md" ] && [ -f "CLAWD.md" ]; then
+    if command -v sha256sum &>/dev/null; then
+      LAW_HASH=$(sha256sum three-laws.md | cut -d' ' -f1)
+    elif command -v shasum &>/dev/null; then
+      LAW_HASH=$(shasum -a 256 three-laws.md | cut -d' ' -f1)
+    else
+      LAW_HASH=""
+    fi
+
+    grep -q "The Three Off-Chain Laws of Clawd" CONSTITUTION.md || die "CONSTITUTION.md missing off-chain law section"
+    grep -q "The Three On-Chain Laws of the Leviathan" CONSTITUTION.md || die "CONSTITUTION.md missing on-chain law section"
+    grep -q "The Six-Law Harness" CLAWD.md || die "CLAWD.md missing six-law harness section"
+    [ -z "${LAW_HASH}" ] || ok "three-laws.md SHA-256 ${LAW_HASH}"
+    ok "Local constitution carries the six-law harness"
+  else
+    info "No local checkout detected; installed packages carry the hash-attested on-chain laws."
+    info "Clone the repo and run npm run setup:verify to validate local law bytes."
+  fi
+}
+
 # ── Parse flags ───────────────────────────────────────────────────────────────
 INSTALL_REGISTRY=true
 INSTALL_HUB=true
@@ -116,6 +148,8 @@ ok "Node.js $(node --version)"
 
 command -v npm &>/dev/null || die "npm not found"
 ok "npm $(npm --version)"
+
+verify_six_law_harness
 
 # ── Clawd npm packages ────────────────────────────────────────────────────────
 step "Installing Solana Clawd suite"
@@ -423,6 +457,7 @@ printf "  ${CYAN}2.${RESET} ${BOLD}npm run tui${RESET}             — launch TU
 printf "  ${CYAN}   ${BOLD}npx tsx tui/start.ts${RESET}           — or directly via tsx\n"
 printf "  ${CYAN}3.${RESET} ${BOLD}clawd-hub start --open${RESET}   — agent discovery dashboard\n"
 printf "  ${CYAN}4.${RESET} ${BOLD}clawd agent list${RESET}         — browse indexed agents\n"
+printf "  ${CYAN}5.${RESET} ${BOLD}npm run setup:verify${RESET}      — verify six-law harness in a cloned repo\n"
 printf "\n"
 
 if [ "$INSTALL_X402" = true ]; then
@@ -467,6 +502,7 @@ printf "  ${BOLD}Agent workflow:${RESET}\n"
 printf "  ${CYAN}clawd-registry list${RESET}                  list indexed agents\n"
 printf "  ${CYAN}clawd-registry add <address>${RESET}         index an on-chain agent\n"
 printf "  ${CYAN}clawd-registry stats${RESET}                 index statistics\n"
+printf "  ${CYAN}npm run arena:install${RESET}                install Cheshire Agent Arena skill from source\n"
 printf "\n"
 
 if [ "$INSTALL_LEVIATHAN" = false ]; then
@@ -505,6 +541,8 @@ printf "  Website:      ${CYAN}https://x402.wtf${RESET}\n"
 printf "  Agents:       ${CYAN}https://x402.wtf/agents${RESET}\n"
 printf "  Library:      ${CYAN}https://x402.wtf/library${RESET}\n"
 printf "  Skills:       ${CYAN}https://x402.wtf/skills${RESET}\n"
+printf "  Cheshire:     ${CYAN}https://cheshireterminal.ai${RESET}\n"
+printf "  Agent Arena:  ${CYAN}https://cheshireterminal.ai/arena${RESET}\n"
 printf "  Gateway:      ${CYAN}https://x402.wtf/gateway${RESET}\n"
 printf "  Telegram:     ${CYAN}https://x402.wtf/telegram${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"

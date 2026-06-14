@@ -31,6 +31,8 @@
 | `clawd-gen.mjs` | Agent character generator |
 | `agent-identity-attest.sh` | Shell script for on-chain agent identity attestation |
 | `setup-agent-kit.sh` | Sets up the agent kit environment |
+| `setup.sh` | One-shot source checkout setup: dependencies, six-law verification, README refresh, runtime build |
+| `install-agent-arena.sh` | Installs the Cheshire Terminal Agent Arena skill into `~/.openclawd/workspace/skills` |
 
 ## Usage
 
@@ -41,6 +43,8 @@ npm run library:validate   # validate all agents
 npm run library:doctor     # health check
 npm run mint:clawd         # mint an agent (dry-run: --dry-run)
 npm run readme             # update README counters
+npm run setup:verify       # verify six-law harness without installing dependencies
+npm run arena:install      # install Cheshire Terminal Agent Arena skill
 ```
 
 ---

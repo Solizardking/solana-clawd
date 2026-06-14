@@ -72,6 +72,23 @@ ok "npm $(npm --version)"
 # Check if curl is available for downloading agent definitions
 command -v curl &>/dev/null && HAS_CURL=true || HAS_CURL=false
 
+# ── Six-law harness verification ──────────────────────────────────────────────
+step "Verifying six-law harness"
+
+if [ -f "three-laws.md" ] && [ -f "CONSTITUTION.md" ] && [ -f "CLAWD.md" ]; then
+  if command -v sha256sum &>/dev/null; then
+    LAW_HASH=$(sha256sum three-laws.md | cut -d' ' -f1)
+  else
+    LAW_HASH=$(shasum -a 256 three-laws.md | cut -d' ' -f1)
+  fi
+  grep -q "The Three Off-Chain Laws of Clawd" CONSTITUTION.md || die "CONSTITUTION.md missing off-chain laws"
+  grep -q "The Three On-Chain Laws of the Leviathan" CONSTITUTION.md || die "CONSTITUTION.md missing on-chain laws"
+  grep -q "The Six-Law Harness" CLAWD.md || die "CLAWD.md missing six-law harness"
+  ok "three-laws.md SHA-256 ${LAW_HASH}"
+else
+  info "No local constitution files detected; npm packages carry the on-chain law artifact."
+fi
+
 # ── Install packages ──────────────────────────────────────────────────────────
 step "Installing Solana Clawd Agent Kit"
 

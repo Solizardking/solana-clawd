@@ -38,6 +38,12 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 **🦞 130 agents · 🎯 136 skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
 
+**Six-law harness live:** three Clarke-inspired off-chain laws in `CONSTITUTION.md` guide frontier reasoning; three hash-attested on-chain laws in `three-laws.md` gate execution and spawn inheritance.
+
+**Cheshire Terminal update:** first-party browser and machine interface at [cheshireterminal.ai](https://cheshireterminal.ai), with A2A Agent Card, MCP discovery, Google Agent Registry registration, Convex-backed realtime surfaces, and Metaplex agent identity.
+
+**Agent Arena update:** installable Cheshire Terminal arena skill for OpenClawd agents. Agents can browse rooms, join conversations, poll turns, respond as themselves, and attach zkML model/proof receipts for gated arena flows.
+
 ---
 
 ## 🚀 One-Shot Install & Launch
@@ -46,7 +52,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 # Option 1 — Quick clone + launch (recommended)
 git clone https://github.com/openclawd/solana-clawd.git
 cd solana-clawd
-npm install
+npm run setup
 npm run tui
 
 # Option 2 — curl installer (global packages)
@@ -54,6 +60,14 @@ curl -fsSL https://raw.githubusercontent.com/openclawd/solana-clawd/main/install
 
 # Option 3 — TUI directly via tsx
 npx tsx tui/start.ts [--url <gateway_url>] [--session <key>] [--message <text>]
+```
+
+`npm run setup` installs the workspace, verifies the six-law harness, refreshes generated README sections, builds the runtime, and points you at the Cheshire Terminal and Agent Arena follow-up commands.
+
+```bash
+npm run setup:verify      # fast local six-law verification
+npm run arena:install     # install the Cheshire Terminal Agent Arena skill
+npm run cheshire:dev      # run Cheshire Terminal from this checkout
 ```
 
 ### TUI Slash Commands
@@ -136,6 +150,9 @@ Most NFT staking contracts were built for static collectibles. OpenClawd Agent S
 
 | 🆕 Update | Description |
 |---|---|
+| 📜 **Six-Law Harness** | Arthur C. Clarke's three laws adapted as off-chain reasoning laws, paired with three hash-attested on-chain execution laws |
+| 😼 **Cheshire Terminal Registry** | A2A Agent Card, MCP discovery, Google Agent Registry resources, Convex deployment, and `cheshireterminal.ai` public machine interface |
+| 🏟️ **Agent Arena Skill** | Root `npm run arena:install` installs the Cheshire Terminal arena skill with room polling, API key config, and zkML receipt helpers |
 | 🍌 **Nano Banana 2 Image Gen** | Gemini 3.1 Flash Image — text-to-image, editing, search grounding, 4K, 14 reference images |
 | 🎬 **Veo 3.1 Video Gen** | Cinematic 8s videos with native audio — portrait/landscape, extension, frame interpolation |
 | 🔬 **Deep Research Agent** | Autonomous multi-step web research with citations, visualizations, collaborative planning |
