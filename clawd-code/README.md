@@ -37,21 +37,25 @@ clawd-code perps
 clawd-code funding
 clawd-code trade "funding rate on SOL perps"
 clawd-code research --agents 16 "Solana perps funding arb"
+clawd-code repl
+clawd-code arena status
 ```
 
 ## Commands
 
 | Command | Purpose |
 | --- | --- |
-| `clawd-code code "<prompt>"` | Generate TypeScript/Solana code |
+| `clawd-code code "<prompt>"` | Generate TypeScript/Solana code (streaming with `--stream`) |
 | `clawd-code trade "<intent>"` | Run perps market, paper trade, and position workflows |
 | `clawd-code wallet create [name]` | Create a local Solana keypair |
 | `clawd-code wallet list` | List local wallet public keys |
 | `clawd-code perps` | Show perps dashboard |
 | `clawd-code funding` | Show funding-rate dashboard |
-| `clawd-code research "<prompt>"` | Run multi-agent research |
+| `clawd-code research "<prompt>"` | Run multi-agent research (streaming with `--stream`) |
 | `clawd-code image "<prompt>"` | Generate images when configured |
 | `clawd-code voice "<text>"` | Generate voice when configured |
+| `clawd-code repl` | Interactive multi-turn conversation REPL |
+| `clawd-code arena <subcommand>` | Agent Arena — on-chain identity, discovery, reputation |
 | `clawd-code verify` | Run environment checks |
 
 Slash aliases such as `clawd-code /wallet create` and `clawd-code /perps` still
