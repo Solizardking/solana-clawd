@@ -241,7 +241,15 @@ export class LLM extends EventTarget implements LLMClient {
         )
       }
 
-      const tc = toolCalls[0]
+      const tc = toolCalls.find((toolCall) => toolCall.type === 'function' && 'function' in toolCall)
+      if (!tc) {
+        throw new InvokeError(
+          InvokeErrorType.NO_TOOL_CALL,
+          'Model did not return a function tool call',
+          undefined,
+          response,
+        )
+      }
       let args: any
       try {
         args = JSON.parse(tc.function.arguments)

@@ -6,6 +6,8 @@ import { WebSocketServer } from 'ws'
 
 const EXT_ID = 'ccalceefjldibjloiknckgbkajmjfokd'
 const STORE_URL = `https://chromewebstore.google.com/detail/solana-clawd-pagent/${EXT_ID}`
+const MAX_BODY_BYTES = 64 * 1024
+const TASK_TIMEOUT_MS = 120000
 
 const launcherTemplate = readFileSync(
 	fileURLToPath(new URL('./launcher.html', import.meta.url)),
@@ -33,7 +35,7 @@ export class HubBridge {
 	/** @type {boolean} */
 	#hubReady = false
 
-	/** @type {{ resolve: (r: {success: boolean, data: string}) => void, reject: (e: Error) => void } | null} */
+	/** @type {{ resolve: (r: {success: boolean, data: string}) => void, reject: (e: Error) => void, timeout: NodeJS.Timeout } | null} */
 	#pendingTask = null
 
 	/** @param {number} port */
@@ -73,16 +75,29 @@ export class HubBridge {
 		// POST /execute — fire-and-wait from popup chat "Run in Browser"
 		if (req.method === 'POST' && req.url === '/execute') {
 			let body = ''
-			req.on('data', chunk => { body += chunk })
+			let tooLarge = false
+			req.on('data', chunk => {
+				body += chunk
+				if (body.length > MAX_BODY_BYTES) {
+					tooLarge = true
+					req.destroy()
+				}
+			})
 			req.on('end', () => {
+				if (tooLarge) {
+					res.writeHead(413, { 'Content-Type': 'application/json', ...cors })
+					res.end(JSON.stringify({ error: 'Request body too large' }))
+					return
+				}
 				let task
 				try { task = JSON.parse(body).task } catch {
-					res.writeHead(400, cors)
+					res.writeHead(400, { 'Content-Type': 'application/json', ...cors })
 					res.end(JSON.stringify({ error: 'Invalid JSON body — expected { task: string }' }))
 					return
 				}
+				task = String(task || '').trim()
 				if (!task) {
-					res.writeHead(400, cors)
+					res.writeHead(400, { 'Content-Type': 'application/json', ...cors })
 					res.end(JSON.stringify({ error: 'Missing task field' }))
 					return
 				}
@@ -128,11 +143,19 @@ export class HubBridge {
 					reject(err)
 				}
 			})
-			this.#httpServer.listen(this.port, () => {
-				console.error(`[clawd-mcp] HTTP + WS on http://localhost:${this.port}`)
+			this.#httpServer.listen(this.port, '127.0.0.1', () => {
+				const address = this.#httpServer.address()
+				if (address && typeof address === 'object') {
+					this.port = address.port
+				}
+				console.error(`[clawd-mcp] HTTP + WS on http://127.0.0.1:${this.port}`)
 				resolve()
 			})
 		})
+	}
+
+	httpServerAddress() {
+		return this.#httpServer.address()
 	}
 
 	get connected() {
@@ -153,7 +176,13 @@ export class HubBridge {
 		if (this.#pendingTask) throw new Error('Agent is already running a task.')
 
 		return new Promise((resolve, reject) => {
-			this.#pendingTask = { resolve, reject }
+			const timeout = setTimeout(() => {
+				if (this.#pendingTask) {
+					this.#pendingTask.reject(new Error('Agent task timed out'))
+					this.#pendingTask = null
+				}
+			}, TASK_TIMEOUT_MS)
+			this.#pendingTask = { resolve, reject, timeout }
 			this.#hub.send(JSON.stringify({ type: 'execute', task, config }))
 		})
 	}
@@ -162,6 +191,24 @@ export class HubBridge {
 		if (this.connected) {
 			this.#hub.send(JSON.stringify({ type: 'stop' }))
 		}
+	}
+
+	/** @param {() => void} [callback] */
+	close(callback) {
+		for (const client of this.#wss.clients) {
+			client.close()
+		}
+		this.#wss.close()
+		const closePromise = new Promise((resolve, reject) => {
+			this.#httpServer.close((err) => {
+				if (err) reject(err)
+				else resolve()
+			})
+		})
+		if (callback) {
+			closePromise.then(() => callback()).catch(() => callback())
+		}
+		return closePromise
 	}
 
 	// TODO: Add version checking
@@ -189,9 +236,11 @@ export class HubBridge {
 				this.#hubReady = true
 				console.error('[clawd-mcp] Hub ready')
 			} else if (msg.type === 'result') {
+				if (this.#pendingTask) clearTimeout(this.#pendingTask.timeout)
 				this.#pendingTask?.resolve({ success: msg.success ?? false, data: msg.data ?? '' })
 				this.#pendingTask = null
 			} else if (msg.type === 'error') {
+				if (this.#pendingTask) clearTimeout(this.#pendingTask.timeout)
 				this.#pendingTask?.reject(new Error(msg.message ?? 'Unknown error from hub'))
 				this.#pendingTask = null
 			}
@@ -204,6 +253,7 @@ export class HubBridge {
 				this.#hubReady = false
 			}
 			if (this.#pendingTask) {
+				clearTimeout(this.#pendingTask.timeout)
 				this.#pendingTask.reject(new Error('Hub disconnected while task was running'))
 				this.#pendingTask = null
 			}

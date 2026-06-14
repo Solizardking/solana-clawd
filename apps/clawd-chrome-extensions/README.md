@@ -24,7 +24,7 @@
 8. [MCP HTTP API](#mcp-http-api)
 9. [Agent Wallet Vault](#agent-wallet-vault)
 10. [Local Port Map](#local-port-map)
-11. [Build Instructions](#build-instructions)
+11. [Build, Test, and Package](#build-test-and-package)
 12. [Configuration](#configuration)
 13. [Directory Layout](#directory-layout)
 14. [Security](#security)
@@ -50,8 +50,17 @@ Builds the extension, starts the MCP bridge on port 38401, and prints load-unpac
 ### Option C — Build a CWS Zip
 
 ```bash
+npm run build:cws
+# or:
 bash build-cws.sh
 # output: build/clawd-popup-v3.0.0.zip
+```
+
+### Verify Locally
+
+```bash
+npm run check
+npm run build:packages
 ```
 
 ---
@@ -62,6 +71,7 @@ This directory is a monorepo. Every sub-directory is an npm package that feeds i
 
 | Package | npm name | Version | Role |
 |---|---|---|---|
+| `./` | `@openclawd/chrome-extension` | 3.0.0 | Root scripts for tests, package builds, CWS zip, MCP launcher |
 | `core/` | `@page-agent/core` | 1.6.2 | ReAct agent loop (observe → think → act) |
 | `llms/` | `@page-agent/llms` | 1.6.2 | LLM provider adapters (OpenRouter, OpenAI-compat) |
 | `page-controller/` | `@page-agent/page-controller` | 1.6.2 | DOM state capture + element interactions |
@@ -70,7 +80,7 @@ This directory is a monorepo. Every sub-directory is an npm package that feeds i
 | `mcp/` | `@openclawd/browser-mcp` | 2.0.0 | MCP stdio server + HTTP/WS hub bridge (port 38401) |
 | `clawd-agent/` | *(prebuilt bundle)* | — | Prebuilt extension bundle (load alongside main) |
 
-All packages share the TypeScript config at `../../tsconfig.base.json` (repo root).
+All TypeScript packages share the repository root config at `../../../tsconfig.base.json` from each package directory.
 
 ---
 
@@ -116,14 +126,16 @@ The popup never opens a direct WebSocket. Background acts as an HTTP proxy to th
 
 ## Six Tabs
 
-| Tab | What it does | Paid? |
-|---|---|:---:|
-| 💰 **Wallet** | SOL + SPL balances, OODA trade history, Bitaxe miner card, send / swap | Free |
-| 📱 **Seeker** | WebSocket bridge to the Solana Seeker phone | Free |
-| ⛏ **Miner** | MawdAxe Bitaxe fleet dashboard with live SSE updates | Free |
-| 💬 **Chat** | Multi-turn chat with Clawd — OpenRouter free models or local daemon | Free |
-| 🔧 **Tools** | Live RPC health, trending tokens, system status, on-chain agent identity | Free |
-| 🔐 **Vault** | AES-256-GCM local wallet vault at `localhost:9099` — keys never leave your machine | Free |
+| Tab | Primary feature | Runtime it depends on | Covered by checks |
+|---|---|---|:---:|
+| 💰 **Wallet** | SOL + SPL balances, OODA trade history, Bitaxe card, send / swap | Clawd daemon `:7777` | ✅ |
+| 📱 **Seeker** | WebSocket bridge to the Solana Seeker phone | Seeker gateway `:18790` | ✅ |
+| ⛏ **Miner** | MawdAxe Bitaxe fleet dashboard with SSE updates | MawdAxe `:8420` | ✅ |
+| 💬 **Chat** | Multi-turn Clawd chat and Run-in-browser pAGENT tasks | OpenRouter/local daemon + MCP `:38401` | ✅ |
+| 🔧 **Tools** | RPC health, trending tokens, system status, agent identity | Clawd daemon `:7777` | ✅ |
+| 🔐 **Vault** | AES-256-GCM local wallet vault management | agentwallet-vault `:9099` | ✅ |
+
+The local test suite verifies that every top-level tab has a matching content panel and that every static DOM id referenced by `popup.js` exists in `popup.html`.
 
 ---
 
@@ -206,7 +218,7 @@ X-Title: Clawd pAGENT
 
 ## MCP HTTP API
 
-`mcp/src/hub-bridge.js` exposes an HTTP API on `127.0.0.1:38401` that the background service worker calls. All responses include `Access-Control-Allow-Origin: *`.
+`mcp/src/hub-bridge.js` exposes an HTTP API on `127.0.0.1:38401` that the background service worker calls. The server binds to loopback only, caps `/execute` request bodies, trims empty tasks, and times out stuck agent tasks after 120 seconds. All JSON API responses include `Access-Control-Allow-Origin: *`.
 
 | Method | Path | Description |
 |---|---|---|
@@ -259,11 +271,11 @@ npx @agentwallet/vault serve --port 9099
 
 ---
 
-## Build Instructions
+## Build, Test, and Package
 
 ### Prerequisites
 
-The monorepo requires a shared TypeScript base config at the **repo root** (`../../tsconfig.base.json` relative to this directory):
+The source packages require the shared TypeScript base config at the **repo root** (`../../../tsconfig.base.json` relative to `llms/`, `core/`, `page-controller/`, `page-agent/`, and `ui/`):
 
 ```json
 {
@@ -287,33 +299,59 @@ The monorepo requires a shared TypeScript base config at the **repo root** (`../
 }
 ```
 
-### Build all packages
+### Test the extension workspace
 
 ```bash
-for pkg in llms core page-controller page-agent ui; do
-  echo "=== $pkg ===" && cd $pkg && npm install && npm run build && cd ..
-done
+cd apps/clawd-chrome-extensions
+npm test
 ```
 
-### Build page-controller only
+The test suite covers:
+
+| Area | Coverage |
+|---|---|
+| Manifest | MV3 popup, service worker, icons, localhost-only host permissions |
+| Popup | Six feature tabs, matching content panels, all referenced DOM ids |
+| Secrets | Confirms no bundled OpenRouter key is shipped |
+| Background | Single consolidated status alarm, settings migration, message handling |
+| MCP bridge | Loopback status API, execute validation, WebSocket execute/stop forwarding |
+| Entrypoints | Syntax checks for checked-in runtime JavaScript |
+
+### Build all source packages
 
 ```bash
-cd page-controller
-npm install
-npm run build
-# output: dist/lib/page-controller.js  (ESM, sourcemap, CSS injected)
+cd apps/clawd-chrome-extensions
+npm run build:packages
 ```
 
-`page-controller` uses `vite-plugin-css-injected-by-js` with `relativeCSSInjection: false` so that CSS from dynamically-imported components (e.g. `SimulatorMask`) is bundled into the main entry chunk rather than left as an orphaned asset.
+This builds, in order:
+
+| Package | Output |
+|---|---|
+| `llms/` | `dist/lib/page-agent-llms.js` plus declarations |
+| `page-controller/` | `dist/lib/page-controller.js` plus declarations |
+| `core/` | `dist/esm/page-agent-core.js` plus declarations |
+| `ui/` | `dist/esm/index.js` plus declarations |
+| `page-agent/` | `dist/esm/page-agent.js` and `dist/iife/page-agent.demo.js` |
+
+`page-controller` uses `vite-plugin-css-injected-by-js` with `relativeCSSInjection: false` so that CSS from dynamically-imported components (for example, `SimulatorMask`) is bundled into the main entry chunk rather than left as an orphaned asset.
 
 The `dom_tree/` subdirectory ships as plain JavaScript. Its type declaration lives at `src/dom/dom_tree/index.d.ts` — do not remove this file or TypeScript builds of dependent packages will fail with TS7016.
+
+### Package for Chrome Web Store
+
+```bash
+cd apps/clawd-chrome-extensions
+npm run build:cws
+# output: build/clawd-popup-v3.0.0.zip
+```
 
 ### Build the MCP bridge
 
 ```bash
 cd mcp
 npm install
-node src/index.js
+npm start
 # starts immediately on port 38401
 ```
 
@@ -341,6 +379,8 @@ Click the settings gear in the popup header.
 
 ```
 clawd-chrome-extensions/
+├── package.json           Root scripts — check, build:packages, build:cws, mcp
+├── tests/                 Node test suite for manifest, popup, background, MCP
 ├── manifest.json          MV3 manifest — permissions, host_permissions, service worker
 ├── background.js          Service worker — pAGENT polling, MCP HTTP proxy, badge
 ├── popup.html             6-tab UI shell — Run button + status dot in Chat tab
@@ -357,7 +397,8 @@ clawd-chrome-extensions/
 │       └── prompts/       system_prompt.md (Clawd/Solana/DeFi identity)
 │
 ├── llms/                  @page-agent/llms — LLM provider adapters
-│   └── src/index.ts       createOpenRouterConfig(), OPENROUTER_FREE_MODELS, LLMConfig
+│   ├── src/index.ts       createOpenRouterConfig(), OPENROUTER_FREE_MODELS, LLMConfig
+│   └── vite.config.js     Library build config for dist/lib/page-agent-llms.js
 │
 ├── page-controller/       @page-agent/page-controller — DOM + interactions
 │   ├── src/
@@ -375,6 +416,7 @@ clawd-chrome-extensions/
 ├── ui/                    @page-agent/ui — side panel stub
 │
 ├── mcp/                   @openclawd/browser-mcp v2.0.0
+│   ├── package.json       npm start/test scripts
 │   └── src/
 │       ├── index.js       MCP stdio server — reads OPENROUTER_API_KEY env var
 │       ├── hub-bridge.js  HTTP server (:38401) — /status /execute /stop
@@ -397,6 +439,7 @@ clawd-chrome-extensions/
 - **Vault files** are `chmod 0600`, AES-256-GCM encrypted, stored in `~/.agentwallet/`
 - **Zero telemetry** — no analytics, no crash reports, no external beacons
 - **MCP bridge localhost only** — `hub-bridge.js` binds to `127.0.0.1:38401`, never `0.0.0.0`
+- **Bounded bridge execution** — `/execute` rejects empty tasks, caps request bodies, and clears timed-out pending tasks
 
 ---
 
@@ -408,4 +451,4 @@ clawd-chrome-extensions/
 
 ---
 
-*Built with by the Clawd crew — The Hermes of Web3*
+*Built by the Clawd crew — The Hermes of Web3*

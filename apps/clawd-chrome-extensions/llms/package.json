@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "build": "vite build"
+    "build": "vite build && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist/lib"
   },
   "dependencies": {
     "openai": "^4.80.0"

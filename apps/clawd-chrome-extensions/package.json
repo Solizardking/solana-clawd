@@ -1,0 +1,15 @@
+{
+  "name": "@openclawd/chrome-extension",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "npm test && npm run check:packages",
+    "check:packages": "node tests/package-scripts.test.js",
+    "build:cws": "bash build-cws.sh",
+    "build:packages": "npm --prefix llms run build && npm --prefix page-controller run build && npm --prefix core run build && npm --prefix ui run build && npm --prefix page-agent run build",
+    "mcp": "npm --prefix mcp start"
+  },
+  "devDependencies": {}
+}

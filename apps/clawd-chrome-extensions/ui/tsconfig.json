@@ -1,19 +1,18 @@
 {
-    "extends": "../../tsconfig.base.json",
+    "extends": "../../../tsconfig.base.json",
     "compilerOptions": {
         "composite": true,
         "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
         "noEmit": false,
         "allowImportingTsExtensions": false,
         "baseUrl": ".",
-        "outDir": "dist",
+        "ignoreDeprecations": "6.0",
+        "rootDir": "src",
+        "outDir": "dist/esm",
         "paths": {
-            "@page-agent/core": ["../core/src/PageAgentCore.ts"]
+            "@page-agent/core": ["../core/dist/esm/PageAgentCore.d.ts"]
         }
     },
-    "include": ["**/*.ts"],
-    "exclude": ["dist", "node_modules"],
-    "references": [
-        { "path": "../core" }
-    ]
+    "include": ["src/**/*.ts"],
+    "exclude": ["dist", "node_modules"]
 }

@@ -132,22 +132,20 @@ function deriveBadge(status) {
   return { text: 'N', color: '#00D1FF' };
 }
 
-// Check every 30 seconds
+// Check every 30 seconds. Keep both daemon and pAGENT checks on one alarm
+// path so the service worker does not duplicate API probes every interval.
 chrome.alarms.create('clawd-status', { periodInMinutes: 0.5 });
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'clawd-status') checkStatus();
-});
 
 // Check on install/startup
 chrome.runtime.onInstalled.addListener(() => {
-  migrateSettings().then(checkStatus);
+  migrateSettings().then(refreshAllStatus);
 });
 chrome.runtime.onStartup.addListener(() => {
-  migrateSettings().then(checkStatus);
+  migrateSettings().then(refreshAllStatus);
 });
 
 // Also migrate immediately when the service worker loads.
-migrateSettings().then(checkStatus);
+migrateSettings().then(refreshAllStatus);
 
 // ── pAGENT MCP bridge health check ──────────────────────────────────────
 const MCP_BRIDGE_URL = 'http://127.0.0.1:38401';
@@ -179,18 +177,20 @@ async function executeAgentTask(task) {
   return r.json();
 }
 
-// Check pAGENT status alongside daemon status
+async function refreshAllStatus() {
+  await Promise.allSettled([checkStatus(), checkPagentStatus()]);
+}
+
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'clawd-status') {
-    checkStatus();
-    checkPagentStatus();
+    refreshAllStatus();
   }
 });
 
 // Handle messages from popup
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'CHECK_STATUS') {
-    checkStatus().then(() => sendResponse({ ok: true }));
+    refreshAllStatus().then(() => sendResponse({ ok: true }));
     return true;
   }
   if (msg.type === 'GET_SETTINGS') {
