@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const packageJson = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
+const args = new Set(process.argv.slice(2));
+const summaryOnly = args.has("--summary");
 
 const dependencySections = [
   "dependencies",
@@ -34,6 +36,21 @@ const excludedGlobs = [
   "!TradingView-API-main/**",
   "!library/**",
   "!caveman-agent/**",
+  "!CLEANUP_AUDIT.md",
+  "!scripts/dependency-audit.mjs",
+  "!package.json",
+  "!package-lock.json",
+  "!pnpm-lock.yaml",
+  "!**/package.json",
+  "!**/package-lock.json",
+  "!**/pnpm-lock.yaml",
+  "!**/*.log",
+  "!**/*.png",
+  "!**/*.jpg",
+  "!**/*.jpeg",
+  "!**/*.gif",
+  "!**/*.svg",
+  "!**/*.db",
 ];
 
 const knownTooling = new Set([
@@ -50,14 +67,10 @@ const knownTooling = new Set([
 
 const knownTypes = /^@types\//;
 
-function rg(pattern) {
+function rgFiles() {
   const args = [
-    "--fixed-strings",
-    "--no-heading",
-    "--line-number",
+    "--files",
     ...excludedGlobs.flatMap((glob) => ["--glob", glob]),
-    pattern,
-    ".",
   ];
 
   try {
@@ -79,31 +92,52 @@ function packageRoot(specifier) {
   return specifier.split("/")[0];
 }
 
-const importLines = rg("from ")
-  + rg("import(")
-  + rg("import ")
-  + rg("require(");
-
+const files = rgFiles().split("\n").filter(Boolean);
 const imported = new Set();
-for (const match of importLines.matchAll(/["'](@?[^"'./][^"']*)["']/g)) {
-  imported.add(packageRoot(match[1]));
+const literalReferences = new Map();
+const importReferenceRegex =
+  /(?:import\s+(?:type\s+)?(?:[^"'()]+?\s+from\s+)?|export\s+(?:type\s+)?(?:[^"'()]+?\s+from\s+)|import\s*\(|require\s*\()\s*["'](@?[^"'./][^"']*)["']/g;
+
+for (const file of files) {
+  const absolute = resolve(root, file);
+  let stat;
+  try {
+    stat = statSync(absolute);
+  } catch {
+    continue;
+  }
+  if (!stat.isFile() || stat.size > 2 * 1024 * 1024) continue;
+
+  let text;
+  try {
+    text = readFileSync(absolute, "utf8");
+  } catch {
+    continue;
+  }
+
+  for (const match of text.matchAll(importReferenceRegex)) {
+    imported.add(packageRoot(match[1]));
+  }
+
+  const lines = text.split("\n");
+  for (const { name } of dependencies) {
+    if (!text.includes(name)) continue;
+    const refs = literalReferences.get(name) ?? [];
+    if (refs.length >= 3) continue;
+    const index = lines.findIndex((line) => line.includes(name));
+    if (index !== -1) refs.push(`${file}:${index + 1}:${lines[index].trim()}`);
+    literalReferences.set(name, refs);
+  }
 }
 
 const rows = dependencies.map(({ name, section }) => {
   const directImport = imported.has(name);
-  const literalReferences = rg(name)
-    .split("\n")
-    .filter(Boolean)
-    .filter((line) => !line.includes("package.json"))
-    .filter((line) => !line.includes("pnpm-lock.yaml"))
-    .filter((line) => !line.includes("package-lock.json"))
-    .filter((line) => !line.includes("CLEANUP_AUDIT.md"))
-    .filter((line) => !line.includes("dependency-audit.mjs"));
+  const references = literalReferences.get(name) ?? [];
 
   let status = "candidate";
   if (directImport) {
     status = "imported";
-  } else if (literalReferences.length > 0) {
+  } else if (references.length > 0) {
     status = "referenced";
   } else if (knownTypes.test(name)) {
     status = "types";
@@ -115,7 +149,7 @@ const rows = dependencies.map(({ name, section }) => {
     name,
     section,
     status,
-    references: literalReferences.slice(0, 3),
+    references,
   };
 });
 
@@ -125,8 +159,10 @@ for (const group of groups) {
   console.log(`## ${group} (${items.length})`);
   for (const item of items) {
     console.log(`${item.name} [${item.section}]`);
-    for (const reference of item.references) {
-      console.log(`  ${reference}`);
+    if (!summaryOnly) {
+      for (const reference of item.references) {
+        console.log(`  ${reference}`);
+      }
     }
   }
   console.log("");

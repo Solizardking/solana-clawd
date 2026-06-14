@@ -118,6 +118,39 @@ Needs package-specific verification before removal:
 
 Do not remove any dependency from `package.json` based on this scan alone. The next safe step would be targeted verification for each package in the second list, including configs, scripts, generated code, and runtime string usage.
 
+Repeatable helper:
+
+```sh
+node scripts/dependency-audit.mjs --summary
+```
+
+Latest helper output summary:
+
+- `imported`: `143`
+- `referenced`: `5`
+- `types`: `18`
+- `tooling`: `2`
+- `candidate`: `16`
+
+Current repeatable candidate list:
+
+- `@anthropic-ai/sdk`
+- `@better-auth/core`
+- `@better-auth/sso`
+- `@emotion/react`
+- `@emotion/styled`
+- `@fal-ai/client`
+- `@jridgewell/trace-mapping`
+- `@mui/material`
+- `connect-pg-simple`
+- `memorystore`
+- `passport`
+- `passport-local`
+- `stream-browserify`
+- `zod-validation-error`
+- `@replit/object-storage`
+- `bufferutil`
+
 Additional targeted verification:
 
 - `@crossmint/client-sdk-react-ui` is used by dynamic import in `client/src/components/CrossmintWalletProvider.tsx`.
