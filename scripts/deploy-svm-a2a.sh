@@ -68,8 +68,8 @@ if [[ -f "$A2A_DIR/wrangler.toml" ]]; then
     echo "✓ Cloudflare Worker dry-run validated"
   else
     (cd "$A2A_DIR" && npx wrangler deploy) 2>&1 | tail -12
+    echo "✓ Cloudflare Workers deployed"
   fi
-  echo "✓ Cloudflare Workers deployed"
 else
   echo "⚠ a2a/wrangler.toml not found — skipping Cloudflare deploy"
 fi
@@ -107,7 +107,11 @@ echo "    ✓ MCP Tools:   https://api.svm-a2a.ai/mcp/tools"
 echo ""
 
 echo "═══ Deploy Complete ═══"
-echo "  Agent is live on $NETWORK"
+if [[ "$DRY_RUN" == "true" ]]; then
+  echo "  Dry-run validated for $NETWORK"
+else
+  echo "  Agent is live on $NETWORK"
+fi
 echo ""
 echo "  Connect your wallet to authenticate:"
 echo "    siws + das attestation + claud tier"
