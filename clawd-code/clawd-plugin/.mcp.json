@@ -15,6 +15,10 @@
     "DFlow": {
       "type": "http",
       "url": "https://pond.dflow.net/mcp"
+    },
+    "zkcompression": {
+      "type": "http",
+      "url": "https://www.zkcompression.com/mcp"
     }
   }
 }
