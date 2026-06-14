@@ -4,22 +4,22 @@
  * Headless lobster-native AI coding agent for the Clawd ecosystem
  */
 
-import { MODELS, printModelsTable, normalizeModelId, DEFAULT_MODEL } from './grok-models.js';
-import { HeadlessWriter } from './headless.js';
-import { EnvironmentVerifier } from './verify.js';
-import { createOpenRouterClient, OpenRouterClient, DEFAULT_FREE_MODEL } from './openrouter.js';
-import { loadClawdEnv, maskSecret } from './env.js';
 import * as C from './commands.js';
+import { loadClawdEnv, maskSecret } from './env.js';
+import { normalizeModelId, printModelsTable } from './grok-models.js';
+import { DEFAULT_FREE_MODEL } from './openrouter.js';
+import { EnvironmentVerifier } from './verify.js';
 
-type Mode = 'CODE' | 'TRADE' | 'RESEARCH' | 'IMAGE' | 'VOICE';
+type Mode = 'CODE' | 'TRADE' | 'RESEARCH' | 'IMAGE' | 'VOICE' | 'REPL';
 
 interface ClawdCodeConfig {
   mode: Mode;
-  provider: 'xai' | 'openrouter' | 'deepseek';
+  provider: 'xai' | 'openrouter' | 'deepseek' | 'anthropic';
   liveTrading: boolean;
   operatorConfirmed: boolean;
   rpcUrl: string;
   xaiApiKey: string;
+  anthropicApiKey: string;
   deepSeekApiKey: string;
   deepSeekBaseUrl: string;
   heliusApiKey: string;
@@ -27,6 +27,7 @@ interface ClawdCodeConfig {
   vulcanMcpUrl: string;
   agentCount: 4 | 16;
   model: string;
+  stream: boolean;
 }
 
 const DEFAULT_HELIUS_RPC = process.env.HELIUS_RPC_URL ||
@@ -44,21 +45,24 @@ function loadConfig(): ClawdCodeConfig {
     operatorConfirmed: env.OPERATOR_CONFIRMED === 'true',
     rpcUrl: env.SOLANA_RPC_URL || env.HELIUS_RPC_URL || process.env.SOLANA_RPC_URL || DEFAULT_HELIUS_RPC,
     xaiApiKey: env.XAI_API_KEY || process.env.XAI_API_KEY || '',
+    anthropicApiKey: env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY || '',
     deepSeekApiKey: env.DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY || '',
     deepSeekBaseUrl: env.DEEPSEEK_BASE_URL || process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
     heliusApiKey: env.HELIUS_API_KEY || process.env.HELIUS_API_KEY || '',
     phoenixRiseUrl: env.PHOENIX_RISE_URL || 'https://api.phoenix.gg/enclave',
     vulcanMcpUrl: env.VULCAN_MCP_URL || 'http://localhost:3001',
-    agentCount: parseInt(env.CLAWD_AGENT_COUNT || '4') as 4 | 16,
+    agentCount: parseInt(env.CLAWD_AGENT_COUNT || '4', 10) as 4 | 16,
     model: env.CLAWD_MODEL || 'grok-4.20-multi-agent',
+    stream: env.CLAWD_STREAM === 'true',
   };
 }
 
-function normalizeProvider(provider: string): 'xai' | 'openrouter' | 'deepseek' {
+function normalizeProvider(provider: string): 'xai' | 'openrouter' | 'deepseek' | 'anthropic' {
   const normalized = provider.toLowerCase();
   if (normalized === 'or') return 'openrouter';
   if (normalized === 'ds') return 'deepseek';
-  if (normalized === 'deepseek' || normalized === 'openrouter' || normalized === 'xai') return normalized;
+  if (normalized === 'claude' || normalized === 'ant') return 'anthropic';
+  if (normalized === 'anthropic' || normalized === 'deepseek' || normalized === 'openrouter' || normalized === 'xai') return normalized;
   return 'xai';
 }
 
