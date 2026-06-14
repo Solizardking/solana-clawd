@@ -63,8 +63,9 @@ step "Checking prerequisites"
 
 command -v node &>/dev/null || die "Node.js not found — install v20+ from https://nodejs.org"
 NODE_MAJOR=$(node --version | sed 's/v//' | cut -d. -f1)
-[ "${NODE_MAJOR}" -ge 20 ] && [ "${NODE_MAJOR}" -lt 25 ] || die "Node.js v20-24 required (found $(node --version))"
+[ "${NODE_MAJOR}" -ge 20 ] || die "Node.js v20+ required (found $(node --version))"
 ok "Node.js $(node --version)"
+[ "${NODE_MAJOR}" -lt 25 ] || warn "Node $(node --version) is outside the declared package engine range >=20 <25"
 
 command -v npm &>/dev/null || die "npm not found"
 ok "npm $(npm --version)"
