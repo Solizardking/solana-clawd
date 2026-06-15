@@ -1,0 +1,84 @@
+# LoRA SFT config — NousResearch/Hermes-3-Llama-3.1-8B
+#
+# 8B model: needs at least a 24 GB L4 (4-bit) or A100-40 (4-bit / bf16).
+# Uses the same ChatML format as Qwen2.5 — no chat-template changes required.
+#
+# Usage:
+#   python3 scripts/train_lora.py --config configs/hermes3_lora_config.yaml
+#   ./scripts/launch_hf_jobs.sh a100-large --config configs/hermes3_lora_config.yaml
+
+# Base model
+base_model: "NousResearch/Hermes-3-Llama-3.1-8B"
+model_revision: "main"
+torch_dtype: "bfloat16"
+device_map: "auto"
+
+# Dataset (same instruction pairs as the 1.5B run)
+dataset_repo: "solanaclawd/solana-clawd-instruct"
+dataset_revision: "main"
+max_seq_length: 4096
+train_split: "train"
+eval_split: "test"
+
+# Output
+output_dir: "./outputs/solana-clawd-8b-lora"
+push_to_hub: true
+hub_model_id: "solanaclawd/solana-clawd-8b-lora"
+hub_private: false
+
+# LoRA — higher rank for 8B to capture more domain signal
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+# Training — smaller per-device batch to fit 8B in 24 GB with quant
+training:
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16    # effective batch size = 16 (same as 1.5B run)
+  per_device_eval_batch_size: 1
+  num_train_epochs: 3
+  max_steps: -1
+  learning_rate: 1.0e-4              # slightly lower LR for larger model
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  optim: "adamw_torch"
+  bf16: true
+  fp16: false
+  tf32: true
+  gradient_checkpointing: true
+  logging_steps: 10
+  save_steps: 200
+  save_total_limit: 3
+  eval_steps: 200
+  eval_strategy: "steps"
+  report_to:
+    - "none"
+  seed: 42
+  dataloader_num_workers: 2
+  remove_unused_columns: false
+
+# Quantization — required on L4 (24 GB); optional on A100-80 for speed
+quantization:
+  enabled: true
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: true
+
+# SFT
+sft:
+  packing: false
+  assistant_only_loss: true
+  chat_template_kwargs: {}
