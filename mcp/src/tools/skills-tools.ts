@@ -79,7 +79,7 @@ async function readSkillContent(slug: string): Promise<string | null> {
     try {
       return await fs.readFile(p, "utf-8");
     } catch {
-      continue;
+      // try next candidate
     }
   }
   return null;

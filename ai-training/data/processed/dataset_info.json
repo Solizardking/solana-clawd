@@ -1,0 +1,14 @@
+{
+  "num_examples": 22,
+  "splits": {
+    "train": 19,
+    "eval": 1,
+    "test": 2
+  },
+  "schema": {
+    "messages": "list[{role: str, content: str}]"
+  },
+  "source_files": [
+    "data/solana_clawd_seed.jsonl"
+  ]
+}

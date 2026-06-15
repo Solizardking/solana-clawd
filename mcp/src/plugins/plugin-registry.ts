@@ -91,10 +91,19 @@ export const BUILTIN_PLUGINS: PluginManifest[] = [
   },
   {
     id: "skills",
-    name: "Agent Skill Files",
+    name: "Agent Skill Catalog (137+ attested skills)",
     modulePath: "skills",
-    toolSources: [],
-    category: "agents",
+    toolSources: ["catalog.json"],
+    category: "skills" as ToolCategory,
+    version: "2.0.0",
+  },
+  {
+    id: "composio",
+    name: "ClaWD Composio Provider",
+    modulePath: "mcp/src/composio",
+    toolSources: ["clawd-provider.ts"],
+    category: "composio" as ToolCategory,
+    requiresEnv: ["COMPOSIO_API_KEY"],
     version: "1.0.0",
   },
   {
