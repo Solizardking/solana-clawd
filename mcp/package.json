@@ -16,8 +16,11 @@
     "composio:setup": "node dist/composio/setup.js"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.84",
+    "@ai-sdk/mcp": "^1.0.51",
     "@composio/core": "^0.10.0",
     "@modelcontextprotocol/sdk": "^1.10.2",
+    "ai": "^6.0.205",
     "express": "^4.21.1"
   },
   "devDependencies": {
