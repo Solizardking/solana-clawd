@@ -1,0 +1,9 @@
+[submodule "core-ai"]
+	path = core-ai
+	url = https://github.com/Solizardking/core-ai.git
+	branch = clawd-code-lobster-rebrand
+
+[submodule "mcp/clawd-mcp"]
+	path = mcp/clawd-mcp
+	url = https://github.com/Solizardking/clawd-mcp.git
+	branch = main

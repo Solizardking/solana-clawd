@@ -409,6 +409,7 @@ programs/target/
 **/target/release/
 **/target/sbpf-solana-solana/
 .anchor/target/
+staking/target/
 
 # ============================================================================
 # HUGGING FACE — homebase build dir + token belt-and-suspenders
