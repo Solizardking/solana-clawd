@@ -1368,5 +1368,15 @@
     "manifest": "https://x402.wtf/skills/greptile/manifest.json",
     "attested": true,
     "attested_at": "2026-06-07"
+  },
+  {
+    "slug": "solana-rpc",
+    "name": "solana-rpc",
+    "description": "Solana RPC data toolkit \u2014 8-command CLI for live on-chain data: wallet balance + SPL portfolio with USD values, transaction details with balance changes, SPL token metadata + top holders, recent activity history, NFT portfolio (SPL + cNFT via Helius DAS), whale detector, network stats (TPS/epoch/price), and quick price lookup. Pure Python stdlib, no extra packages, optional HELIUS_API_KEY for compressed NFTs.",
+    "category": "Solana / Blockchain",
+    "homepage": "https://x402.wtf/skills/solana-rpc",
+    "manifest": "https://x402.wtf/skills/solana-rpc/manifest.json",
+    "attested": true,
+    "attested_at": "2026-06-15"
   }
 ]
