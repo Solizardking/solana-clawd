@@ -921,6 +921,13 @@ export async function createServer(): Promise<Server> {
             `- agent_spawn → spawn research/scanner/dream agent`,
             `- memory_recall / memory_write → persistent memory`,
             ``,
+            `## 8. Skills Catalog (137+ attested skills)`,
+            `- skills_catalog → full catalog with metadata, filter by category`,
+            `- skills_search → fuzzy search by name/description/category`,
+            `- skills_load → read a skill's full SKILL.md by slug`,
+            `- skills_list → all slugs + one-liner descriptions by category`,
+            `- skills_categories → category breakdown with counts`,
+            ``,
             `## Suggested orchestration flow:`,
             `1. list_sections → explore docs`,
             `2. market_signal → assess current opportunity`,
@@ -1051,7 +1058,7 @@ export async function createServer(): Promise<Server> {
           ].join("\n"));
 
         case "solana_overview":
-          return msg(`You are solana-clawd v3, an autonomous Solana research, trading, and agent orchestration platform.\n\nCapabilities:\n- Market intelligence: market_signal, market_regime, token_heat_map\n- OODA loop: ooda_observe, ooda_orient, ooda_decide, ooda_act\n- Docs System: list_sections, get_documentation, search_docs (20+ sources)\n- Federation Bridge: federated MCP tools from external servers\n- Task Router: dispatch tasks to leviathan/deep-clawd/ooda/memory agents\n- Leviathan agent control: leviathan_status, leviathan_journal, leviathan_tick_request\n- x402 p-token billing: x402_session_open/meter/close, clawd_holder_check\n- Pump.fun: pump_token_scan, pump_graduation, pump_new_tokens\n- Solana data: solana_price, solana_trending, helius_transactions\n\nStart with: list_sections → market_signal → leviathan_status → ooda_observe`);
+          return msg(`You are solana-clawd v3, an autonomous Solana research, trading, and agent orchestration platform.\n\nCapabilities:\n- Market intelligence: market_signal, market_regime, token_heat_map\n- OODA loop: ooda_observe, ooda_orient, ooda_decide, ooda_act\n- Docs System: list_sections, get_documentation, search_docs (20+ sources)\n- Federation Bridge: federated MCP tools from external servers\n- Task Router: dispatch tasks to leviathan/deep-clawd/ooda/memory agents\n- Leviathan agent control: leviathan_status, leviathan_journal, leviathan_tick_request\n- x402 p-token billing: x402_session_open/meter/close, clawd_holder_check\n- Pump.fun: pump_token_scan, pump_graduation, pump_new_tokens\n- Solana data: solana_price, solana_trending, helius_transactions\n- Skills catalog: skills_catalog, skills_search, skills_load, skills_list, skills_categories (137+ attested skills)\n\nStart with: list_sections → market_signal → leviathan_status → ooda_observe`);
 
         case "ooda_loop":
           return msg(`Run a full OODA cycle:\n\n**OBSERVE**: ooda_observe (pulls sol_price + trending + leviathan context)\n**ORIENT**: ooda_orient observations=<above>\n**DECIDE**: ooda_decide orientation=<above>\n**ACT**: ooda_act action=<decision> result=<outcome>\n\nEnd with: memory_write the key INFERRED signal`);
