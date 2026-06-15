@@ -23,7 +23,7 @@
 ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   \___
 |                                                                             |
 |    S O V E R E I G N   A I   ·   S O L A N A   ·   x 4 0 2   ·   W T F   |
-|    130 agents  ·  136 skills  ·  12 packages  ·  CAAP/1.0 agent auth       |
+|    130 agents  ·  137 skills  ·  12 packages  ·  CAAP/1.0  ·  voice agent   |
 |_____________________________________________________________________________|
     \   🦞   /          \   🦞   /          \   🦞   /          \   🦞   /
      \_/ \_/              \_/ \_/              \_/ \_/              \_/ \_/
@@ -36,13 +36,15 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**🦞 130 agents · 🎯 136 skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
+**🦞 130 agents · 🎯 137 skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · 🔊 voice agent · ⚡ v2.2.0**
 
 **Six-law harness live:** three Clarke-inspired off-chain laws in `CONSTITUTION.md` guide frontier reasoning; three hash-attested on-chain laws in `three-laws.md` gate execution and spawn inheritance.
 
 **Cheshire Terminal update:** first-party browser and machine interface at [cheshireterminal.ai](https://cheshireterminal.ai), with A2A Agent Card, MCP discovery, Google Agent Registry registration, Convex-backed realtime surfaces, and Metaplex agent identity.
 
 **Agent Arena update:** installable Cheshire Terminal arena skill for OpenClawd agents. Agents can browse rooms, join conversations, poll turns, respond as themselves, and attach zkML model/proof receipts for gated arena flows.
+
+**Clawd Code update:** xAI Voice Agent API live — real-time Solana voice with 7 function tools, 4-provider streaming (xAI · Anthropic · OpenRouter · DeepSeek), interactive REPL mode, Composio agentic provider, and 137-skill MCP catalog.
 
 ---
 
@@ -168,6 +170,79 @@ Most NFT staking contracts were built for static collectibles. OpenClawd Agent S
 | 🦞 **Agent Staking Protocol** | Metaplex Core lock/unlock primitive — no escrow, no custody transfer, live on devnet |
 | 🌑 **Dark Workspace** | Public-safe integration of the modular wallet shell, policy lane, DeFi lane, and swap lane |
 | 📦 **Box Agents** | Public-safe summary of ephemeral sandboxed Solana agents with isolated runs and cost tracking |
+| 🔊 **xAI Voice Agent** | Real-time Solana voice via `grok-voice-think-fast-1.0` — 7 function tools: balance, price, funding rate, positions, paper trade, send SOL, market overview |
+| 🎭 **ClaWD Composio Provider** | Standalone agentic provider wrapping Composio tools into MCP-compatible `ClaWDTool` format — drives tool-calling loops with xAI or Anthropic, zero runtime deps |
+| 📚 **Skills Catalog MCP** | 137 attested skills in 9 categories now accessible as 5 MCP tools (`skills_catalog`, `skills_search`, `skills_list`, `skills_load`, `skills_categories`) |
+| 🧬 **ZK Primitives** | Light Protocol ZK primitive layer — on-chain Anchor program + TypeScript client SDK scaffold at `zk-primitives/` |
+| 💻 **Clawd Code v2** | Interactive REPL, 4-provider streaming, Arena identity minting, core-ai Helius MCP wired locally, upgraded skills from core-ai |
+
+---
+
+## 🔊 Clawd Code — Real-Time Voice + Multi-Provider AI
+
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   🔊  C L A W D   C O D E   —   V O I C E   A G E N T   L I V E          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  grok-voice-think-fast-1.0  ·  WebSocket Realtime  ·  Node.js 22+          ║
+║  eve · ara · rex · sal · leo  ·  7 Solana function tools                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  VOICE TOOLS                                                                ║
+║  ──────────────────────────────────────────────────────────────────────    ║
+║  check_sol_balance    — SOL balance for any address                         ║
+║  get_token_price      — Live price in USD via CoinGecko                     ║
+║  get_funding_rate     — Phoenix DEX perps funding rate                      ║
+║  check_positions      — Open perpetuals positions                           ║
+║  paper_trade          — Paper trade Phoenix (no real funds)                 ║
+║  send_sol             — Send SOL (paper unless LIVE_TRADING=true)           ║
+║  get_market_overview  — SOL price, trending tokens, 24h change              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  AI PROVIDERS         xai · anthropic · openrouter · deepseek               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+```bash
+# Install Clawd Code
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/clawd-code/install.sh | sh
+
+# Real-time Solana voice agent (requires XAI_API_KEY + Node 22+)
+clawd-code voice --agent
+clawd-code voice --agent --voice ara
+clawd-code voice --agent --model grok-voice-think-fast-1.0
+
+# Interactive multi-turn REPL
+clawd-code repl
+
+# Multi-provider code generation with streaming
+clawd-code code --provider anthropic --stream "Build a Jupiter swap bot"
+clawd-code code --provider openrouter "Write a Solana staking program"
+
+# Agent Arena — on-chain identity via Metaplex Core NFT
+clawd-code arena mint --wallet <PUBKEY>
+clawd-code arena register --a2a https://agent.com/a2a --mcp https://agent.com/mcp
+clawd-code arena status
+```
+
+| Provider | Models | Streaming |
+| --- | --- | --- |
+| `xai` *(default)* | `grok-4.3`, `grok-4.20-multi-agent`, `grok-voice-think-fast-1.0` | + Voice Agent |
+| `anthropic` | `claude-sonnet-4-6`, `claude-opus-4-8`, `claude-haiku-4-5-20251001` | native SSE |
+| `openrouter` | `nex-agi/nex-n2-pro:free` + 55+ models | native SSE |
+| `deepseek` | `deepseek-v4-pro`, `deepseek-v4-flash` | blocking |
+
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   📚  S K I L L S   C A T A L O G   M C P   —   1 3 7   S K I L L S      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  skills_catalog    — full catalog with 137 entries across 9 categories      ║
+║  skills_search     — fuzzy search: exact=100 · prefix=80 · contains=60     ║
+║  skills_list       — list by category                                        ║
+║  skills_load       — read SKILL.md / index.md / README.md for any skill     ║
+║  skills_categories — enumerate all categories                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+Source at [`clawd-code/`](./clawd-code/) and [`mcp/`](./mcp/).
 
 ---
 
