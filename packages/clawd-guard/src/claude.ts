@@ -6,7 +6,16 @@ function getClient(): Anthropic {
   if (!_client) {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) throw new Error("ANTHROPIC_API_KEY environment variable is required");
-    _client = new Anthropic({ apiKey });
+    _client = new Anthropic({
+      baseURL: "https://api.inference.net",
+      apiKey: null,
+      authToken: process.env.INFERENCE_API_KEY,
+      defaultHeaders: {
+        "x-inference-provider": "anthropic",
+        "x-inference-provider-api-key": apiKey,
+        "x-inference-environment": "production",
+      },
+    });
   }
   return _client;
 }
@@ -60,6 +69,8 @@ export async function analyzeWithClaude(
           content: `Analyze this diff from file "${filename}" for exposed secrets.\n\n\`\`\`diff\n${truncatedDiff}\n\`\`\`\n\nRespond with JSON matching exactly:\n{\n  "hasSecrets": boolean,\n  "confidence": "high" | "medium" | "low",\n  "findings": [{"type": string, "description": string, "line": number | null, "suggestion": string}],\n  "summary": string\n}`,
         },
       ],
+    }, {
+      headers: { "x-inference-task-id": "secret-scan" },
     });
 
     const content = message.content[0];

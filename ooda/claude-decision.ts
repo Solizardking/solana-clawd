@@ -40,16 +40,30 @@ function getOodaClient(): OodaClient {
 
   if (deepseekKey) {
     _oodaClient = {
-      client: new OpenAI({ apiKey: deepseekKey, baseURL: 'https://api.deepseek.com' }),
+      client: new OpenAI({
+        baseURL: 'https://api.inference.net/v1',
+        apiKey: process.env.INFERENCE_API_KEY,
+        defaultHeaders: {
+          'x-inference-provider-url': 'https://api.deepseek.com',
+          'x-inference-provider-api-key': deepseekKey,
+          'x-inference-environment': 'production',
+        },
+      }),
       model: modelOverride ?? 'deepseek-v4-flash',
       provider: 'deepseek',
     };
   } else if (openrouterKey) {
     _oodaClient = {
       client: new OpenAI({
-        apiKey: openrouterKey,
-        baseURL: 'https://openrouter.ai/api/v1',
-        defaultHeaders: { 'HTTP-Referer': 'https://openclawd.com', 'X-Title': 'Solana Clawd OODA' },
+        baseURL: 'https://api.inference.net/v1',
+        apiKey: process.env.INFERENCE_API_KEY,
+        defaultHeaders: {
+          'HTTP-Referer': 'https://openclawd.com',
+          'X-Title': 'Solana Clawd OODA',
+          'x-inference-provider-url': 'https://openrouter.ai/api/v1',
+          'x-inference-provider-api-key': openrouterKey,
+          'x-inference-environment': 'production',
+        },
       }),
       model: modelOverride ?? 'anthropic/claude-haiku-4-5',
       provider: 'openrouter',
@@ -57,7 +71,15 @@ function getOodaClient(): OodaClient {
   } else if (anthropicKey) {
     // Anthropic via DeepSeek-compatible endpoint doesn't apply here — use OpenAI compat shim
     _oodaClient = {
-      client: new OpenAI({ apiKey: anthropicKey, baseURL: 'https://api.anthropic.com/v1' }),
+      client: new OpenAI({
+        baseURL: 'https://api.inference.net/v1',
+        apiKey: process.env.INFERENCE_API_KEY,
+        defaultHeaders: {
+          'x-inference-provider-url': 'https://api.anthropic.com/v1',
+          'x-inference-provider-api-key': anthropicKey,
+          'x-inference-environment': 'production',
+        },
+      }),
       model: modelOverride ?? 'claude-haiku-4-5-20251001',
       provider: 'anthropic',
     };
@@ -126,7 +148,9 @@ export async function claudeDecision(obs: Observations): Promise<unknown> {
       { role: 'user', content: prompt },
     ],
     ...extraBody,
-  } as Parameters<typeof client.chat.completions.create>[0]);
+  } as Parameters<typeof client.chat.completions.create>[0], {
+    headers: { 'x-inference-task-id': 'ooda-decision' },
+  });
 
   const msg = response.choices[0]?.message;
   const text = msg?.content ?? '';

@@ -124,11 +124,14 @@ export class GachaMachine {
 
   constructor(apiKey: string) {
     this.client = new OpenAI({
-      baseURL: "https://openrouter.ai/api/v1",
-      apiKey,
+      baseURL: "https://api.inference.net/v1",
+      apiKey: process.env.INFERENCE_API_KEY ?? apiKey,
       defaultHeaders: {
         "HTTP-Referer": this.siteUrl,
         "X-Title": this.siteName,
+        "x-inference-provider-url": "https://openrouter.ai/api/v1",
+        "x-inference-provider-api-key": apiKey,
+        "x-inference-environment": "production",
       },
     });
   }
@@ -160,6 +163,8 @@ export class GachaMachine {
       messages: enriched,
       max_tokens: opts.maxTokens ?? 2048,
       stream: false,
+    }, {
+      headers: { "x-inference-task-id": "gacha-chat" },
     });
 
     const content = response.choices[0]?.message?.content ?? "";
@@ -190,6 +195,8 @@ export class GachaMachine {
       messages: enriched,
       max_tokens: opts.maxTokens ?? 2048,
       stream: true,
+    }, {
+      headers: { "x-inference-task-id": "gacha-stream" },
     });
 
     for await (const chunk of stream) {

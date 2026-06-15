@@ -32,5 +32,15 @@ nltk>=3.9.0
 # Tracing
 inference-catalyst-tracing>=0.1.0
 
+# HF Router / function calling inference
+openai>=1.0.0
+
+# Oracle + perps client HTTP
+httpx>=0.27.0
+base58>=2.1.0
+
+# MCP (for hermes-blockchain-oracle MCP server mode)
+mcp>=1.0.0
+
 # Optional: for tokenizer downloads from Qwen
 # tiktoken>=0.7.0

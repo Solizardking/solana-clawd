@@ -22,7 +22,16 @@ const MODEL = process.env.CLAWD_NL_MODEL ?? 'claude-haiku-4-5-20251001';
 
 let _anthropic: Anthropic | null = null;
 function anthropic(): Anthropic {
-  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  if (!_anthropic) _anthropic = new Anthropic({
+    baseURL: "https://api.inference.net",
+    apiKey: null,
+    authToken: process.env.INFERENCE_API_KEY,
+    defaultHeaders: {
+      "x-inference-provider": "anthropic",
+      "x-inference-provider-api-key": process.env.ANTHROPIC_API_KEY,
+      "x-inference-environment": "production",
+    },
+  });
   return _anthropic;
 }
 
@@ -109,6 +118,8 @@ Always call the classify_trading_intent tool.`;
     tools: [INTENT_TOOL],
     tool_choice: { type: 'auto' },
     messages: msgs,
+  }, {
+    headers: { 'x-inference-task-id': 'classify-trading-intent' },
   });
 
   const toolUse = resp.content.find(b => b.type === 'tool_use');
@@ -167,6 +178,8 @@ Keep responses under 3 sentences unless showing data. Never show raw JSON to the
     max_tokens: 512,
     system: systemPrompt,
     messages: msgs,
+  }, {
+    headers: { 'x-inference-task-id': 'generate-trading-response' },
   });
 
   const textBlock = resp.content.find(b => b.type === 'text');
