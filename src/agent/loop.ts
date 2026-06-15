@@ -5,6 +5,7 @@
  * Inference provider is pluggable: pass a `think()` callable.
  */
 
+import { agentSpan } from '@inference/tracing';
 import { ulid } from 'ulid';
 import { buildSystemPrompt } from './system-prompt.js';
 import { getShellDb, recordEvent, getLeviathan } from '../state/database.js';
@@ -93,7 +94,20 @@ export async function tailFlick(input: LoopInput): Promise<void> {
     { role: 'user', content: lev.spawn_prompt },
   ];
 
-  const reply = await input.infer.think(model, sys, history, allTools);
+  const reply = await agentSpan(
+    {
+      agentId: lev.pubkey,
+      agentName: lev.name,
+      sessionId: flickId,
+      spanName: 'leviathan.tail-flick',
+    },
+    async (span) => {
+      span.setInput(lev.spawn_prompt);
+      const result = await input.infer.think(model, sys, history, allTools);
+      span.setOutput(result);
+      return result;
+    },
+  );
   const endedAt = Date.now();
 
   const tokensIn = approxTokens(sys + lev.spawn_prompt);

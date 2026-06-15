@@ -14,6 +14,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { initTracing, shutdownTracing } from './tracing.js';
 import { hasKeystore, readKeystoreMetadata, requireKeypair } from './identity/wallet.js';
 import { runSpawnWizard } from './setup/wizard.js';
 import { spawnSpawnling } from './molting/spawn.js';
@@ -108,6 +109,11 @@ if (flag('--spawnling')) {
 
 if (flag('--run')) {
   if (!hasKeystore()) throw new Error('No keystore. Run `openclawd --spawn` first.');
+  await initTracing();
+  process.on('SIGTERM', async () => {
+    await shutdownTracing();
+    process.exit(0);
+  });
   console.log('🦞 leviathan resumed — pulse engaged');
   startPulse(RPC, {
     onTick: async ({ depth, balances }) => {

@@ -29,5 +29,8 @@ sentencepiece>=0.2.0
 scikit-learn>=1.5.0
 nltk>=3.9.0
 
+# Tracing
+inference-catalyst-tracing>=0.1.0
+
 # Optional: for tokenizer downloads from Qwen
 # tiktoken>=0.7.0
