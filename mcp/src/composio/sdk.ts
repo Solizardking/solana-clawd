@@ -10,15 +10,20 @@ import {
   type ClawdComposioConfig,
   type ClawdComposioConfigOverrides,
 } from "./config.js";
+import { ClaWDProvider } from "./clawd-provider.js";
 
 export interface CreateClawdComposioOptions extends ClawdComposioConfigOverrides {
   disableVersionCheck?: boolean;
+  verbose?: boolean;
 }
+
+type ClawdComposio = Composio<ClaWDProvider>;
+type ClawdSessionConfig = Parameters<ClawdComposio["create"]>[1];
 
 export function createClawdComposio(
   options: CreateClawdComposioOptions = {},
 ): {
-  composio: Composio;
+  composio: ClawdComposio;
   config: ClawdComposioConfig;
 } {
   const config = getClawdComposioConfig(options);
@@ -28,6 +33,7 @@ export function createClawdComposio(
     apiKey,
     baseURL: config.baseURL,
     host: config.host,
+    provider: new ClaWDProvider({ verbose: options.verbose }),
     disableVersionCheck: options.disableVersionCheck ?? true,
   });
 
@@ -35,12 +41,12 @@ export function createClawdComposio(
 }
 
 export async function createClawdSession(
-  sessionConfig?: Parameters<Composio["create"]>[1],
+  sessionConfig?: ClawdSessionConfig,
   options: CreateClawdComposioOptions = {},
 ): Promise<{
-  composio: Composio;
+  composio: ClawdComposio;
   config: ClawdComposioConfig;
-  session: Session<unknown, unknown, Composio["provider"]>;
+  session: Session<unknown, unknown, ClaWDProvider>;
 }> {
   const { composio, config } = createClawdComposio(options);
   const session = await composio.create(config.userId, sessionConfig);
@@ -50,7 +56,7 @@ export async function createClawdSession(
 export async function listClawdConnectedAccounts(
   options: CreateClawdComposioOptions = {},
 ): Promise<{
-  composio: Composio;
+  composio: ClawdComposio;
   config: ClawdComposioConfig;
   accounts: ConnectedAccountListResponseItem[];
 }> {
@@ -63,12 +69,12 @@ export async function listClawdConnectedAccounts(
 
 export async function authorizeClawdToolkit(
   toolkit: string,
-  sessionConfig?: Parameters<Composio["create"]>[1],
+  sessionConfig?: ClawdSessionConfig,
   options: CreateClawdComposioOptions = {},
 ): Promise<{
-  composio: Composio;
+  composio: ClawdComposio;
   config: ClawdComposioConfig;
-  session: Session<unknown, unknown, Composio["provider"]>;
+  session: Session<unknown, unknown, ClaWDProvider>;
   request: ConnectionRequest;
 }> {
   const { composio, config, session } = await createClawdSession(

@@ -208,6 +208,26 @@ Optional flags:
 --manual-auth
 ```
 
+### Sovereign Clawd agent harness
+
+Clawd can use Composio sessions without Claude Code or Anthropic as the model runtime. The sovereign harness creates a Composio session, connects to `session.mcp.url` through `@ai-sdk/mcp`, and runs tools through any OpenAI-compatible model endpoint.
+
+Set a model endpoint first:
+
+```bash
+export CLAWD_MODEL_BASE_URL=http://127.0.0.1:11434/v1
+export CLAWD_MODEL_API_KEY=local-or-gateway-key
+export CLAWD_MODEL=solana-clawd
+```
+
+Run the harness:
+
+```bash
+npm run clawd:agent -- --prompt="Check the Clawd runtime and Vulcan status" --toolkits=github,slack
+```
+
+Native Composio sessions also include local custom tools for Clawd runtime status and read-only Vulcan/Phoenix checks. Composio's current custom-tool API is native-session only, so Vulcan custom tools are exposed through `session.tools()` and this local Clawd MCP server rather than the remote Composio MCP URL.
+
 ### STDIO mode (default for Cursor/VS Code/Claude Desktop)
 ```bash
 node dist/index.js
