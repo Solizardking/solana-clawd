@@ -15,7 +15,7 @@ node_modules/
 .pnp.js
 yarn.lock
 bun.lock
-
+solana-mcp-official-main
 # Build outputs
 .next/
 .next-dev-*/

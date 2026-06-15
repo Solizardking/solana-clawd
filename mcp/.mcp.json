@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "solana-clawd-composio": {
+      "type": "http",
+      "url": "https://backend.composio.dev/v3/mcp/99df7ac3-91c1-4e9d-9d62-ad290d9077ea?include_composio_helper_actions=true&user_id=0e9b47dd-2f4d-441e-bb96-87859317ed17"
+    }
+  }
+}

@@ -81,6 +81,12 @@ import { getPluginRegistry, type PluginRegistry } from "./plugins/plugin-registr
 import { getFederationBridge, type FederationBridge } from "./federation/federation-bridge.js";
 import { getAgentTaskRouter, type AgentTaskRouter } from "./federation/agent-task-router.js";
 import { getDocsSystem, type DocsSystem } from "./docs/docs-system.js";
+import {
+  getOfficialSolanaAssets,
+  listOfficialSolanaSections,
+  readOfficialSolanaAsset,
+  searchOfficialSolanaSources,
+} from "./docs/official-solana.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -463,6 +469,58 @@ async function buildOrchestrator(
   },
     async (a) => docs.searchDocs(String(a.query), Number(a.topK ?? 5)));
 
+  reg({
+    name: "official_solana_sections",
+    description:
+      "[Official Solana MCP] List the upstream Solana MCP documentation corpus from solana-mcp-official-main/ingestion/sources.yaml.",
+    inputSchema: { type: "object", properties: {} },
+    category: "docs",
+  },
+    async () => listOfficialSolanaSections());
+
+  reg({
+    name: "official_solana_search_sources",
+    description:
+      "[Official Solana MCP] Search upstream Solana documentation source metadata by id, section, URL, or use case.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search term, section, source id, or use case keyword" },
+        limit: { type: "number", description: "Maximum results, default 10" },
+      },
+      required: ["query"],
+    },
+    category: "docs",
+  },
+    async (a) => ({
+      query: String(a.query),
+      results: await searchOfficialSolanaSources(String(a.query), Number(a.limit ?? 10)),
+    }));
+
+  reg({
+    name: "official_solana_assets",
+    description:
+      "[Official Solana MCP] List adapted upstream implementation assets: api, lib, server, ingestion, monitoring, and dashboard files.",
+    inputSchema: { type: "object", properties: {} },
+    category: "docs",
+  },
+    async () => getOfficialSolanaAssets());
+
+  reg({
+    name: "official_solana_read_asset",
+    description:
+      "[Official Solana MCP] Read an upstream implementation asset by id. Use official_solana_assets first.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        assetId: { type: "string", description: "Asset id from official_solana_assets" },
+      },
+      required: ["assetId"],
+    },
+    category: "docs",
+  },
+    async (a) => readOfficialSolanaAsset(String(a.assetId)));
+
   // ── Federation tools (federated MCP proxying) ─────────────────────────────
   const federatedTools = await bridge.generateFederatedTools();
   if (federatedTools.length > 0) {
@@ -739,6 +797,8 @@ export async function createServer(): Promise<Server> {
       { uri: "solana-clawd://clawd/token", name: "CLAWD Token", description: "CLAWD token info and discount tiers", mimeType: "application/json" },
       { uri: "solana-clawd://orchestrator/tools", name: "Tool Registry", description: "All registered tools by category", mimeType: "application/json" },
       { uri: "solana-clawd://docs/sections", name: "Doc Sections", description: "Available documentation sections", mimeType: "text/markdown" },
+      { uri: "solana-clawd://official-solana/sections", name: "Official Solana MCP Sources", description: "Upstream Solana MCP source taxonomy", mimeType: "text/markdown" },
+      { uri: "solana-clawd://official-solana/assets", name: "Official Solana MCP Assets", description: "Adapted upstream implementation assets", mimeType: "application/json" },
       { uri: "solana-clawd://federation/status", name: "Federation Status", description: "Federated MCP server connections and health", mimeType: "application/json" },
       { uri: "solana-clawd://plugins/status", name: "Plugin Status", description: "Plugin registry status and loaded tools", mimeType: "application/json" },
     ],
@@ -748,6 +808,7 @@ export async function createServer(): Promise<Server> {
     resourceTemplates: [
       { uriTemplate: "solana-clawd://source/{path}", name: "Source file", description: "Read a repository source file", mimeType: "text/plain" },
       { uriTemplate: "solana-clawd://docs/{sourceId}", name: "Documentation", description: "Documentation for a source or section", mimeType: "text/markdown" },
+      { uriTemplate: "solana-clawd://official-solana/asset/{assetId}", name: "Official Solana MCP asset", description: "Read an adapted upstream official Solana MCP file", mimeType: "text/plain" },
     ],
   }));
 
@@ -801,6 +862,17 @@ export async function createServer(): Promise<Server> {
     }
     if (uri === "solana-clawd://docs/sections") {
       return c("text/markdown", docs.listSections());
+    }
+    if (uri === "solana-clawd://official-solana/sections") {
+      return c("text/markdown", await listOfficialSolanaSections());
+    }
+    if (uri === "solana-clawd://official-solana/assets") {
+      return c("application/json", JSON.stringify(getOfficialSolanaAssets(), null, 2));
+    }
+    if (uri.startsWith("solana-clawd://official-solana/asset/")) {
+      const assetId = uri.slice("solana-clawd://official-solana/asset/".length);
+      const asset = await readOfficialSolanaAsset(assetId);
+      return c(asset.mimeType, asset.text);
     }
     if (uri === "solana-clawd://federation/status") {
       const bridge = getFederationBridge();
