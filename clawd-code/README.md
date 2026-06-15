@@ -16,6 +16,8 @@ curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/claw
 The installer checks for Node.js 18+, installs the `clawd-code` binary, and
 creates `~/.clawd-code/.env` if one does not already exist.
 
+> **Note:** The xAI Voice Agent (`clawd-code voice --agent`) requires Node.js 22+ for native WebSocket support.
+
 Manual install:
 
 ```bash
@@ -53,7 +55,8 @@ clawd-code arena status
 | `clawd-code funding` | Show funding-rate dashboard |
 | `clawd-code research "<prompt>"` | Run multi-agent research (streaming with `--stream`) |
 | `clawd-code image "<prompt>"` | Generate images when configured |
-| `clawd-code voice "<text>"` | Generate voice when configured |
+| `clawd-code voice "<text>"` | Generate voice via local TTS or xAI Voice Agent API |
+| `clawd-code voice --agent` | Real-time Solana voice agent (requires `XAI_API_KEY`, Node 22+) |
 | `clawd-code repl` | Interactive multi-turn conversation REPL |
 | `clawd-code arena <subcommand>` | Agent Arena — on-chain identity, discovery, reputation |
 | `clawd-code verify` | Run environment checks |
@@ -70,7 +73,7 @@ Runtime configuration lives in `~/.clawd-code/.env`. Start from
 | --- | --- | --- |
 | `CLAWD_PROVIDER` | AI provider: `xai`, `anthropic`, `openrouter`, or `deepseek` | `xai` |
 | `CLAWD_MODEL` | Model used by the selected provider | `grok-4.20-multi-agent` |
-| `XAI_API_KEY` | xAI API key for Grok modes | empty |
+| `XAI_API_KEY` | xAI API key for Grok models + Voice Agent API | empty |
 | `ANTHROPIC_API_KEY` | Anthropic API key for Claude models (streaming) | empty |
 | `DEEPSEEK_API_KEY` | DeepSeek API key | empty |
 | `OPENROUTER_API_KEY` | OpenRouter API key (free models supported) | empty |
@@ -154,6 +157,40 @@ An interactive multi-turn conversation session. Dot commands:
 | `.history` | Print conversation history |
 | `.help` | Show all dot commands |
 | `.exit` / `.quit` | End session |
+
+## xAI Voice Agent
+
+Real-time Solana voice interactions powered by `grok-voice-think-fast-1.0` via the xAI Voice Agent API. Requires `XAI_API_KEY` and Node.js 22+.
+
+```bash
+# Start voice agent REPL (text I/O over WebSocket)
+clawd-code voice --agent
+
+# Choose a voice persona (eve, ara, rex, sal, leo)
+clawd-code voice --agent --voice ara
+
+# Pin to a specific model
+clawd-code voice --agent --model grok-voice-think-fast-1.0
+```
+
+Built-in Solana function tools:
+
+| Tool | Description |
+| --- | --- |
+| `check_sol_balance` | Get SOL balance for any wallet address |
+| `get_token_price` | Current price of any Solana token in USD |
+| `get_funding_rate` | Phoenix DEX perps funding rate for a symbol |
+| `check_positions` | Open perpetuals positions |
+| `paper_trade` | Paper trade on Phoenix (no real funds) |
+| `send_sol` | Send SOL — paper mode unless `LIVE_TRADING=true` |
+| `get_market_overview` | SOL price, trending tokens, 24h change |
+
+For ephemeral token generation (browser/mobile clients):
+
+```typescript
+import { VoiceAgentClient } from '@solana-clawd/clawd-code/voice-agent';
+const token = await VoiceAgentClient.fetchEphemeralToken(process.env.XAI_API_KEY, 300);
+```
 
 ## Agent Arena
 

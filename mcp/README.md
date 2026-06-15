@@ -181,6 +181,33 @@ npm install
 npm run build
 ```
 
+### Composio setup for Clawd Code
+
+The repo includes a Composio integration in [src/composio](/Users/8bit/Downloads/solana-clawd/mcp/src/composio) plus a helper CLI that provisions a Composio-hosted MCP server and prints a Claude/Clawd-compatible `.mcp.json` snippet.
+
+Set `COMPOSIO_API_KEY` first. The default Composio context in this repo is:
+
+```bash
+COMPOSIO_PROJECT_ID=pr_EfJnixWA-18L
+COMPOSIO_ORG_ID=ok_AzkvMFngCFIJ
+COMPOSIO_ORG_MEMBER_EMAIL=beetsbyj@gmail.com
+COMPOSIO_USER_ID=0e9b47dd-2f4d-441e-bb96-87859317ed17
+```
+
+Generate a Composio MCP server for selected toolkits:
+
+```bash
+npm run composio:setup -- --toolkits=github,slack
+```
+
+Optional flags:
+
+```bash
+--name=solana-clawd-composio
+--tools=GITHUB_CREATE_ISSUE,SLACK_SEND_MESSAGE
+--manual-auth
+```
+
 ### STDIO mode (default for Cursor/VS Code/Claude Desktop)
 ```bash
 node dist/index.js
