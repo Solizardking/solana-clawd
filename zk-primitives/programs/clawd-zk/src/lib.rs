@@ -50,14 +50,18 @@ pub mod nullifier;
 pub mod proof;
 pub mod state;
 
-use nullifier::NullifierAccount;
-use nullifier_creation::NullifierInstructionData;
 use proof::verify_groth16;
 
 declare_id!("CLAWDzk11111111111111111111111111111111111");
 
 /// Light CPI signer (auto-derived from this program's ID by the Light SDK).
-pub const LIGHT_CPI_SIGNER: Pubkey = Pubkey::new_from_array([0u8; 32]); // placeholder, see idl-build
+/// Set at IDL-build time via `anchor idl build`. Placeholder for the scaffold.
+pub const LIGHT_CPI_SIGNER: Pubkey = Pubkey::new_from_array([
+    0x9C, 0x9C, 0x5A, 0xCB, 0x9F, 0x88, 0xC0, 0xA5,
+    0xE2, 0xD0, 0xBC, 0xB4, 0x42, 0xD6, 0xC3, 0x70,
+    0x42, 0xC2, 0xCC, 0x1F, 0x2D, 0x18, 0x9D, 0x6E,
+    0x29, 0x68, 0x9B, 0xC3, 0xA7, 0xE1, 0x3D, 0xB5,
+]);
 
 #[program]
 pub mod clawd_zk {
@@ -245,7 +249,7 @@ pub struct PublishAttestationData {
     /// Light Protocol data for writing the compressed attestation record.
     pub state_data: state::WriteStateData,
     /// Light Protocol data for creating the nullifier compressed accounts.
-    pub nullifier_data: NullifierInstructionData,
+    pub nullifier_data: nullifier::NullifierInstructionData,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
