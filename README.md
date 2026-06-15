@@ -384,21 +384,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`4255ad9c`](../../commit/4255ad9c) | chore: register submodules in .gitmodules and gitignore stak | solizardking | Jun 15 |
-| 🥈 | [`d44de619`](../../commit/d44de619) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| 🥉 | [`fc854de4`](../../commit/fc854de4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| 4️⃣ | [`6fc29869`](../../commit/6fc29869) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 15 |
-| 5️⃣ | [`208bda0b`](../../commit/208bda0b) | dffd | solizardking | Jun 15 |
-| 6️⃣ | [`915183d7`](../../commit/915183d7) | sfdsdffd | solizardking | Jun 15 |
-| 7️⃣ | [`c1424e54`](../../commit/c1424e54) | gsgdsg | solizardking | Jun 15 |
-| 8️⃣ | [`29185e41`](../../commit/29185e41) | sdfdfs | solizardking | Jun 15 |
-| 9️⃣ | [`2cbc9608`](../../commit/2cbc9608) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| 🔟 | [`b801646d`](../../commit/b801646d) | sagfads | solizardking | Jun 15 |
+| 🥇 | [`f5787ee7`](../../commit/f5787ee7) | fix(.npmrc): drop hardcoded virtual-store-dir that broke pnp | solizardking | Jun 15 |
+| 🥈 | [`c42578c4`](../../commit/c42578c4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| 🥉 | [`4255ad9c`](../../commit/4255ad9c) | chore: register submodules in .gitmodules and gitignore stak | solizardking | Jun 15 |
+| 4️⃣ | [`d44de619`](../../commit/d44de619) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| 5️⃣ | [`fc854de4`](../../commit/fc854de4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| 6️⃣ | [`6fc29869`](../../commit/6fc29869) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 15 |
+| 7️⃣ | [`208bda0b`](../../commit/208bda0b) | dffd | solizardking | Jun 15 |
+| 8️⃣ | [`915183d7`](../../commit/915183d7) | sfdsdffd | solizardking | Jun 15 |
+| 9️⃣ | [`c1424e54`](../../commit/c1424e54) | gsgdsg | solizardking | Jun 15 |
+| 🔟 | [`29185e41`](../../commit/29185e41) | sdfdfs | solizardking | Jun 15 |
+| · | [`2cbc9608`](../../commit/2cbc9608) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| · | [`b801646d`](../../commit/b801646d) | sagfads | solizardking | Jun 15 |
 | · | [`b51ff434`](../../commit/b51ff434) | fdfssfdsgd | solizardking | Jun 15 |
 | · | [`f1b43747`](../../commit/f1b43747) | dsgdfsgd | solizardking | Jun 15 |
 | · | [`91243c9b`](../../commit/91243c9b) | feat(zk-primitives): scaffold Light Protocol ZK primitive la | solizardking | Jun 15 |
-| · | [`6dcbb6f9`](../../commit/6dcbb6f9) | ssfsffsdx | solizardking | Jun 15 |
-| · | [`d36fa3a3`](../../commit/d36fa3a3) | asdfdfs | solizardking | Jun 15 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
