@@ -1,0 +1,22 @@
+# Evaluation config for Solana Clawd model
+#
+# Used by scripts/evaluate.py
+
+base_model: "Qwen/Qwen2.5-1.5B-Instruct"
+adapter_repo: "solanaclawd/solana-clawd-1.5b-lora"
+adapter_revision: "main"
+
+# Eval dataset
+eval_dataset_repo: "solanaclawd/solana-clawd-eval"
+eval_split: "test"
+max_eval_samples: 100
+
+# Generation
+max_new_tokens: 512
+temperature: 0.2
+top_p: 0.9
+do_sample: true
+
+# Output
+output_dir: "./outputs/eval"
+report_to: "json"               # json | markdown | console
