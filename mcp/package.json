@@ -12,9 +12,11 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "start:http": "node dist/http.js"
+    "start:http": "node dist/http.js",
+    "composio:setup": "node dist/composio/setup.js"
   },
   "dependencies": {
+    "@composio/core": "^0.10.0",
     "@modelcontextprotocol/sdk": "^1.10.2",
     "express": "^4.21.1"
   },
