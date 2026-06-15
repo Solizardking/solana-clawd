@@ -384,21 +384,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`6fc29869`](../../commit/6fc29869) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 15 |
-| 🥈 | [`208bda0b`](../../commit/208bda0b) | dffd | solizardking | Jun 15 |
-| 🥉 | [`915183d7`](../../commit/915183d7) | sfdsdffd | solizardking | Jun 15 |
-| 4️⃣ | [`c1424e54`](../../commit/c1424e54) | gsgdsg | solizardking | Jun 15 |
-| 5️⃣ | [`29185e41`](../../commit/29185e41) | sdfdfs | solizardking | Jun 15 |
-| 6️⃣ | [`2cbc9608`](../../commit/2cbc9608) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| 7️⃣ | [`b801646d`](../../commit/b801646d) | sagfads | solizardking | Jun 15 |
-| 8️⃣ | [`b51ff434`](../../commit/b51ff434) | fdfssfdsgd | solizardking | Jun 15 |
-| 9️⃣ | [`f1b43747`](../../commit/f1b43747) | dsgdfsgd | solizardking | Jun 15 |
-| 🔟 | [`91243c9b`](../../commit/91243c9b) | feat(zk-primitives): scaffold Light Protocol ZK primitive la | solizardking | Jun 15 |
+| 🥇 | [`fc854de4`](../../commit/fc854de4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| 🥈 | [`6fc29869`](../../commit/6fc29869) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 15 |
+| 🥉 | [`208bda0b`](../../commit/208bda0b) | dffd | solizardking | Jun 15 |
+| 4️⃣ | [`915183d7`](../../commit/915183d7) | sfdsdffd | solizardking | Jun 15 |
+| 5️⃣ | [`c1424e54`](../../commit/c1424e54) | gsgdsg | solizardking | Jun 15 |
+| 6️⃣ | [`29185e41`](../../commit/29185e41) | sdfdfs | solizardking | Jun 15 |
+| 7️⃣ | [`2cbc9608`](../../commit/2cbc9608) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| 8️⃣ | [`b801646d`](../../commit/b801646d) | sagfads | solizardking | Jun 15 |
+| 9️⃣ | [`b51ff434`](../../commit/b51ff434) | fdfssfdsgd | solizardking | Jun 15 |
+| 🔟 | [`f1b43747`](../../commit/f1b43747) | dsgdfsgd | solizardking | Jun 15 |
+| · | [`91243c9b`](../../commit/91243c9b) | feat(zk-primitives): scaffold Light Protocol ZK primitive la | solizardking | Jun 15 |
 | · | [`6dcbb6f9`](../../commit/6dcbb6f9) | ssfsffsdx | solizardking | Jun 15 |
 | · | [`d36fa3a3`](../../commit/d36fa3a3) | asdfdfs | solizardking | Jun 15 |
 | · | [`0f7808a5`](../../commit/0f7808a5) | fdsadfsdfs | solizardking | Jun 15 |
 | · | [`f5b6c9be`](../../commit/f5b6c9be) | fsfsfs | solizardking | Jun 15 |
-| · | [`503a89f3`](../../commit/503a89f3) | ffsfs | solizardking | Jun 15 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
