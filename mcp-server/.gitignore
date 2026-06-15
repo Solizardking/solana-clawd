@@ -55,7 +55,7 @@ secrets.json
 # Helius / RPC config with embedded keys
 helius.json
 rpc-config.json
-
+.env.local
 # npm auth token (NEVER commit)
 .npmrc
 

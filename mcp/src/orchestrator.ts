@@ -39,7 +39,9 @@ export type ToolCategory =
   | "federation"
   | "docs"
   | "orchestrator"
-  | "deep-clawd";
+  | "deep-clawd"
+  | "skills"
+  | "composio";
 
 export interface InputSchema {
   type: "object";

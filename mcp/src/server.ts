@@ -76,6 +76,7 @@ import { LEVIATHAN_TOOLS } from "./tools/leviathan-tools.js";
 import { MARKET_TOOLS } from "./tools/market-tools.js";
 import { DEEP_CLAWD_TOOLS } from "./tools/deep-clawd-tools.js";
 import { createIntegrationTools } from "./tools/integration-tools.js";
+import { createSkillsTools } from "./tools/skills-tools.js";
 import { getPluginRegistry, type PluginRegistry } from "./plugins/plugin-registry.js";
 import { getFederationBridge, type FederationBridge } from "./federation/federation-bridge.js";
 import { getAgentTaskRouter, type AgentTaskRouter } from "./federation/agent-task-router.js";
@@ -262,23 +263,8 @@ async function buildOrchestrator(
       return { message: `Stopped ${a.taskId}`, task };
     });
 
-  // ── Skills ────────────────────────────────────────────────────────────────
-
-  reg({ name: "skill_list", description: "List available solana-clawd skills", inputSchema: { type: "object", properties: {} }, category: "agents" },
-    async () => {
-      let skills: string[] = [];
-      try { const e = await fs.readdir(path.join(REPO_ROOT, "skills"), { withFileTypes: true }); skills = e.map(x => x.name); } catch { /* ok */ }
-      return { skills, hint: "Use skill_read to see contents" };
-    });
-
-  reg({ name: "skill_read", description: "Read a skill file by name", inputSchema: { type: "object", properties: { skillName: { type: "string" } }, required: ["skillName"] }, category: "agents" },
-    async (a) => {
-      const name = String(a.skillName);
-      for (const p of [path.join(REPO_ROOT, "skills", `${name}.md`), path.join(REPO_ROOT, "skills", name, "SKILL.md"), path.join(REPO_ROOT, "skills", name, "README.md")]) {
-        const c = await readFileText(p); if (c) return c;
-      }
-      return `Skill not found: ${name}`;
-    });
+  // ── Skills catalog (137+ attested agent skills) ───────────────────────────
+  orch.registerAll(createSkillsTools());
 
   // ── Session helpers ───────────────────────────────────────────────────────
 

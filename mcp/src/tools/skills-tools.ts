@@ -15,7 +15,7 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { ToolDef, ToolHandler, ToolCategory } from "../orchestrator.js";
+import type { ToolCategory, ToolDef, ToolHandler } from "../orchestrator.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -87,7 +87,7 @@ async function readSkillContent(slug: string): Promise<string | null> {
 
 // ─── Tool Definitions ─────────────────────────────────────────────────────────
 
-const SKILLS_CATEGORY: ToolCategory = "agents";
+const SKILLS_CATEGORY: ToolCategory = "skills";
 
 export function createSkillsTools(): Array<[ToolDef, ToolHandler]> {
   return [

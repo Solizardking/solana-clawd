@@ -58,7 +58,7 @@ rpc-config.json
 
 # npm auth token (NEVER commit)
 .npmrc
-
+.env.local
 # ── Build artifacts ───────────────────────────────────────────────
 *.tgz
 *.tar.gz
