@@ -11,3 +11,5 @@ packages:
   - "goals"
   - "nemo-clawd"
   - "nemo-clawd/nemo-clawd-mcp"
+  - "zk-primitives/*"
+  - "a2a"

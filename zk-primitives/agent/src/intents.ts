@@ -11,13 +11,9 @@
  * calls — so it is fast, predictable, and CI-testable.
  */
 
-import type { ClawdZkAgent } from "./agent.js";
-// ClawdZkAgent.loadProof is used inside dispatchRoute at runtime, so we
-// import it as a value (it is a static method on the class). We need
-// the runtime symbol even though the class itself is referenced only
-// by type above.
-import { ClawdZkAgent as _ClawdZkAgentRuntime } from "./agent.js";
-void _ClawdZkAgentRuntime;
+import { ClawdZkAgent } from "./agent.js";
+// `ClawdZkAgent` is also used as a value (in `dispatchRoute` below),
+// so this is a regular import, not `import type`.
 
 /** Intents the agent knows how to handle. */
 export const KNOWN_INTENTS = [
