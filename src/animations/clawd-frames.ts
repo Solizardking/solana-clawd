@@ -32,15 +32,11 @@ export const clawdSpin: Spinner = {
     '⣰⣿⣿⡆',
     '⣿⡏⠀⠀',
     '⣿⡇⠀⠀',
-    '⣿⡏⠀⠀',
     '⠹⣿⣿⠃',
     '⠀⠈⠉⠀',
     '⠹⣿⣿⠃',
-    '⣿⡏⠀⠀',
     '⣿⡇⠀⠀',
     '⣿⡏⠀⠀',
-    '⣰⣿⣿⡆',
-    '⠀⠉⠉⠀',
   ],
   interval: 90,
 }
@@ -62,21 +58,22 @@ export const walletHeartbeat: Spinner = {
 }
 
 // ── Token orbit ────────────────────────────────────────────────────────
-// Dots orbiting like tokens swirling in a bonding curve.
+// Dots orbiting like tokens swirling in a bonding curve. One-directional —
+// the loop wraps straight from the last position back to the first, so the
+// orbit reads as continuous motion instead of a back-and-forth shuttle.
 export const tokenOrbit: Spinner = {
   frames: [
     '◆ ·  · ·',
     '· ◆  · ·',
     '· ·  ◆ ·',
     '· ·  · ◆',
-    '· ·  ◆ ·',
-    '· ◆  · ·',
   ],
   interval: 110,
 }
 
 // ── Pump loader ────────────────────────────────────────────────────────
-// Bonding curve filling up — used for launch animations.
+// Bonding curve filling up — used for launch animations. Holds briefly at
+// full before draining, but doesn't repeat the full-bar frame back to back.
 export const pumpLoader: Spinner = {
   frames: [
     '▱▱▱▱▱▱▱▱',
@@ -88,7 +85,6 @@ export const pumpLoader: Spinner = {
     '▰▰▰▰▰▰▱▱',
     '▰▰▰▰▰▰▰▱',
     '▰▰▰▰▰▰▰▰',
-    '▰▰▰▰▰▰▰▰',
     '▱▰▰▰▰▰▰▰',
     '▱▱▰▰▰▰▰▰',
     '▱▱▱▰▰▰▰▰',
@@ -96,7 +92,6 @@ export const pumpLoader: Spinner = {
     '▱▱▱▱▱▰▰▰',
     '▱▱▱▱▱▱▰▰',
     '▱▱▱▱▱▱▱▰',
-    '▱▱▱▱▱▱▱▱',
   ],
   interval: 60,
 }
