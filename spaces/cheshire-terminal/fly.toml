@@ -1,0 +1,70 @@
+# Cheshire Terminal — Fly.io app config
+#
+# The live app is hosted at:
+#   - https://cheshire-clawd-terminal.fly.dev  (Fly-assigned hostname)
+#   - https://cheshireterminal.ai             (custom domain, primary)
+#
+# Brand: "Cheshire Terminal" everywhere user-facing.
+# Internal Fly app slug:  cheshire-clawd-terminal   (legacy from when the
+#                         build was a webhook-driven gateway; harmless
+#                         to keep — public DNS already points at it).
+# If you want to rename the internal slug too, run:
+#   fly apps rename cheshire-terminal cheshire-clawd-terminal
+# …and then update any `app = "…"` lines that reference the old name.
+#
+# Secrets (set once, encrypted at rest):
+#   fly secrets set LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=... \
+#                 CLERK_PUBLISHABLE_KEY=... CLERK_SECRET_KEY=... \
+#                 SOLANA_RPC_URL="https://mainnet.helius-rpc.com/?api-key=..." \
+#                 PUMP_DRY_RUN=true \
+#                 --app cheshire-clawd-terminal
+
+app            = "cheshire-clawd-terminal"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  APP_NAME          = "Cheshire Terminal"
+  APP_BRAND         = "Cheshire Terminal — Powered by $CLAWD"
+  APP_HOST_PRIMARY  = "https://cheshireterminal.ai"
+  APP_HOST_FLY      = "https://cheshire-clawd-terminal.fly.dev"
+  # Token + ecosystem
+  CLAWD_MINT        = "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+  # x402 gateway
+  X402_API_URL      = "https://x402.wtf/api"
+  # Soft mirror: no signing, no custody
+  PUMP_DRY_RUN      = "true"
+  # Inherit the HF token for soft inference routing
+  HF_HUB_URL        = "https://huggingface.co"
+
+# Two listeners: 8080 for Fly's http_service, 7860 for HF Spaces
+[[services]]
+  internal_port = 8080
+  protocol      = "tcp"
+  [[services.ports]]
+    handlers = ["http"]
+    port     = 80
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port     = 443
+  [[services.tcp_checks]]
+    interval     = "15s"
+    timeout      = "2s"
+    grace_period = "10s"
+
+  [services.concurrency]
+    type      = "connections"
+    hard_limit = 250
+    soft_limit = 200
+
+[[vm]]
+  memory   = "512mb"
+  cpu_kind = "shared"
+  cpus     = 1
+
+# Persistent volume for sessions.json (mirrors clawd-gateway pattern)
+[[mounts]]
+  source      = "cheshire_data"
+  destination = "/data"
