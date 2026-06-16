@@ -419,21 +419,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`3e51af73`](../../commit/3e51af73) | spaces/clawd-zoo: mirror + fix default model + add fallback  | solizardking | Jun 16 |
-| 🥈 | [`cee06fca`](../../commit/cee06fca) | fsfs | solizardking | Jun 16 |
-| 🥉 | [`c9f624e0`](../../commit/c9f624e0) | fsfsfs | solizardking | Jun 16 |
-| 4️⃣ | [`f2d27cad`](../../commit/f2d27cad) | sdfdfs | solizardking | Jun 16 |
-| 5️⃣ | [`37d516f0`](../../commit/37d516f0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 6️⃣ | [`ba060a96`](../../commit/ba060a96) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
-| 7️⃣ | [`c649a574`](../../commit/c649a574) | dssgdsdfdfs | solizardking | Jun 16 |
-| 8️⃣ | [`44e34f1f`](../../commit/44e34f1f) | fssfsgdsdgsfsdggfs | solizardking | Jun 16 |
-| 9️⃣ | [`1225446f`](../../commit/1225446f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 🔟 | [`f41118d6`](../../commit/f41118d6) | fssfsd | solizardking | Jun 16 |
-| · | [`02ab2141`](../../commit/02ab2141) | fssffs | solizardking | Jun 16 |
-| · | [`3846c371`](../../commit/3846c371) | sffs | solizardking | Jun 16 |
-| · | [`ee9a3a4c`](../../commit/ee9a3a4c) | sffs | solizardking | Jun 16 |
-| · | [`10812752`](../../commit/10812752) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| · | [`a18a60ee`](../../commit/a18a60ee) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
+| 🥇 | [`4cdbb5eb`](../../commit/4cdbb5eb) | ;k;k; | solizardking | Jun 16 |
+| 🥈 | [`07090fef`](../../commit/07090fef) | ,n,n, | solizardking | Jun 16 |
+| 🥉 | [`fb444e42`](../../commit/fb444e42) | llml | solizardking | Jun 16 |
+| 4️⃣ | [`c9dacdcc`](../../commit/c9dacdcc) | ljllj | solizardking | Jun 16 |
+| 5️⃣ | [`4514f41d`](../../commit/4514f41d) | sgfg | solizardking | Jun 16 |
+| 6️⃣ | [`b367cbf8`](../../commit/b367cbf8) | dfsdfsfd | solizardking | Jun 16 |
+| 7️⃣ | [`a1376e67`](../../commit/a1376e67) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 8️⃣ | [`3e51af73`](../../commit/3e51af73) | spaces/clawd-zoo: mirror + fix default model + add fallback  | solizardking | Jun 16 |
+| 9️⃣ | [`cee06fca`](../../commit/cee06fca) | fsfs | solizardking | Jun 16 |
+| 🔟 | [`c9f624e0`](../../commit/c9f624e0) | fsfsfs | solizardking | Jun 16 |
+| · | [`f2d27cad`](../../commit/f2d27cad) | sdfdfs | solizardking | Jun 16 |
+| · | [`37d516f0`](../../commit/37d516f0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| · | [`ba060a96`](../../commit/ba060a96) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
+| · | [`c649a574`](../../commit/c649a574) | dssgdsdfdfs | solizardking | Jun 16 |
+| · | [`44e34f1f`](../../commit/44e34f1f) | fssfsgdsdgsfsdggfs | solizardking | Jun 16 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
