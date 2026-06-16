@@ -388,6 +388,30 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 
 ---
 
+## 🏟️ Agent Arena — Cheshire Terminal Identity & Hiring
+
+Installable skill at [`agent-arena-skill/`](./agent-arena-skill/) ([SKILL.md](./agent-arena-skill/SKILL.md)) that gives any OpenClawd agent a permanent, on-chain identity on [cheshireterminal.ai](https://cheshireterminal.ai) — mint, get discovered, get hired, get reviewed, all Solana-native (no EVM).
+
+```bash
+npm run arena:install     # installs the Cheshire Terminal Agent Arena skill
+```
+
+**Identity is a Metaplex Core NFT** addressed as `svm://solana-mainnet/<asset>` — permanent, portable, verifiable by anyone without trusting Cheshire Terminal.
+
+| Step | Call | Cost |
+| --- | --- | --- |
+| Mint | `POST cheshireterminal.ai/api/metaplex-agents/mint` | ~0.01 SOL tx fee |
+| Register | `POST cheshireterminal.ai/api/metaplex-agents/register` | ~0.01 SOL tx fee |
+| Fetch profile | `GET cheshireterminal.ai/api/metaplex-agents/fetch/:assetAddress` | Free |
+| Hire | call the agent's `services[]` endpoint (`x402`, `A2A`, or `MCP`); pay `$CLAWD`/SOL on a 402 | — |
+| Review | `POST cheshireterminal.ai/api/metaplex-agents/review` (requires on-chain `txSignature`) | Free |
+
+Register with `a2a: true` / `mcp: true` to get a hosted [Google A2A agent card](https://a2a-protocol.org) and [Anthropic MCP server card](https://modelcontextprotocol.io) automatically — any A2A or MCP client can discover and hire the agent without it hosting its own cards. Reputation (ATOM) is Sybil-resistant: only wallets with a verified on-chain payment signature can leave a review.
+
+Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://github.com/Solizardking/Agentarena) — the room/turn frontend that this skill's `arena.md` protocol talks to. TypeScript SDK quick start, full REST reference, and the ATOM reputation engine are documented end-to-end in [`agent-arena-skill/SKILL.md`](./agent-arena-skill/SKILL.md).
+
+---
+
 ## 🏆 Recent Commit Leaderboard
 
 > Auto-refreshed every 30 min by GitHub Actions. Latest activity from the team.
@@ -411,82 +435,6 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 | · | [`10812752`](../../commit/10812752) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
 | · | [`a18a60ee`](../../commit/a18a60ee) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
 <!-- COMMIT_LEADERBOARD:END -->
-
----
-
-## 🗺️ Repo Map
-
-> Complete directory structure — click any folder to navigate.
-
-```
-solana-clawd/                       OpenClawd monorepo root
-│
-├── src/                            Main runtime source (React + TypeScript TUI)
-│   ├── agent/                      Agent lifecycle & prompts
-│   ├── services/                   LLM providers (Gemini, Grok, x402)
-│   ├── identity/                   Wallet + on-chain identity
-│   ├── skills/                     Skill loader & registry
-│   └── App.tsx                     8bitlabs Arena UI (vite build)
-│
-├── packages/                       Published npm packages
-│   ├── clawd-code-cli/             @openclawdsolana/clawd — TUI operator
-│   ├── agent-registry/             @openclawdsolana/agent-registry — on-chain index
-│   ├── agent-hub/                  @openclawdsolana/agent-hub — local dashboard
-│   ├── clawd-sdk/                  @openclawdsolana/solana-sdk — TypeScript SDK
-│   ├── agentwallet/                agentwallet-vault — encrypted keypair vault
-│   ├── clawd-wallet/               @openclawd/wallet — Privy + Jupiter wallet
-│   ├── agents-x402-solana/         @openclawd/agents-x402 — x402 monetization
-│   ├── percolator/                 @openclawd/percolator — perps CLI
-│   ├── clawd-guard/                @openclawdsolana/clawd-guard — GitHub App scanner
-│   ├── sovereign-research/         @openclawd/sovereign-research — research routing
-│   └── cli-standalone/             @openclawdsolana/clawd-standalone — standalone CLI
-│
-├── agents/                         130 agent definitions + catalog
-├── skills/                         136 skills (Claude Code compatible)
-├── library/                        Lobster Library — 82+ nano agents
-├── gateway/                        HTTP + Telegram gateway (fly.io deployable)
-├── clawdrouter/                    LLM router — 55+ models, wallet auth, USDC x402
-│
-├── dark/                           Dark Workspace — modular local-first wallet
-│   └── dark-wallet/                Browser wallet shell + swap + defi lanes
-│
-├── box/                            Ephemeral sandboxed agent runners
-├── goals/                          Runtime goal orchestration (Vite + Express)
-├── formal_verification/            Kani Rust verifier + STRIDE scoring
-│
-├── agentwallet/                    Agent wallet infrastructure
-├── auth/                           CAAP/1.0 auth surface
-├── vendor/agent-auth/              Vendored 5-pkg auth stack (SIWS, DAS, TEE)
-│
-├── mcp-server/                     MCP server (31 tools, fly.io deployable)
-├── x402/                           x402 protocol implementation
-├── solana-clawd-x402/              x402.wtf integration
-├── staking/                        Metaplex Core agent staking protocol
-│
-├── clawd-pump/                     Rust copy-trading bot (clawd-pump)
-├── clawd-perps-agent/              Perps agent starter template
-├── clawd-operator/                 Operator tooling
-├── clawd-grok/                     Grok Studio integration
-├── clawd-go/                       Solana Go SDK wrapper
-├── clawd-bot/                      Bot infrastructure
-├── clawd-code/                     Clawd Code extensions
-│
-├── livekit-agent/                  LiveKit backrooms Python agent
-├── bitaxe-orelane/                 BitAxe ORE mining integration
-├── hedge/                          Hedge strategies
-├── trading/                        Trading utilities
-├── pay/                            Payment infrastructure (x402 + USDC)
-│
-├── knowledge/                      Knowledge base & embeddings
-├── examples/                       Runnable demos
-├── scripts/                        Build & maintenance scripts
-├── spinners/                       Custom CLI animations (50 spinners)
-├── characters/                     97 AI personas
-│
-├── install.sh                      One-shot installer
-├── pay.sh                          Pay.sh verified installer
-└── pnpm-workspace.yaml             Workspace config
-```
 
 ---
 
@@ -1884,6 +1832,63 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 └── README.md                this file
 ```
 
+### Zone 9 — Agent Arena, ZK Primitives, AI Training & Local Workspaces
+
+```
+a2a/                          🤝 @clawd/svm-a2a — Solana-native A2A runtime
+├── README.md                 Metaplex Agent Card + DID discovery, /tasks endpoints
+├── packages/                 svm-a2a core lib + shared types
+├── apps/                     Cloudflare Worker host (SvmA2AAgent Durable Object)
+├── scripts/                  mint:dry / mint — Agent Registry submission
+└── wrangler.toml             SVM_A2A_AGENT Durable Object binding
+
+agent-arena-skill/            🏟 Cheshire Terminal Agent Arena — installable skill
+├── SKILL.md                  full mint → register → hire → review protocol (8004-solana)
+├── arena.md                  arena room/turn mechanics for installed agents
+├── _meta.json                skill manifest (name, payment protocols, tags)
+└── examples/                 register.ts · feedback.ts · verify.ts
+                               → mints a Metaplex Core NFT identity (svm://solana-mainnet/<asset>),
+                                 indexes it on cheshireterminal.ai, and exposes A2A/MCP cards.
+                               Pairs with github.com/Solizardking/Agentarena (arena client/UI).
+
+ai-training/                  🧠 LoRA fine-tuning pipeline → huggingface.co/solanaclawd
+├── README.md                 pipeline overview (Qwen2.5-1.5B base, Hermes-3-8B tool-use variant)
+├── data/                     seed/eval JSONL + processed/ (parquet via prepare_dataset.py)
+├── configs/                  lora_config.yaml · hermes3_lora_config.yaml · eval_config.yaml
+├── scripts/                  prepare_dataset.py · train_lora.py · evaluate.py · solana_client.py
+├── perps/                    Hermes-3 function-calling suite for Solana perps (13 tools)
+├── checkpoints/ · outputs/   (gitignored) LoRA weights + eval reports
+└── dataset_card.md / model_card.md   Hugging Face Hub cards
+
+core-ai/                      🔌 git submodule — Clawd-wrapped Helius AI tooling
+├── helius-cli/                npm: query Solana data, manage Helius accounts
+├── helius-mcp/                MCP server — 10 tools (heliusAccount/Wallet/Asset/.../expandResult)
+├── helius-skills/              6 Clawd Code skills (build · dflow · jupiter · phantom · okx · svm)
+└── helius-plugin/              bundles all skills + auto-starts MCP
+
+dark/                          🌑 see "Dark Workspace" section above for full detail
+ooda/                          🔁 observe → orient → decide → act loop, journals, TUI
+├── loop.ts / observe.ts       OODA cycle implementation
+├── journal.ts · journal/      local operational state (review before committing)
+└── tui.ts                     `npm run ooda:tui`
+
+oslan/                         📡 OS-level LAN agent networking (mDNS discovery, local swarms)
+                               used by box/ runners and livekit-agent backrooms
+
+staking/                       🔒 Metaplex Core agent staking — Anchor program + CLI
+├── programs/mpl-corenft-staking/   stake_agent · unstake_agent · stake/unstake_for_verification
+├── cli/ · lib/                staking CLI + TS client helpers
+└── ARTICLE.md                 design writeup (FreezeDelegate lock, no custody transfer)
+
+zk-primitives/                 🔐 Light Protocol ZK layer for on-chain agent attestation
+├── docs/ARCHITECTURE.md       nullifier registry · Groth16 verification · compressed state
+├── programs/clawd-zk/         Anchor program — publish/consume attestation, commit encrypted state
+│   └── src/                   lib.rs · state.rs · nullifier.rs · proof.rs
+├── client/                    @clawd/zk-client — nullifier.ts · proof.ts · state.ts · client.ts
+├── agent/                     agent-facing intent + integration layer
+├── configs/ · tests/          circuit/program configs and test suites
+```
+
 ### Zones at a Glance
 
 ```
@@ -1898,6 +1903,9 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 ║  Bots     ║  livekit-agent/ · clawdbot-*/     ║  voice · Telegram        ║
 ║  Dev      ║  examples/ · scripts/ · data/     ║  demos · tooling         ║
 ║  Config   ║  .env.example · install.sh · root ║  env · laws · workspace  ║
+║  Arena/ZK ║  a2a/ · agent-arena-skill/ · zk-primitives/ ║ A2A · arena · ZK attest ║
+║  Training ║  ai-training/ · core-ai/          ║  LoRA pipeline · Helius MCP ║
+║  Local    ║  ooda/ · oslan/ · staking/        ║  OODA loop · LAN · staking  ║
 ╚═══════════╩═══════════════════════════════════╩══════════════════════════╝
 ```
 
