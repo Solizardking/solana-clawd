@@ -459,21 +459,21 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`9e1584cb`](../../commit/9e1584cb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 🥈 | [`1e8b2de9`](../../commit/1e8b2de9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 🥉 | [`cc6c557f`](../../commit/cc6c557f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| 4️⃣ | [`87ce8c74`](../../commit/87ce8c74) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| 5️⃣ | [`7ad4a890`](../../commit/7ad4a890) | feat(ai-training): Hermes-3 LoRA config and inference script | solizardking | Jun 15 |
-| 6️⃣ | [`4b60378f`](../../commit/4b60378f) | feat(ai-training): add v2 dataset example generator | solizardking | Jun 15 |
-| 7️⃣ | [`70c7cf0f`](../../commit/70c7cf0f) | feat(ai-training): seed datasets and solana-rpc client | solizardking | Jun 15 |
-| 8️⃣ | [`b5dc3b1a`](../../commit/b5dc3b1a) | feat(ai-training): Hermes-3 training configs, solana-rpc ski | solizardking | Jun 15 |
-| 9️⃣ | [`73d0f9e4`](../../commit/73d0f9e4) | feat(ai-training): add perps training pipeline (functioncall | solizardking | Jun 15 |
-| 🔟 | [`143c83cd`](../../commit/143c83cd) | chore: update clawd settings, env example, ooda decision, he | solizardking | Jun 15 |
-| · | [`7a8a3b81`](../../commit/7a8a3b81) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| · | [`9b427a9a`](../../commit/9b427a9a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| · | [`8670dd05`](../../commit/8670dd05) | docs(README): add voice agent, ZK primitives, skills MCP, Co | solizardking | Jun 15 |
-| · | [`ce592af5`](../../commit/ce592af5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
-| · | [`f5787ee7`](../../commit/f5787ee7) | fix(.npmrc): drop hardcoded virtual-store-dir that broke pnp | solizardking | Jun 15 |
+| 🥇 | [`2b9b3dbd`](../../commit/2b9b3dbd) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
+| 🥈 | [`2d827657`](../../commit/2d827657) | afsasfdggsxc | solizardking | Jun 16 |
+| 🥉 | [`8bb3abeb`](../../commit/8bb3abeb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 4️⃣ | [`9e1584cb`](../../commit/9e1584cb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 5️⃣ | [`751bd4ee`](../../commit/751bd4ee) | feat(clawd-code): make xAI Grok the default provider & model | solizardking | Jun 16 |
+| 6️⃣ | [`ad443012`](../../commit/ad443012) | docs(ai-training): bring README and cards current with perps | solizardking | Jun 16 |
+| 7️⃣ | [`1e8b2de9`](../../commit/1e8b2de9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 8️⃣ | [`cc6c557f`](../../commit/cc6c557f) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| 9️⃣ | [`87ce8c74`](../../commit/87ce8c74) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 15 |
+| 🔟 | [`7ad4a890`](../../commit/7ad4a890) | feat(ai-training): Hermes-3 LoRA config and inference script | solizardking | Jun 15 |
+| · | [`4b60378f`](../../commit/4b60378f) | feat(ai-training): add v2 dataset example generator | solizardking | Jun 15 |
+| · | [`70c7cf0f`](../../commit/70c7cf0f) | feat(ai-training): seed datasets and solana-rpc client | solizardking | Jun 15 |
+| · | [`b5dc3b1a`](../../commit/b5dc3b1a) | feat(ai-training): Hermes-3 training configs, solana-rpc ski | solizardking | Jun 15 |
+| · | [`73d0f9e4`](../../commit/73d0f9e4) | feat(ai-training): add perps training pipeline (functioncall | solizardking | Jun 15 |
+| · | [`143c83cd`](../../commit/143c83cd) | chore: update clawd settings, env example, ooda decision, he | solizardking | Jun 15 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
