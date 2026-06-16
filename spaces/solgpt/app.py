@@ -12,7 +12,10 @@ chat is $0.
      bonding curves, MEV, RPC choices, wallet security, rug detection.
   2. **Model picker** — default is a free OpenRouter model; paid models
      are available as an opt-in for users who want frontier quality.
-  3. **Status** — confirms the Space can reach OpenRouter and shows
+  3. **API Key** — generate your own free `solgpt_...` key, good against
+     a real `/v1/chat/completions` endpoint mounted on this same Space,
+     so you can call SolGPT from curl/your own app, not just the browser.
+  4. **Status** — confirms the Space can reach OpenRouter and shows
      which key is active (masked) so operators can debug at a glance.
 
 Built for HF Spaces (Gradio SDK). Runs on a `cpu-basic` (free) flavor.
@@ -23,10 +26,14 @@ OpenRouter's infrastructure.
 from __future__ import annotations
 
 import os
+import secrets
+import threading
+import time
 from typing import Any, Dict, List, Tuple
 
 import gradio as gr
 import requests
+from fastapi import FastAPI, Header, HTTPException, Request
 
 # --------------------------------------------------------------------------- #
 # Constants
@@ -39,6 +46,11 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "").strip()
 # Sent to OpenRouter as required/recommended attribution headers.
 APP_URL = os.environ.get("SOLGPT_APP_URL", "https://github.com/Solizardking/solana-clawd")
 APP_TITLE = "SolGPT"
+
+# The public URL this Space is reachable at — used only to render example
+# curl commands in the API Key tab. Override via SOLGPT_PUBLIC_URL if the
+# Space is mirrored somewhere other than its default *.hf.space domain.
+PUBLIC_BASE_URL = os.environ.get("SOLGPT_PUBLIC_URL", "https://solanaclawd-solgpt.hf.space")
 
 SYSTEM_PROMPT = """You are SolGPT, a free, Solana-native AI assistant.
 
@@ -226,6 +238,64 @@ def chat_with_solgpt(
 
 
 # --------------------------------------------------------------------------- #
+# Self-service API keys
+# --------------------------------------------------------------------------- #
+#
+# Anyone can generate a `solgpt_...` key from the UI. The key is valid
+# against the `/v1/chat/completions` route mounted below on this same
+# Space — it's a thin, rate-limited proxy in front of the shared
+# OPENROUTER_API_KEY, restricted to free-tier models so the Space owner's
+# budget can't be drained by a leaked key.
+#
+# Storage is in-memory only: keys vanish if the Space restarts/sleeps.
+# That's an intentional trade-off for a free public demo — see the README
+# for how to swap in persistent storage if you fork this for production.
+
+_KEYS_LOCK = threading.Lock()
+_API_KEYS: Dict[str, Dict[str, Any]] = {}
+
+API_KEY_PREFIX = "solgpt_"
+RATE_LIMIT_PER_DAY = 200  # requests per key per rolling 24h window
+RATE_LIMIT_WINDOW_S = 24 * 60 * 60
+
+
+def create_api_key(label: str = "") -> str:
+    key = API_KEY_PREFIX + secrets.token_urlsafe(24)
+    with _KEYS_LOCK:
+        _API_KEYS[key] = {
+            "created_at": time.time(),
+            "label": (label or "").strip()[:64],
+            "request_times": [],
+        }
+    return key
+
+
+def _key_record(key: str) -> Dict[str, Any] | None:
+    with _KEYS_LOCK:
+        return _API_KEYS.get(key)
+
+
+def _check_and_consume(key: str) -> Tuple[bool, str]:
+    """Validate a key and consume one request against its rate limit."""
+    with _KEYS_LOCK:
+        rec = _API_KEYS.get(key)
+        if rec is None:
+            return False, "invalid API key — generate one in the 🔑 API Key tab"
+        now = time.time()
+        rec["request_times"] = [t for t in rec["request_times"] if now - t < RATE_LIMIT_WINDOW_S]
+        if len(rec["request_times"]) >= RATE_LIMIT_PER_DAY:
+            return False, f"rate limit exceeded — {RATE_LIMIT_PER_DAY} requests / 24h per key"
+        rec["request_times"].append(now)
+        return True, ""
+
+
+def render_key_status() -> str:
+    with _KEYS_LOCK:
+        n = len(_API_KEYS)
+    return f"<div class='footer-note'>{n} key(s) issued since this Space last restarted.</div>"
+
+
+# --------------------------------------------------------------------------- #
 # UI
 # --------------------------------------------------------------------------- #
 
@@ -337,6 +407,47 @@ def build_app() -> gr.Blocks:
             msg.submit(_on_send, inputs=[msg, chatbot, model_dd, temp, maxtok], outputs=[msg, chatbot])
             clear.click(lambda: [], outputs=chatbot)
 
+        with gr.Tab("🔑 API Key"):
+            gr.Markdown(
+                f"""
+### Get your own free SolGPT API key
+
+Generate a personal key to call SolGPT from curl, a script, or your own
+app — not just this browser tab. It works against a real
+`/v1/chat/completions` endpoint mounted on this Space, OpenAI-compatible,
+restricted to free-tier models so it never touches the Space owner's
+paid budget.
+
+- Rate limit: **{RATE_LIMIT_PER_DAY} requests / 24h** per key
+- Storage: **in-memory** — your key stops working if the Space restarts
+  or goes to sleep from inactivity. Regenerate a new one if that happens.
+- No email, no sign-up, no wallet.
+                """
+            )
+            with gr.Row():
+                key_label = gr.Textbox(
+                    label="Label (optional)",
+                    placeholder="e.g. my-trading-bot",
+                    scale=3,
+                )
+                gen_btn = gr.Button("Generate free API key 🔑", variant="primary", scale=1)
+            key_out = gr.Textbox(label="Your API key (copy it now)", interactive=False, show_copy_button=True)
+            curl_out = gr.Code(label="Example usage", language="shell")
+
+            def _on_generate(label: str):
+                key = create_api_key(label)
+                example = f"""curl {PUBLIC_BASE_URL}/v1/chat/completions \\
+  -H "Authorization: Bearer {key}" \\
+  -H "Content-Type: application/json" \\
+  -d '{{
+    "model": "{DEFAULT_MODEL}",
+    "messages": [{{"role": "user", "content": "How do I derive a PDA in Anchor?"}}]
+  }}'"""
+                return key, example
+
+            gen_btn.click(_on_generate, inputs=key_label, outputs=[key_out, curl_out])
+            gr.Markdown(render_key_status())
+
         with gr.Tab("📡 Status"):
             gr.Markdown("### Live OpenRouter connectivity + key check")
             status_md = gr.Markdown(render_status())
@@ -369,6 +480,65 @@ tracking beyond what billing requires.
     return demo
 
 
+# --------------------------------------------------------------------------- #
+# Public API proxy — what self-service keys actually unlock
+# --------------------------------------------------------------------------- #
+#
+# OpenAI-compatible /v1/chat/completions, mounted on the same FastAPI app
+# that serves the Gradio UI. Requires `Authorization: Bearer solgpt_...`
+# from the API Key tab. Forwards to OpenRouter with the Space's shared
+# OPENROUTER_API_KEY, but only for free-tier models — a leaked solgpt_
+# key can burn its own rate limit, never the owner's paid budget.
+
+fastapi_app = FastAPI(title="SolGPT API")
+
+
+@fastapi_app.post("/v1/chat/completions")
+async def proxy_chat_completions(request: Request, authorization: str = Header(default="")):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="missing Authorization: Bearer <solgpt_key>")
+    key = authorization.removeprefix("Bearer ").strip()
+    if not key.startswith(API_KEY_PREFIX):
+        raise HTTPException(status_code=401, detail="not a SolGPT key — generate one in the 🔑 API Key tab")
+
+    ok, reason = _check_and_consume(key)
+    if not ok:
+        raise HTTPException(status_code=429 if "rate limit" in reason else 401, detail=reason)
+
+    body = await request.json()
+    requested_model = body.get("model") or DEFAULT_MODEL
+    if not requested_model.endswith(":free"):
+        raise HTTPException(
+            status_code=403,
+            detail=f"public API keys are restricted to free-tier models (got `{requested_model}`)",
+        )
+    if not OPENROUTER_API_KEY:
+        raise HTTPException(status_code=503, detail="OPENROUTER_API_KEY is not configured on this Space")
+
+    body["model"] = requested_model
+    body.setdefault("messages", [])
+    body.setdefault("max_tokens", 512)
+    upstream_headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": APP_URL,
+        "X-Title": APP_TITLE,
+    }
+    try:
+        r = requests.post(OPENROUTER_CHAT_URL, headers=upstream_headers, json=body, timeout=60)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(status_code=502, detail=f"upstream error: {type(e).__name__}: {e}") from e
+
+    if r.status_code >= 400:
+        raise HTTPException(status_code=r.status_code, detail=r.text[:500])
+    return r.json()
+
+
 if __name__ == "__main__":
-    app = build_app()
-    app.queue(max_size=16).launch(server_name="0.0.0.0", server_port=7860)
+    demo = build_app()
+    demo.queue(max_size=16)
+    app = gr.mount_gradio_app(fastapi_app, demo, path="/")
+
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=7860)
