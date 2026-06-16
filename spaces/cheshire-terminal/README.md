@@ -63,11 +63,15 @@ The Fly-assigned hostname (`cheshire-clawd-terminal.fly.dev`) is a legacy
 slug from the first build. The custom domain `cheshireterminal.ai` is
 already pointed at it via DNS and TLS, so user-facing branding is
 "Cheshire Terminal" everywhere. The internal app name does not affect
-the brand. To rename:
+the brand. To rename the internal slug (run from this directory so the
+fly.toml is in scope):
 
 ```bash
-fly apps rename cheshire-terminal cheshire-clawd-terminal
+fly apps rename cheshire-terminal
 ```
+
+The new slug is what the new `app = "…"` line in `fly.toml` must match;
+update it before the next `fly deploy`.
 
 ## Ecosystem
 
