@@ -419,21 +419,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`9655caad`](../../commit/9655caad) | spaces: rebrand Cheshire Terminal → Trench Town | solizardking | Jun 16 |
-| 🥈 | [`0987cd58`](../../commit/0987cd58) | ffwffe | solizardking | Jun 16 |
-| 🥉 | [`a9d04166`](../../commit/a9d04166) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 4️⃣ | [`3093988e`](../../commit/3093988e) | spaces/clawd-zoo: switch default backend to Pollinations (tr | solizardking | Jun 16 |
-| 5️⃣ | [`1843b3cd`](../../commit/1843b3cd) | m | solizardking | Jun 16 |
-| 6️⃣ | [`d6ffa951`](../../commit/d6ffa951) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 7️⃣ | [`87058b5b`](../../commit/87058b5b) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
-| 8️⃣ | [`a6e3568d`](../../commit/a6e3568d) | lklj | solizardking | Jun 16 |
-| 9️⃣ | [`25742224`](../../commit/25742224) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 🔟 | [`a996d416`](../../commit/a996d416) | lkllj | solizardking | Jun 16 |
+| 🥇 | [`20f029d1`](../../commit/20f029d1) | spaces: clean up nested .git dirs from prior sessions (defen | solizardking | Jun 16 |
+| 🥈 | [`361dffac`](../../commit/361dffac) | spaces/trench-town/fly.toml: drop cheshire_data volume mount | solizardking | Jun 16 |
+| 🥉 | [`d98dcb63`](../../commit/d98dcb63) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 4️⃣ | [`9655caad`](../../commit/9655caad) | spaces: rebrand Cheshire Terminal → Trench Town | solizardking | Jun 16 |
+| 5️⃣ | [`0987cd58`](../../commit/0987cd58) | ffwffe | solizardking | Jun 16 |
+| 6️⃣ | [`a9d04166`](../../commit/a9d04166) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 7️⃣ | [`3093988e`](../../commit/3093988e) | spaces/clawd-zoo: switch default backend to Pollinations (tr | solizardking | Jun 16 |
+| 8️⃣ | [`1843b3cd`](../../commit/1843b3cd) | m | solizardking | Jun 16 |
+| 9️⃣ | [`d6ffa951`](../../commit/d6ffa951) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 🔟 | [`87058b5b`](../../commit/87058b5b) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
+| · | [`a6e3568d`](../../commit/a6e3568d) | lklj | solizardking | Jun 16 |
+| · | [`25742224`](../../commit/25742224) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| · | [`a996d416`](../../commit/a996d416) | lkllj | solizardking | Jun 16 |
 | · | [`df2dde46`](../../commit/df2dde46) | merge: sync leaderboard refresh with local cleanup pass | solizardking | Jun 16 |
 | · | [`596f3fd1`](../../commit/596f3fd1) | llll | solizardking | Jun 16 |
-| · | [`91704bb2`](../../commit/91704bb2) | ;kl | solizardking | Jun 16 |
-| · | [`78f5d741`](../../commit/78f5d741) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| · | [`4cdbb5eb`](../../commit/4cdbb5eb) | ;k;k; | solizardking | Jun 16 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
