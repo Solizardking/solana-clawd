@@ -1,6 +1,6 @@
 # spaces/ — push instructions (v3)
 
-This directory holds the **clean, in-repo** sources for four deployments:
+This directory holds the **clean, in-repo** sources for five deployments:
 
 | Subdir | Type | Target |
 |---|---|---|
@@ -8,6 +8,7 @@ This directory holds the **clean, in-repo** sources for four deployments:
 | `solanaclawd-pump-soft/` | static HF Space | `huggingface.co/spaces/solanaclawd/pump-soft` (must be created first) |
 | `cheshire-terminal/` | Docker image + Fly app | `cheshire-clawd-terminal.fly.dev` → `cheshireterminal.ai` (live) |
 | `clawd-zoo/` | Gradio Space | `huggingface.co/spaces/solanaclawd/clawd-zoo` (live; 50+ agents + free AI chat) |
+| `solgpt/` | Gradio Space | `huggingface.co/spaces/solanaclawd/solgpt` (new; free Solana-native AI chat, direct OpenRouter) |
 
 All sources are committed on `fix/clawd-computer-no-ttyd` and pushed to
 `origin/fix/clawd-computer-no-ttyd`. The HF / Fly pushes happen from the
