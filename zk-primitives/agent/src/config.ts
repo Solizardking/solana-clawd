@@ -18,9 +18,16 @@
 
 import { PublicKey } from "@solana/web3.js";
 
-/** Default program id used by the deployed `clawd-zk` program on mainnet. */
+/**
+ * Default program id used by the deployed `clawd-zk` program on mainnet.
+ *
+ * 32 base-58 chars; corresponds to the placeholder 32-byte buffer
+ * 0xCL CLAWDzk11111111111111111111111111111111 (visible as a base58
+ * string only at the config layer — the actual program address is
+ * set when the Anchor IDL is built and deployed).
+ */
 export const DEFAULT_PROGRAM_ID = new PublicKey(
-  "CLAWDzk11111111111111111111111111111111111",
+  "CLAWDzk1111111111111111111111111111111111111",
 );
 
 export interface ZkAgentConfig {
@@ -41,9 +48,9 @@ export interface ZkAgentConfig {
 }
 
 const KNOWN_PROGRAM_IDS: Record<string, string> = {
-  CLAWDZK_MAINNET: "CLAWDzk11111111111111111111111111111111111",
-  CLAWDZK_DEVNET: "CLAWDzk22222222222222222222222222222222222",
-  CLAWDZK_LOCALNET: "CLAWDzk33333333333333333333333333333333333",
+  CLAWDZK_MAINNET: "CLAWDzk1111111111111111111111111111111111111",
+  CLAWDZK_DEVNET: "CLAWDzk2222222222222222222222222222222222222",
+  CLAWDZK_LOCALNET: "CLAWDzk3333333333333333333333333333333333333",
 };
 
 function asString(v: string | undefined, fallback: string): string {

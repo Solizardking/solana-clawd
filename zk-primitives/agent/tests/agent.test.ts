@@ -9,17 +9,19 @@
  *   - public-input packing via the route action
  */
 
-// The zk-client has a pre-existing bug: it tries to `new PublicKey("CLAWDzk11…111")`
-// at module load, and that string is too short to be a valid base58 pubkey.
-// Importing it pulls that line in, so we mock the module entirely for the
-// off-chain unit tests. We re-import only the bits we actually need.
 import { test, describe, expect, vi } from "vitest";
 
-vi.mock("@clawd/zk-client", async () => {
+// The zk-client has a pre-existing bug: it tries to
+// `new PublicKey("CLAWDzk11…111")` at module load, and that string
+// is too short to be a valid base58 pubkey. Importing it pulls
+// that line in, so we mock the module entirely for the off-chain
+// unit tests with a minimal surface area.
+vi.mock("@clawd/zk-client", () => {
   // Re-implement the small bits we exercise (nullifier computation,
-  // public-input packing, proof serialization) in a way that doesn't
-  // touch the broken top-level constant.
-  const { createHash } = await import("node:crypto");
+  // public-input packing, proof serialization) in a way that
+  // doesn't touch the broken top-level constant.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { createHash } = require("node:crypto") as typeof import("node:crypto");
   async function computeNullifier(args: {
     secret: Uint8Array;
     context: Uint8Array | string;
@@ -36,7 +38,7 @@ vi.mock("@clawd/zk-client", async () => {
     const out = hasher.digest();
     return new Uint8Array(out).subarray(0, 32);
   }
-  function packPublicInputs(inputs: (Uint8Array)[]): Uint8Array {
+  function packPublicInputs(inputs: Uint8Array[]): Uint8Array {
     const out = new Uint8Array(inputs.length * 32);
     for (let i = 0; i < inputs.length; i++) {
       const chunk = inputs[i];
@@ -62,6 +64,9 @@ vi.mock("@clawd/zk-client", async () => {
     if (args.publicInputs.length < 1) {
       return { ok: false, reason: "public inputs cannot be empty" };
     }
+    if (args.proof.a.length !== 64) return { ok: false, reason: "proof.a must be 64 bytes" };
+    if (args.proof.b.length !== 128) return { ok: false, reason: "proof.b must be 128 bytes" };
+    if (args.proof.c.length !== 64) return { ok: false, reason: "proof.c must be 64 bytes" };
     return { ok: true };
   }
   class ClawdZkClient {
@@ -76,21 +81,23 @@ vi.mock("@clawd/zk-client", async () => {
   };
 });
 
-const {
+import {
   routeIntent,
   KNOWN_INTENTS,
   type IntentRoute,
-} = await import("../src/intents.js");
-const { loadAgentConfig, DEFAULT_PROGRAM_ID } = await import("../src/config.js");
-const { ClawdZkAgent } = await import("../src/agent.js");
-const { packPublicInputs, buildPublishPublicInputs } = await import("@clawd/zk-client");
-type Groth16Proof = {
-  a: Uint8Array;
-  b: Uint8Array;
-  c: Uint8Array;
-  verifyingKey: Uint8Array;
-};
-type Bytes32 = Uint8Array & { readonly length: 32 };
+} from "../src/intents.js";
+import { loadAgentConfig, DEFAULT_PROGRAM_ID } from "../src/config.js";
+import { ClawdZkAgent } from "../src/agent.js";
+import {
+  packPublicInputs,
+  buildPublishPublicInputs,
+  type Groth16Proof,
+  type Bytes32,
+} from "@clawd/zk-client";
+
+import { Buffer } from "node:buffer";
+
+const hexOf = (b: Uint8Array): string => Buffer.from(b).toString("hex");
 
 // Minimal stub agent (no RPC, no signer) — used by intent-router tests.
 function makeStubAgent(): ClawdZkAgent {
@@ -171,7 +178,7 @@ describe("ClawdZkAgent.verifyProof (off-chain)", () => {
     ];
     const r = agent.verifyProof({ proof: fakeProof(), publicInputs });
     expect(r.ok).toBe(true);
-    expect(r.publicInputsPackedHex).toBe(packPublicInputs(publicInputs).toString("hex"));
+    expect(r.publicInputsPackedHex).toBe(hexOf(packPublicInputs(publicInputs)));
   });
 
   test("rejects a proof with the wrong point size", () => {
@@ -194,14 +201,16 @@ describe("ClawdZkAgent.verifyProof (off-chain)", () => {
     });
     expect(r.ok).toBe(true);
     expect(r.publicInputsPackedHex).toBe(
-      packPublicInputs(
-        buildPublishPublicInputs({
-          attester: new Uint8Array(32),
-          modelHash: new Uint8Array(32),
-          payloadCommitment: new Uint8Array(32),
-          nullifier: new Uint8Array(32),
-        }),
-      ).toString("hex"),
+      hexOf(
+        packPublicInputs(
+          buildPublishPublicInputs({
+            attester: new Uint8Array(32),
+            modelHash: new Uint8Array(32),
+            payloadCommitment: new Uint8Array(32),
+            nullifier: new Uint8Array(32),
+          }),
+        ),
+      ),
     );
   });
 });
@@ -238,8 +247,8 @@ describe("Intent router", () => {
     expect(KNOWN_INTENTS).toContain("attest-model");
     expect(KNOWN_INTENTS).toContain("commit-state");
     expect(KNOWN_INTENTS).toContain("verify-proof");
-    expect(KNOWN_INTESTS).toContain("compute-nullifier");
-    expect(KNOWN_INTESTS).toContain("inspect");
+    expect(KNOWN_INTENTS).toContain("compute-nullifier");
+    expect(KNOWN_INTENTS).toContain("inspect");
   });
 
   test("routes attest verbs to attestModel", () => {
