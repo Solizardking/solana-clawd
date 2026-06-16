@@ -7,36 +7,58 @@
 ## What this is
 
 A reproducible LoRA fine-tuning pipeline that takes a base instruct model
-(currently `Qwen/Qwen2.5-1.5B-Instruct`) and turns it into a **Clawd**:
+(`Qwen/Qwen2.5-1.5B-Instruct`, with `NousResearch/Hermes-3-Llama-3.1-8B` as a
+larger tool-use-capable variant) and turns it into a **Clawd**:
 a constitutionally-grounded, Solana-fluent, degen-wary AI agent that lives
 in the trenches without becoming the rug.
 
 The dataset is curated from the solana-clawd repository (AGENTS.md,
-CONSTITUTION.md, the 95+ skills, the three-laws, and the agent catalog)
-plus targeted reference material on Solana primitives, DeFi, and trading.
+CONSTITUTION.md, the 137+ skills, the three-laws, and the agent catalog)
+plus targeted reference material on Solana primitives, DeFi, perpetuals,
+and the agent's own runtime capabilities (voice agent, MCP skills catalog,
+Composio provider, ZK primitives, HF Router, ClawdRouter, x402).
 
 ## Repo layout
 
-```
+```text
 ai-training/
-├── README.md                    ← you are here
-├── requirements.txt             ← Python deps
-├── .gitignore                   ← excludes checkpoints / outputs / secrets
+├── README.md                       ← you are here
+├── requirements.txt                ← Python deps (HF stack + openai + httpx + mcp)
+├── .gitignore                      ← excludes checkpoints / outputs / secrets
 ├── data/
-│   └── solana_clawd_seed.jsonl  ← seed SFT pairs (~20 conversations)
+│   ├── solana_clawd_seed.jsonl     ← seed SFT pairs (32 conversations)
+│   ├── solana_clawd_eval.jsonl     ← held-out eval prompts (13 conversations)
+│   ├── eval_card.md                ← eval dataset card (upload to Hub)
+│   └── processed/                  ← committed sample output of prepare_dataset.py (parquet + arrow splits)
 ├── configs/
-│   ├── lora_config.yaml         ← LoRA + training hyperparameters
-│   └── eval_config.yaml         ← evaluation config
+│   ├── lora_config.yaml            ← LoRA + training hyperparameters (Qwen2.5-1.5B)
+│   ├── hermes3_lora_config.yaml    ← LoRA config for Hermes-3-Llama-3.1-8B (r=32, 4-bit)
+│   ├── deep_solana_cpt_config.yaml ← continued pre-training config (DeepSolana-GPT2 corpus)
+│   └── eval_config.yaml            ← evaluation config
 ├── scripts/
-│   ├── prepare_dataset.py       ← JSONL → HF Datasets (parquet)
-│   ├── train_lora.py            ← LoRA SFT via TRL + PEFT
-│   ├── evaluate.py              ← held-out inference eval
-│   └── launch_hf_jobs.sh        ← submit remote GPU job
-├── dataset_card.md              ← dataset README (upload to Hub)
-├── model_card.md                ← model README (upload to Hub)
-├── checkpoints/                 ← (gitignored) LoRA adapter weights
-└── outputs/                     ← (gitignored) eval reports
+│   ├── prepare_dataset.py          ← JSONL → HF Datasets (parquet)
+│   ├── train_lora.py               ← LoRA SFT via TRL + PEFT
+│   ├── evaluate.py                 ← held-out inference eval
+│   ├── launch_hf_jobs.sh           ← submit remote GPU job
+│   ├── hermes3_inference.py        ← 3-mode Hermes-3 inference: HF Router / pipeline / direct
+│   ├── solana_client.py            ← 8-command Solana RPC tool (wallet/tx/token/nft/whales/stats/price)
+│   ├── download_deep_solana.py     ← DeepSolana-GPT2-bucket downloader + GPT-2→text decoder
+│   └── add_v2_examples.py          ← one-off script that seeded the v2 dataset examples
+├── perps/                          ← Hermes-3 function calling for Solana perps
+│   ├── functions.py                ← 13 perps tools (sol price, funding rate, paper trade, risk...)
+│   ├── functioncall.py             ← HermesPerpsAgent inference loop (HF Router / local, GOAP mode)
+│   ├── schema.py                   ← Pydantic models: FunctionCall, TradeOrder, RiskAssessment...
+│   └── prompter.py                 ← system prompt builder (standard / GOAP / JSON mode)
+├── dataset_card.md                 ← dataset README (upload to Hub)
+├── model_card.md                   ← model README (upload to Hub)
+├── checkpoints/                    ← (gitignored) LoRA adapter weights
+└── outputs/                        ← (gitignored) eval reports
 ```
+
+See also: [`skills/solana-rpc/SKILL.md`](../skills/solana-rpc/SKILL.md) — the
+Clawd skill registration for `scripts/solana_client.py`, and
+[`hermes-agent/`](../hermes-agent/) — the `clawd-operator` Hermes adapter and
+`clawd-agent` Phoenix/Oracle tool integrations that consume `perps/functions.py`.
 
 ## The Hugging Face integration
 
@@ -155,6 +177,7 @@ tokenizer = AutoTokenizer.from_pretrained("solanaclawd/solana-clawd-1.5b-lora")
 ```
 
 Or with `mlx-lm` on a Mac (fastest local path):
+
 ```bash
 pip install mlx-lm
 mlx_lm.generate \
@@ -162,6 +185,54 @@ mlx_lm.generate \
   --adapter solanaclawd/solana-clawd-1.5b-lora \
   --prompt "How do I detect a rug pull on a fresh Solana token?"
 ```
+
+## Hermes-3-Llama-3.1-8B path (tool use / function calling)
+
+For agents that need to call real tools (Solana perps, on-chain data,
+Jupiter quotes) rather than just converse, use the `NousResearch/Hermes-3-Llama-3.1-8B`
+base with `configs/hermes3_lora_config.yaml` and the `perps/` function-calling
+suite instead of (or alongside) the 1.5B chat-only model:
+
+```bash
+# Train (8B needs a 24GB+ GPU with 4-bit, or 80GB A100/H200 in bf16)
+python3 scripts/train_lora.py --config configs/hermes3_lora_config.yaml
+./scripts/launch_hf_jobs.sh a100-large --config configs/hermes3_lora_config.yaml
+
+# Inference — 3 modes in one script
+python3 scripts/hermes3_inference.py --mode router "What is a PDA?"        # HF Router, no GPU
+python3 scripts/hermes3_inference.py --mode pipeline "What is a PDA?"      # local transformers
+python3 scripts/hermes3_inference.py --mode direct --adapter solanaclawd/solana-clawd-8b-lora "What is a PDA?"
+
+# Function calling — 13 Solana perps tools (Phoenix DEX, Jupiter, risk assessment)
+cd perps
+python3 functioncall.py --query "What's the SOL-PERP funding rate? Should I go long?"
+python3 functioncall.py --query "Paper trade: long SOL-PERP $500 at 3x leverage" --verbose
+HERMES_LOCAL=1 python3 functioncall.py --goap --query "Assess risk of shorting SOL-PERP $1000 at 5x"
+```
+
+The 13 perps tools (`perps/functions.py`) and the matching `HermesAdapter`
+(`hermes-agent/clawd-operator/adapters/hermes.py`) and Phoenix/Oracle
+`Tool` wrappers (`hermes-agent/clawd-agent/tools/`) all share the same
+function definitions, so a LoRA trained here drops directly into the
+running agents.
+
+## Continued pre-training: DeepSolana-GPT2-bucket
+
+To inject raw Solana-domain text (ordinals, program source, on-chain docs)
+before the instruction-tuning pass, decode the
+[`ordlibrary/DeepSolana-GPT2-bucket`](https://huggingface.co/datasets/ordlibrary/DeepSolana-GPT2-bucket)
+dataset and run a CPT stage with `configs/deep_solana_cpt_config.yaml`:
+
+```bash
+python3 scripts/download_deep_solana.py --output data/deep_solana_corpus.jsonl --limit 5000
+python3 scripts/train_lora.py --config configs/deep_solana_cpt_config.yaml
+# then SFT on top of the CPT checkpoint:
+python3 scripts/train_lora.py --config configs/lora_config.yaml --base-model ./outputs/solana-clawd-1.5b-cpt
+```
+
+The downloader also supports `--sft-mode` to wrap decoded chunks directly as
+ChatML pairs appended to `data/solana_clawd_seed.jsonl`, skipping the
+separate CPT stage entirely.
 
 ## Why Qwen2.5-1.5B?
 

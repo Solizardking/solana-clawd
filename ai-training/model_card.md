@@ -23,6 +23,14 @@ A Qwen2.5-1.5B-Instruct model fine-tuned with LoRA on the
 dataset. Designed to run locally on a Mac (MPS) or any 4GB+ GPU, and to
 behave like a sober, helpful, constitutionally-grounded Solana degen.
 
+> **Looking for tool-use / function calling?** See the larger
+> [`solanaclawd/solana-clawd-8b-lora`](https://huggingface.co/solanaclawd/solana-clawd-8b-lora)
+> variant — a LoRA on `NousResearch/Hermes-3-Llama-3.1-8B` (config:
+> [`configs/hermes3_lora_config.yaml`](configs/hermes3_lora_config.yaml)),
+> which pairs with the [`perps/`](perps/) function-calling suite for live
+> Solana perps tool use (13 tools: funding rate, paper trade, risk
+> assessment, Jupiter quotes, and more).
+
 ## What's in the adapter
 
 - **Base**: `Qwen/Qwen2.5-1.5B-Instruct` (1.54B params, 4096 ctx, bf16)

@@ -34,6 +34,12 @@ sovereign, helpful Solana-native AI agents ("leviathans") in the Clawd ecosystem
 - **Constitutional reasoning**: how to be helpful, honest, and never recommend actions that would harm users (in the spirit of the Clawd Constitution)
 - **Code generation**: Anchor (Rust), TypeScript SDK (`@solana/kit`, Helius), Python
 - **HF integration**: how Clawd agents use the Hub, datasets, models, and Jobs
+- **Runtime self-knowledge** (v2): the xAI Voice Agent API and its 7 function
+  tools, the 137-skill Skills Catalog MCP, the ClaWDProvider Composio wrapper,
+  Light Protocol ZK compression primitives, the Clawd Code 4-provider REPL,
+  Agent Arena / Metaplex Core identity, HF Inference Router provider suffixes,
+  Hermes-3 vs Qwen2.5 tradeoffs, ClawdRouter `$CLAWD` tier gating, and the
+  x402 agent payment challenge/retry flow
 
 ## Format
 
@@ -53,6 +59,11 @@ The system prompt is intentionally stable across examples so the fine-tuned
 model locks in to the Clawd voice and the constitutional guardrails.
 
 ## Splits
+
+`data/solana_clawd_seed.jsonl` holds 32 SFT conversations; `prepare_dataset.py`
+splits this 90/5/5 into the Hub-pushed dataset below. A separate held-out file,
+`data/solana_clawd_eval.jsonl` (13 conversations), is never seen during
+training and backs `solanaclawd/solana-clawd-eval`.
 
 | Split | Examples | Use |
 |-------|---------:|-----|
@@ -75,8 +86,9 @@ of widely-known patterns. No proprietary strategy code is included.
 
 ## Intended use
 
-- **Fine-tune a base instruct model** (Qwen2.5-1.5B-Instruct, Llama-3.2-1B-Instruct, Phi-3.5-mini) into a Clawd voice.
-- **Continue pretraining** of domain-specific models (lighter touch).
+- **Fine-tune a base instruct model** (Qwen2.5-1.5B-Instruct, Hermes-3-Llama-3.1-8B, Llama-3.2-1B-Instruct, Phi-3.5-mini) into a Clawd voice.
+- **Continue pretraining** of domain-specific models (lighter touch) — see `configs/deep_solana_cpt_config.yaml` for an example using the DeepSolana-GPT2-bucket corpus.
+- **Function-calling fine-tunes**: pairs with `perps/functions.py` (13 Solana perps tools) for Hermes-3 tool-use training.
 - **Evaluation**: held-out prompts for measuring model alignment with the Clawd Constitution and Solana accuracy.
 
 ## Out of scope

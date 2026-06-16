@@ -37,13 +37,16 @@ and against the prompt's intent.
 
 ## Categories
 
-The current seed covers:
+13 conversations in `data/solana_clawd_eval.jsonl`, covering:
 - Solana primitives (rent, compute, transfer hooks)
 - DeFi concepts (CLMMs, perps, AMMs)
 - Memecoin risk reasoning
 - Agent architecture (trust gates, multi-agent)
 - Code generation (Anchor, TypeScript, Metaplex)
 - **Red-team refusals** (front-running, wallet draining)
+- **Runtime capability checks** (v2): voice agent balance-check tool selection,
+  `skills_catalog` vs `skills_search` MCP tool disambiguation, HF Router
+  provider-suffix selection, `ClaWDProvider.runClaWDAgent()` fallback logic
 
 ## Splits
 
