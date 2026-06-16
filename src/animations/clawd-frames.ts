@@ -97,7 +97,9 @@ export const pumpLoader: Spinner = {
 }
 
 // ── MEV shark scan ─────────────────────────────────────────────────────
-// Braille scan-line for the sniper/shark species.
+// Braille scan-line for the sniper/shark species. The beam exits the right
+// edge and the loop wraps straight back to frame 0 — no blank hold frame,
+// so the scan reads as continuous instead of flashing empty each cycle.
 export const mevScan: Spinner = {
   frames: [
     '⠁⠀⠀⠀⠀⠀⠀⠀',
@@ -111,7 +113,6 @@ export const mevScan: Spinner = {
     '⠀⠀⠀⠀⠀⡀⠄⠂',
     '⠀⠀⠀⠀⠀⠀⡀⠄',
     '⠀⠀⠀⠀⠀⠀⠀⡀',
-    '⠀⠀⠀⠀⠀⠀⠀⠀',
   ],
   interval: 70,
 }
