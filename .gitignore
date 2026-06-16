@@ -434,3 +434,4 @@ clawd-box
 # Accidental OS/editor copies of config files
 *.gitignore copy
 .gitignore copy
+spaces/clawd-computer/
