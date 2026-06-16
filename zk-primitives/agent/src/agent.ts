@@ -269,12 +269,16 @@ export class ClawdZkAgent {
       nullifier = await this.computeNullifierFor(secret, args.context);
     }
 
-    const attester = this.signer
+    // Fallback for the instruction-only path (no signer). We synthesise
+    // a deterministic PublicKey from the first 32 bytes of the nullifier
+    // and the at-rest attester bytes for the public input.
+    const attesterPubkey = this.signer
       ? this.signer.publicKey
-      : new PublicKey(hexToBytes(nullifier).slice(0, 32)); // fallback for instruction-only mode
+      : new PublicKey(Buffer.from(nullifier));
+    const attesterBytes = attesterPubkey.toBytes();
 
     const publishArgs: PublishAttestationArgs = {
-      signer: attester,
+      signer: attesterPubkey,
       modelHash,
       payloadCommitment,
       nullifier,
@@ -284,7 +288,7 @@ export class ClawdZkAgent {
 
     const publicInputsPacked = packPublicInputs(
       buildPublishPublicInputs({
-        attester: attester.toBytes(),
+        attester: attesterBytes,
         modelHash,
         payloadCommitment,
         nullifier,
@@ -294,7 +298,7 @@ export class ClawdZkAgent {
     const summary = [
       `${CLAWD_BANNER} attestModel`,
       `  program       : ${this.config.programId.toBase58()}`,
-      `  attester      : ${attester.toBase58()}`,
+      `  attester      : ${attesterPubkey.toBase58()}`,
       `  modelHash     : 0x${bytesToHex(modelHash)}`,
       `  payload       : 0x${bytesToHex(payloadCommitment)}`,
       `  nullifier     : 0x${bytesToHex(nullifier)}`,
@@ -327,12 +331,12 @@ export class ClawdZkAgent {
     const stateVersion =
       typeof args.stateVersion === "bigint" ? args.stateVersion : BigInt(args.stateVersion);
 
-    const attester = this.signer
+    const attesterPubkey = this.signer
       ? this.signer.publicKey
-      : new PublicKey(hexToBytes(modelHash).slice(0, 32));
+      : new PublicKey(Buffer.from(modelHash));
 
     const commitArgs: CommitStateArgs = {
-      signer: attester,
+      signer: attesterPubkey,
       modelHash,
       ciphertextCommitment,
       stateVersion,
@@ -343,7 +347,7 @@ export class ClawdZkAgent {
     const summary = [
       `${CLAWD_BANNER} commitEncryptedState`,
       `  program        : ${this.config.programId.toBase58()}`,
-      `  committer      : ${attester.toBase58()}`,
+      `  committer      : ${attesterPubkey.toBase58()}`,
       `  modelHash      : 0x${bytesToHex(modelHash)}`,
       `  ciphertext     : 0x${bytesToHex(ciphertextCommitment)}`,
       `  stateVersion   : ${stateVersion.toString()}`,
