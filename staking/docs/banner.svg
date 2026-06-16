@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="900" height="220">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117"/>
+      <stop offset="100%" style="stop-color:#161b22"/>
+    </linearGradient>
+    <linearGradient id="sweepGrad" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   style="stop-color:#9945FF"/>
+      <stop offset="35%"  style="stop-color:#14F195"/>
+      <stop offset="65%"  style="stop-color:#00C2FF"/>
+      <stop offset="100%" style="stop-color:#9945FF"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse" x1="0" x2="900">
+      <stop offset="0%"   stop-color="#9945FF"/>
+      <stop offset="50%"  stop-color="#14F195"/>
+      <stop offset="100%" stop-color="#9945FF">
+        <animate attributeName="stop-color" values="#9945FF;#00C2FF;#14F195;#9945FF" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <animateTransform attributeName="gradientTransform" type="translate" values="-900 0;900 0;-900 0" dur="5s" repeatCount="indefinite"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="rounded">
+      <rect width="900" height="220" rx="14" ry="14"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="220" fill="url(#bgGrad)" rx="14"/>
+
+  <!-- Animated border -->
+  <rect width="900" height="220" fill="none" stroke="url(#sweepGrad)" stroke-width="1.5" rx="14" opacity="0.6">
+    <animate attributeName="opacity" values="0.4;0.9;0.4" dur="3s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Grid lines (subtle) -->
+  <g opacity="0.06" stroke="#14F195" stroke-width="0.5">
+    <line x1="0" y1="55" x2="900" y2="55"/>
+    <line x1="0" y1="110" x2="900" y2="110"/>
+    <line x1="0" y1="165" x2="900" y2="165"/>
+    <line x1="225" y1="0" x2="225" y2="220"/>
+    <line x1="450" y1="0" x2="450" y2="220"/>
+    <line x1="675" y1="0" x2="675" y2="220"/>
+  </g>
+
+  <!-- Pulsing orbs -->
+  <circle cx="80" cy="110" r="40" fill="#9945FF" opacity="0.07">
+    <animate attributeName="r" values="35;50;35" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.05;0.12;0.05" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="820" cy="110" r="40" fill="#14F195" opacity="0.07">
+    <animate attributeName="r" values="35;50;35" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.05;0.12;0.05" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Diamond decorators -->
+  <text x="60" y="120" font-family="monospace" font-size="28" text-anchor="middle" fill="#9945FF" filter="url(#glow)" opacity="0.8">◈</text>
+  <text x="840" y="120" font-family="monospace" font-size="28" text-anchor="middle" fill="#14F195" filter="url(#glow)" opacity="0.8">◈</text>
+
+  <!-- Main title -->
+  <text x="450" y="88" font-family="'Courier New', monospace" font-size="40" font-weight="bold" text-anchor="middle" fill="url(#textGrad)" filter="url(#glow)">
+    OpenClawd Agent Staking
+  </text>
+
+  <!-- Subtitle -->
+  <text x="450" y="128" font-family="'Courier New', monospace" font-size="15" text-anchor="middle" fill="#8b949e">
+    Stake Metaplex Core agent NFTs · Earn $CLAWD rewards · Built on Solana
+  </text>
+
+  <!-- Live indicator row -->
+  <g transform="translate(450, 165)" text-anchor="middle">
+    <!-- Green pulse dot -->
+    <circle cx="-105" cy="-4" r="5" fill="#14F195">
+      <animate attributeName="r" values="4;6;4" dur="1.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="-90" y="0" font-family="'Courier New', monospace" font-size="13" fill="#14F195" font-weight="bold">LIVE ON DEVNET</text>
+
+    <!-- Separator -->
+    <text x="20" y="0" font-family="monospace" font-size="13" fill="#30363d">·</text>
+
+    <!-- Anchor badge -->
+    <text x="50" y="0" font-family="'Courier New', monospace" font-size="13" fill="#6e7681">Anchor v0.30.1</text>
+
+    <!-- Separator -->
+    <text x="145" y="0" font-family="monospace" font-size="13" fill="#30363d">·</text>
+
+    <!-- MIT badge -->
+    <text x="165" y="0" font-family="'Courier New', monospace" font-size="13" fill="#6e7681">MIT License</text>
+  </g>
+
+  <!-- Bottom accent line -->
+  <line x1="200" y1="200" x2="700" y2="200" stroke="url(#sweepGrad)" stroke-width="1" opacity="0.4"/>
+</svg>
