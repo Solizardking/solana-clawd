@@ -1,0 +1,12 @@
+# SolGPT — Space deps
+# Pinned for reproducibility. Tested on Python 3.13.
+#
+# IMPORTANT: huggingface_hub is pinned to <0.30 because Gradio 5.6.x still
+# imports `HfFolder`, which was removed from huggingface_hub in 1.0+. Newer
+# hub releases break `import gradio.oauth` with
+#   ImportError: cannot import name 'HfFolder' from 'huggingface_hub'
+# This is a known compat shim until Gradio drops the legacy import.
+
+gradio>=5.6.0,<6.0
+huggingface_hub>=0.24.0,<0.30
+requests>=2.32.0
