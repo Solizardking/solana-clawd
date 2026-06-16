@@ -44,6 +44,7 @@
 | **Solana Gemni Image Generator** | `solana-gemini-image-generator` | Creative | Nano Banana image generation for Solana content | ✅ Production |
 | **Solana Helius Specialist** | `solana-helius-specialist` | Infrastructure | Helius API integration, DAS queries, webhook management | ✅ Production |
 | **Solana Bot Architect** | `solana-bot-architect` | Dev Tools | Telegram/Discord trading bot architecture and deployment | ✅ Production |
+| **Clawd ZK Agent** | `clawd-zk-agent` | Infrastructure | Agent-shaped wrapper over the on-chain `clawd-zk` program — nullifiers, Groth16 proofs, Light Protocol compressed state, and a deterministic natural-language intent router. | ✅ Production |
 | **Solana OpenClawd Orchestrator** | `solana-openclawd-orchestrator` | Orchestration | Multi-agent coordination and task routing | ✅ Production |
 | **Solana OpenClawd Shell Auditor** | `solana-openclawd-shell-auditor` | Security | Agent shell configuration audit and compliance verification | ✅ Beta |
 | **Solana OpenClawd Spawn Manager** | `solana-openclawd-spawn-manager` | Orchestration | Leviathan spawn lifecycle management | ✅ Production |

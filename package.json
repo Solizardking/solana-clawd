@@ -217,6 +217,18 @@
     "clawd:build": "cd packages/clawd-code-cli && npm run build",
     "clawd:start": "cd packages/clawd-code-cli && node dist/index.js",
     "clawd:dev": "cd packages/clawd-code-cli && npx tsx src/index.ts",
+    "zk:client:build": "cd zk-primitives/client && npm run build",
+    "zk:client:test":  "cd zk-primitives/client && npm run test",
+    "zk:agent:build":  "cd zk-primitives/agent && npm run build",
+    "zk:agent:test":   "cd zk-primitives/agent && npm run test",
+    "zk:agent:lint":   "cd zk-primitives/agent && npm run lint",
+    "zk:agent:inspect":"cd zk-primitives/agent && npm run inspect",
+    "zk:agent:ask":    "cd zk-primitives/agent && CLAWD_ZK_RPC_URL=${CLAWD_ZK_RPC_URL:-https://api.mainnet-beta.solana.com} node ./dist/cli.js ask",
+    "zk:agent:attest": "cd zk-primitives/agent && CLAWD_ZK_RPC_URL=${CLAWD_ZK_RPC_URL:-https://api.mainnet-beta.solana.com} node ./dist/cli.js attest",
+    "zk:agent:verify": "cd zk-primitives/agent && CLAWD_ZK_RPC_URL=${CLAWD_ZK_RPC_URL:-https://api.mainnet-beta.solana.com} node ./dist/cli.js verify",
+    "zk:agent:nullifier": "cd zk-primitives/agent && CLAWD_ZK_RPC_URL=${CLAWD_ZK_RPC_URL:-https://api.mainnet-beta.solana.com} node ./dist/cli.js nullifier",
+    "zk:build":        "npm run zk:client:build && npm run zk:agent:build",
+    "zk:test":         "npm run zk:client:test && npm run zk:agent:test",
     "bitaxe:install": "cd packages/clawd-code-cli/bitaxe-orelane && npm install",
     "bitaxe:build": "cd packages/clawd-code-cli/bitaxe-orelane && npm run build",
     "bitaxe:test": "cd packages/clawd-code-cli/bitaxe-orelane && npm test",
@@ -353,7 +365,9 @@
     "goals",
     "dark/dark-wallet",
     "vendor/agent-auth/packages/*",
-    "programs/programs/client"
+    "programs/programs/client",
+    "zk-primitives/client",
+    "zk-primitives/agent"
   ],
   "pnpm": {
     "onlyBuiltDependencies": [

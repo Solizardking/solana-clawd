@@ -1,0 +1,81 @@
+name: zk-agent CI
+
+on:
+  push:
+    branches: [main, clawd-code-lobster-rebrand]
+    paths:
+      - 'zk-primitives/**'
+      - '.github/workflows/zk-agent-ci.yml'
+      - 'package.json'
+  pull_request:
+    paths:
+      - 'zk-primitives/**'
+      - '.github/workflows/zk-agent-ci.yml'
+
+jobs:
+  build-and-test:
+    name: Build & test @clawd/zk-agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install (monorepo)
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Build @clawd/zk-client
+        run: pnpm --filter @clawd/zk-client build
+
+      - name: Lint @clawd/zk-agent
+        run: pnpm --filter @clawd/zk-agent lint
+
+      - name: Build @clawd/zk-agent
+        run: pnpm --filter @clawd/zk-agent build
+
+      - name: Test @clawd/zk-agent
+        env:
+          # The unit tests are off-chain and don't need a real RPC.
+          # The base mainnet-beta URL is only here to satisfy config
+          # loading; tests construct their own stub agent and never
+          # make network calls.
+          CLAWD_ZK_RPC_URL: https://api.mainnet-beta.solana.com
+        run: pnpm --filter @clawd/zk-agent test
+
+      - name: Smoke test — `clawd-zk-agent inspect`
+        env:
+          CLAWD_ZK_RPC_URL: https://api.mainnet-beta.solana.com
+        run: |
+          cd zk-primitives/agent
+          node ./dist/cli.js inspect
+
+      - name: Smoke test — `clawd-zk-agent nullifier`
+        env:
+          CLAWD_ZK_RPC_URL: https://api.mainnet-beta.solana.com
+        run: |
+          cd zk-primitives/agent
+          node ./dist/cli.js nullifier "model-attest:v1:ci-smoke"
+
+      - name: Smoke test — `clawd-zk-agent ask`
+        env:
+          CLAWD_ZK_RPC_URL: https://api.mainnet-beta.solana.com
+        run: |
+          cd zk-primitives/agent
+          node ./dist/cli.js ask "attest this model 0xdeadbeef"
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: clawd-zk-agent-${{ github.sha }}
+          path: zk-primitives/agent/dist
+          if-no-files-found: ignore
