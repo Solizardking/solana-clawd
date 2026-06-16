@@ -419,21 +419,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`87058b5b`](../../commit/87058b5b) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
-| 🥈 | [`a6e3568d`](../../commit/a6e3568d) | lklj | solizardking | Jun 16 |
-| 🥉 | [`25742224`](../../commit/25742224) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 4️⃣ | [`a996d416`](../../commit/a996d416) | lkllj | solizardking | Jun 16 |
-| 5️⃣ | [`df2dde46`](../../commit/df2dde46) | merge: sync leaderboard refresh with local cleanup pass | solizardking | Jun 16 |
-| 6️⃣ | [`596f3fd1`](../../commit/596f3fd1) | llll | solizardking | Jun 16 |
-| 7️⃣ | [`91704bb2`](../../commit/91704bb2) | ;kl | solizardking | Jun 16 |
-| 8️⃣ | [`78f5d741`](../../commit/78f5d741) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 9️⃣ | [`4cdbb5eb`](../../commit/4cdbb5eb) | ;k;k; | solizardking | Jun 16 |
-| 🔟 | [`07090fef`](../../commit/07090fef) | ,n,n, | solizardking | Jun 16 |
+| 🥇 | [`3093988e`](../../commit/3093988e) | spaces/clawd-zoo: switch default backend to Pollinations (tr | solizardking | Jun 16 |
+| 🥈 | [`1843b3cd`](../../commit/1843b3cd) | m | solizardking | Jun 16 |
+| 🥉 | [`d6ffa951`](../../commit/d6ffa951) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 4️⃣ | [`87058b5b`](../../commit/87058b5b) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
+| 5️⃣ | [`a6e3568d`](../../commit/a6e3568d) | lklj | solizardking | Jun 16 |
+| 6️⃣ | [`25742224`](../../commit/25742224) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 7️⃣ | [`a996d416`](../../commit/a996d416) | lkllj | solizardking | Jun 16 |
+| 8️⃣ | [`df2dde46`](../../commit/df2dde46) | merge: sync leaderboard refresh with local cleanup pass | solizardking | Jun 16 |
+| 9️⃣ | [`596f3fd1`](../../commit/596f3fd1) | llll | solizardking | Jun 16 |
+| 🔟 | [`91704bb2`](../../commit/91704bb2) | ;kl | solizardking | Jun 16 |
+| · | [`78f5d741`](../../commit/78f5d741) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| · | [`4cdbb5eb`](../../commit/4cdbb5eb) | ;k;k; | solizardking | Jun 16 |
+| · | [`07090fef`](../../commit/07090fef) | ,n,n, | solizardking | Jun 16 |
 | · | [`fb444e42`](../../commit/fb444e42) | llml | solizardking | Jun 16 |
 | · | [`c9dacdcc`](../../commit/c9dacdcc) | ljllj | solizardking | Jun 16 |
-| · | [`4514f41d`](../../commit/4514f41d) | sgfg | solizardking | Jun 16 |
-| · | [`b367cbf8`](../../commit/b367cbf8) | dfsdfsfd | solizardking | Jun 16 |
-| · | [`a1376e67`](../../commit/a1376e67) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
