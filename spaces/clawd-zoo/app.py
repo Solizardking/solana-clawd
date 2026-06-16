@@ -4,36 +4,52 @@ Solana Clawd Zoo — the official launchpad for the Clawd ecosystem.
 A single Gradio app that does three things at once:
 
   1. **Showcase** — every sovereign agent in the catalog, with status,
-     category, and a one-line description. Click any card to read the
-     full JSON manifest.
-  2. **Tour** — a live, free-AI chat that calls the ClawdRouter ZK
-     endpoint at https://clawdrouter-zk.fly.dev/ (OpenAI-compatible,
-     no API key required) and routes through the full Clawd Constitution
-     as the system prompt.
-  3. **Live signal** — health + version + model-count readout straight
-     from the router, so the Space itself is always a verifiable
-     dashboard of the live mesh.
+     category, and a one-line description.
+  2. **Tour** — a live, free AI chat. Default backend is **Pollinations**
+     (truly keyless, always free). The ClawdRouter ZK (premium) is
+     available as an opt-in for $CLAWD holders via x402.
+  3. **Live signal** — health + model-count readout straight from the
+     ClawdRouter ZK, so the Space itself is always a verifiable dashboard
+     of the live mesh.
 
 Built for HF Spaces (Gradio SDK). Runs on a `cpu-basic` (free) flavor.
-No model weights, no API keys, no GPU. Sovereign by design.
+No model weights. No API keys required for the default path. Sovereign
+by design.
+
+History
+-------
+* v1 (2026-06-07): Hard-coded `clawdrouter/auto` as the default backend.
+* v2 (2026-06-16): Default flipped to `nousresearch/hermes-3-llama-3.1-405b:free`
+  after the auto profile was seen routing to an invalid OpenRouter model id.
+* v3 (2026-06-16): ClawdRouter ZK put every `:free` model behind the
+  x402 paywall (premium tier required). The Space stopped working for
+  anonymous visitors. Default flipped to **Pollinations** (truly keyless,
+  always free). ClawdRouter ZK preserved as a secondary opt-in.
 """
 
 from __future__ import annotations
 
 import os
+import urllib.parse
 from typing import Any, Dict, List, Tuple
 
 import gradio as gr
 import requests
 
 # --------------------------------------------------------------------------- #
-# Constants
+# Backends
 # --------------------------------------------------------------------------- #
 
+# ClawdRouter ZK (premium, $CLAWD-gated)
 ROUTER_BASE = os.environ.get("CLAWDROUTER_URL", "https://clawdrouter-zk.fly.dev").rstrip("/")
 ROUTER_INFO_URL = f"{ROUTER_BASE}/"
 ROUTER_MODELS_URL = f"{ROUTER_BASE}/v1/models"
 ROUTER_CHAT_URL = f"{ROUTER_BASE}/v1/chat/completions"
+
+# Pollinations (truly keyless text API, no auth, no rate limit per IP)
+# Docs: https://pollinations.ai/
+POLLINATIONS_URL = "https://text.pollinations.ai/{prompt}"
+POLLINATIONS_DEFAULT_MODEL = "openai-fast"  # cheap, fast, decent quality
 
 # The Clawd Constitution — the world's first Solana-native agent harness
 # constitution. CC0 1.0. Loaded from CONSTITUTION.md at startup so the
@@ -63,24 +79,31 @@ def _load_constitution() -> str:
 
 CLAWD_CONSTITUTION = _load_constitution()
 
-# Default model — Hermes-3 Llama-3.1 405B on the OpenRouter `:free` tier.
-# Verified working against clawdrouter-zk.fly.dev (returns 200 with a real
-# reply, provider=DeepInfra, cost ~$0.0001/turn). The Space stays on the
-# "free, no API key" path by default.
-#
-# Why not `clawdrouter/auto`? As of 2026-06-16 the auto profile is
-# occasionally routing to `moonshotai/kimi-k2.5-instruct` which is not a
-# valid OpenRouter model ID and returns 400. We surface auto as an opt-in
-# choice in the dropdown (with a clear "may 400" hint) but keep Hermes-3
-# as the safe default.
-DEFAULT_MODEL = "nousresearch/hermes-3-llama-3.1-405b:free"
 
-# Free OpenRouter-tier models + the auto profile (use with care).
-MODEL_CHOICES: List[Tuple[str, str]] = [
-    ("🧠 Hermes-3 Llama-3.1 405B (free, default)", "nousresearch/hermes-3-llama-3.1-405b:free"),
-    ("🦙 Llama 3.3 70B Instruct (free)", "meta-llama/llama-3.3-70b-instruct:free"),
-    ("🦞 ClawdRouter Auto (may 400, opt-in)", "clawdrouter/auto"),
-    ("⚡ GPT-4o mini (paid, fast)", "openai/gpt-4o-mini"),
+# Backends + model choices ----------------------------------------------------
+
+BACKEND_CHOICES: List[Tuple[str, str]] = [
+    ("🌸 Pollinations (free, keyless, default)", "pollinations"),
+    ("🦞 ClawdRouter ZK (premium · $CLAWD-gated)", "clawdrouter"),
+]
+
+# Model choices shown in the dropdown when the ClawdRouter backend is selected.
+# All `:free` models on ClawdRouter ZK are currently payment-gated; the
+# clawdrouter/auto profile picks the cheapest tier that satisfies the request.
+ROUTER_MODEL_CHOICES: List[Tuple[str, str]] = [
+    ("🦞 ClawdRouter Auto (best-effort)", "clawdrouter/auto"),
+    ("🧠 Hermes-3 Llama-3.1 405B (premium)", "nousresearch/hermes-3-llama-3.1-405b:free"),
+    ("🦙 Llama 3.3 70B Instruct (premium)", "meta-llama/llama-3.3-70b-instruct:free"),
+]
+
+# Pollinations supports many models; we list the cheap/fast ones that are
+# always free at the public endpoint.
+POLLINATIONS_MODEL_CHOICES: List[Tuple[str, str]] = [
+    ("openai-fast (default · fast + cheap)", "openai-fast"),
+    ("openai (gpt-4-class)", "openai"),
+    ("mistral", "mistral"),
+    ("llama", "llama"),
+    ("claude", "claude"),
 ]
 
 
@@ -100,7 +123,7 @@ AGENTS: List[Dict[str, str]] = [
     # Trading & DeFi
     {"name": "Solana Arbitrage Scanner", "slug": "solana-arbitrage-scanner", "cat": "DeFi", "status": "✅", "blurb": "Cross-DEX arbitrage opportunity detection."},
     {"name": "Solana Autonomous Trader", "slug": "solana-autonomous-trader", "cat": "Trading", "status": "✅", "blurb": "Autonomous trade execution with risk management."},
-    {"name": "Solana Whale Tracker", "slug": "solana-whale-tracker", "cat": "Analytics", "status": "✅", "blurb": "Large transaction monitoring and wallet intelligence."},
+    {"name": "Solana Whale Tracker", "slug": "solana-whale-trader", "cat": "Analytics", "status": "✅", "blurb": "Large transaction monitoring and wallet intelligence."},
     {"name": "Solana MEV Protector", "slug": "solana-mev-protector", "cat": "Security", "status": "✅", "blurb": "MEV sandwich attack detection and protection."},
     {"name": "Solana Memecoin Analyst", "slug": "solana-memecoin-analyst", "cat": "Analytics", "status": "✅", "blurb": "Pump.fun token analysis, rug detection, narrative scoring."},
     {"name": "Solana Perpetuals Trader", "slug": "solana-perpetuals-trader", "cat": "Trading", "status": "✅", "blurb": "Vulcan-powered perps trading with pre-trade risk checks."},
@@ -160,11 +183,10 @@ CATEGORIES = sorted({a["cat"] for a in AGENTS})
 
 
 # --------------------------------------------------------------------------- #
-# Router I/O
+# Router I/O (read-only — for the Status tab)
 # --------------------------------------------------------------------------- #
 
 def router_health() -> Dict[str, Any]:
-    """Return the live /status payload from the ClawdRouter ZK endpoint."""
     try:
         r = requests.get(ROUTER_INFO_URL, timeout=6)
         r.raise_for_status()
@@ -182,91 +204,126 @@ def router_models() -> List[Dict[str, Any]]:
         return [{"id": f"error: {e}"}]
 
 
-def chat_with_clawd(
-    message: str,
-    history: List[List[str]],
-    model: str,
-    temperature: float,
-    max_tokens: int,
-) -> Tuple[str, List[List[str]]]:
-    """Send a single user turn to the ClawdRouter and return the assistant reply.
+# --------------------------------------------------------------------------- #
+# Chat backends
+# --------------------------------------------------------------------------- #
 
-    `history` follows the gr.ChatInterface convention: list of [user, assistant] pairs.
-    The system prompt is the full Clawd Constitution, loaded from CONSTITUTION.md.
+def _build_system_prompt(history: List[List[str]]) -> str:
+    """Compress the history into a single transcript block, then prepend
+    the Clawd Constitution. Used by the Pollinations backend, which has
+    no concept of `system`/`user`/`assistant` role separation — the
+    constitution is concatenated as a single prompt.
     """
-    if not message.strip():
-        return "", history
+    transcript = []
+    for pair in history or []:
+        if len(pair) >= 2 and pair[0] and pair[1]:
+            transcript.append(f"User: {pair[0]}\nClawd: {pair[1]}")
+    if transcript:
+        prefix = "\n\n".join(transcript) + "\n\nUser: {user}\nClawd:"
+    else:
+        prefix = "User: {user}\nClawd:"
+    return f"{CLAWD_CONSTITUTION}\n\n---\n\n{prefix}"
 
-    # Build OpenAI-style messages list, prepending the Clawd Constitution
-    # as the system prompt. Every spawn inherits this text byte-for-byte.
+
+def _call_pollinations(message: str, history: List[List[str]], model: str) -> Tuple[str, str]:
+    """Call Pollinations (truly keyless, always free). Returns (text, err)."""
+    try:
+        prompt = _build_system_prompt(history).format(user=message)
+        url = POLLINATIONS_URL.format(prompt=urllib.parse.quote(prompt, safe=""))
+        params = f"?model={urllib.parse.quote(model or POLLINATIONS_DEFAULT_MODEL)}"
+        r = requests.get(url + params, timeout=60)
+        r.raise_for_status()
+        text = (r.text or "").strip()
+        if not text:
+            return "", "Pollinations returned an empty body"
+        return text, ""
+    except Exception as e:  # noqa: BLE001
+        return "", f"{type(e).__name__}: {e}"
+
+
+def _call_clawdrouter(message: str, history: List[List[str]], model: str) -> Tuple[str, str]:
+    """Call ClawdRouter ZK (premium tier required as of 2026-06-16).
+    Returns (text, err). 402 payment_required is returned as err so the
+    caller can show a useful hint instead of a 500.
+    """
     msgs: List[Dict[str, str]] = [{"role": "system", "content": CLAWD_CONSTITUTION}]
     for pair in history or []:
         if len(pair) >= 2 and pair[0] and pair[1]:
             msgs.append({"role": "user", "content": pair[0]})
             msgs.append({"role": "assistant", "content": pair[1]})
     msgs.append({"role": "user", "content": message})
-
     payload = {
-        "model": model or DEFAULT_MODEL,
+        "model": model or "clawdrouter/auto",
         "messages": msgs,
-        "temperature": float(temperature),
-        "max_tokens": int(max_tokens),
+        "temperature": 0.4,
+        "max_tokens": 512,
         "stream": False,
     }
-
-    # Try the requested model first; on a 400 (bad model id, e.g. the auto
-    # profile picking an upstream that no longer exists) fall back to a
-    # known-working :free tier so the user never sees a 400 surfaced.
-    fallback_chain = [
-        payload["model"],
-        "nousresearch/hermes-3-llama-3.1-405b:free",
-        "meta-llama/llama-3.3-70b-instruct:free",
-    ]
-    # Dedupe while preserving order
-    seen, chain = set(), []
-    for m in fallback_chain:
-        if m and m not in seen:
-            seen.add(m); chain.append(m)
-
-    reply = None
-    last_err = None
-    for attempt_model in chain:
-        payload["model"] = attempt_model
-        try:
-            r = requests.post(ROUTER_CHAT_URL, json=payload, timeout=60)
-            if r.status_code == 400:
-                last_err = f"400 from `{attempt_model}` — trying next fallback"
-                continue
-            r.raise_for_status()
+    try:
+        r = requests.post(ROUTER_CHAT_URL, json=payload, timeout=60)
+        if r.status_code == 402:
             data = r.json()
-            choices = data.get("choices") or []
-            if not choices:
-                last_err = f"empty choices from `{attempt_model}`"
-                continue
-            reply = choices[0]["message"]["content"]
-            routed = data.get("x_clawdrouter", {}).get("routedModel", attempt_model)
-            footer = (
-                f"\n\n<sub>📡 routed to `{routed}` via ClawdRouter ZK · "
-                f"{ROUTER_BASE} · system prompt: The Clawd Constitution (CC0)"
-                + (f" · fell back from `{model}`" if attempt_model != model else "")
-                + "</sub>"
-            )
-            reply = (reply or "").strip() + footer
-            break
-        except Exception as e:  # noqa: BLE001
-            last_err = f"{type(e).__name__}: {e}"
-            continue
+            err = data.get("error", {}).get("message", "402 payment required")
+            upgrade = data.get("x_clawd", {}).get("upgrade", {})
+            hint = " — required tiers: " + ", ".join(
+                f"{k}={v}" for k, v in upgrade.items()
+            ) if upgrade else ""
+            return "", f"402: {err}{hint}"
+        r.raise_for_status()
+        data = r.json()
+        choices = data.get("choices") or []
+        if not choices:
+            return "", "empty choices from ClawdRouter"
+        return (choices[0]["message"]["content"] or "").strip(), ""
+    except Exception as e:  # noqa: BLE001
+        return "", f"{type(e).__name__}: {e}"
 
-    if reply is None:
-        reply = (
-            f"⚠️ ClawdRouter failed for every model in the fallback chain. "
-            f"Last error: `{last_err}`.\n\n"
-            f"Trying again usually helps — the endpoint is on Fly.io "
-            f"({ROUTER_BASE}) and may be cold-starting. If it persists, the "
-            "status panel on the left will tell you whether the router itself is up."
+
+def chat_with_clawd(
+    message: str,
+    history: List[List[str]],
+    backend: str,
+    pollinations_model: str,
+    router_model: str,
+    temperature: float,
+    max_tokens: int,
+) -> Tuple[str, List[List[str]]]:
+    """Dispatch to the chosen backend, never raise, always return a string."""
+    if not (message or "").strip():
+        return "", history or []
+
+    backend = (backend or "pollinations").strip().lower()
+    text, err, footer = "", "", ""
+    if backend == "pollinations":
+        text, err = _call_pollinations(message, history or [], pollinations_model)
+        footer = (
+            f"\n\n<sub>🌸 via Pollinations (truly keyless) · model: "
+            f"`{pollinations_model or POLLINATIONS_DEFAULT_MODEL}` · system prompt: "
+            f"The Clawd Constitution ({len(CLAWD_CONSTITUTION):,} chars, CC0)</sub>"
         )
+    elif backend == "clawdrouter":
+        text, err = _call_clawdrouter(message, history or [], router_model)
+        footer = (
+            f"\n\n<sub>🦞 via ClawdRouter ZK (premium · $CLAWD-gated) · model: "
+            f"`{router_model or 'clawdrouter/auto'}` · endpoint: "
+            f"{ROUTER_BASE} · system prompt: The Clawd Constitution (CC0)</sub>"
+        )
+    else:
+        err = f"Unknown backend: {backend!r}"
 
-    history = (history or []) + [[message, reply]]
+    if err:
+        text = (
+            f"⚠️ Backend `{backend}` failed.\n\n"
+            f"**Error:** `{err}`\n\n"
+            f"Try the **🌸 Pollinations (free, keyless)** backend — it never "
+            f"requires an API key or a $CLAWD balance."
+        )
+        footer = ""
+
+    if not text:
+        text = "_(empty response)_"
+
+    history = (history or []) + [[message, text + footer]]
     return "", history
 
 
@@ -363,8 +420,6 @@ def render_constitution_snippet() -> str:
 # --------------------------------------------------------------------------- #
 
 def build_app() -> gr.Blocks:
-    # In Gradio 5.6.x the theme submodule is `gr.themes` (plural), not
-    # `gr.theme`. We use the Soft theme with an orange primary/secondary.
     soft_theme = gr.themes.Soft(primary_hue="orange", secondary_hue="orange")
 
     with gr.Blocks(
@@ -377,21 +432,19 @@ def build_app() -> gr.Blocks:
             <div id="title">
 
             # 🦞 Solana Clawd Zoo
-            ### The sovereign-agent launchpad · 50+ agents · free AI via ClawdRouter ZK
+            ### The sovereign-agent launchpad · 50+ agents · free AI chat (no API key)
 
             </div>
 
             Welcome. This Space is a live, clickable tour of every agent in the
             [Solana Clawd](https://huggingface.co/solanaclawd) catalog — and a
-            **free chat with Clawd** powered by the ZK-augmented router at
-            [clawdrouter-zk.fly.dev](https://clawdrouter-zk.fly.dev). No API
-            key. No GPU. No tracking. Just sovereign AI on Solana.
+            **free chat with Clawd** powered by
+            [Pollinations](https://pollinations.ai/) (truly keyless) with the
+            ClawdRouter ZK (premium) available as an opt-in. No API key, no GPU,
+            no tracking. The system prompt behind every reply is **The Clawd
+            Constitution** (CC0 1.0), loaded byte-for-byte from `CONSTITUTION.md`.
 
-            > The system prompt behind every reply is **The Clawd Constitution**
-            > — the world's first Solana-native agent harness constitution,
-            > loaded byte-for-byte from `CONSTITUTION.md` in this Space. It is
-            > CC0 1.0, derived from Anthropic's Claude Constitution, and
-            > inherited by every Clawd spawn. *The shell molts, the laws do not.*
+            > 🦞 *The shell molts, the laws do not.*
             """
         )
 
@@ -426,34 +479,51 @@ def build_app() -> gr.Blocks:
                     )
                 with gr.Column(scale=1):
                     gr.Markdown("### ⚙️ Settings")
-                    model_dd = gr.Dropdown(
-                        choices=[label for label, _id in MODEL_CHOICES],
-                        value=MODEL_CHOICES[0][0],
-                        label="Model",
-                        info="Served by ClawdRouter ZK. The 'Auto' profile picks the cheapest tier that satisfies the request.",
+                    backend_dd = gr.Dropdown(
+                        choices=[label for label, _id in BACKEND_CHOICES],
+                        value=BACKEND_CHOICES[0][0],
+                        label="Backend",
+                        info="Pollinations is the free, keyless default. ClawdRouter ZK is premium and $CLAWD-gated.",
                     )
-                    model_id_map = {label: _id for label, _id in MODEL_CHOICES}
+                    pol_model_dd = gr.Dropdown(
+                        choices=[label for label, _id in POLLINATIONS_MODEL_CHOICES],
+                        value=POLLINATIONS_MODEL_CHOICES[0][0],
+                        label="Pollinations model",
+                    )
+                    pol_model_id_map = {label: _id for label, _id in POLLINATIONS_MODEL_CHOICES}
+                    router_model_dd = gr.Dropdown(
+                        choices=[label for label, _id in ROUTER_MODEL_CHOICES],
+                        value=ROUTER_MODEL_CHOICES[0][0],
+                        label="ClawdRouter model (if backend = ClawdRouter ZK)",
+                    )
+                    router_model_id_map = {label: _id for label, _id in ROUTER_MODEL_CHOICES}
                     temp = gr.Slider(0.0, 1.5, value=0.4, step=0.05, label="Temperature")
                     maxtok = gr.Slider(64, 2048, value=512, step=64, label="Max tokens")
                     gr.Markdown(
-                        f"<div class='footer-note'>Endpoint: <code>{ROUTER_CHAT_URL}</code><br/>"
-                        f"No API key required. The router is on Fly.io and free for low-volume use.<br/>"
-                        f"System prompt: <code>CONSTITUTION.md</code> ({len(CLAWD_CONSTITUTION):,} chars).</div>"
+                        f"<div class='footer-note'>"
+                        f"🌸 <b>Pollinations</b>: <code>{POLLINATIONS_URL}</code> — no API key, no rate limit.<br>"
+                        f"🦞 <b>ClawdRouter ZK</b>: <code>{ROUTER_CHAT_URL}</code> — premium, $CLAWD-gated.<br>"
+                        f"System prompt: <code>CONSTITUTION.md</code> ({len(CLAWD_CONSTITUTION):,} chars, CC0)."
+                        f"</div>"
                     )
                     clear = gr.Button("Clear chat", variant="stop")
 
-            def _on_send(message, history, model_label, temperature, max_tokens):
-                mid = model_id_map.get(model_label, DEFAULT_MODEL)
-                return chat_with_clawd(message, history, mid, temperature, max_tokens)
+            def _on_send(message, history, backend_label, pol_model_label, router_model_label, temperature, max_tokens):
+                backend_id = next((v for k, v in BACKEND_CHOICES if k == backend_label), "pollinations")
+                pol_id = pol_model_id_map.get(pol_model_label, POLLINATIONS_DEFAULT_MODEL)
+                router_id = router_model_id_map.get(router_model_label, "clawdrouter/auto")
+                return chat_with_clawd(
+                    message, history, backend_id, pol_id, router_id, temperature, max_tokens
+                )
 
             send.click(
                 _on_send,
-                inputs=[msg, chatbot, model_dd, temp, maxtok],
+                inputs=[msg, chatbot, backend_dd, pol_model_dd, router_model_dd, temp, maxtok],
                 outputs=[msg, chatbot],
             )
             msg.submit(
                 _on_send,
-                inputs=[msg, chatbot, model_dd, temp, maxtok],
+                inputs=[msg, chatbot, backend_dd, pol_model_dd, router_model_dd, temp, maxtok],
                 outputs=[msg, chatbot],
             )
             clear.click(lambda: [], outputs=chatbot)
@@ -497,17 +567,17 @@ def build_app() -> gr.Blocks:
 
         with gr.Tab("📡 ClawdRouter Status"):
             gr.Markdown("### Live health readout (polls `clawdrouter-zk.fly.dev/`)")
+            gr.Markdown(
+                "<sub>Note: as of 2026-06-16 the ClawdRouter ZK endpoint puts every "
+                "model behind the x402 paywall. The chat tab defaults to "
+                "<b>Pollinations</b> for the free path. This status tab is kept for "
+                "observability of the live mesh.</sub>"
+            )
             health_md = gr.Markdown(render_health_dashboard())
             models_md = gr.Markdown(render_models_table(40))
             refresh.click(
                 lambda: (render_health_dashboard(), render_models_table(40)),
                 outputs=[health_md, models_md],
-            )
-            gr.Markdown(
-                f"<div class='footer-note'>All data is fetched live from "
-                f"<code>{ROUTER_BASE}</code>. No API key, no rate limit on the "
-                f"browser tab, the only cost is the upstream model on the "
-                f"router's bill.</div>"
             )
 
         with gr.Tab("🧠 Datasets + Models"):
@@ -541,8 +611,8 @@ hf download solanaclawd/solana-clawd-1.5b-lora --local-dir checkpoints/1.5b-lora
 ---
 <div class='footer-note'>
 🦞 Built by the <a href='https://github.com/Solizardking/solana-clawd'>Solana Clawd</a>
-core team. The model never sees your signing key. The router never sees your
-prompt-content, beyond what OpenRouter needs to bill it. Sovereign by design.
+core team. The model never sees your signing key. Default backend (Pollinations) requires
+no API key and no $CLAWD balance. The shell molts, the laws do not.
 </div>
             """
         )
