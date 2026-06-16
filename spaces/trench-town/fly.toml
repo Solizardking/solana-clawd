@@ -1,0 +1,65 @@
+# Trench Town — Fly.io app config
+#
+# The live app is hosted at:
+#   - https://cheshire-clawd-terminal.fly.dev  (Fly-assigned hostname, preserved)
+#   - https://cheshireterminal.ai             (custom domain, primary)
+#
+# Brand: "Trench Town" everywhere user-facing.
+# Internal Fly app slug:  cheshire-clawd-terminal   (legacy; public DNS
+#                         already points at it, harmless to keep).
+# To rename the internal slug (run from this dir so fly.toml is in scope):
+#   fly apps rename cheshire-terminal
+# …and then update `app = "cheshire-terminal"` in this file before the
+# next `fly deploy`. The custom domain `cheshireterminal.ai` and the
+# $CLAWD brand in the landing page are unaffected.
+#
+# Secrets (set once, encrypted at rest):
+#   fly secrets set LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=... \
+#                 CLERK_PUBLISHABLE_KEY=... CLERK_SECRET_KEY=... \
+#                 SOLANA_RPC_URL="https://mainnet.helius-rpc.com/?api-key=..." \
+#                 PUMP_DRY_RUN=true \
+#                 --app cheshire-clawd-terminal
+
+app            = "cheshire-clawd-terminal"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  APP_NAME          = "Trench Town"
+  APP_BRAND         = "Trench Town — the AI town where Clawd lives"
+  APP_HOST_PRIMARY  = "https://cheshireterminal.ai"
+  APP_HOST_FLY      = "https://cheshire-clawd-terminal.fly.dev"
+  CLAWD_MINT        = "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+  X402_API_URL      = "https://x402.wtf/api"
+  PUMP_DRY_RUN      = "true"
+  HF_HUB_URL        = "https://huggingface.co"
+
+[[services]]
+  internal_port = 8080
+  protocol      = "tcp"
+  [[services.ports]]
+    handlers = ["http"]
+    port     = 80
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port     = 443
+  [[services.tcp_checks]]
+    interval     = "15s"
+    timeout      = "2s"
+    grace_period = "10s"
+
+  [services.concurrency]
+    type      = "connections"
+    hard_limit = 250
+    soft_limit = 200
+
+[[vm]]
+  memory   = "512mb"
+  cpu_kind = "shared"
+  cpus     = 1
+
+[[mounts]]
+  source      = "cheshire_data"
+  destination = "/data"

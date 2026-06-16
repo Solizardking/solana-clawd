@@ -1,4 +1,4 @@
-# spaces/ — push instructions (v3)
+# spaces/ — push instructions (v4)
 
 This directory holds the **clean, in-repo** sources for five deployments:
 
@@ -6,9 +6,9 @@ This directory holds the **clean, in-repo** sources for five deployments:
 |---|---|---|
 | `clawd-computer/` | Docker Space | `huggingface.co/spaces/solanaclawd/clawd-computer` (currently **PAUSED** — see `clawd-computer/RECOVERY.md`) |
 | `solanaclawd-pump-soft/` | static HF Space | `huggingface.co/spaces/solanaclawd/pump-soft` (must be created first) |
-| `cheshire-terminal/` | Docker image + Fly app | `cheshire-clawd-terminal.fly.dev` → `cheshireterminal.ai` (live) |
-| `clawd-zoo/` | Gradio Space | `huggingface.co/spaces/solanaclawd/clawd-zoo` (live; 50+ agents + free AI chat) |
-| `solgpt/` | Gradio Space | `huggingface.co/spaces/solanaclawd/solgpt` (new; free Solana-native AI chat, direct OpenRouter) |
+| `cheshire-terminal/` | Docker image (Fly) | **DEPRECATED** — rebranded to Trench Town. Kept for the existing Fly deploy; new work in `trench-town/`. |
+| `trench-town/` | Docker image (Fly) | `cheshire-clawd-terminal.fly.dev` → `cheshireterminal.ai` (live; new Trench Town brand) |
+| `clawd-zoo/` | Gradio Space | `huggingface.co/spaces/solanaclawd/clawd-zoo` (live; 50+ agents + free AI chat via Pollinations) |
 
 All sources are committed on `fix/clawd-computer-no-ttyd` and pushed to
 `origin/fix/clawd-computer-no-ttyd`. The HF / Fly pushes happen from the
@@ -97,12 +97,11 @@ curl -sIL https://huggingface.co/spaces/solanaclawd/pump-soft | head -3
 
 ## 3. Push the patched `solanaclawd/clawd-zoo`
 
-The Space is already live and the chat works (verified 2026-06-16), but
-the previous default `clawdrouter/auto` profile was occasionally routing
-to an invalid OpenRouter model ID and returning 400. The local mirror in
-`spaces/clawd-zoo/` patches the default to the verified-working
-`nousresearch/hermes-3-llama-3.1-405b:free` and adds a fallback chain so
-the user never sees a surfaced 400.
+The Space is already live. The local mirror in `spaces/clawd-zoo/`
+patches the chat to use **Pollinations** (truly keyless, no API key) as
+the default backend, with ClawdRouter ZK as a paid opt-in. The previous
+default `clawdrouter/auto` was returning `400 invalid model id`; all
+`:free` models on ClawdRouter ZK are now `402 payment_required`.
 
 ```bash
 TMP=$(mktemp -d)
@@ -113,7 +112,7 @@ rsync -a --delete \
 
 cd "$TMP/cz"
 git add -A
-git commit -m "fix: default to working :free model, add fallback chain for auto-profile 400s"
+git commit -m "v3: default to Pollinations (truly keyless) — ClawdRouter ZK 402s all :free models"
 git push origin main
 cd -
 rm -rf "$TMP"
@@ -125,73 +124,36 @@ curl -s https://huggingface.co/api/spaces/solanaclawd/clawd-zoo \
   | python3 -c "import json,sys;d=json.load(sys.stdin);print('stage =',d['runtime']['stage'])"
 ```
 
-## 4. Create and push the new `solanaclawd/solgpt`
+## 4. Re-deploy (or rename) Trench Town on Fly
 
-A free, Solana-native AI chat that talks **directly** to OpenRouter
-(no ClawdRouter hop) using a server-side `OPENROUTER_API_KEY`. Defaults
-to OpenRouter's free model tier, so the chat costs every visitor $0.
-
-```bash
-# one-time: create the Space (Gradio, public)
-hf repos create solanaclawd/solgpt \
-    --repo-type space \
-    --space-sdk gradio \
-    --exist-ok
-
-TMP=$(mktemp -d)
-git clone https://huggingface.co/spaces/solanaclawd/solgpt "$TMP/sg"
-rsync -a --delete \
-      --exclude='.git' --exclude='.git/' \
-      spaces/solgpt/ "$TMP/sg/"
-
-cd "$TMP/sg"
-git add -A
-git commit -m "v1: SolGPT — free Solana-native AI chat, direct OpenRouter integration"
-git push -u origin main
-cd -
-rm -rf "$TMP"
-```
-
-**Before the chat works**, set the Space secret (one-time, via the web
-UI — Space → Settings → Variables and secrets, or the CLI below):
+The live Fly app is `cheshire-clawd-terminal` — the hostname is preserved
+so existing links, cert, and DNS keep working. The new landing page in
+`spaces/trench-town/` rebrands everything user-facing to **"Trench Town"**.
 
 ```bash
-# copy the key already provisioned for clawdrouter/clawd-code/clawd-pump,
-# or mint a fresh one at https://openrouter.ai/keys (no credit card)
-KEY=$(grep '^OPENROUTER_API_KEY=' services/clawdrouter/.env | cut -d= -f2-)
-hf repos secret-set solanaclawd/solgpt OPENROUTER_API_KEY "$KEY" --repo-type space
+cd spaces/trench-town
+fly deploy --app cheshire-clawd-terminal
+# to also rename the internal slug (run from this dir so fly.toml is in scope):
+#   fly apps rename cheshire-terminal
+# then update `app = "cheshire-terminal"` in fly.toml and re-deploy.
 ```
 
-Verify after ~60s:
+To test locally:
 ```bash
-curl -s https://huggingface.co/api/spaces/solanaclawd/solgpt \
-  | python3 -c "import json,sys;d=json.load(sys.stdin);print('stage =',d['runtime']['stage'])"
+cd spaces/trench-town
+docker build -t trench-town .
+docker run -p 8080:8080 trench-town
+# open http://localhost:8080
 ```
 
-The Space's **📡 Status** tab confirms the key is live (masked) and
-shows current usage/limit straight from OpenRouter's `/key` endpoint.
+## 5. (Optional) Re-deploy the legacy Cheshire Terminal build
 
-## 5. (Optional) Re-deploy or rename the Cheshire Terminal on Fly
-
-The live Fly app is `cheshire-clawd-terminal`. This dir is a clean
-reference build of the same brand. To redeploy:
+Only needed if you want the old "Cheshire Terminal" landing back. The
+dir is now a deprecation pointer; see `spaces/cheshire-terminal/README.md`.
 
 ```bash
 cd spaces/cheshire-terminal
 fly deploy --app cheshire-clawd-terminal
-# or, to spin up a NEW app called `cheshire-terminal`:
-fly apps create cheshire-terminal
-# (then update `app = "cheshire-terminal"` in fly.toml)
-fly deploy
-```
-
-To rename the existing app from `cheshire-clawd-terminal` → `cheshire-terminal`:
-```bash
-# run from spaces/cheshire-terminal/ so fly.toml is in scope
-fly apps rename cheshire-terminal
-# then update `app = "cheshire-terminal"` in fly.toml
-# and re-issue the cert for the custom domain:
-fly certs create cheshireterminal.ai -a cheshire-terminal
 ```
 
 ## 6. Mirror this tree back to the GitHub monorepo
@@ -207,7 +169,5 @@ https://github.com/Solizardking/solana-clawd/compare/main...fix/clawd-computer-n
 
 - `https://solanaclawd-clawd-computer.hf.space/` — the static homebase, swap panel locked to `$CLAWD`, model panel
 - `https://huggingface.co/spaces/solanaclawd/pump-soft` — the soft pump-mcp mirror with the Jupiter quote box
-- `https://huggingface.co/spaces/solanaclawd/clawd-zoo` — 50+ agents + free Hermes-3 chat, no API key
-- `https://huggingface.co/spaces/solanaclawd/solgpt` — free Solana-native AI chat, direct OpenRouter, no API key from visitors
-- `https://cheshire-clawd-terminal.fly.dev` — unchanged, still branded "Cheshire Terminal — Powered by $CLAWD"
-- `https://cheshireterminal.ai` — unchanged, primary branding surface
+- `https://huggingface.co/spaces/solanaclawd/clawd-zoo` — 50+ agents + free Hermes-3 chat via Pollinations, no API key
+- `https://cheshire-clawd-terminal.fly.dev` and `https://cheshireterminal.ai` — **Trench Town** landing: 7 roles, 8 Stages of Degen Evolution, TUPP, MEOW, Claw Beads, convoys, patrol board
