@@ -1,19 +1,6 @@
 ---
 name: dflow-kalshi-trading
-description: Buy, sell, or redeem YES/NO outcome tokens on Kalshi prediction markets
-  via DFlow. Use when the user wants to bet on an event, place a Kalshi order, take
-  a YES or NO position, exit a Kalshi position, redeem winning outcome tokens after
-  a market resolves, tune priority fees on a PM trade, or build a gasless / sponsored
-  PM flow where the app pays tx / ATA / market-init costs. Covers both the `dflow`
-  CLI and the DFlow Trading API. Do NOT use to discover markets, view positions, stream
-  prices, complete Proof KYC, or for non-Kalshi spot swaps.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-kalshi-trading
-  - https://x402.wtf/skills/dflow-kalshi-trading
-homepage: https://x402.wtf/skills/dflow-kalshi-trading
+description: Buy, sell, or redeem YES/NO outcome tokens on Kalshi prediction markets via DFlow. Use when the user wants to bet on an event, place a Kalshi order, take a YES or NO position, exit a Kalshi position, redeem winning outcome tokens after a market resolves, tune priority fees on a PM trade, or build a gasless / sponsored PM flow where the app pays tx / ATA / market-init costs. Covers both the `dflow` CLI and the DFlow Trading API. Do NOT use to discover markets, view positions, stream prices, complete Proof KYC, or for non-Kalshi spot swaps.
 ---
 
 # DFlow Kalshi Trading

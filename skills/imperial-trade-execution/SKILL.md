@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-trade-execution
-  - https://x402.wtf/skills/imperial-trade-execution
-homepage: https://x402.wtf/skills/imperial-trade-execution
+name: imperial-trade-execution
+description: Safe Imperial live execution: authenticated market orders, Phoenix-first venue preference, profile-aware routing, and post-trade verification.
 ---
 
 # Imperial Trade Execution

@@ -1,14 +1,6 @@
 ---
 name: slack
-description: Use when you need to control Slack from Clawdbot via the slack tool,
-  including reacting to messages or pinning/unpinning items in Slack channels or DMs.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/slack
-  - https://x402.wtf/skills/slack
-homepage: https://x402.wtf/skills/slack
+description: Use when you need to control Slack from Clawdbot via the slack tool, including reacting to messages or pinning/unpinning items in Slack channels or DMs.
 ---
 
 # Slack Actions

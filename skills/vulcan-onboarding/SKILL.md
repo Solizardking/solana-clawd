@@ -1,14 +1,6 @@
 ---
 name: vulcan-onboarding
-description: First-run Vulcan setup for paper trading, wallet, registration, collateral,
-  MCP skills, and live readiness.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-onboarding
-  - https://x402.wtf/skills/vulcan-onboarding
-homepage: https://x402.wtf/skills/vulcan-onboarding
+description: First-run Vulcan setup for paper trading, wallet, registration, collateral, MCP skills, and live readiness.
 ---
 
 # Vulcan Onboarding

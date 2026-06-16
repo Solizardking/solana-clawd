@@ -1,14 +1,6 @@
 ---
 name: vulcan-tpsl-management
-description: Take-profit and stop-loss setup, cancellation, laddered exits, position-side
-  rules, and verification for Vulcan/Phoenix.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-tpsl-management
-  - https://x402.wtf/skills/vulcan-tpsl-management
-homepage: https://x402.wtf/skills/vulcan-tpsl-management
+description: Take-profit and stop-loss setup, cancellation, laddered exits, position-side rules, and verification for Vulcan/Phoenix.
 ---
 
 # Vulcan TP/SL Management

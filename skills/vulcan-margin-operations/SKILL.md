@@ -1,14 +1,6 @@
 ---
 name: vulcan-margin-operations
-description: Vulcan/Phoenix collateral, deposits, withdrawals, transfers, isolated
-  margin, leverage tiers, and margin health.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-margin-operations
-  - https://x402.wtf/skills/vulcan-margin-operations
-homepage: https://x402.wtf/skills/vulcan-margin-operations
+description: Vulcan/Phoenix collateral, deposits, withdrawals, transfers, isolated margin, leverage tiers, and margin health.
 ---
 
 # Vulcan Margin Operations

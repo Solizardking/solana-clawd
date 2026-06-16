@@ -1,14 +1,6 @@
 ---
 name: github
-description: Interact with GitHub using the `gh` CLI. Use `gh issue`, `gh pr`, `gh
-  run`, and `gh api` for issues, PRs, CI runs, and advanced queries.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/github
-  - https://x402.wtf/skills/github
-homepage: https://x402.wtf/skills/github
+description: "Interact with GitHub using the `gh` CLI. Use `gh issue`, `gh pr`, `gh run`, and `gh api` for issues, PRs, CI runs, and advanced queries."
 ---
 
 # GitHub Skill

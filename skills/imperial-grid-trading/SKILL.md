@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-grid-trading
-  - https://x402.wtf/skills/imperial-grid-trading
-homepage: https://x402.wtf/skills/imperial-grid-trading
+name: imperial-grid-trading
+description: Grid strategy design for Imperial/Phoenix perps: ladder layout, venue pinning, replacement logic, and durable-runner boundaries.
 ---
 
 # Imperial Grid Trading

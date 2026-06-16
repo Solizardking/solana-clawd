@@ -1,14 +1,6 @@
 ---
 name: pumpfun
-description: Launch and trade tokens on Pump.fun bonding curves. Create memecoins,
-  buy/sell tokens, check prices, and collect creator fees on Solana.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pumpfun
-  - https://x402.wtf/skills/pumpfun
-homepage: https://x402.wtf/skills/pumpfun
+description: "Launch and trade tokens on Pump.fun bonding curves. Create memecoins, buy/sell tokens, check prices, and collect creator fees on Solana."
 ---
 
 # Pump.fun Skill

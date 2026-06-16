@@ -1,19 +1,6 @@
 ---
 name: qedgen
-description: Formally verify programs by writing Lean 4 proofs. Trigger this skill
-  whenever the user wants to formally verify code, generate Lean 4 proofs, prove properties
-  about algorithms or smart contracts, verify invariants, convert program logic into
-  formal specifications, or anything involving Lean 4 and formal verification. Also
-  trigger when the user mentions "qedgen", "lean proof", "formal proof", "verify my
-  code", "prove correctness", "formal verification", or wants mathematical guarantees
-  about their implementation.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/solana-formal-verification
-  - https://x402.wtf/skills/solana-formal-verification
-homepage: https://x402.wtf/skills/solana-formal-verification
+description: Formally verify programs by writing Lean 4 proofs. Trigger this skill whenever the user wants to formally verify code, generate Lean 4 proofs, prove properties about algorithms or smart contracts, verify invariants, convert program logic into formal specifications, or anything involving Lean 4 and formal verification. Also trigger when the user mentions "qedgen", "lean proof", "formal proof", "verify my code", "prove correctness", "formal verification", or wants mathematical guarantees about their implementation.
 ---
 
 # QEDGen — Agent-Driven Formal Verification

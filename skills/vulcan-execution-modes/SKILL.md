@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-execution-modes
-  - https://x402.wtf/skills/vulcan-execution-modes
-homepage: https://x402.wtf/skills/vulcan-execution-modes
+name: vulcan-execution-modes
+description: Canonical Vulcan execution mode taxonomy: Observe, Paper, Dry-Run, Confirm-Each, Auto-Execute. Use before launching strategies or live-capable perps flows.
 ---
 
 # Vulcan Execution Modes

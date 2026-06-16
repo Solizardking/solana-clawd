@@ -1,19 +1,6 @@
 ---
 name: dflow-kalshi-portfolio
-description: View what a wallet holds on DFlow's Kalshi prediction markets — current
-  positions, unrealized mark-to-market, realized P&L, activity history, and redeemable
-  winners. Use when the user asks "what are my positions?", "what do I own?", "am
-  I up or down?", "what's my fill history?", "what can I redeem?", "mark my portfolio
-  to market", or "show me this wallet's DFlow activity". Read-only. Do NOT use to
-  place sells or redemptions (use `dflow-kalshi-trading`), for market-wide data unrelated
-  to a wallet (use `dflow-kalshi-market-data`), or to discover new markets (use `dflow-kalshi-market-scanner`).
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-kalshi-portfolio
-  - https://x402.wtf/skills/dflow-kalshi-portfolio
-homepage: https://x402.wtf/skills/dflow-kalshi-portfolio
+description: View what a wallet holds on DFlow's Kalshi prediction markets — current positions, unrealized mark-to-market, realized P&L, activity history, and redeemable winners. Use when the user asks "what are my positions?", "what do I own?", "am I up or down?", "what's my fill history?", "what can I redeem?", "mark my portfolio to market", or "show me this wallet's DFlow activity". Read-only. Do NOT use to place sells or redemptions (use `dflow-kalshi-trading`), for market-wide data unrelated to a wallet (use `dflow-kalshi-market-data`), or to discover new markets (use `dflow-kalshi-market-scanner`).
 ---
 
 # DFlow Kalshi Portfolio

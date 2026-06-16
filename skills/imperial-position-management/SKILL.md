@@ -1,14 +1,6 @@
 ---
 name: imperial-position-management
-description: Inspect, reduce, and close Imperial-routed positions across Phoenix,
-  Flash, Jupiter, and GMTrade, with Phoenix preferred by default.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-position-management
-  - https://x402.wtf/skills/imperial-position-management
-homepage: https://x402.wtf/skills/imperial-position-management
+description: Inspect, reduce, and close Imperial-routed positions across Phoenix, Flash, Jupiter, and GMTrade, with Phoenix preferred by default.
 ---
 
 # Imperial Position Management

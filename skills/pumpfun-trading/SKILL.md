@@ -1,12 +1,5 @@
 ---
 description: Buy and sell tokens on Pump.fun bonding curves and AMM pools
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pumpfun-trading
-  - https://x402.wtf/skills/pumpfun-trading
-homepage: https://x402.wtf/skills/pumpfun-trading
 ---
 
 # PumpFun Trading

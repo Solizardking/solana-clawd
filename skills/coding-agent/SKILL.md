@@ -1,23 +1,7 @@
 ---
 name: coding-agent
-description: Run Codex CLI, Claude Code, OpenCode, or Pi Coding Agent via background
-  process for programmatic control.
-metadata:
-  clawdbot:
-    emoji: 🧩
-    requires:
-      anyBins:
-      - claude
-      - codex
-      - opencode
-      - pi
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/coding-agent
-  - https://x402.wtf/skills/coding-agent
-homepage: https://x402.wtf/skills/coding-agent
+description: Run Codex CLI, Claude Code, OpenCode, or Pi Coding Agent via background process for programmatic control.
+metadata: {"clawdbot":{"emoji":"🧩","requires":{"anyBins":["claude","codex","opencode","pi"]}}}
 ---
 
 # Coding Agent (bash-first)

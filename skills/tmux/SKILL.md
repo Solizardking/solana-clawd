@@ -1,23 +1,7 @@
 ---
 name: tmux
-description: Remote-control tmux sessions for interactive CLIs by sending keystrokes
-  and scraping pane output.
-metadata:
-  clawdbot:
-    emoji: 🧵
-    os:
-    - darwin
-    - linux
-    requires:
-      bins:
-      - tmux
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/tmux
-  - https://x402.wtf/skills/tmux
-homepage: https://x402.wtf/skills/tmux
+description: Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.
+metadata: {"clawdbot":{"emoji":"🧵","os":["darwin","linux"],"requires":{"bins":["tmux"]}}}
 ---
 
 # tmux Skill (Clawdbot)

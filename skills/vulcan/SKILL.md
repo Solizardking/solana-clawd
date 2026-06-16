@@ -1,16 +1,6 @@
 ---
 name: vulcan
-description: Entry-point skill for Phoenix perpetuals through Vulcan/Rise SDK inside
-  solana-clawd. Use before answering or acting on Vulcan, Phoenix DEX, Solana perps,
-  paper trading, live trading, margin, TP/SL, TWAP, grid, TA strategies, or perps
-  agent setup.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan
-  - https://x402.wtf/skills/vulcan
-homepage: https://x402.wtf/skills/vulcan
+description: Entry-point skill for Phoenix perpetuals through Vulcan/Rise SDK inside solana-clawd. Use before answering or acting on Vulcan, Phoenix DEX, Solana perps, paper trading, live trading, margin, TP/SL, TWAP, grid, TA strategies, or perps agent setup.
 ---
 
 # Vulcan Skill Pack

@@ -1,14 +1,6 @@
 ---
 name: imperial-tpsl-management
-description: Take-profit and stop-loss management for Imperial-routed positions, including
-  close-leg design, verification, and Telegram operator caveats.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-tpsl-management
-  - https://x402.wtf/skills/imperial-tpsl-management
-homepage: https://x402.wtf/skills/imperial-tpsl-management
+description: Take-profit and stop-loss management for Imperial-routed positions, including close-leg design, verification, and Telegram operator caveats.
 ---
 
 # Imperial TP/SL Management

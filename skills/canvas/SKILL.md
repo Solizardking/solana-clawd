@@ -1,12 +1,3 @@
----
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/canvas
-  - https://x402.wtf/skills/canvas
-homepage: https://x402.wtf/skills/canvas
----
 # Canvas Skill
 
 Display HTML content on connected Clawdbot nodes (Mac app, iOS, Android).

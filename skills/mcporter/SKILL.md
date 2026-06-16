@@ -1,27 +1,8 @@
 ---
 name: mcporter
-description: Use the mcporter CLI to list, configure, auth, and call MCP servers/tools
-  directly (HTTP or stdio), including ad-hoc servers, config edits, and CLI/type generation.
+description: Use the mcporter CLI to list, configure, auth, and call MCP servers/tools directly (HTTP or stdio), including ad-hoc servers, config edits, and CLI/type generation.
 homepage: http://mcporter.dev
-metadata:
-  clawdbot:
-    emoji: 📦
-    requires:
-      bins:
-      - mcporter
-    install:
-    - id: node
-      kind: node
-      package: mcporter
-      bins:
-      - mcporter
-      label: Install mcporter (node)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/mcporter
-  - https://x402.wtf/skills/mcporter
+metadata: {"clawdbot":{"emoji":"📦","requires":{"bins":["mcporter"]},"install":[{"id":"node","kind":"node","package":"mcporter","bins":["mcporter"],"label":"Install mcporter (node)"}]}}
 ---
 
 # mcporter

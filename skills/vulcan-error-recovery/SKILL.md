@@ -1,15 +1,6 @@
 ---
 name: vulcan-error-recovery
-description: Error category routing and recovery for Vulcan/Phoenix perps. Use on
-  failed CLI/MCP calls, tx failures, auth/config/API/network/rate-limit errors, and
-  strategy recovery.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-error-recovery
-  - https://x402.wtf/skills/vulcan-error-recovery
-homepage: https://x402.wtf/skills/vulcan-error-recovery
+description: Error category routing and recovery for Vulcan/Phoenix perps. Use on failed CLI/MCP calls, tx failures, auth/config/API/network/rate-limit errors, and strategy recovery.
 ---
 
 # Vulcan Error Recovery

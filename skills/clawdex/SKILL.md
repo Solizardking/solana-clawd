@@ -1,25 +1,7 @@
 ---
 name: clawdex
-description: Clawdex — dual-engine coding agent. Claude Code (reasoning + planning)
-  + OpenAI Codex (fast execution) + Browser Use boxes (web research) + Upstash compute
-  boxes (isolated sandboxes).
-metadata:
-  clawdbot:
-    emoji: 🦞
-    requires:
-      anyBins:
-      - claude
-      - codex
-      anyServices:
-      - browser-harness-js
-      - upstash-box
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/clawdex
-  - https://x402.wtf/skills/clawdex
-homepage: https://x402.wtf/skills/clawdex
+description: Clawdex — dual-engine coding agent. Claude Code (reasoning + planning) + OpenAI Codex (fast execution) + Browser Use boxes (web research) + Upstash compute boxes (isolated sandboxes).
+metadata: {"clawdbot":{"emoji":"🦞","requires":{"anyBins":["claude","codex"],"anyServices":["browser-harness-js","upstash-box"]}}}
 ---
 
 # Clawdex

@@ -2,21 +2,7 @@
 name: trello
 description: Manage Trello boards, lists, and cards via the Trello REST API.
 homepage: https://developer.atlassian.com/cloud/trello/rest/
-metadata:
-  clawdbot:
-    emoji: 📋
-    requires:
-      bins:
-      - jq
-      env:
-      - TRELLO_API_KEY
-      - TRELLO_TOKEN
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/trello
-  - https://x402.wtf/skills/trello
+metadata: {"clawdbot":{"emoji":"📋","requires":{"bins":["jq"],"env":["TRELLO_API_KEY","TRELLO_TOKEN"]}}}
 ---
 
 # Trello Skill

@@ -1,20 +1,7 @@
 ---
 name: voice-call
 description: Start voice calls via the Clawdbot voice-call plugin.
-metadata:
-  clawdbot:
-    emoji: 📞
-    skillKey: voice-call
-    requires:
-      config:
-      - plugins.entries.voice-call.enabled
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/voice-call
-  - https://x402.wtf/skills/voice-call
-homepage: https://x402.wtf/skills/voice-call
+metadata: {"clawdbot":{"emoji":"📞","skillKey":"voice-call","requires":{"config":["plugins.entries.voice-call.enabled"]}}}
 ---
 
 # Voice Call

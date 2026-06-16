@@ -1,27 +1,24 @@
 ---
 name: claude-code-skill
-description: Control Claude Code via MCP protocol. Trigger with "plan" to write a
-  precise execution plan then feed it to Claude Code. Also supports direct commands,
-  persistent sessions, agent teams, and advanced tool control.
+description: Control Claude Code via MCP protocol. Trigger with "plan" to write a precise execution plan then feed it to Claude Code. Also supports direct commands, persistent sessions, agent teams, and advanced tool control.
 homepage: https://github.com/enderfga/claude-code-skill
-metadata:
-  solanaos:
-    emoji: 🤖
-    requires:
-      bins:
-      - node
-      env: []
-    install:
-    - id: local
-      kind: local
-      path: ~/clawd/claude-code-skill
-      label: Use local installation
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/openclaw-claude-code-skill-main
-  - https://x402.wtf/skills/openclaw-claude-code-skill-main
+metadata: {
+  "solanaos": {
+    "emoji": "🤖",
+    "requires": {
+      "bins": ["node"],
+      "env": []
+    },
+    "install": [
+      {
+        "id": "local",
+        "kind": "local",
+        "path": "~/clawd/claude-code-skill",
+        "label": "Use local installation"
+      }
+    ]
+  }
+}
 ---
 
 # Claude Code Skill

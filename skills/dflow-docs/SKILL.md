@@ -1,19 +1,10 @@
 ---
 name: dflow-docs
-description: Discover and use DFlow documentation, Agent CLI, Trading API, Metadata
-  API, Proof KYC, prediction markets, and the hosted DFlow docs MCP. Use before implementing
-  DFlow features or when field-level endpoint details are needed.
+description: "Discover and use DFlow documentation, Agent CLI, Trading API, Metadata API, Proof KYC, prediction markets, and the hosted DFlow docs MCP. Use before implementing DFlow features or when field-level endpoint details are needed."
 metadata:
   source: https://pond.dflow.net/llms.txt
   mcp-server: https://pond.dflow.net/mcp
   docs-index: skills/dflow-docs/llms.txt
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-docs
-  - https://x402.wtf/skills/dflow-docs
-homepage: https://x402.wtf/skills/dflow-docs
 ---
 
 # DFlow Docs

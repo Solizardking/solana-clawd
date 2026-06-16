@@ -1,33 +1,22 @@
 ---
 name: solana-clawd
-description: 'One-shot setup and operation guide for the solana-clawd agentic engine.
-  Use when: cloning the repo, setting up MCP tools, starting the Telegram bot, deploying
-  to Fly.io/Netlify, hatching blockchain buddies, running OODA loops, configuring
-  voice mode (ElevenLabs + Grok), minting Metaplex agents, managing the vault, running
-  the worker swarm, or contributing to the project. Covers all 31 MCP tools, 18 buddy
-  species, 9 spinners, 60+ Telegram commands, 95 skills, and the full repo structure.'
+description: 'One-shot setup and operation guide for the solana-clawd agentic engine. Use when: cloning the repo, setting up MCP tools, starting the Telegram bot, deploying to Fly.io/Netlify, hatching blockchain buddies, running OODA loops, configuring voice mode (ElevenLabs + Grok), minting Metaplex agents, managing the vault, running the worker swarm, or contributing to the project. Covers all 31 MCP tools, 18 buddy species, 9 spinners, 60+ Telegram commands, 95 skills, and the full repo structure.'
 metadata:
-  solanaos:
-    emoji: 🐾
-    requires:
-      env:
-      - HELIUS_API_KEY
-      bins:
-      - node
-      - npm
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/solana-clawd
-  - https://x402.wtf/skills/solana-clawd
-homepage: https://x402.wtf/skills/solana-clawd
+  {
+    "solanaos": {
+      "emoji": "\U0001F43E",
+      "requires": {
+        "env": ["HELIUS_API_KEY"],
+        "bins": ["node", "npm"]
+      }
+    }
+  }
 ---
 
 # solana-clawd — The Agentic Engine Solana Deserves
 
-**Repo**: [github.com/Solizardking/solana-clawd](https://github.com/Solizardking/solana-clawd)
-**Live**: [x402.wtf](https://x402.wtf)
+**Repo**: [github.com/x402agent/solana-clawd](https://github.com/x402agent/solana-clawd)
+**Live**: [solanaclawd.com](https://solanaclawd.com)
 **npm**: `solana-clawd` (v1.6.0)
 **Token**: `$CLAWD` — `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`
 
@@ -48,7 +37,7 @@ homepage: https://x402.wtf/skills/solana-clawd
 ## One-Shot Install
 
 ```bash
-git clone https://github.com/Solizardking/solana-clawd
+git clone https://github.com/x402agent/solana-clawd
 cd solana-clawd
 npm run setup
 ```
@@ -70,13 +59,13 @@ npm run spinners
 Install only the master `solana-clawd` skill:
 
 ```bash
-npx skills add Solizardking/solana-clawd --path skill/solana-clawd
+npx skills add x402agent/solana-clawd --path skill/solana-clawd
 ```
 
 Install the full Solana-clawd skill pack from this repo:
 
 ```bash
-npx skills add Solizardking/solana-clawd
+npx skills add x402agent/solana-clawd
 ```
 
 ## MCP Setup
@@ -184,7 +173,7 @@ npx tsx src/telegram/index.ts
 
 ## Voice Mode
 
-The web app at `x402.wtf/voice` supports two providers:
+The web app at `solanaclawd.com/voice` supports two providers:
 
 | | ElevenLabs | Grok (xAI) |
 |---|---|---|
@@ -281,7 +270,7 @@ docker compose up --build   # start 4 workers (TS + Rust + Python)
 ```
 MCP/               31 MCP tools, STDIO + HTTP + SSE transport
 src/               58 subsystems, 400+ files (engine, agents, telegram, buddy, pump, voice...)
-web/               Next.js frontend (chat, buddies, voice) — x402.wtf
+web/               Next.js frontend (chat, buddies, voice) — solanaclawd.com
 gateway/           Express API + Telegram bot + Birdeye WebSocket
 packages/          agentwallet (encrypted Solana+EVM vault SDK)
 beepboop/          macOS menu bar companion (SwiftUI, Claude vision, voice)

@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-execution-modes
-  - https://x402.wtf/skills/imperial-execution-modes
-homepage: https://x402.wtf/skills/imperial-execution-modes
+name: imperial-execution-modes
+description: Execution-mode taxonomy for Imperial router workflows in this repo: observe, route-check, paper/spec, live single-shot, and external durable runner.
 ---
 
 # Imperial Execution Modes

@@ -1,14 +1,6 @@
 ---
 name: vulcan-market-intel
-description: Phoenix market data, tickers, orderbooks, candles, funding, spreads,
-  liquidity, and pre-trade market context.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-market-intel
-  - https://x402.wtf/skills/vulcan-market-intel
-homepage: https://x402.wtf/skills/vulcan-market-intel
+description: Phoenix market data, tickers, orderbooks, candles, funding, spreads, liquidity, and pre-trade market context.
 ---
 
 # Vulcan Market Intel

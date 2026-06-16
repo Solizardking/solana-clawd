@@ -2,15 +2,7 @@
 name: notion
 description: Notion API for creating and managing pages, databases, and blocks.
 homepage: https://developers.notion.com
-metadata:
-  clawdbot:
-    emoji: 📝
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/notion
-  - https://x402.wtf/skills/notion
+metadata: {"clawdbot":{"emoji":"📝"}}
 ---
 
 # notion

@@ -1,14 +1,6 @@
 ---
 name: vulcan-skills-index
-description: Index for the bundled Vulcan skill pack exposed through solana-clawd.
-  Use to discover the correct focused Vulcan skill.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-skills-index
-  - https://x402.wtf/skills/vulcan-skills-index
-homepage: https://x402.wtf/skills/vulcan-skills-index
+description: Index for the bundled Vulcan skill pack exposed through solana-clawd. Use to discover the correct focused Vulcan skill.
 ---
 
 # Vulcan Skills Index

@@ -1,28 +1,7 @@
 ---
 name: clawdhub
-description: Use the ClawdHub CLI to search, install, update, and publish agent skills
-  from clawdhub.com. Use when you need to fetch new skills on the fly, sync installed
-  skills to latest or a specific version, or publish new/updated skill folders with
-  the npm-installed clawdhub CLI.
-metadata:
-  clawdbot:
-    requires:
-      bins:
-      - clawdhub
-    install:
-    - id: node
-      kind: node
-      package: clawdhub
-      bins:
-      - clawdhub
-      label: Install ClawdHub CLI (npm)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/clawdhub
-  - https://x402.wtf/skills/clawdhub
-homepage: https://x402.wtf/skills/clawdhub
+description: Use the ClawdHub CLI to search, install, update, and publish agent skills from clawdhub.com. Use when you need to fetch new skills on the fly, sync installed skills to latest or a specific version, or publish new/updated skill folders with the npm-installed clawdhub CLI.
+metadata: {"clawdbot":{"requires":{"bins":["clawdhub"]},"install":[{"id":"node","kind":"node","package":"clawdhub","bins":["clawdhub"],"label":"Install ClawdHub CLI (npm)"}]}}
 ---
 
 # ClawdHub CLI

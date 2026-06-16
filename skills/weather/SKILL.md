@@ -2,18 +2,7 @@
 name: weather
 description: Get current weather and forecasts (no API key required).
 homepage: https://wttr.in/:help
-metadata:
-  clawdbot:
-    emoji: 🌤️
-    requires:
-      bins:
-      - curl
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/weather
-  - https://x402.wtf/skills/weather
+metadata: {"clawdbot":{"emoji":"🌤️","requires":{"bins":["curl"]}}}
 ---
 
 # Weather

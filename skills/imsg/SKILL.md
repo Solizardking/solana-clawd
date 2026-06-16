@@ -2,27 +2,7 @@
 name: imsg
 description: iMessage/SMS CLI for listing chats, history, watch, and sending.
 homepage: https://imsg.to
-metadata:
-  clawdbot:
-    emoji: 📨
-    os:
-    - darwin
-    requires:
-      bins:
-      - imsg
-    install:
-    - id: brew
-      kind: brew
-      formula: steipete/tap/imsg
-      bins:
-      - imsg
-      label: Install imsg (brew)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imsg
-  - https://x402.wtf/skills/imsg
+metadata: {"clawdbot":{"emoji":"📨","os":["darwin"],"requires":{"bins":["imsg"]},"install":[{"id":"brew","kind":"brew","formula":"steipete/tap/imsg","bins":["imsg"],"label":"Install imsg (brew)"}]}}
 ---
 
 # imsg

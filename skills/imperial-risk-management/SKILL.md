@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-risk-management
-  - https://x402.wtf/skills/imperial-risk-management
-homepage: https://x402.wtf/skills/imperial-risk-management
+name: imperial-risk-management
+description: Risk checks for Imperial-routed perps: profile funding, existing exposure, venue choice, margin headroom, and Telegram pre-trade snapshots.
 ---
 
 # Imperial Risk Management

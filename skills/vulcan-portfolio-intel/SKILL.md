@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-portfolio-intel
-  - https://x402.wtf/skills/vulcan-portfolio-intel
-homepage: https://x402.wtf/skills/vulcan-portfolio-intel
+name: vulcan-portfolio-intel
+description: Phoenix portfolio snapshots: margin, positions, resting orders, funding exposure, PnL, and account reporting.
 ---
 
 # Vulcan Portfolio Intel

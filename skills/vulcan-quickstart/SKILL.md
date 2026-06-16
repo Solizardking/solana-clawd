@@ -1,14 +1,6 @@
 ---
 name: vulcan-quickstart
-description: Five-minute Vulcan quickstart for install, health check, first market
-  read, and first paper trade.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-quickstart
-  - https://x402.wtf/skills/vulcan-quickstart
-homepage: https://x402.wtf/skills/vulcan-quickstart
+description: Five-minute Vulcan quickstart for install, health check, first market read, and first paper trade.
 ---
 
 # Vulcan Quickstart

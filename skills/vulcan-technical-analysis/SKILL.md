@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-technical-analysis
-  - https://x402.wtf/skills/vulcan-technical-analysis
-homepage: https://x402.wtf/skills/vulcan-technical-analysis
+name: vulcan-technical-analysis
+description: Technical indicators and trigger evaluation for Phoenix markets: RSI, MACD, BBands, ATR, ADX, VWAP, Stoch, SMA, EMA.
 ---
 
 # Vulcan Technical Analysis

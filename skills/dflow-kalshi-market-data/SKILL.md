@@ -1,21 +1,6 @@
 ---
 name: dflow-kalshi-market-data
-description: Read market data for a known Kalshi prediction market on DFlow — orderbook,
-  trades, top-of-book prices, candlesticks, forecast-percentile history, and Kalshi
-  in-game live data — via one-shot REST snapshots, historical ranges, or live WebSocket
-  streams. Use when the user asks "show me the orderbook for X", "get last hour of
-  trades", "build a live price ticker", "stream orderbook depth", "pull 1-minute candles
-  for the last day", "watch in-game scores for this sports market", or "alert me when
-  the orderbook moves". Do NOT use to discover markets matching a criterion (use `dflow-kalshi-market-scanner`),
-  to place orders (use `dflow-kalshi-trading`), or to read a user's own positions/P&L
-  (use `dflow-kalshi-portfolio`).
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-kalshi-market-data
-  - https://x402.wtf/skills/dflow-kalshi-market-data
-homepage: https://x402.wtf/skills/dflow-kalshi-market-data
+description: Read market data for a known Kalshi prediction market on DFlow — orderbook, trades, top-of-book prices, candlesticks, forecast-percentile history, and Kalshi in-game live data — via one-shot REST snapshots, historical ranges, or live WebSocket streams. Use when the user asks "show me the orderbook for X", "get last hour of trades", "build a live price ticker", "stream orderbook depth", "pull 1-minute candles for the last day", "watch in-game scores for this sports market", or "alert me when the orderbook moves". Do NOT use to discover markets matching a criterion (use `dflow-kalshi-market-scanner`), to place orders (use `dflow-kalshi-trading`), or to read a user's own positions/P&L (use `dflow-kalshi-portfolio`).
 ---
 
 # DFlow Kalshi Market Data

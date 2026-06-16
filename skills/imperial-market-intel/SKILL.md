@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-market-intel
-  - https://x402.wtf/skills/imperial-market-intel
-homepage: https://x402.wtf/skills/imperial-market-intel
+name: imperial-market-intel
+description: Imperial and Phoenix market data: funding, mark prices, route checks, Phoenix depth, and pre-trade venue context.
 ---
 
 # Imperial Market Intel

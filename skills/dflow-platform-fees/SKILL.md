@@ -1,20 +1,6 @@
 ---
 name: dflow-platform-fees
-description: Monetize a DFlow integration by collecting a builder-defined fee on trades
-  your app routes through the Trade API — either a fixed percentage (spot + PM) via
-  `platformFeeBps`, or a probability-weighted dynamic fee (PM outcome tokens only)
-  via `platformFeeScale`. Use when the user asks "how do I take a cut of trades?",
-  "add a builder fee", "monetize my swap UI", "charge a platform fee", "how does platformFeeBps
-  / platformFeeScale work?", or "where do my fees get paid?". Do NOT use to run a
-  trade itself (use `dflow-spot-trading` or `dflow-kalshi-trading` — both also cover
-  priority fees and sponsored / gasless flows).
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-platform-fees
-  - https://x402.wtf/skills/dflow-platform-fees
-homepage: https://x402.wtf/skills/dflow-platform-fees
+description: Monetize a DFlow integration by collecting a builder-defined fee on trades your app routes through the Trade API — either a fixed percentage (spot + PM) via `platformFeeBps`, or a probability-weighted dynamic fee (PM outcome tokens only) via `platformFeeScale`. Use when the user asks "how do I take a cut of trades?", "add a builder fee", "monetize my swap UI", "charge a platform fee", "how does platformFeeBps / platformFeeScale work?", or "where do my fees get paid?". Do NOT use to run a trade itself (use `dflow-spot-trading` or `dflow-kalshi-trading` — both also cover priority fees and sponsored / gasless flows).
 ---
 
 # DFlow Platform Fees

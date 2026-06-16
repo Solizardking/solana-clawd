@@ -1,12 +1,5 @@
 ---
 description: Configure and claim creator fee sharing on Pump.fun tokens
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pumpfun-fees
-  - https://x402.wtf/skills/pumpfun-fees
-homepage: https://x402.wtf/skills/pumpfun-fees
 ---
 
 # PumpFun Fee Sharing

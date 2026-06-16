@@ -1,14 +1,6 @@
 ---
 name: skill-creator
-description: Create or update AgentSkills. Use when designing, structuring, or packaging
-  skills with scripts, references, and assets.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/skill-creator
-  - https://x402.wtf/skills/skill-creator
-homepage: https://x402.wtf/skills/skill-creator
+description: Create or update AgentSkills. Use when designing, structuring, or packaging skills with scripts, references, and assets.
 ---
 
 # Skill Creator

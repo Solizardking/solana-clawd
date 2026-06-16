@@ -1,21 +1,6 @@
 ---
 name: dflow-proof-kyc
-description: Integrate DFlow Proof — a Solana wallet identity-verification primitive
-  (Stripe Identity under the hood) — for either (a) gating your own app's features
-  behind KYC, or (b) completing the mandatory verification step for Kalshi prediction-market
-  buys on DFlow. Use when the user asks "how do I KYC a wallet?", "check if a wallet
-  is verified", "add KYC to my DeFi app", "handle unverified_wallet_not_allowed /
-  PROOF_NOT_VERIFIED", "redirect to dflow.net/proof", or "gate a feature by jurisdiction
-  or identity". Do NOT use to actually place trades (use `dflow-kalshi-trading`),
-  for geoblocking (separate concern, handled inline in the trading skill), for age
-  gating (Proof doesn't currently verify age), or for spot swaps (no KYC required).
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-proof-kyc
-  - https://x402.wtf/skills/dflow-proof-kyc
-homepage: https://x402.wtf/skills/dflow-proof-kyc
+description: Integrate DFlow Proof — a Solana wallet identity-verification primitive (Stripe Identity under the hood) — for either (a) gating your own app's features behind KYC, or (b) completing the mandatory verification step for Kalshi prediction-market buys on DFlow. Use when the user asks "how do I KYC a wallet?", "check if a wallet is verified", "add KYC to my DeFi app", "handle unverified_wallet_not_allowed / PROOF_NOT_VERIFIED", "redirect to dflow.net/proof", or "gate a feature by jurisdiction or identity". Do NOT use to actually place trades (use `dflow-kalshi-trading`), for geoblocking (separate concern, handled inline in the trading skill), for age gating (Proof doesn't currently verify age), or for spot swaps (no KYC required).
 ---
 
 # DFlow Proof

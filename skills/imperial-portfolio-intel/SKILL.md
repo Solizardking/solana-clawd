@@ -1,14 +1,6 @@
 ---
 name: imperial-portfolio-intel
-description: Imperial profile balances, open positions, open orders, exposure summary,
-  and wallet-level Telegram/admin portfolio recaps.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-portfolio-intel
-  - https://x402.wtf/skills/imperial-portfolio-intel
-homepage: https://x402.wtf/skills/imperial-portfolio-intel
+description: Imperial profile balances, open positions, open orders, exposure summary, and wallet-level Telegram/admin portfolio recaps.
 ---
 
 # Imperial Portfolio Intel

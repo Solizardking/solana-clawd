@@ -1,21 +1,7 @@
 ---
 name: session-logs
-description: Search and analyze your own session logs (older/parent conversations)
-  using jq.
-metadata:
-  clawdbot:
-    emoji: 📜
-    requires:
-      bins:
-      - jq
-      - rg
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/session-logs
-  - https://x402.wtf/skills/session-logs
-homepage: https://x402.wtf/skills/session-logs
+description: Search and analyze your own session logs (older/parent conversations) using jq.
+metadata: {"clawdbot":{"emoji":"📜","requires":{"bins":["jq","rg"]}}}
 ---
 
 # session-logs

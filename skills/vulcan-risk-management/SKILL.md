@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-risk-management
-  - https://x402.wtf/skills/vulcan-risk-management
-homepage: https://x402.wtf/skills/vulcan-risk-management
+name: vulcan-risk-management
+description: Risk checks for Phoenix perps: margin health, leverage tiers, liquidation distance, notional caps, exposure, stops, and strategy guardrails.
 ---
 
 # Vulcan Risk Management

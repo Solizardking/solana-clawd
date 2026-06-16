@@ -2,25 +2,7 @@
 name: blucli
 description: BluOS CLI (blu) for discovery, playback, grouping, and volume.
 homepage: https://blucli.sh
-metadata:
-  clawdbot:
-    emoji: 🫐
-    requires:
-      bins:
-      - blu
-    install:
-    - id: go
-      kind: go
-      module: github.com/steipete/blucli/cmd/blu@latest
-      bins:
-      - blu
-      label: Install blucli (go)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/blucli
-  - https://x402.wtf/skills/blucli
+metadata: {"clawdbot":{"emoji":"🫐","requires":{"bins":["blu"]},"install":[{"id":"go","kind":"go","module":"github.com/steipete/blucli/cmd/blu@latest","bins":["blu"],"label":"Install blucli (go)"}]}}
 ---
 
 # blucli (blu)

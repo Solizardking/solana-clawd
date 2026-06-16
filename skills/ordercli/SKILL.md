@@ -1,33 +1,8 @@
 ---
 name: ordercli
-description: Foodora-only CLI for checking past orders and active order status (Deliveroo
-  WIP).
+description: Foodora-only CLI for checking past orders and active order status (Deliveroo WIP).
 homepage: https://ordercli.sh
-metadata:
-  clawdbot:
-    emoji: 🛵
-    requires:
-      bins:
-      - ordercli
-    install:
-    - id: brew
-      kind: brew
-      formula: steipete/tap/ordercli
-      bins:
-      - ordercli
-      label: Install ordercli (brew)
-    - id: go
-      kind: go
-      module: github.com/steipete/ordercli/cmd/ordercli@latest
-      bins:
-      - ordercli
-      label: Install ordercli (go)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/ordercli
-  - https://x402.wtf/skills/ordercli
+metadata: {"clawdbot":{"emoji":"🛵","requires":{"bins":["ordercli"]},"install":[{"id":"brew","kind":"brew","formula":"steipete/tap/ordercli","bins":["ordercli"],"label":"Install ordercli (brew)"},{"id":"go","kind":"go","module":"github.com/steipete/ordercli/cmd/ordercli@latest","bins":["ordercli"],"label":"Install ordercli (go)"}]}}
 ---
 
 # ordercli

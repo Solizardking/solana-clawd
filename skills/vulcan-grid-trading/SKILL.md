@@ -1,14 +1,6 @@
 ---
 name: vulcan-grid-trading
-description: Grid trading with layered limit orders on Phoenix perpetuals. Use for
-  grid setup, monitoring, pausing/stopping, and live/paper grid strategy safety.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-grid-trading
-  - https://x402.wtf/skills/vulcan-grid-trading
-homepage: https://x402.wtf/skills/vulcan-grid-trading
+description: Grid trading with layered limit orders on Phoenix perpetuals. Use for grid setup, monitoring, pausing/stopping, and live/paper grid strategy safety.
 ---
 
 # Vulcan Grid Trading

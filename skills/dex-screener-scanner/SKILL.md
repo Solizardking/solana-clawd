@@ -1,17 +1,6 @@
 ---
 name: dex-screener-scanner
-description: 'Automate DexScreener Solana token discovery and screening via browser
-  automation. Navigate dexscreener.com/solana, scrape real-time token listings, filter
-  by volume/liquidity/age/holders, and identify the best opportunities. Triggers:
-  scan dexscreener, find new tokens, find trending tokens, screen Solana tokens, best
-  tokens on Solana, dexscreener scanner.'
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dex-screener-scanner
-  - https://x402.wtf/skills/dex-screener-scanner
-homepage: https://x402.wtf/skills/dex-screener-scanner
+description: "Automate DexScreener Solana token discovery and screening via browser automation. Navigate dexscreener.com/solana, scrape real-time token listings, filter by volume/liquidity/age/holders, and identify the best opportunities. Triggers: scan dexscreener, find new tokens, find trending tokens, screen Solana tokens, best tokens on Solana, dexscreener scanner."
 ---
 
 # DexScreener Solana Scanner

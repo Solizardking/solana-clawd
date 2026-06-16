@@ -1,24 +1,16 @@
 ---
 name: phantom-wallet-mcp
-description: 'Execute wallet operations through the Phantom MCP server. Use when the
-  user wants to interact with their Phantom wallet directly — get addresses, transfer
+description: >
+  Execute wallet operations through the Phantom MCP server. Use when the user
+  wants to interact with their Phantom wallet directly — get addresses, transfer
   SOL or SPL tokens, buy/swap tokens, sign transactions, and sign messages across
-  Solana, Ethereum, Bitcoin, and Sui. Requires the @phantom/mcp-server to be configured
-  as an MCP server.
-
-  '
+  Solana, Ethereum, Bitcoin, and Sui. Requires the @phantom/mcp-server to be
+  configured as an MCP server.
 license: MIT
 metadata:
   author: phantom
-  version: '1.0'
+  version: "1.0"
   homepage: https://github.com/phantom/phantom-connect-cursor-plugin
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/phantom-wallet-mcp
-  - https://x402.wtf/skills/phantom-wallet-mcp
-homepage: https://x402.wtf/skills/phantom-wallet-mcp
 ---
 
 # Phantom Wallet MCP

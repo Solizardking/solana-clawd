@@ -2,25 +2,7 @@
 name: obsidian
 description: Work with Obsidian vaults (plain Markdown notes) and automate via obsidian-cli.
 homepage: https://help.obsidian.md
-metadata:
-  clawdbot:
-    emoji: 💎
-    requires:
-      bins:
-      - obsidian-cli
-    install:
-    - id: brew
-      kind: brew
-      formula: yakitrak/yakitrak/obsidian-cli
-      bins:
-      - obsidian-cli
-      label: Install obsidian-cli (brew)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/obsidian
-  - https://x402.wtf/skills/obsidian
+metadata: {"clawdbot":{"emoji":"💎","requires":{"bins":["obsidian-cli"]},"install":[{"id":"brew","kind":"brew","formula":"yakitrak/yakitrak/obsidian-cli","bins":["obsidian-cli"],"label":"Install obsidian-cli (brew)"}]}}
 ---
 
 # Obsidian

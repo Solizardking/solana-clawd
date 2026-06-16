@@ -1,32 +1,12 @@
 ---
 name: dflow-phantom-connect
-description: Build Solana wallet-connected apps with Phantom Connect SDKs and DFlow
-  trading. Use when user asks to connect a Phantom wallet, integrate Phantom in React,
-  React Native, or vanilla JS, sign messages or transactions, build token-gated pages,
-  mint NFTs, accept crypto payments, swap tokens with DFlow, trade prediction markets,
-  or integrate Proof KYC verification. Covers @phantom/react-sdk, @phantom/react-native-sdk,
-  @phantom/browser-sdk, DFlow spot trading, DFlow prediction markets, and DFlow Proof
-  identity verification. Do NOT use for Ethereum or EVM wallet integrations, or non-DFlow
-  DEX routing.
+description: "Build Solana wallet-connected apps with Phantom Connect SDKs and DFlow trading. Use when user asks to connect a Phantom wallet, integrate Phantom in React, React Native, or vanilla JS, sign messages or transactions, build token-gated pages, mint NFTs, accept crypto payments, swap tokens with DFlow, trade prediction markets, or integrate Proof KYC verification. Covers @phantom/react-sdk, @phantom/react-native-sdk, @phantom/browser-sdk, DFlow spot trading, DFlow prediction markets, and DFlow Proof identity verification. Do NOT use for Ethereum or EVM wallet integrations, or non-DFlow DEX routing."
 license: MIT
 metadata:
   author: DFlow & Phantom Connect
   version: 1.0.0
-  tags:
-  - solana
-  - phantom
-  - wallet
-  - trading
-  - prediction-markets
-  - kyc
+  tags: [solana, phantom, wallet, trading, prediction-markets, kyc]
   mcp-server: pond.dflow.net/mcp
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-phantom-connect
-  - https://x402.wtf/skills/dflow-phantom-connect
-homepage: https://x402.wtf/skills/dflow-phantom-connect
 ---
 
 # Phantom Connect + DFlow Skill

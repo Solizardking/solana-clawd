@@ -1,13 +1,6 @@
 ---
 name: vulcan-position-management
 description: List, show, close, reduce Phoenix positions and attach/cancel TP/SL.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-position-management
-  - https://x402.wtf/skills/vulcan-position-management
-homepage: https://x402.wtf/skills/vulcan-position-management
 ---
 
 # Vulcan Position Management

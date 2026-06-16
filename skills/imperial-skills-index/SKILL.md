@@ -1,14 +1,6 @@
 ---
 name: imperial-skills-index
-description: Index for the bundled Imperial skill pack exposed through solana-clawd.
-  Use to discover the correct focused Imperial skill.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-skills-index
-  - https://x402.wtf/skills/imperial-skills-index
-homepage: https://x402.wtf/skills/imperial-skills-index
+description: Index for the bundled Imperial skill pack exposed through solana-clawd. Use to discover the correct focused Imperial skill.
 ---
 
 # Imperial Skills Index

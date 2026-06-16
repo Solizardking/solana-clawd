@@ -1,31 +1,8 @@
 ---
 name: things-mac
-description: Manage Things 3 via the `things` CLI on macOS (add/update projects+todos
-  via URL scheme; read/search/list from the local Things database). Use when a user
-  asks Clawdbot to add a task to Things, list inbox/today/upcoming, search tasks,
-  or inspect projects/areas/tags.
+description: Manage Things 3 via the `things` CLI on macOS (add/update projects+todos via URL scheme; read/search/list from the local Things database). Use when a user asks Clawdbot to add a task to Things, list inbox/today/upcoming, search tasks, or inspect projects/areas/tags.
 homepage: https://github.com/ossianhempel/things3-cli
-metadata:
-  clawdbot:
-    emoji: ✅
-    os:
-    - darwin
-    requires:
-      bins:
-      - things
-    install:
-    - id: go
-      kind: go
-      module: github.com/ossianhempel/things3-cli/cmd/things@latest
-      bins:
-      - things
-      label: Install things3-cli (go)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/things-mac
-  - https://x402.wtf/skills/things-mac
+metadata: {"clawdbot":{"emoji":"✅","os":["darwin"],"requires":{"bins":["things"]},"install":[{"id":"go","kind":"go","module":"github.com/ossianhempel/things3-cli/cmd/things@latest","bins":["things"],"label":"Install things3-cli (go)"}]}}
 ---
 
 # Things 3 CLI

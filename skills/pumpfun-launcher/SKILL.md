@@ -1,12 +1,5 @@
 ---
 description: Launch new tokens on Pump.fun directly via the Pump SDK
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/pumpfun-launcher
-  - https://x402.wtf/skills/pumpfun-launcher
-homepage: https://x402.wtf/skills/pumpfun-launcher
 ---
 
 # PumpFun Token Launcher

@@ -1,27 +1,8 @@
 ---
 name: oracle
-description: Best practices for using the oracle CLI (prompt + file bundling, engines,
-  sessions, and file attachment patterns).
+description: Best practices for using the oracle CLI (prompt + file bundling, engines, sessions, and file attachment patterns).
 homepage: https://askoracle.dev
-metadata:
-  clawdbot:
-    emoji: 🧿
-    requires:
-      bins:
-      - oracle
-    install:
-    - id: node
-      kind: node
-      package: '@steipete/oracle'
-      bins:
-      - oracle
-      label: Install oracle (node)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/oracle
-  - https://x402.wtf/skills/oracle
+metadata: {"clawdbot":{"emoji":"🧿","requires":{"bins":["oracle"]},"install":[{"id":"node","kind":"node","package":"@steipete/oracle","bins":["oracle"],"label":"Install oracle (node)"}]}}
 ---
 
 # oracle — best use

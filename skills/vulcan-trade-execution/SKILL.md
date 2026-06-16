@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/vulcan-trade-execution
-  - https://x402.wtf/skills/vulcan-trade-execution
-homepage: https://x402.wtf/skills/vulcan-trade-execution
+name: vulcan-trade-execution
+description: Safe Phoenix order execution via Vulcan: pre-trade checks, market/limit orders, paper/dry-run/live gates, and post-trade verification.
 ---
 
 # Vulcan Trade Execution

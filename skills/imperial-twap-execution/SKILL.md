@@ -1,11 +1,6 @@
 ---
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial-twap-execution
-  - https://x402.wtf/skills/imperial-twap-execution
-homepage: https://x402.wtf/skills/imperial-twap-execution
+name: imperial-twap-execution
+description: TWAP execution guidance for Imperial: slice planning, venue pinning, profile budgeting, and durable-runner requirements.
 ---
 
 # Imperial TWAP Execution

@@ -1,16 +1,6 @@
 ---
 name: imperial
-description: Entry-point skill for Imperial perpetual routing on Solana. Use before
-  answering or acting on Imperial router flows, Phoenix-routed perps, profile funding,
-  market/portfolio intel, risk checks, TP/SL, TWAP, grid, or Telegram bot trading
-  workflows.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/imperial
-  - https://x402.wtf/skills/imperial
-homepage: https://x402.wtf/skills/imperial
+description: Entry-point skill for Imperial perpetual routing on Solana. Use before answering or acting on Imperial router flows, Phoenix-routed perps, profile funding, market/portfolio intel, risk checks, TP/SL, TWAP, grid, or Telegram bot trading workflows.
 ---
 
 # Imperial

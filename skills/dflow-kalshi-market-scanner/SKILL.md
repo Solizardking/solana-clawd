@@ -1,20 +1,6 @@
 ---
 name: dflow-kalshi-market-scanner
-description: Find Kalshi prediction markets on DFlow that match a criterion — arbitrage
-  (YES+NO<$1), cheap long-shots, near-certain short-dated plays, biggest movers, widest
-  spreads, highest volume, closing soonest, and series/event-level scans. Use when
-  the user asks "where's the free money?", "any mispriced markets?", "cheap YES with
-  volume", "what moved today?", "markets closing soon", "cheapest YES in this event",
-  "top markets by volume", or "alert me when X happens" (streaming). Do NOT use to
-  place orders (use `dflow-kalshi-trading`), to view a user's own positions (use `dflow-kalshi-portfolio`),
-  or for general live-data plumbing unrelated to a scan (use `dflow-kalshi-market-data`).
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/dflow-kalshi-market-scanner
-  - https://x402.wtf/skills/dflow-kalshi-market-scanner
-homepage: https://x402.wtf/skills/dflow-kalshi-market-scanner
+description: Find Kalshi prediction markets on DFlow that match a criterion — arbitrage (YES+NO<$1), cheap long-shots, near-certain short-dated plays, biggest movers, widest spreads, highest volume, closing soonest, and series/event-level scans. Use when the user asks "where's the free money?", "any mispriced markets?", "cheap YES with volume", "what moved today?", "markets closing soon", "cheapest YES in this event", "top markets by volume", or "alert me when X happens" (streaming). Do NOT use to place orders (use `dflow-kalshi-trading`), to view a user's own positions (use `dflow-kalshi-portfolio`), or for general live-data plumbing unrelated to a scan (use `dflow-kalshi-market-data`).
 ---
 
 # DFlow Kalshi Market Scanner

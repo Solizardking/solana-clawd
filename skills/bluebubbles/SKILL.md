@@ -1,14 +1,6 @@
 ---
 name: bluebubbles
-description: Build or update the BlueBubbles external channel plugin for Clawdbot
-  (extension package, REST send/probe, webhook inbound).
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/bluebubbles
-  - https://x402.wtf/skills/bluebubbles
-homepage: https://x402.wtf/skills/bluebubbles
+description: Build or update the BlueBubbles external channel plugin for Clawdbot (extension package, REST send/probe, webhook inbound).
 ---
 
 # BlueBubbles plugin

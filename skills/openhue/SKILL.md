@@ -2,25 +2,7 @@
 name: openhue
 description: Control Philips Hue lights/scenes via the OpenHue CLI.
 homepage: https://www.openhue.io/cli
-metadata:
-  clawdbot:
-    emoji: 💡
-    requires:
-      bins:
-      - openhue
-    install:
-    - id: brew
-      kind: brew
-      formula: openhue/cli/openhue-cli
-      bins:
-      - openhue
-      label: Install OpenHue CLI (brew)
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/openhue
-  - https://x402.wtf/skills/openhue
+metadata: {"clawdbot":{"emoji":"💡","requires":{"bins":["openhue"]},"install":[{"id":"brew","kind":"brew","formula":"openhue/cli/openhue-cli","bins":["openhue"],"label":"Install OpenHue CLI (brew)"}]}}
 ---
 
 # OpenHue CLI

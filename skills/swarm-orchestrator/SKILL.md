@@ -1,13 +1,5 @@
 ---
-description: Orchestrate multi-bot trading swarms on Pump.fun with persona-driven
-  agents
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/swarm-orchestrator
-  - https://x402.wtf/skills/swarm-orchestrator
-homepage: https://x402.wtf/skills/swarm-orchestrator
+description: Orchestrate multi-bot trading swarms on Pump.fun with persona-driven agents
 ---
 
 # Swarm Orchestrator

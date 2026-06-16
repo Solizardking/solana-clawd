@@ -1,14 +1,6 @@
 ---
 name: solana-clawd-agentic-commerce
-description: Build and operate Solana CLAWD agents that spend through Pay CLI, expose
-  paid stores, mint Metaplex-readable identities, and launch Genesis agent tokens.
-attestation:
-  verified: true
-  verified_at: '2026-06-04'
-  registries:
-  - https://x402.wtf/skills/solana-clawd-agentic-commerce
-  - https://x402.wtf/skills/solana-clawd-agentic-commerce
-homepage: https://x402.wtf/skills/solana-clawd-agentic-commerce
+description: Build and operate Solana CLAWD agents that spend through Pay CLI, expose paid stores, mint Metaplex-readable identities, and launch Genesis agent tokens.
 ---
 
 # Solana CLAWD Agentic Commerce
