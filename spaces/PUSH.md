@@ -1,4 +1,4 @@
-# spaces/ — push instructions (v4)
+# spaces/ — push instructions (v5)
 
 This directory holds the **clean, in-repo** sources for five deployments:
 
@@ -6,7 +6,7 @@ This directory holds the **clean, in-repo** sources for five deployments:
 |---|---|---|
 | `clawd-computer/` | Docker Space | `huggingface.co/spaces/solanaclawd/clawd-computer` (currently **PAUSED** — see `clawd-computer/RECOVERY.md`) |
 | `solanaclawd-pump-soft/` | static HF Space | `huggingface.co/spaces/solanaclawd/pump-soft` (must be created first) |
-| `cheshire-terminal/` | Docker image (Fly) | **DEPRECATED** — rebranded to Trench Town. Kept for the existing Fly deploy; new work in `trench-town/`. |
+| `cheshire-terminal/` | Docker image (Fly) | **DEPRECATED** — rebranded to Trench Town. Files kept for the existing Fly deploy; new work in `trench-town/`. |
 | `trench-town/` | Docker image (Fly) | `cheshire-clawd-terminal.fly.dev` → `cheshireterminal.ai` (live; new Trench Town brand) |
 | `clawd-zoo/` | Gradio Space | `huggingface.co/spaces/solanaclawd/clawd-zoo` (live; 50+ agents + free AI chat via Pollinations) |
 
@@ -35,12 +35,17 @@ fly auth login
 
 ## 1. Push the v2 `solanaclawd/clawd-computer`
 
-The HF repo already has v1. We clone it, overlay the v2 files, commit on
-top, and push.
+The HF repo already has v1. We **clone** it, **overlay** the v2 files,
+**commit** on top, and **push**. ⚠️ **Do not** run `git init` inside the
+subdir — the clone below is the only `git init` you need.
 
 ```bash
-# clean any prior nested init (defensive)
-rm -rf spaces/clawd-computer/.git spaces/solanaclawd-pump-soft/.git
+# Defensive cleanup: if a prior session accidentally ran `git init`
+# inside the subdir, kill the nested .git so the parent monorepo
+# can `git add` the Space normally.
+rm -rf spaces/clawd-computer/.git
+rm -rf spaces/solanaclawd-pump-soft/.git
+rm -rf spaces/clawd-zoo/.git
 
 TMP=$(mktemp -d)
 git clone https://huggingface.co/spaces/solanaclawd/clawd-computer "$TMP/cc"
@@ -51,7 +56,9 @@ rsync -a --delete \
 cd "$TMP/cc"
 git add -A
 git commit -m "v2: drop ttyd, static homebase + Jupiter plugin (locked to \$CLAWD) + HF Router"
-# v1 is the only commit on main; v2 is a full replacement, so --force is correct
+# v1 is the only commit on main; v2 is a full replacement, so plain
+# --force is correct (--force-with-lease will reject because the local
+# has no record of origin/main's SHA — that's the "stale info" error).
 git push --force origin main
 cd -
 rm -rf "$TMP"
@@ -68,8 +75,9 @@ If `stage` is still `PAUSED` after a clean rebuild, send the email in
 
 ## 2. Create and push the new `solanaclawd/pump-soft`
 
-HF `git push` does **not** auto-create a Space repo. Create it first via
-the CLI (or the web UI), then push.
+HF `git push` does **not** auto-create a Space repo. ⚠️ If you skip the
+`hf repos create` step, you'll see `remote: Repository not found`. Create
+the Space first via the CLI (or the web UI), then push.
 
 ```bash
 # one-time: create the Space (static, public)
@@ -124,11 +132,17 @@ curl -s https://huggingface.co/api/spaces/solanaclawd/clawd-zoo \
   | python3 -c "import json,sys;d=json.load(sys.stdin);print('stage =',d['runtime']['stage'])"
 ```
 
-## 4. Re-deploy (or rename) Trench Town on Fly
+## 4. Re-deploy Trench Town on Fly
 
 The live Fly app is `cheshire-clawd-terminal` — the hostname is preserved
 so existing links, cert, and DNS keep working. The new landing page in
 `spaces/trench-town/` rebrands everything user-facing to **"Trench Town"**.
+
+The `fly.toml` in `spaces/trench-town/` is **volumeless** (the static site
+needs no persistent storage), so a fresh `fly deploy` works without
+first creating a volume. If you see an error about `cheshire_data`, that
+means a prior deploy added the mount — just remove the `[[mounts]]` block
+from your live `fly.toml` (the in-repo copy already has it removed).
 
 ```bash
 cd spaces/trench-town

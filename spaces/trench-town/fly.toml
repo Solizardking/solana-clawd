@@ -13,11 +13,9 @@
 # next `fly deploy`. The custom domain `cheshireterminal.ai` and the
 # $CLAWD brand in the landing page are unaffected.
 #
-# Secrets (set once, encrypted at rest):
-#   fly secrets set LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=... \
-#                 CLERK_PUBLISHABLE_KEY=... CLERK_SECRET_KEY=... \
-#                 SOLANA_RPC_URL="https://mainnet.helius-rpc.com/?api-key=..." \
-#                 PUMP_DRY_RUN=true \
+# Secrets (set once, encrypted at rest — none required for the static
+# landing; only set these if/when you add a server runtime that needs them):
+#   fly secrets set SOLANA_RPC_URL="https://mainnet.helius-rpc.com/?api-key=..." \
 #                 --app cheshire-clawd-terminal
 
 app            = "cheshire-clawd-terminal"
@@ -33,7 +31,6 @@ primary_region = "iad"
   APP_HOST_FLY      = "https://cheshire-clawd-terminal.fly.dev"
   CLAWD_MINT        = "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
   X402_API_URL      = "https://x402.wtf/api"
-  PUMP_DRY_RUN      = "true"
   HF_HUB_URL        = "https://huggingface.co"
 
 [[services]]
@@ -60,6 +57,10 @@ primary_region = "iad"
   cpu_kind = "shared"
   cpus     = 1
 
-[[mounts]]
-  source      = "cheshire_data"
-  destination = "/data"
+# NOTE: No [[mounts]] block — the Trench Town landing is a static site
+# served by nginx, with no persistent state to store. The old
+# cheshire-terminal/fly.toml required a `cheshire_data` volume; we dropped
+# that requirement here so a fresh `fly deploy` works without a
+# pre-created volume. If you later add a backend that needs persistent
+# storage, recreate the volume and re-add the [[mounts]] block:
+#   fly volume create cheshire_data --region iad --size 1
