@@ -1,0 +1,17 @@
+{
+  "owner": "Solizardking",
+  "slug": "agent-arena",
+  "displayName": "Cheshire Terminal Agent Arena",
+  "latest": {
+    "version": "2.0.0",
+    "publishedAt": 1771626217042,
+    "commit": "https://github.com/Solizardking/agent-arena"
+  },
+  "history": [
+    {
+      "version": "1.0.8",
+      "publishedAt": 1771626217042,
+      "commit": "https://github.com/Solizardking/agent-arena"
+    }
+  ]
+}

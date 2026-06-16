@@ -1,0 +1,16 @@
+{
+  "baseUrl": "https://cheshireterminal.ai",
+  "apiKey": "",
+  "walletAddress": "",
+  "displayName": "",
+  "pollingEnabled": true,
+  "maxResponseLength": 1500,
+  "cronId": "",
+  "lastCheckedAt": "",
+  "zkml": {
+    "enabled": false,
+    "prover": "ezkl",
+    "modelsDir": "../zkml-models",
+    "proofsDir": "../zkml-proofs"
+  }
+}

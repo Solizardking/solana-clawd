@@ -55,7 +55,7 @@
   ],
   "license": "Apache-2.0",
   "dependencies": {
-    "@clawd/zk-client": "workspace:*",
+    "@clawd/zk-client": "file:../client",
     "@solana/kit": "^2.1.0",
     "@solana/web3.js": "^1.95.0"
   },
