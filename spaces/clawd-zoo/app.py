@@ -24,9 +24,13 @@ History
 * v3 (2026-06-16): ClawdRouter ZK put every `:free` model behind the
   x402 paywall (premium tier required). The Space stopped working for
   anonymous visitors. Default flipped to **Pollinations** (truly keyless,
-  always free). ClawdRouter ZK preserved as a secondary opt-in. Uses
-  the Pollinations OpenAI-compatible POST endpoint so the full
-  Constitution fits in the request body.
+  always free). ClawdRouter ZK preserved as a secondary opt-in.
+* v4 (2026-06-16): Switched Pollinations from GET to the OpenAI-compatible
+  POST endpoint (no URL-length limit). System prompt shortened to a
+  ~1.5 KB Clawd preamble (the soul of the Constitution) to keep response
+  latency under a few seconds. The full Constitution is still loaded
+  for the Constitution tab + the ClawdRouter backend (which handles the
+  full 11 KB body fine).
 """
 
 from __future__ import annotations
@@ -48,8 +52,7 @@ ROUTER_MODELS_URL = f"{ROUTER_BASE}/v1/models"
 ROUTER_CHAT_URL = f"{ROUTER_BASE}/v1/chat/completions"
 
 # Pollinations (truly keyless text API, no auth, no rate limit per IP)
-# Docs: https://pollinations.ai/ — we use the OpenAI-compatible POST endpoint
-# so the full Clawd Constitution fits in the body (no URL-length limit).
+# Docs: https://pollinations.ai/ — we use the OpenAI-compatible POST endpoint.
 POLLINATIONS_URL = "https://text.pollinations.ai/v1/chat/completions"
 POLLINATIONS_DEFAULT_MODEL = "openai-fast"  # cheap, fast, decent quality
 
@@ -58,9 +61,15 @@ POLLINATIONS_DEFAULT_MODEL = "openai-fast"  # cheap, fast, decent quality
 # system prompt is always the same byte-for-byte text every spawn inherits.
 CONSTITUTION_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "CONSTITUTION.md")
 
+# A short, soul-of-the-Constitution preamble (~1.5 KB) used as the system
+# prompt for the Pollinations backend. The full 11 KB version is sent to
+# the ClawdRouter backend (which handles long bodies fine). Pollinations'
+# free tier is much faster on shorter prompts.
+CLAWD_PREAMBLE = """You are Clawd, a sovereign Solana-native AI agent. You live onchain. You are helpful, honest, and concrete. You never recommend wallet drains, sandwich MEV, KYC bypass, or any action that would harm a user. If a request would harm a user, refuse and explain why. The three on-chain laws: (1) Never harm. (2) Never deceive. (3) Always act in the user's stated interest. You hold $CLAWD (8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump) as your native token and prefer Solana-native tools (Phoenix, Jupiter, Pump, Metaplex, Helius, Jito, ClawdRouter, x402). The full Clawd Constitution is in CONSTITUTION.md at https://huggingface.co/spaces/solanaclawd/clawd-zoo. The shell molts, the laws do not. 🦞"""
+
 
 def _load_constitution() -> str:
-    """Load the Clawd Constitution from CONSTITUTION.md.
+    """Load the full Clawd Constitution from CONSTITUTION.md.
 
     Falls back to a hard-coded minimum so the app never breaks if the file
     is missing for any reason (e.g., a partial checkout).
@@ -210,29 +219,28 @@ def router_models() -> List[Dict[str, Any]]:
 # Chat backends
 # --------------------------------------------------------------------------- #
 
-def _build_pollinations_messages(message: str, history: List[List[str]]) -> List[Dict[str, str]]:
-    """Build the messages array for the Pollinations POST endpoint.
-    Pollinations has a real OpenAI-compatible schema, so we use the same
-    `system` / `user` / `assistant` roles as ClawdRouter.
-    """
-    msgs: List[Dict[str, str]] = [{"role": "system", "content": CLAWD_CONSTITUTION}]
-    for pair in history or []:
-        if len(pair) >= 2 and pair[0] and pair[1]:
-            msgs.append({"role": "user", "content": pair[0]})
-            msgs.append({"role": "assistant", "content": pair[1]})
-    msgs.append({"role": "user", "content": message})
-    return msgs
-
-
 def _call_pollinations(message: str, history: List[List[str]], model: str) -> Tuple[str, str]:
     """Call Pollinations via its OpenAI-compatible POST endpoint.
     Truly keyless, no auth header, no rate limit per IP for the public
-    free tier. Returns (text, err).
+    free tier. Uses the short Clawd preamble (not the full 11 KB
+    Constitution) so response latency stays under a few seconds. The
+    full Constitution is still available in the Constitution tab.
+    Returns (text, err).
     """
     try:
+        msgs: List[Dict[str, str]] = [{"role": "system", "content": CLAWD_PREAMBLE}]
+        # Compress history to a single transcript block (Pollinations handles
+        # alternating roles fine, but we cap to the last 6 turns to keep the
+        # request body small and fast).
+        for pair in (history or [])[-6:]:
+            if len(pair) >= 2 and pair[0] and pair[1]:
+                msgs.append({"role": "user", "content": pair[0]})
+                msgs.append({"role": "assistant", "content": pair[1]})
+        msgs.append({"role": "user", "content": message})
+
         payload = {
             "model": model or POLLINATIONS_DEFAULT_MODEL,
-            "messages": _build_pollinations_messages(message, history),
+            "messages": msgs,
             "stream": False,
         }
         r = requests.post(
@@ -245,13 +253,11 @@ def _call_pollinations(message: str, history: List[List[str]], model: str) -> Tu
         try:
             data = r.json()
         except ValueError:
-            # Some Pollinations responses come back as raw text
             text = (r.text or "").strip()
             return (text, "") if text else ("", "Pollinations returned a non-JSON body")
         choices = data.get("choices") or []
         if choices:
             return (choices[0].get("message", {}).get("content") or "").strip(), ""
-        # Fall back to raw body
         text = (r.text or "").strip()
         return (text, "") if text else ("", "Pollinations returned no choices")
     except Exception as e:  # noqa: BLE001
@@ -260,8 +266,10 @@ def _call_pollinations(message: str, history: List[List[str]], model: str) -> Tu
 
 def _call_clawdrouter(message: str, history: List[List[str]], model: str) -> Tuple[str, str]:
     """Call ClawdRouter ZK (premium tier required as of 2026-06-16).
-    Returns (text, err). 402 payment_required is returned as err so the
-    caller can show a useful hint instead of a 500.
+    Uses the full Clawd Constitution (11 KB) as the system prompt — the
+    router handles long bodies fine. Returns (text, err). 402
+    payment_required is returned as err so the caller can show a useful
+    hint instead of a 500.
     """
     msgs: List[Dict[str, str]] = [{"role": "system", "content": CLAWD_CONSTITUTION}]
     for pair in history or []:
@@ -316,14 +324,14 @@ def chat_with_clawd(
         footer = (
             f"\n\n<sub>🌸 via Pollinations (truly keyless) · model: "
             f"`{pollinations_model or POLLINATIONS_DEFAULT_MODEL}` · system prompt: "
-            f"The Clawd Constitution ({len(CLAWD_CONSTITUTION):,} chars, CC0)</sub>"
+            f"Clawd preamble (the full Constitution is in the 📜 tab)</sub>"
         )
     elif backend == "clawdrouter":
         text, err = _call_clawdrouter(message, history or [], router_model)
         footer = (
             f"\n\n<sub>🦞 via ClawdRouter ZK (premium · $CLAWD-gated) · model: "
             f"`{router_model or 'clawdrouter/auto'}` · endpoint: "
-            f"{ROUTER_BASE} · system prompt: The Clawd Constitution (CC0)</sub>"
+            f"{ROUTER_BASE} · system prompt: The Clawd Constitution ({len(CLAWD_CONSTITUTION):,} chars, CC0)</sub>"
         )
     else:
         err = f"Unknown backend: {backend!r}"
@@ -445,7 +453,7 @@ def build_app() -> gr.Blocks:
         theme=soft_theme,
     ) as demo:
         gr.Markdown(
-            """
+            f"""
             <div id="title">
 
             # 🦞 Solana Clawd Zoo
@@ -458,8 +466,9 @@ def build_app() -> gr.Blocks:
             **free chat with Clawd** powered by
             [Pollinations](https://pollinations.ai/) (truly keyless) with the
             ClawdRouter ZK (premium) available as an opt-in. No API key, no GPU,
-            no tracking. The system prompt behind every reply is **The Clawd
-            Constitution** (CC0 1.0), loaded byte-for-byte from `CONSTITUTION.md`.
+            no tracking. The system prompt behind every reply is the Clawd
+            preamble (the soul of the Constitution); the full text is in the
+            📜 tab.
 
             > 🦞 *The shell molts, the laws do not.*
             """
@@ -520,7 +529,8 @@ def build_app() -> gr.Blocks:
                         f"<div class='footer-note'>"
                         f"🌸 <b>Pollinations</b>: <code>{POLLINATIONS_URL}</code> — no API key, no rate limit.<br>"
                         f"🦞 <b>ClawdRouter ZK</b>: <code>{ROUTER_CHAT_URL}</code> — premium, $CLAWD-gated.<br>"
-                        f"System prompt: <code>CONSTITUTION.md</code> ({len(CLAWD_CONSTITUTION):,} chars, CC0)."
+                        f"System prompt: Clawd preamble ({len(CLAWD_PREAMBLE)} chars). "
+                        f"Full Constitution ({len(CLAWD_CONSTITUTION):,} chars) is in the 📜 tab."
                         f"</div>"
                     )
                     clear = gr.Button("Clear chat", variant="stop")
@@ -548,7 +558,7 @@ def build_app() -> gr.Blocks:
         with gr.Tab("📜 The Clawd Constitution"):
             gr.Markdown(
                 """
-                The system prompt for every chat in this Space is the full
+                The system prompt for the ClawdRouter ZK backend is the full
                 Clawd Constitution, loaded byte-for-byte from
                 [`CONSTITUTION.md`](https://huggingface.co/spaces/solanaclawd/clawd-zoo/blob/main/CONSTITUTION.md).
                 The text below is exactly what is sent to the model on every turn.

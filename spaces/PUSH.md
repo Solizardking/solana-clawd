@@ -125,7 +125,53 @@ curl -s https://huggingface.co/api/spaces/solanaclawd/clawd-zoo \
   | python3 -c "import json,sys;d=json.load(sys.stdin);print('stage =',d['runtime']['stage'])"
 ```
 
-## 4. (Optional) Re-deploy or rename the Cheshire Terminal on Fly
+## 4. Create and push the new `solanaclawd/solgpt`
+
+A free, Solana-native AI chat that talks **directly** to OpenRouter
+(no ClawdRouter hop) using a server-side `OPENROUTER_API_KEY`. Defaults
+to OpenRouter's free model tier, so the chat costs every visitor $0.
+
+```bash
+# one-time: create the Space (Gradio, public)
+hf repos create solanaclawd/solgpt \
+    --repo-type space \
+    --space-sdk gradio \
+    --exist-ok
+
+TMP=$(mktemp -d)
+git clone https://huggingface.co/spaces/solanaclawd/solgpt "$TMP/sg"
+rsync -a --delete \
+      --exclude='.git' --exclude='.git/' \
+      spaces/solgpt/ "$TMP/sg/"
+
+cd "$TMP/sg"
+git add -A
+git commit -m "v1: SolGPT — free Solana-native AI chat, direct OpenRouter integration"
+git push -u origin main
+cd -
+rm -rf "$TMP"
+```
+
+**Before the chat works**, set the Space secret (one-time, via the web
+UI — Space → Settings → Variables and secrets, or the CLI below):
+
+```bash
+# copy the key already provisioned for clawdrouter/clawd-code/clawd-pump,
+# or mint a fresh one at https://openrouter.ai/keys (no credit card)
+KEY=$(grep '^OPENROUTER_API_KEY=' services/clawdrouter/.env | cut -d= -f2-)
+hf repos secret-set solanaclawd/solgpt OPENROUTER_API_KEY "$KEY" --repo-type space
+```
+
+Verify after ~60s:
+```bash
+curl -s https://huggingface.co/api/spaces/solanaclawd/solgpt \
+  | python3 -c "import json,sys;d=json.load(sys.stdin);print('stage =',d['runtime']['stage'])"
+```
+
+The Space's **📡 Status** tab confirms the key is live (masked) and
+shows current usage/limit straight from OpenRouter's `/key` endpoint.
+
+## 5. (Optional) Re-deploy or rename the Cheshire Terminal on Fly
 
 The live Fly app is `cheshire-clawd-terminal`. This dir is a clean
 reference build of the same brand. To redeploy:
@@ -148,7 +194,7 @@ fly apps rename cheshire-terminal
 fly certs create cheshireterminal.ai -a cheshire-terminal
 ```
 
-## 5. Mirror this tree back to the GitHub monorepo
+## 6. Mirror this tree back to the GitHub monorepo
 
 The branch is already on `origin/fix/clawd-computer-no-ttyd`; no extra push
 needed unless you amend it. Open a PR when ready:
@@ -162,5 +208,6 @@ https://github.com/Solizardking/solana-clawd/compare/main...fix/clawd-computer-n
 - `https://solanaclawd-clawd-computer.hf.space/` — the static homebase, swap panel locked to `$CLAWD`, model panel
 - `https://huggingface.co/spaces/solanaclawd/pump-soft` — the soft pump-mcp mirror with the Jupiter quote box
 - `https://huggingface.co/spaces/solanaclawd/clawd-zoo` — 50+ agents + free Hermes-3 chat, no API key
+- `https://huggingface.co/spaces/solanaclawd/solgpt` — free Solana-native AI chat, direct OpenRouter, no API key from visitors
 - `https://cheshire-clawd-terminal.fly.dev` — unchanged, still branded "Cheshire Terminal — Powered by $CLAWD"
 - `https://cheshireterminal.ai` — unchanged, primary branding surface
