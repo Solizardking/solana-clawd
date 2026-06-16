@@ -1,7 +1,7 @@
 /**
  * Clawd Code — CODE MODE
  * Write, review, and ship production code
- * Providers: xAI Grok (chat) | Anthropic Claude (streaming) | DeepSeek | OpenRouter (streaming)
+ * Default provider: xAI Grok (grok-4.3). Streams via SSE like Anthropic & OpenRouter.
  */
 
 import { execSync } from 'node:child_process';
@@ -10,6 +10,12 @@ import { join } from 'node:path';
 import { createAnthropicClient, DEFAULT_CLAUDE_MODEL, isClaudeModel } from '../anthropic.js';
 import { createDeepSeekClient } from '../deepseek.js';
 import { loadClawdEnv } from '../env.js';
+import {
+  DEFAULT_MODEL,
+  isResponsesOnlyModel,
+  normalizeModelId,
+  resolveModelForMode,
+} from '../grok-models.js';
 import { createOpenRouterClient } from '../openrouter.js';
 import { createXaiClient } from '../xai.js';
 
@@ -34,6 +40,11 @@ export class CodeMode {
     console.log('\n[CODE MODE] Initiating code synthesis...\n');
 
     const provider = this.resolveProvider();
+    const requested = this.config.model ?? DEFAULT_MODEL;
+    const model = resolveModelForMode(requested, 'code');
+    if (isResponsesOnlyModel(requested) && model !== requested) {
+      console.log(`[CODE MODE] ${requested} is responses-only — falling back to ${model} for tool use.`);
+    }
 
     if (!command.trim()) {
       console.error('[CODE MODE] No prompt given. Usage: clawd-code code "Build a Jupiter swap bot"');
@@ -42,8 +53,8 @@ export class CodeMode {
 
     const useStream = this.config.stream ?? false;
     const code = useStream
-      ? await this.generateStreaming(command, provider)
-      : await this.generateBlocking(command, provider);
+      ? await this.generateStreaming(command, provider, model)
+      : await this.generateBlocking(command, provider, model);
 
     const outputDir = join(process.cwd(), 'outputs');
     mkdirSync(outputDir, { recursive: true });
@@ -72,7 +83,7 @@ export class CodeMode {
     return 'xai';
   }
 
-  private async generateStreaming(prompt: string, provider: string): Promise<string> {
+  private async generateStreaming(prompt: string, provider: string, model: string): Promise<string> {
     process.stdout.write('\n[CODE MODE] Streaming output:\n\n');
     const chunks: string[] = [];
 
@@ -81,12 +92,34 @@ export class CodeMode {
         const client = createAnthropicClient(this.config.anthropicApiKey);
         if (!client) return this.fallbackCode(prompt, 'ANTHROPIC_API_KEY not set');
 
-        const model = isClaudeModel(this.config.model ?? '') ? (this.config.model ?? DEFAULT_CLAUDE_MODEL) : DEFAULT_CLAUDE_MODEL;
+        const useModel = isClaudeModel(model) ? model : DEFAULT_CLAUDE_MODEL;
         for await (const chunk of client.stream({
-          model,
+          model: useModel,
           system: CODE_SYSTEM,
           messages: [{ role: 'user', content: prompt }],
           maxTokens: 8096,
+        })) {
+          if (chunk.text) {
+            process.stdout.write(chunk.text);
+            chunks.push(chunk.text);
+          }
+        }
+        process.stdout.write('\n');
+        return chunks.join('');
+      }
+
+      if (provider === 'xai') {
+        const client = createXaiClient(this.config.xaiApiKey);
+        if (!client) return this.fallbackCode(prompt, 'XAI_API_KEY not set');
+
+        for await (const chunk of client.streamChat({
+          model,
+          messages: [
+            { role: 'system', content: CODE_SYSTEM },
+            { role: 'user', content: prompt },
+          ],
+          maxTokens: 8096,
+          temperature: 0.7,
         })) {
           if (chunk.text) {
             process.stdout.write(chunk.text);
@@ -123,20 +156,20 @@ export class CodeMode {
       console.log(`\n[CODE MODE] Streaming error (${provider}): ${msg} — falling back to blocking`);
     }
 
-    // Fall back to blocking for xai/deepseek
-    return this.generateBlocking(prompt, provider);
+    // Fall back to blocking for deepseek or on stream failure
+    return this.generateBlocking(prompt, provider, model);
   }
 
-  private async generateBlocking(prompt: string, provider: string): Promise<string> {
+  private async generateBlocking(prompt: string, provider: string, model: string): Promise<string> {
     try {
       if (provider === 'anthropic') {
         const client = createAnthropicClient(this.config.anthropicApiKey);
         if (!client) return this.fallbackCode(prompt, 'ANTHROPIC_API_KEY not set');
 
-        const model = isClaudeModel(this.config.model ?? '') ? (this.config.model ?? DEFAULT_CLAUDE_MODEL) : DEFAULT_CLAUDE_MODEL;
-        console.log(`[CODE MODE] Generating with ${model}...`);
+        const useModel = isClaudeModel(model) ? model : DEFAULT_CLAUDE_MODEL;
+        console.log(`[CODE MODE] Generating with ${useModel}...`);
         const response = await client.chat({
-          model,
+          model: useModel,
           system: CODE_SYSTEM,
           messages: [{ role: 'user', content: prompt }],
           maxTokens: 8096,
@@ -148,12 +181,10 @@ export class CodeMode {
         const client = createDeepSeekClient(this.config.deepSeekApiKey, this.config.deepSeekBaseUrl);
         if (!client) return this.fallbackCode(prompt, 'DEEPSEEK_API_KEY not set');
 
-        const model = String(this.config.model ?? '').startsWith('deepseek-')
-          ? (this.config.model ?? 'deepseek-v4-pro')
-          : 'deepseek-v4-pro';
-        console.log(`[CODE MODE] Generating with ${model}...`);
+        const useModel = String(model).startsWith('deepseek-') ? model : 'deepseek-v4-pro';
+        console.log(`[CODE MODE] Generating with ${useModel}...`);
         const response = await client.chat({
-          model,
+          model: useModel,
           messages: [
             { role: 'system', content: CODE_SYSTEM },
             { role: 'user', content: prompt },
@@ -171,10 +202,10 @@ export class CodeMode {
         const client = createOpenRouterClient(env);
         if (!client) return this.fallbackCode(prompt, 'OPENROUTER_API_KEY not set');
 
-        const model = this.config.model?.startsWith('grok-') ? client.getDefaultModel() : (this.config.model ?? client.getDefaultModel());
-        console.log(`[CODE MODE] Generating with OpenRouter/${model}...`);
+        const useModel = this.config.model?.startsWith('grok-') ? client.getDefaultModel() : (this.config.model ?? client.getDefaultModel());
+        console.log(`[CODE MODE] Generating with OpenRouter/${useModel}...`);
         const result = await client.prompt(prompt, {
-          model,
+          model: useModel,
           systemPrompt: CODE_SYSTEM,
           maxTokens: 8096,
         });
@@ -185,10 +216,10 @@ export class CodeMode {
       const client = createXaiClient(this.config.xaiApiKey);
       if (!client) return this.fallbackCode(prompt, 'XAI_API_KEY not set');
 
-      const model = this.config.model === 'grok-4.20-multi-agent' ? 'grok-4.3' : (this.config.model || 'grok-4.3');
-      console.log(`[CODE MODE] Generating with ${model}...`);
+      const useModel = normalizeModelId(model || DEFAULT_MODEL);
+      console.log(`[CODE MODE] Generating with ${useModel}...`);
       const response = await client.chat({
-        model,
+        model: useModel,
         messages: [
           { role: 'system', content: CODE_SYSTEM },
           { role: 'user', content: prompt },

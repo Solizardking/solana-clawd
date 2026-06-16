@@ -5,19 +5,20 @@
 
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { DEFAULT_IMAGE_MODEL } from '../grok-models.js';
 
 export class ImageMode {
   constructor(private config: any) {}
 
   async run(args: string[]): Promise<void> {
     const prompt = args.filter(a => !a.startsWith('--')).join(' ');
-    
+
     console.log('\n[IMAGE MODE] Initiating image generation...\n');
-    
-    // Parse image flags
+
+    // Default to xAI Grok Imagine. Fall back to DALL-E / Gemini if user overrides.
     let size = '1024x1024';
-    let model = 'dall-e-3';
-    
+    let model = DEFAULT_IMAGE_MODEL;
+
     for (let i = 0; i < args.length; i++) {
       if (args[i] === '--size' && args[i + 1]) size = args[i + 1];
       if (args[i] === '--model' && args[i + 1]) model = args[i + 1];

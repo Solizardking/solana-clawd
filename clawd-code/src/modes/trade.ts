@@ -1,22 +1,25 @@
 /**
  * Clawd Code — TRADE MODE
  * Perpetuals trading with Phoenix + Vulcan CLI + Helius RPC
+ * Default model for AI analysis: xAI Grok 4.3 (grok-4.3).
  */
 
 import { spawn } from 'child_process';
 import { existsSync } from 'fs';
+import { DEFAULT_MODEL } from '../grok-models.js';
 
 export class TradeMode {
   constructor(private config: any) {}
 
   async run(args: string[]): Promise<void> {
     const command = args.filter(a => !a.startsWith('--')).join(' ');
-    
+
     console.log('\n[TRADE MODE] Entering perpetuals trading mode...\n');
     console.log(`[TRADE MODE] RPC: ${this.config.rpcUrl}`);
     console.log(`[TRADE MODE] Live Trading: ${this.config.liveTrading}`);
     console.log(`[TRADE MODE] Operator Confirmed: ${this.config.operatorConfirmed}`);
-    
+    const analysisModel = this.config.model ?? DEFAULT_MODEL;
+    console.log(`[TRADE MODE] AI analysis model (xAI default): ${analysisModel}`);
     // Check safety gates
     if (!this.config.liveTrading) {
       console.log('\n[TRADE MODE] ⚠ PAPER MODE — No real funds will be used');

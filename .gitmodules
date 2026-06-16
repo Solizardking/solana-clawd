@@ -7,3 +7,8 @@
 	path = mcp/clawd-mcp
 	url = https://github.com/Solizardking/clawd-mcp.git
 	branch = main
+
+[submodule "hermes-agent"]
+	path = hermes-agent
+	url = https://github.com/x402agent/hermes-agent.git
+	branch = main

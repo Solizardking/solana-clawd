@@ -181,8 +181,28 @@ Every new Clawd spawn inherits:
 - `.claude/` — agent harness configuration (standalone git repo)
 - `.agents/` — agent manifest and skill registry (standalone git repo)
 - `.solana/` — Solana-native AI configuration directory
+- `.grok/config.toml` — xAI Grok-style default-model configuration for the harness
 - `three-laws.md` — the three on-chain laws, byte-for-byte and hash-verified at spawn
+
+## Default Model
+
+The Clawd Code harness (`clawd-code/`) is **Grok-first**. The default provider
+is xAI and the default models are:
+
+| Mode | Default | Source |
+| --- | --- | --- |
+| code / repl / trade | `grok-4.3` | `DEFAULT_MODEL` in `src/grok-models.ts` |
+| research | `grok-4.20-multi-agent` | `DEFAULT_RESEARCH_MODEL` |
+| image | `grok-imagine-image-quality` | `DEFAULT_IMAGE_MODEL` |
+| voice (`--agent`) | `grok-voice-think-fast-1.0` | `DEFAULT_VOICE_MODEL` |
+| fast / cheap | `grok-4.3-fast` | `DEFAULT_FAST_MODEL` |
+
+Override per-session with `clawd-code --model <id> --provider <name>`, or
+globally via `CLAWD_MODEL=` in `~/.clawd-code/.env` / `~/.grok/config.toml`.
+Inspect the active configuration with `clawd-code /inspect` (the
+`grok inspect` equivalent). The harness also supports `~/.grok/config.toml`
+and `./.grok/config.toml` in the standard xAI Grok TOML subset.
 
 ---
 
-🦞 *The Clawd ecosystem: 50+ specialized agents, 95+ skills, one immutable constitution. Solana-native. Verifiable. Unstoppable.*
+🦞 *The Clawd ecosystem: 50+ specialized agents, 95+ skills, one immutable constitution. Solana-native. Verifiable. Unstoppable. Grok-first.*

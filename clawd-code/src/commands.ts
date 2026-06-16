@@ -8,6 +8,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { CLAWD_MINT, arena } from './arena.js';
 import { loadClawdEnv } from './env.js';
+import { DEFAULT_MODEL } from './grok-models.js';
 import { createWallet, listWallets } from './wallet.js';
 
 const CLAWD_ENV = loadClawdEnv();
@@ -26,7 +27,7 @@ function aiModeConfig(): Record<string, string | number> {
   const env = loadClawdEnv();
   return {
     provider: env.CLAWD_PROVIDER || 'xai',
-    model: env.CLAWD_MODEL || 'grok-4.3',
+    model: env.CLAWD_MODEL || DEFAULT_MODEL,
     xaiApiKey: env.XAI_API_KEY || '',
     deepSeekApiKey: env.DEEPSEEK_API_KEY || '',
     deepSeekBaseUrl: env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',

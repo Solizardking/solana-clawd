@@ -3,22 +3,31 @@ import { homedir } from 'os';
 import { join } from 'path';
 import { generateKeyPairSync } from 'crypto';
 
-const WALLET_DIR = join(homedir(), '.clawd-code', 'wallets');
-
 export type WalletRecord = {
   name: string;
   publicKey: string;
   path: string;
 };
 
-function ensureWalletDir(): void {
-  mkdirSync(WALLET_DIR, { recursive: true, mode: 0o700 });
-  chmodSync(WALLET_DIR, 0o700);
+/**
+ * Resolved lazily (not cached at module load) so tests can override via
+ * CLAWD_WALLET_DIR, and so a HOME change mid-process (rare, but real in
+ * multi-tenant hosts) is always honored.
+ */
+function getWalletDir(): string {
+  return process.env.CLAWD_WALLET_DIR || join(homedir(), '.clawd-code', 'wallets');
+}
+
+function ensureWalletDir(): string {
+  const dir = getWalletDir();
+  mkdirSync(dir, { recursive: true, mode: 0o700 });
+  chmodSync(dir, 0o700);
+  return dir;
 }
 
 function walletPath(name: string): string {
   const safeName = name.replace(/[^a-zA-Z0-9._-]/g, '-');
-  return join(WALLET_DIR, `${safeName}.json`);
+  return join(getWalletDir(), `${safeName}.json`);
 }
 
 function base64UrlToBytes(value: string): Uint8Array {
@@ -97,12 +106,12 @@ export function createWallet(name = 'default'): WalletRecord {
 }
 
 export function listWallets(): WalletRecord[] {
-  ensureWalletDir();
+  const dir = ensureWalletDir();
 
-  return readdirSync(WALLET_DIR)
+  return readdirSync(dir)
     .filter((file) => file.endsWith('.json'))
     .map((file) => {
-      const path = join(WALLET_DIR, file);
+      const path = join(dir, file);
       const secret = Uint8Array.from(JSON.parse(readFileSync(path, 'utf-8')));
       const keypair = keypairFromSecret(secret);
 

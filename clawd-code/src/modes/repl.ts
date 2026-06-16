@@ -2,6 +2,7 @@
  * Clawd Code — REPL MODE
  * Interactive multi-turn conversation with persistent history.
  * Type a prompt and get a streamed response. Switch modes inline.
+ * Default provider: xAI (Grok). Streams via SSE like Anthropic & OpenRouter.
  * Commands: .exit .mode <mode> .model <id> .provider <name> .clear .help
  */
 
@@ -9,6 +10,12 @@ import * as readline from 'node:readline';
 import { createAnthropicClient, DEFAULT_CLAUDE_MODEL, isClaudeModel } from '../anthropic.js';
 import { createDeepSeekClient } from '../deepseek.js';
 import { loadClawdEnv } from '../env.js';
+import {
+  DEFAULT_MODEL,
+  isResponsesOnlyModel,
+  normalizeModelId,
+  resolveModelForMode,
+} from '../grok-models.js';
 import { createOpenRouterClient } from '../openrouter.js';
 import { createXaiClient } from '../xai.js';
 
@@ -45,7 +52,7 @@ export class ReplMode {
 
   constructor(private config: ReplConfig) {
     this.provider = this.resolveProvider();
-    this.model = config.model ?? this.defaultModel();
+    this.model = resolveModelForMode(config.model ?? DEFAULT_MODEL, 'repl');
   }
 
   async run(): Promise<void> {
@@ -110,8 +117,12 @@ export class ReplMode {
 
       case '.model':
         if (arg) {
-          this.model = arg;
-          this.provider = isClaudeModel(arg) ? 'anthropic' : this.provider;
+          const normalized = normalizeModelId(arg);
+          this.model = resolveModelForMode(normalized, this.mode);
+          if (isResponsesOnlyModel(normalized) && this.mode !== 'research' && this.model !== normalized) {
+            console.log(`[REPL] ${normalized} is responses-only — using ${this.model} for ${this.mode} mode.`);
+          }
+          if (isClaudeModel(normalized)) this.provider = 'anthropic';
           console.log(`[REPL] Model → ${this.model} (provider: ${this.provider})`);
         }
         break;
@@ -122,7 +133,7 @@ export class ReplMode {
           this.model = this.defaultModel();
           console.log(`[REPL] Provider → ${this.provider} | Model → ${this.model}`);
         } else {
-          console.log('[REPL] Providers: xai | anthropic | openrouter | deepseek');
+          console.log('[REPL] Providers: xai (default) | anthropic | openrouter | deepseek');
         }
         break;
 
@@ -215,19 +226,22 @@ export class ReplMode {
       return response.content;
     }
 
-    // xAI
+    // xAI (default) — stream via SSE
     const client = createXaiClient(this.config.xaiApiKey);
     if (!client) throw new Error('XAI_API_KEY not set');
 
-    const model = this.model === 'grok-4.20-multi-agent' ? 'grok-4.3' : this.model;
-    const response = await client.chat({
-      model,
+    for await (const chunk of client.streamChat({
+      model: this.model,
       messages: [{ role: 'system', content: system }, ...this.history],
       maxTokens: 4096,
       temperature: 0.7,
-    });
-    process.stdout.write(response.content);
-    return response.content;
+    })) {
+      if (chunk.text) {
+        process.stdout.write(chunk.text);
+        chunks.push(chunk.text);
+      }
+    }
+    return chunks.join('');
   }
 
   private resolveProvider(): ReplProvider {
@@ -243,12 +257,12 @@ export class ReplMode {
       case 'anthropic': return DEFAULT_CLAUDE_MODEL;
       case 'deepseek':  return 'deepseek-v4-pro';
       case 'openrouter': return 'nex-agi/nex-n2-pro:free';
-      default:           return 'grok-4.3';
+      default:           return DEFAULT_MODEL;
     }
   }
 
   private promptString(): string {
-    return `\n[${this.mode}:${this.provider}] > `;
+    return `\n[${this.mode}:${this.provider}:${this.model}] > `;
   }
 
   private printWelcome(): void {
@@ -271,8 +285,8 @@ export class ReplMode {
   .exit / .quit          End the session
   .clear                 Clear conversation history
   .mode <mode>           Switch mode: code | research | trade | general
-  .model <id>            Switch model (e.g. claude-sonnet-4-6, grok-4.3)
-  .provider <name>       Switch provider: xai | anthropic | openrouter | deepseek
+  .model <id>            Switch model (e.g. grok-4.3, grok-4.20-multi-agent, claude-sonnet-4-6)
+  .provider <name>       Switch provider: xai (default) | anthropic | openrouter | deepseek
   .history               Show conversation history
   .help                  Show this help
 `);

@@ -11,7 +11,7 @@
     "build": "tsc",
     "dev": "tsx src/cli.ts",
     "start": "node dist/cli.js",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "node --import tsx --test src/**/*.test.ts"
   },
   "files": [
     "dist",

@@ -72,7 +72,7 @@ Runtime configuration lives in `~/.clawd-code/.env`. Start from
 | Variable | Description | Default |
 | --- | --- | --- |
 | `CLAWD_PROVIDER` | AI provider: `xai`, `anthropic`, `openrouter`, or `deepseek` | `xai` |
-| `CLAWD_MODEL` | Model used by the selected provider | `grok-4.20-multi-agent` |
+| `CLAWD_MODEL` | Model used by the selected provider | `grok-4.3` |
 | `XAI_API_KEY` | xAI API key for Grok models + Voice Agent API | empty |
 | `ANTHROPIC_API_KEY` | Anthropic API key for Claude models (streaming) | empty |
 | `DEEPSEEK_API_KEY` | DeepSeek API key | empty |
@@ -84,6 +84,61 @@ Runtime configuration lives in `~/.clawd-code/.env`. Start from
 | `LIVE_TRADING` | Enables live trading path when true | `false` |
 | `OPERATOR_CONFIRMED` | Required operator acknowledgement for live trading | `false` |
 | `PERPS_SIM_ONLY` | Keeps perps execution simulated | `true` |
+
+### Default models per mode (Grok-first)
+
+| Mode | Default model | Notes |
+| --- | --- | --- |
+| `code` / `repl` / `trade` | `grok-4.3` | xAI flagship reasoning, SSE streaming, client tools |
+| `research` | `grok-4.20-multi-agent` | 4 (default) or 16 sub-agents with `web_search` + `x_search` + `code_interpreter` |
+| `image` | `grok-imagine-image-quality` | xAI Imagine text/image-to-image; falls back to DALL-E / Gemini |
+| `voice --agent` | `grok-voice-think-fast-1.0` | xAI realtime voice agent API with Solana tools |
+
+Override per-session with `--model <id>` or `--provider <name>`, or globally
+with `CLAWD_MODEL=` / `CLAWD_PROVIDER=` in `~/.clawd-code/.env`.
+
+### Optional Grok-style config (`~/.grok/config.toml`)
+
+Clawd Code also reads the standard xAI Grok config locations:
+
+- `~/.grok/config.toml` (user)
+- `./.grok/config.toml` (project, overrides user)
+
+Supported subset of TOML (see `parseGrokConfigToml()` in `src/env.ts`):
+
+```toml
+# ~/.grok/config.toml
+[models]
+default = "grok-4.3"
+
+[model.grok-fast]
+model = "grok-4.3-fast"
+base_url = "https://api.x.ai/v1"
+name = "Grok Fast"
+env_key = "XAI_API_KEY"
+
+[ui]
+permission_mode = "ask"
+```
+
+When this file sets `[models] default = "..."`, Clawd Code uses it as the
+default model (unless `CLAWD_MODEL` is set explicitly). `[model.<name>]`
+blocks populate `~/.grok/inspected-models` for `/inspect` discovery.
+
+Precedence (low → high): `~/.clawd-code/.env` < `./.env` < `~/.grok/config.toml`
+< `./.grok/config.toml` < `process.env`.
+
+### `/inspect` command (Grok `inspect` equivalent)
+
+```bash
+clawd-code /inspect
+# or
+clawd-code inspect
+```
+
+Prints: config sources, active provider/model, API key health, live xAI
+`/v1/models` reachability, per-mode defaults, and the model catalog grouped
+by provider.
 
 Never commit `.env`, wallet files, API keys, private keys, or generated outputs.
 The repository ignore rules exclude `.env`, `.clawd/`, `node_modules/`,
@@ -121,7 +176,7 @@ Clawd Code supports four AI providers with unified streaming:
 
 | Provider | Alias | Models | Streaming |
 | --- | --- | --- | --- |
-| `xai` | *(default)* | `grok-4.3`, `grok-4.20-multi-agent` | blocking |
+| `xai` | *(default)* | `grok-4.3`, `grok-4.3-fast`, `grok-4.20-multi-agent`, `grok-voice-think-fast-1.0`, `grok-imagine-image-quality`, … | native SSE |
 | `anthropic` | `claude`, `ant` | `claude-sonnet-4-6`, `claude-opus-4-8`, `claude-haiku-4-5-20251001` | native SSE |
 | `openrouter` | `or` | `nex-agi/nex-n2-pro:free` + any OR model | native SSE |
 | `deepseek` | `ds` | `deepseek-v4-pro`, `deepseek-v4-flash` | blocking |
