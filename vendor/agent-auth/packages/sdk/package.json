@@ -43,7 +43,7 @@
     "better-auth": "1.5.4",
     "tsup": "^8.0.0",
     "typescript": "^5.8.0",
-    "vitest": "^4.1.0"
+    "vitest": "^3.2.6"
   },
   "peerDependencies": {
     "ai": ">=3.0.0"
