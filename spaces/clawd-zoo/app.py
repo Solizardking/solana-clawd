@@ -63,17 +63,23 @@ def _load_constitution() -> str:
 
 CLAWD_CONSTITUTION = _load_constitution()
 
-# Default model. ClawdRouter's `auto` profile picks the cheapest tier that
-# satisfies the request. It currently routes to Google Gemini 2.5 Flash.
-DEFAULT_MODEL = "clawdrouter/auto"
+# Default model — Hermes-3 Llama-3.1 405B on the OpenRouter `:free` tier.
+# Verified working against clawdrouter-zk.fly.dev (returns 200 with a real
+# reply, provider=DeepInfra, cost ~$0.0001/turn). The Space stays on the
+# "free, no API key" path by default.
+#
+# Why not `clawdrouter/auto`? As of 2026-06-16 the auto profile is
+# occasionally routing to `moonshotai/kimi-k2.5-instruct` which is not a
+# valid OpenRouter model ID and returns 400. We surface auto as an opt-in
+# choice in the dropdown (with a clear "may 400" hint) but keep Hermes-3
+# as the safe default.
+DEFAULT_MODEL = "nousresearch/hermes-3-llama-3.1-405b:free"
 
-# Fallback / explicit choices the user can pick from the dropdown. These
-# have all been verified working against the live endpoint at the time of
-# last deploy; the router handles upstream failures transparently.
+# Free OpenRouter-tier models + the auto profile (use with care).
 MODEL_CHOICES: List[Tuple[str, str]] = [
-    ("🦞 ClawdRouter Auto (recommended)", "clawdrouter/auto"),
-    ("🧠 Hermes-3 Llama-3.1 405B (free)", "nousresearch/hermes-3-llama-3.1-405b:free"),
+    ("🧠 Hermes-3 Llama-3.1 405B (free, default)", "nousresearch/hermes-3-llama-3.1-405b:free"),
     ("🦙 Llama 3.3 70B Instruct (free)", "meta-llama/llama-3.3-70b-instruct:free"),
+    ("🦞 ClawdRouter Auto (may 400, opt-in)", "clawdrouter/auto"),
     ("⚡ GPT-4o mini (paid, fast)", "openai/gpt-4o-mini"),
 ]
 
@@ -207,17 +213,54 @@ def chat_with_clawd(
         "max_tokens": int(max_tokens),
         "stream": False,
     }
-    try:
-        r = requests.post(ROUTER_CHAT_URL, json=payload, timeout=60)
-        r.raise_for_status()
-        data = r.json()
-        reply = data["choices"][0]["message"]["content"]
-        routed = data.get("x_clawdrouter", {}).get("routedModel", model)
-        footer = f"\n\n<sub>📡 routed to `{routed}` via ClawdRouter ZK · {ROUTER_BASE} · system prompt: The Clawd Constitution (CC0)</sub>"
-        reply = (reply or "").strip() + footer
-    except Exception as e:  # noqa: BLE001
+
+    # Try the requested model first; on a 400 (bad model id, e.g. the auto
+    # profile picking an upstream that no longer exists) fall back to a
+    # known-working :free tier so the user never sees a 400 surfaced.
+    fallback_chain = [
+        payload["model"],
+        "nousresearch/hermes-3-llama-3.1-405b:free",
+        "meta-llama/llama-3.3-70b-instruct:free",
+    ]
+    # Dedupe while preserving order
+    seen, chain = set(), []
+    for m in fallback_chain:
+        if m and m not in seen:
+            seen.add(m); chain.append(m)
+
+    reply = None
+    last_err = None
+    for attempt_model in chain:
+        payload["model"] = attempt_model
+        try:
+            r = requests.post(ROUTER_CHAT_URL, json=payload, timeout=60)
+            if r.status_code == 400:
+                last_err = f"400 from `{attempt_model}` — trying next fallback"
+                continue
+            r.raise_for_status()
+            data = r.json()
+            choices = data.get("choices") or []
+            if not choices:
+                last_err = f"empty choices from `{attempt_model}`"
+                continue
+            reply = choices[0]["message"]["content"]
+            routed = data.get("x_clawdrouter", {}).get("routedModel", attempt_model)
+            footer = (
+                f"\n\n<sub>📡 routed to `{routed}` via ClawdRouter ZK · "
+                f"{ROUTER_BASE} · system prompt: The Clawd Constitution (CC0)"
+                + (f" · fell back from `{model}`" if attempt_model != model else "")
+                + "</sub>"
+            )
+            reply = (reply or "").strip() + footer
+            break
+        except Exception as e:  # noqa: BLE001
+            last_err = f"{type(e).__name__}: {e}"
+            continue
+
+    if reply is None:
         reply = (
-            f"⚠️ ClawdRouter unreachable: `{e}`\n\n"
+            f"⚠️ ClawdRouter failed for every model in the fallback chain. "
+            f"Last error: `{last_err}`.\n\n"
             f"Trying again usually helps — the endpoint is on Fly.io "
             f"({ROUTER_BASE}) and may be cold-starting. If it persists, the "
             "status panel on the left will tell you whether the router itself is up."
