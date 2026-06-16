@@ -1,15 +1,16 @@
-# spaces/ — push instructions
+# spaces/ — push instructions (v2)
 
 This directory holds the **clean, in-repo** sources for three deployments:
 
 | Subdir | Type | Target |
 |---|---|---|
 | `clawd-computer/` | Docker Space | `huggingface.co/spaces/solanaclawd/clawd-computer` (currently **PAUSED** — see `clawd-computer/RECOVERY.md`) |
-| `solanaclawd-pump-soft/` | static HF Space | `huggingface.co/spaces/solanaclawd/pump-soft` (new) |
+| `solanaclawd-pump-soft/` | static HF Space | `huggingface.co/spaces/solanaclawd/pump-soft` (must be created first) |
 | `cheshire-terminal/` | Docker image + Fly app | `cheshire-clawd-terminal.fly.dev` → `cheshireterminal.ai` (live) |
 
-All three branches are committed together on `fix/clawd-computer-no-ttyd`. The
-$HUGGING_FACE / $FLY pushes happen from inside each subdir.
+All three sources are committed on `fix/clawd-computer-no-ttyd` and pushed to
+`origin/fix/clawd-computer-no-ttyd`. The HF / Fly pushes happen from the
+parent monorepo, not from the subdirs.
 
 ## Prerequisites
 
@@ -24,46 +25,84 @@ curl -L https://fly.io/install.sh | sh
 fly auth login
 ```
 
-## 1. Push the patched `solanaclawd/clawd-computer` (v2)
+> **Important:** do **not** run `git init` inside `spaces/clawd-computer/` or
+> `spaces/solanaclawd-pump-soft/`. The monorepo already owns these files,
+> and a nested `git init` makes the parent `git add` fail with
+> *"does not have a commit checked out"*. The HF pushes below use a
+> separate clone (or the Hub API) and don't write into the monorepo.
+
+## 1. Push the v2 `solanaclawd/clawd-computer`
+
+The HF repo already has v1. We clone it, overlay the v2 files, commit on
+top, and push.
 
 ```bash
-cd spaces/clawd-computer
-git init -q
-git remote add origin https://huggingface.co/spaces/solanaclawd/clawd-computer
+# clean any prior nested init (defensive)
+rm -rf spaces/clawd-computer/.git spaces/solanaclawd-pump-soft/.git
+
+# clone the live repo to a temp dir
+TMP=$(mktemp -d)
+git clone https://huggingface.co/spaces/solanaclawd/clawd-computer "$TMP/cc"
+
+# overlay the v2 files
+rsync -a --delete \
+      --exclude='.git' --exclude='.git/' \
+      spaces/clawd-computer/ "$TMP/cc/"
+
+cd "$TMP/cc"
 git add -A
-git commit -m "v2: drop ttyd, static homebase + Jupiter plugin + HF Router"
-git push --force-with-lease origin main
-# the runtime will be re-evaluated; abuse flag should clear on a clean build
-# if not, send the email in APPEAL_EMAIL.txt
+git commit -m "v2: drop ttyd, static homebase + Jupiter plugin (locked to \$CLAWD) + HF Router"
+# v1 is the only commit on main; v2 is a full replacement, so --force is correct
+git push --force origin main
+cd -
+rm -rf "$TMP"
 ```
 
-After ~90s, hit:
+After ~60–120 s, check the runtime:
 ```bash
 curl -s https://huggingface.co/api/spaces/solanaclawd/clawd-computer \
-  | python3 -c "import json,sys;d=json.load(sys.stdin);print('stage =',d['runtime']['stage'])"
+  | python3 -c "import json,sys;d=json.load(sys.stdin);print('stage =',d['runtime']['stage']);print('error =',d['runtime'].get('errorMessage'))"
 ```
 
-## 2. Push the new `solanaclawd/pump-soft`
+If `stage` is still `PAUSED` after a clean rebuild, send the email in
+`spaces/clawd-computer/APPEAL_EMAIL.txt`.
 
-The HF API will let you create the Space on first push:
+## 2. Create and push the new `solanaclawd/pump-soft`
+
+HF `git push` does **not** auto-create a Space repo. Create it first via
+the CLI (or the web UI), then push.
 
 ```bash
-cd ../solanaclawd-pump-soft
-git init -q
-git remote add origin https://huggingface.co/spaces/solanaclawd/pump-soft
+# one-time: create the Space (static, public)
+hf repos create solanaclawd/pump-soft \
+    --repo-type space \
+    --space-sdk static \
+    --exist-ok
+
+TMP=$(mktemp -d)
+git clone https://huggingface.co/spaces/solanaclawd/pump-soft "$TMP/ps"
+rsync -a --delete \
+      --exclude='.git' --exclude='.git/' \
+      spaces/solanaclawd-pump-soft/ "$TMP/ps/"
+
+cd "$TMP/ps"
 git add -A
 git commit -m "v1: soft, read-only mirror of ordlibrary/pump-mcp"
-git push origin main
-# then: hf repos settings --repo-type space solanaclawd/pump-soft --description "Soft read-only mirror of pump-mcp"
+git push -u origin main
+cd -
+rm -rf "$TMP"
+
+# verify it serves
+curl -sIL https://huggingface.co/spaces/solanaclawd/pump-soft | head -3
 ```
 
-## 3. (Optional) Re-deploy the Cheshire Terminal to Fly
+## 3. (Optional) Re-deploy or rename the Cheshire Terminal on Fly
 
-The live Fly app is `cheshire-clawd-terminal`. This dir is a clean reference
-build of the same brand. To redeploy:
+The live Fly app is `cheshire-clawd-terminal`. This dir is a clean
+reference build of the same brand. To redeploy:
 
 ```bash
-cd ../cheshire-terminal
+cd spaces/cheshire-terminal
 fly deploy --app cheshire-clawd-terminal
 # or, to spin up a NEW app called `cheshire-terminal`:
 fly apps create cheshire-terminal
@@ -73,19 +112,20 @@ fly deploy
 
 To rename the existing app from `cheshire-clawd-terminal` → `cheshire-terminal`:
 ```bash
-fly apps rename cheshire-terminal           # run from spaces/cheshire-terminal/
+# run from spaces/cheshire-terminal/ so fly.toml is in scope
+fly apps rename cheshire-terminal
 # then update `app = "cheshire-terminal"` in fly.toml
-# and add cheshireterminal.ai to the certificate:
+# and re-issue the cert for the custom domain:
 fly certs create cheshireterminal.ai -a cheshire-terminal
 ```
 
 ## 4. Mirror this tree back to the GitHub monorepo
 
-```bash
-cd ../..
-git add spaces/
-git commit -m "spaces: clawd-computer v2 (no ttyd) + pump-soft + cheshire-terminal reference build"
-git push origin fix/clawd-computer-no-ttyd
+The branch is already on `origin/fix/clawd-computer-no-ttyd`; no extra push
+needed unless you amend it. Open a PR when ready:
+
+```
+https://github.com/Solizardking/solana-clawd/compare/main...fix/clawd-computer-no-ttyd
 ```
 
 ## What you should see when it all works
