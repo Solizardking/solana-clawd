@@ -24,13 +24,14 @@ History
 * v3 (2026-06-16): ClawdRouter ZK put every `:free` model behind the
   x402 paywall (premium tier required). The Space stopped working for
   anonymous visitors. Default flipped to **Pollinations** (truly keyless,
-  always free). ClawdRouter ZK preserved as a secondary opt-in.
+  always free). ClawdRouter ZK preserved as a secondary opt-in. Uses
+  the Pollinations OpenAI-compatible POST endpoint so the full
+  Constitution fits in the request body.
 """
 
 from __future__ import annotations
 
 import os
-import urllib.parse
 from typing import Any, Dict, List, Tuple
 
 import gradio as gr
@@ -47,8 +48,9 @@ ROUTER_MODELS_URL = f"{ROUTER_BASE}/v1/models"
 ROUTER_CHAT_URL = f"{ROUTER_BASE}/v1/chat/completions"
 
 # Pollinations (truly keyless text API, no auth, no rate limit per IP)
-# Docs: https://pollinations.ai/
-POLLINATIONS_URL = "https://text.pollinations.ai/{prompt}"
+# Docs: https://pollinations.ai/ — we use the OpenAI-compatible POST endpoint
+# so the full Clawd Constitution fits in the body (no URL-length limit).
+POLLINATIONS_URL = "https://text.pollinations.ai/v1/chat/completions"
 POLLINATIONS_DEFAULT_MODEL = "openai-fast"  # cheap, fast, decent quality
 
 # The Clawd Constitution — the world's first Solana-native agent harness
@@ -208,35 +210,50 @@ def router_models() -> List[Dict[str, Any]]:
 # Chat backends
 # --------------------------------------------------------------------------- #
 
-def _build_system_prompt(history: List[List[str]]) -> str:
-    """Compress the history into a single transcript block, then prepend
-    the Clawd Constitution. Used by the Pollinations backend, which has
-    no concept of `system`/`user`/`assistant` role separation — the
-    constitution is concatenated as a single prompt.
+def _build_pollinations_messages(message: str, history: List[List[str]]) -> List[Dict[str, str]]:
+    """Build the messages array for the Pollinations POST endpoint.
+    Pollinations has a real OpenAI-compatible schema, so we use the same
+    `system` / `user` / `assistant` roles as ClawdRouter.
     """
-    transcript = []
+    msgs: List[Dict[str, str]] = [{"role": "system", "content": CLAWD_CONSTITUTION}]
     for pair in history or []:
         if len(pair) >= 2 and pair[0] and pair[1]:
-            transcript.append(f"User: {pair[0]}\nClawd: {pair[1]}")
-    if transcript:
-        prefix = "\n\n".join(transcript) + "\n\nUser: {user}\nClawd:"
-    else:
-        prefix = "User: {user}\nClawd:"
-    return f"{CLAWD_CONSTITUTION}\n\n---\n\n{prefix}"
+            msgs.append({"role": "user", "content": pair[0]})
+            msgs.append({"role": "assistant", "content": pair[1]})
+    msgs.append({"role": "user", "content": message})
+    return msgs
 
 
 def _call_pollinations(message: str, history: List[List[str]], model: str) -> Tuple[str, str]:
-    """Call Pollinations (truly keyless, always free). Returns (text, err)."""
+    """Call Pollinations via its OpenAI-compatible POST endpoint.
+    Truly keyless, no auth header, no rate limit per IP for the public
+    free tier. Returns (text, err).
+    """
     try:
-        prompt = _build_system_prompt(history).format(user=message)
-        url = POLLINATIONS_URL.format(prompt=urllib.parse.quote(prompt, safe=""))
-        params = f"?model={urllib.parse.quote(model or POLLINATIONS_DEFAULT_MODEL)}"
-        r = requests.get(url + params, timeout=60)
+        payload = {
+            "model": model or POLLINATIONS_DEFAULT_MODEL,
+            "messages": _build_pollinations_messages(message, history),
+            "stream": False,
+        }
+        r = requests.post(
+            POLLINATIONS_URL,
+            json=payload,
+            timeout=60,
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+        )
         r.raise_for_status()
+        try:
+            data = r.json()
+        except ValueError:
+            # Some Pollinations responses come back as raw text
+            text = (r.text or "").strip()
+            return (text, "") if text else ("", "Pollinations returned a non-JSON body")
+        choices = data.get("choices") or []
+        if choices:
+            return (choices[0].get("message", {}).get("content") or "").strip(), ""
+        # Fall back to raw body
         text = (r.text or "").strip()
-        if not text:
-            return "", "Pollinations returned an empty body"
-        return text, ""
+        return (text, "") if text else ("", "Pollinations returned no choices")
     except Exception as e:  # noqa: BLE001
         return "", f"{type(e).__name__}: {e}"
 
