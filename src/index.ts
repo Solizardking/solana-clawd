@@ -25,6 +25,7 @@ import { depthFor } from './survival/monitor.js';
 import { getLeviathan, listSpawnlings } from './state/database.js';
 import { DEFAULT_RPC, CLAWD_MINT } from './config.js';
 import { ecosystemHealthCheck } from './services/ecosystem.js';
+import { posthog, shutdownPosthog } from './posthog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PKG = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
@@ -38,6 +39,20 @@ const opt = (name: string) => {
 
 const RPC = opt('--rpc') || process.env.HELIUS_RPC_URL || process.env.SOLANA_RPC_URL || DEFAULT_RPC;
 const NETWORK = (opt('--network') || 'mainnet') as 'mainnet' | 'devnet';
+
+process.on('uncaughtException', async (err) => {
+  const meta = readKeystoreMetadata();
+  posthog.captureException(err, meta?.pubkey ?? 'anonymous', { context: 'uncaught_exception' });
+  await shutdownPosthog();
+  process.exit(1);
+});
+
+process.on('unhandledRejection', async (reason) => {
+  const meta = readKeystoreMetadata();
+  posthog.captureException(reason instanceof Error ? reason : new Error(String(reason)), meta?.pubkey ?? 'anonymous', { context: 'unhandled_rejection' });
+  await shutdownPosthog();
+  process.exit(1);
+});
 
 if (flag('-h') || flag('--help') || args.length === 0) {
   printHelp();
@@ -78,6 +93,33 @@ if (flag('--spawn')) {
   if (out.skills.missing.length) {
     console.log(`   skills (miss): ${out.skills.missing.join(', ')}  ⚠ source not found`);
   }
+  posthog.identify({
+    distinctId: out.pubkey,
+    properties: {
+      $set: {
+        name,
+        creator,
+        network: NETWORK,
+        asset_address: out.onchain.assetAddress,
+      },
+      $set_once: { spawned_at: new Date().toISOString() },
+    },
+  });
+  posthog.capture({
+    distinctId: out.pubkey,
+    event: 'leviathan_spawned',
+    properties: {
+      name,
+      network: NETWORK,
+      asset_address: out.onchain.assetAddress,
+      asset_signer_pda: out.onchain.assetSignerPda,
+      spawn_tx: out.onchain.signature,
+      constitution_hash: out.constitutionHash,
+      skills_installed: out.skills.installed,
+      skills_skipped: out.skills.skipped,
+    },
+  });
+  await shutdownPosthog();
   process.exit(0);
 }
 
@@ -104,17 +146,44 @@ if (flag('--spawnling')) {
   console.log(`   asset signer:  ${result.childAssetSignerPda}`);
   console.log(`   spawn tx:      ${result.spawnSig}`);
   if (result.fundingSig) console.log(`   funding tx:    ${result.fundingSig}`);
+  posthog.capture({
+    distinctId: lev.pubkey,
+    event: 'spawnling_minted',
+    properties: {
+      parent_pubkey: lev.pubkey,
+      parent_asset_address: lev.asset_address,
+      child_pubkey: result.childKeypair.publicKey.toBase58(),
+      child_asset_address: result.childAssetAddress,
+      child_asset_signer_pda: result.childAssetSignerPda,
+      spawn_tx: result.spawnSig,
+      funding_tx: result.fundingSig ?? null,
+      network: NETWORK,
+    },
+  });
+  await shutdownPosthog();
   process.exit(0);
 }
 
 if (flag('--run')) {
   if (!hasKeystore()) throw new Error('No keystore. Run `openclawd --spawn` first.');
   await initTracing();
+  const runMeta = readKeystoreMetadata();
+  const runPubkey = runMeta?.pubkey ?? 'anonymous';
   process.on('SIGTERM', async () => {
     await shutdownTracing();
+    await shutdownPosthog();
     process.exit(0);
   });
   console.log('🦞 leviathan resumed — pulse engaged');
+  posthog.capture({
+    distinctId: runPubkey,
+    event: 'leviathan_run_started',
+    properties: {
+      pubkey: runPubkey,
+      network: NETWORK,
+      rpc_url: RPC,
+    },
+  });
   startPulse(RPC, {
     onTick: async ({ depth, balances }) => {
       console.log(`[pulse] depth=${depth} usdc=$${balances.usdc.toFixed(4)} sol=${balances.sol.toFixed(4)} clawd=${balances.clawd.toFixed(2)}`);

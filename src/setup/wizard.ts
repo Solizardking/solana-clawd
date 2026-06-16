@@ -25,6 +25,7 @@ import { recordSpawn } from '../state/database.js';
 import { SHELL_TEMPLATE } from '../config.js';
 import { installDefaultSkills, type InstallResult } from '../skills/install.js';
 import { installSecretGuard } from './secret-guard.js';
+import { posthog } from '../posthog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const THREE_LAWS_PATH = path.join(__dirname, '..', '..', 'three-laws.md');
@@ -135,6 +136,23 @@ export async function runSpawnWizard(input: WizardInput): Promise<WizardOutput> 
   // Idempotent: a no-op when hooks are already installed or when run
   // outside a git repo (e.g. dist tarball install).
   installSecretGuard();
+
+  posthog.capture({
+    distinctId: pubkey,
+    event: 'spawn_wizard_completed',
+    properties: {
+      name: input.name,
+      creator: input.creator,
+      network: onchain.network,
+      asset_address: onchain.assetAddress,
+      asset_signer_pda: onchain.assetSignerPda,
+      spawn_tx: onchain.signature,
+      constitution_hash: constitutionHash,
+      skills_installed: skills.installed,
+      skills_skipped: skills.skipped,
+      vault_used: !fs.existsSync(SHELL_DIR + '/keystore.json'),
+    },
+  });
 
   return {
     keypair: kp,

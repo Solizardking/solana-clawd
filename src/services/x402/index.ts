@@ -16,6 +16,8 @@
 
 import type { PaymentRequirement, PaymentPayload } from "./types.js";
 import { X402_HEADERS, USDC_ADDRESSES } from "./types.js";
+import { posthog } from "../../posthog.js";
+import { getPubkey } from "../../identity/wallet.js";
 
 export { X402_HEADERS, USDC_ADDRESSES } from "./types.js";
 export type { PaymentRequirement, PaymentPayload } from "./types.js";
@@ -182,6 +184,19 @@ export function wrapFetchWithX402(fetchFn: typeof fetch): typeof fetch {
         amountUSD,
         timestamp: Date.now(),
       };
+      const distinctId = getPubkey() ?? 'anonymous';
+      posthog.capture({
+        distinctId,
+        event: 'x402_payment_completed',
+        properties: {
+          resource: req.resource,
+          amount_usd: amountUSD,
+          network: req.network,
+          scheme: req.scheme,
+          session_total_payments: sessionStats.payments,
+          session_total_usd: sessionStats.totalUSD,
+        },
+      });
     }
 
     return paidResponse;

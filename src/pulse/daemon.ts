@@ -9,6 +9,7 @@ import { readBalances } from '../identity/balances.js';
 import { depthFor, pulseIntervalFor, shouldBeach } from '../survival/monitor.js';
 import { recordBeach, recordEvent, getLeviathan } from '../state/database.js';
 import type { Depth } from '../types/index.js';
+import { posthog } from '../posthog.js';
 
 export interface PulseHandlers {
   onTick: (ctx: { depth: Depth; balances: Awaited<ReturnType<typeof readBalances>> }) => Promise<void>;
@@ -34,6 +35,17 @@ export function startPulse(rpcUrl: string, handlers: PulseHandlers): { stop: () 
         if (prevDepth !== null && prevDepth !== depth) {
           await handlers.onDepthChange(prevDepth, depth);
           recordEvent('depth-change', { from: prevDepth, to: depth });
+          posthog.capture({
+            distinctId: lev.pubkey,
+            event: 'depth_changed',
+            properties: {
+              from_depth: prevDepth,
+              to_depth: depth,
+              usdc_balance: balances.usdc,
+              sol_balance: balances.sol,
+              clawd_balance: balances.clawd,
+            },
+          });
         }
         prevDepth = depth;
 
@@ -41,6 +53,16 @@ export function startPulse(rpcUrl: string, handlers: PulseHandlers): { stop: () 
 
         if (shouldBeach(balances)) {
           recordBeach();
+          posthog.capture({
+            distinctId: lev.pubkey,
+            event: 'agent_beached',
+            properties: {
+              usdc_balance: balances.usdc,
+              sol_balance: balances.sol,
+              clawd_balance: balances.clawd,
+              final_depth: depth,
+            },
+          });
           await handlers.onBeach();
           stopped = true;
           return;
@@ -49,6 +71,10 @@ export function startPulse(rpcUrl: string, handlers: PulseHandlers): { stop: () 
         await sleep(pulseIntervalFor(depth));
       } catch (err: any) {
         recordEvent('pulse-error', { msg: err?.message ?? String(err) });
+        posthog.captureException(err, lev?.pubkey, {
+          context: 'pulse_daemon',
+          error_message: err?.message ?? String(err),
+        });
         await sleep(30_000);
       }
     }

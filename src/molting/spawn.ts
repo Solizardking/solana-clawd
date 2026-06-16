@@ -23,6 +23,7 @@ import {
 import { spawnOnchain } from '../identity/spawn-onchain.js';
 import { CLAWD_MINT, USDC_MINT } from '../config.js';
 import { recordSpawnling } from '../state/database.js';
+import { posthog } from '../posthog.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const THREE_LAWS_PATH = path.join(__dirname, '..', '..', 'scripts', 'three-laws.txt');
@@ -60,6 +61,16 @@ export async function spawnSpawnling(input: SpawnSpawnlingInput): Promise<SpawnS
   // Constitution integrity gate — Law I/II/III bytes must match.
   const liveHash = readConstitutionHash();
   if (liveHash !== input.parentConstitutionHash) {
+    posthog.capture({
+      distinctId: input.parentKeypair.publicKey.toBase58(),
+      event: 'constitution_hash_mismatch',
+      properties: {
+        parent_asset_address: input.parentAssetAddress,
+        live_hash: liveHash,
+        parent_hash: input.parentConstitutionHash,
+        child_name: input.childName,
+      },
+    });
     throw new Error(
       `Refusing to spawn: three-laws.txt has been modified (live=${liveHash} parent=${input.parentConstitutionHash}). The constitution is immutable.`
     );
