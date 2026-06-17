@@ -28,6 +28,15 @@ Usage:
     --base-model qwen2p5-7b-instruct \
     --dataset-id solana-clawd \
     --output-model qwensolana
+
+  # Launch a new SFT job from already-uploaded Fireworks datasets:
+  python3 ai-training/scripts/deploy_fireworks.py \
+    --account-id <account_id> \
+    --dataset-id solana-clawd-20260617 \
+    --eval-dataset-id solana-clawd-eval-20260617 \
+    --base-model qwen2p5-7b-instruct \
+    --output-model clawd-glm-5-2 \
+    --reuse-datasets
 """
 from __future__ import annotations
 
@@ -66,6 +75,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--eval-auto-carveout", action="store_true")
     parser.add_argument("--job-id", default=None)
     parser.add_argument("--skip-eval-dataset", action="store_true")
+    parser.add_argument("--reuse-datasets", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -81,6 +91,7 @@ def api_request(
 ) -> dict[str, Any]:
     request_headers = {
         "Authorization": f"Bearer {api_key}",
+        "User-Agent": "curl/8.0 codex-fireworks-deploy",
     }
     if headers:
         request_headers.update(headers)
@@ -163,11 +174,21 @@ def validate_dataset(api_key: str, account_id: str, dataset_id: str, dry_run: bo
 
 
 def create_sft_job(args: argparse.Namespace, evaluation_dataset: str | None) -> dict[str, Any]:
+    account_prefix = f"accounts/{args.account_id}"
+    dataset_name = args.dataset_id
+    if not dataset_name.startswith("accounts/"):
+        dataset_name = f"{account_prefix}/datasets/{dataset_name}"
+    output_model = args.output_model
+    if not output_model.startswith("accounts/"):
+        output_model = f"{account_prefix}/models/{output_model}"
+    base_model = args.base_model
+    if not base_model.startswith("accounts/"):
+        base_model = f"accounts/fireworks/models/{base_model}"
     body: dict[str, Any] = {
-        "dataset": args.dataset_id,
+        "dataset": dataset_name,
         "displayName": args.display_name,
-        "outputModel": args.output_model,
-        "baseModel": args.base_model,
+        "outputModel": output_model,
+        "baseModel": base_model,
         "epochs": args.epochs,
         "learningRate": args.learning_rate,
         "maxContextLength": args.max_context_length,
@@ -175,6 +196,8 @@ def create_sft_job(args: argparse.Namespace, evaluation_dataset: str | None) -> 
         "evalAutoCarveout": args.eval_auto_carveout,
     }
     if evaluation_dataset:
+        if not evaluation_dataset.startswith("accounts/"):
+            evaluation_dataset = f"{account_prefix}/datasets/{evaluation_dataset}"
         body["evaluationDataset"] = evaluation_dataset
     job_id = args.job_id
     url = f"{API_BASE}/accounts/{args.account_id}/supervisedFineTuningJobs"
@@ -198,52 +221,58 @@ def main() -> None:
     ensure_inputs()
 
     results: dict[str, Any] = {}
-    results["train_dataset"] = create_dataset(
-        args.api_key,
-        args.account_id,
-        args.dataset_id,
-        args.dataset_display_name,
-        TRAIN_FILE,
-        args.dry_run,
-    )
-    results["train_upload"] = upload_dataset_file(
-        args.api_key,
-        args.account_id,
-        args.dataset_id,
-        TRAIN_FILE,
-        args.dry_run,
-    )
-    results["train_validate"] = validate_dataset(
-        args.api_key,
-        args.account_id,
-        args.dataset_id,
-        args.dry_run,
-    )
+    if args.reuse_datasets:
+        results["train_dataset"] = {"reused": True, "dataset_id": args.dataset_id}
+    else:
+        results["train_dataset"] = create_dataset(
+            args.api_key,
+            args.account_id,
+            args.dataset_id,
+            args.dataset_display_name,
+            TRAIN_FILE,
+            args.dry_run,
+        )
+        results["train_upload"] = upload_dataset_file(
+            args.api_key,
+            args.account_id,
+            args.dataset_id,
+            TRAIN_FILE,
+            args.dry_run,
+        )
+        results["train_validate"] = validate_dataset(
+            args.api_key,
+            args.account_id,
+            args.dataset_id,
+            args.dry_run,
+        )
 
     evaluation_dataset = None
     if not args.skip_eval_dataset:
         evaluation_dataset = args.eval_dataset_id
-        results["eval_dataset"] = create_dataset(
-            args.api_key,
-            args.account_id,
-            args.eval_dataset_id,
-            args.eval_dataset_display_name,
-            EVAL_FILE,
-            args.dry_run,
-        )
-        results["eval_upload"] = upload_dataset_file(
-            args.api_key,
-            args.account_id,
-            args.eval_dataset_id,
-            EVAL_FILE,
-            args.dry_run,
-        )
-        results["eval_validate"] = validate_dataset(
-            args.api_key,
-            args.account_id,
-            args.eval_dataset_id,
-            args.dry_run,
-        )
+        if args.reuse_datasets:
+            results["eval_dataset"] = {"reused": True, "dataset_id": args.eval_dataset_id}
+        else:
+            results["eval_dataset"] = create_dataset(
+                args.api_key,
+                args.account_id,
+                args.eval_dataset_id,
+                args.eval_dataset_display_name,
+                EVAL_FILE,
+                args.dry_run,
+            )
+            results["eval_upload"] = upload_dataset_file(
+                args.api_key,
+                args.account_id,
+                args.eval_dataset_id,
+                EVAL_FILE,
+                args.dry_run,
+            )
+            results["eval_validate"] = validate_dataset(
+                args.api_key,
+                args.account_id,
+                args.eval_dataset_id,
+                args.dry_run,
+            )
 
     results["sft_job"] = create_sft_job(args, evaluation_dataset)
     print(json.dumps(results, indent=2))

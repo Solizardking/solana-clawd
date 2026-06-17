@@ -186,6 +186,43 @@ mlx_lm.generate \
   --prompt "How do I detect a rug pull on a fresh Solana token?"
 ```
 
+### 6. Fireworks managed SFT
+
+Fireworks does not accept Hugging Face dataset URLs directly for managed SFT.
+Use the Hub dataset as the source of truth, then upload the JSONL export to a
+Fireworks dataset or provide a supported cloud-storage URI (`gs://`, `s3://`,
+or Azure Blob).
+
+Current Fireworks run:
+
+| Field | Value |
+| --- | --- |
+| Account | `accounts/beetsbyj-d25663` |
+| Job | `accounts/beetsbyj-d25663/supervisedFineTuningJobs/b1rgqmi9` |
+| Base model | `accounts/fireworks/models/qwen2p5-7b-instruct` |
+| Output model | `accounts/beetsbyj-d25663/models/clawd-glm-5-2` |
+| Train dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-20260617` |
+| Eval dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-eval-20260617` |
+| Source dataset | [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) |
+
+```bash
+export FIREWORKS_API_KEY=fw_...
+
+python3 scripts/deploy_fireworks.py \
+  --account-id beetsbyj-d25663 \
+  --dataset-id solana-clawd-20260617 \
+  --eval-dataset-id solana-clawd-eval-20260617 \
+  --base-model qwen2p5-7b-instruct \
+  --output-model clawd-glm-5-2 \
+  --display-name "Clawd GLM 5.2 Solana SFT" \
+  --reuse-datasets
+
+python3 scripts/monitor_fireworks_job.py \
+  --account-id beetsbyj-d25663 \
+  --job-id b1rgqmi9 \
+  --once
+```
+
 ## Hermes-3-Llama-3.1-8B path (tool use / function calling)
 
 For agents that need to call real tools (Solana perps, on-chain data,

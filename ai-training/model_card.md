@@ -95,6 +95,26 @@ Check every domain your training data covers:
 | Dataset size | 47 curated conversations -> 42/2/3 train/eval/test split |
 | Dataset seed | 42 (deterministic splits) |
 
+### Fireworks managed SFT run
+
+The current Fireworks deployment uses the Hugging Face dataset export from
+`solanaclawd/solana-clawd-instruct`, uploaded to Fireworks as JSONL because
+the Fireworks dataset API only accepts uploaded files or cloud-storage URIs for
+managed SFT.
+
+| Field | Value |
+| --- | --- |
+| Job | `accounts/beetsbyj-d25663/supervisedFineTuningJobs/b1rgqmi9` |
+| State at submission | `JOB_STATE_RUNNING` |
+| Base model | `accounts/fireworks/models/qwen2p5-7b-instruct` |
+| Output model | `accounts/beetsbyj-d25663/models/clawd-glm-5-2` |
+| Train dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-20260617` |
+| Eval dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-eval-20260617` |
+| Epochs | 1 |
+| Learning rate | 1.0e-4 |
+| LoRA rank | 8 |
+| Max context length | 8192 |
+
 ### How to reproduce
 
 ```bash
