@@ -6,10 +6,12 @@
 # train_lora.py with a chosen hardware flavor.
 #
 # Usage:
-#   ./scripts/launch_hf_jobs.sh                # default: a100-large
-#   ./scripts/launch_hf_jobs.sh h200           # 80GB H200
-#   ./scripts/launch_hf_jobs.sh a100x4         # 4xA100 80GB (DDP)
-#   ./scripts/launch_hf_jobs.sh l4x1           # cheaper 24GB L4
+#   ./scripts/launch_hf_jobs.sh                             # default: a100-large, lora_config.yaml
+#   ./scripts/launch_hf_jobs.sh h200                        # 80GB H200
+#   ./scripts/launch_hf_jobs.sh a100x4                      # 4xA100 80GB (DDP)
+#   ./scripts/launch_hf_jobs.sh l4x1                        # cheaper 24GB L4
+#   ./scripts/launch_hf_jobs.sh a100-large glm52            # GLM-5.2 config on A100
+#   ./scripts/launch_hf_jobs.sh h200 glm52                  # GLM-5.2 on H200 (fastest)
 #
 # Prereqs:
 #   - hf CLI >= 1.19.0 (`pip install --upgrade huggingface_hub`)
@@ -24,8 +26,23 @@
 set -euo pipefail
 
 FLAVOR="${1:-a100-large}"
+CONFIG_KEY="${2:-}"                  # e.g. "glm52", "hermes3", "cpt" — maps to configs/<key>_lora_config.yaml
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Resolve config path from short key
+case "$CONFIG_KEY" in
+  glm52|glm)  CONFIG_PATH="configs/glm52_lora_config.yaml" ;;
+  hermes3|8b) CONFIG_PATH="configs/hermes3_lora_config.yaml" ;;
+  cpt)        CONFIG_PATH="configs/deep_solana_cpt_config.yaml" ;;
+  "")         CONFIG_PATH="configs/lora_config.yaml" ;;
+  *.yaml)     CONFIG_PATH="$CONFIG_KEY" ;;
+  *)
+    echo "Unknown config key: $CONFIG_KEY" >&2
+    echo "Try: glm52, hermes3, cpt, or a full .yaml path" >&2
+    exit 1
+    ;;
+esac
 
 # A100-80GB / H100 / H200 / L4 / A10G flavors supported.
 case "$FLAVOR" in
@@ -46,6 +63,7 @@ esac
 cd "$ROOT_DIR"
 
 echo "Launching HF Jobs training on $FLAVOR..."
+echo "  config:    $CONFIG_PATH"
 echo "  scripts:   $ROOT_DIR/scripts"
 echo "  configs:   $ROOT_DIR/configs"
 echo "  dataset:   solanaclawd/solana-clawd-instruct"
@@ -60,7 +78,8 @@ hf jobs uv run "$ROOT_DIR/scripts/train_lora.py" \
   --timeout 4h \
   --secrets HF_TOKEN \
   --env-file <(printf "HUGGING_FACE_HUB_TOKEN=%s\n" "${HF_TOKEN:-}") \
-  --detach
+  --detach \
+  -- --config "$CONFIG_PATH"
 
 echo
 echo "Job submitted. To monitor:"

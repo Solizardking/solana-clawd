@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#   "torch>=2.1.0",
+#   "transformers>=5.12.0",
+#   "accelerate>=1.14.0",
+#   "peft>=0.19.1",
+#   "trl>=1.6.0",
+#   "bitsandbytes>=0.46.0",
+#   "datasets>=5.0.0",
+#   "huggingface_hub>=1.19.0",
+#   "pyyaml>=6.0",
+#   "safetensors>=0.5.0",
+# ]
+# ///
 """
 LoRA SFT training for the Solana Clawd AI model.
 
