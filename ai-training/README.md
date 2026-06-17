@@ -202,6 +202,9 @@ Current Fireworks run:
 | Final state | `JOB_STATE_COMPLETED` |
 | Base model | `accounts/fireworks/models/qwen2p5-7b-instruct` |
 | Output model | `accounts/beetsbyj-d25663/models/clawd-glm-5-2` |
+| Live-merge deployment | `accounts/beetsbyj-d25663/deployments/clawd-glm-5-2-live` (`FAILED`, Fireworks internal error) |
+| Multi-LoRA deployment | `accounts/beetsbyj-d25663/deployments/qwen2p5-7b-clawd-addons` (`CREATING`) |
+| Deployment shape | `NVIDIA_A100_80GB` x2, `FP16`, min replicas 0, max replicas 1 |
 | Train dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-20260617` |
 | Eval dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-eval-20260617` |
 | Source dataset | [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) |
@@ -222,6 +225,19 @@ python3 scripts/monitor_fireworks_job.py \
   --account-id beetsbyj-d25663 \
   --job-id b1rgqmi9 \
   --once
+
+python3 scripts/monitor_fireworks_deployment.py \
+  --account-id beetsbyj-d25663 \
+  --deployment-id qwen2p5-7b-clawd-addons \
+  --once
+
+curl https://api.fireworks.ai/inference/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $FIREWORKS_API_KEY" \
+  -d '{
+    "model": "accounts/beetsbyj-d25663/models/clawd-glm-5-2#accounts/beetsbyj-d25663/deployments/qwen2p5-7b-clawd-addons",
+    "messages": [{"role": "user", "content": "What is a PDA on Solana?"}]
+  }'
 ```
 
 ## Hermes-3-Llama-3.1-8B path (tool use / function calling)

@@ -109,6 +109,9 @@ managed SFT.
 | Completed | `2026-06-17T22:59:49.848326Z` |
 | Base model | `accounts/fireworks/models/qwen2p5-7b-instruct` |
 | Output model | `accounts/beetsbyj-d25663/models/clawd-glm-5-2` |
+| Live-merge deployment | `accounts/beetsbyj-d25663/deployments/clawd-glm-5-2-live` (`FAILED`, Fireworks internal error) |
+| Multi-LoRA deployment | `accounts/beetsbyj-d25663/deployments/qwen2p5-7b-clawd-addons` (`CREATING`) |
+| Deployment shape | `NVIDIA_A100_80GB` x2, `FP16`, min replicas 0, max replicas 1 |
 | Train dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-20260617` |
 | Eval dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-eval-20260617` |
 | Epochs | 1 |
