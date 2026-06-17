@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * ooda/loop.ts — Dark Ralph OODA Loop Harness
+ * ooda/loop.ts — Clawd OODA Loop Harness
  *
  * TypeScript port of the clawd-operator agent/loop.py.
  * Paper-trading, devnet-only, stdlib-Node implementation of the
- * "Dark Ralph" adaptation of Geoffrey Huntley's Ralph harness.
+ * OODA loop adapted for the Clawd ecosystem.
  *
  * Safety contract (all enforced in code):
- *   - mode: paper only (rejects anything else in RALPH.md)
+ *   - mode: paper only (rejects anything else in CLAWD.md)
  *   - network: devnet only
  *   - mainnet RPC URLs rejected at startup
  *   - no key handling anywhere in this file
@@ -30,12 +30,12 @@ import { parseArgs } from 'node:util';
 import { createState, openPosition, closePosition, unrealisedPnl } from './state.js';
 import type { State, Candle } from './state.js';
 import { SynthObserver, rejectMainnet } from './observe.js';
-import { validate, parseRalphConfig } from './validate.js';
-import type { RalphConfig, Decision } from './validate.js';
+import { validate, parseClawdConfig } from './validate.js';
+import type { ClawdConfig, Decision } from './validate.js';
 import { appendTick, readLastEntries } from './journal.js';
 import type { TickEntry } from './journal.js';
-import { deterministicDecision, claudeDecision } from './claude-decision.js';
-import type { Observations } from './claude-decision.js';
+import { deterministicDecision, clawdDecision } from './clawd-decision.js';
+import type { Observations } from './clawd-decision.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -60,8 +60,8 @@ const { values: flags } = parseArgs({
 });
 
 const GOBLIN_MODE  = flags['goblin'] as boolean;
-// Goblin mode: load goblin.md instead of RALPH.md, use tighter sleep, more ticks default
-const RALPH_FILE   = GOBLIN_MODE ? 'goblin.md' : 'RALPH.md';
+// Goblin mode: load goblin.md instead of CLAWD.md, use tighter sleep, more ticks default
+const CLAWD_CONFIG_FILE = GOBLIN_MODE ? 'goblin.md' : 'CLAWD.md';
 const TICKS        = parseInt(flags['ticks'] as string, 10) || (GOBLIN_MODE ? 100 : 50);
 const SLEEP_MS     = GOBLIN_MODE ? 0 : Math.round(parseFloat(flags['sleep'] as string) * 1000);
 const SEED         = parseInt(flags['seed'] as string, 10);
@@ -178,18 +178,18 @@ async function commitJournal(tick: number): Promise<void> {
 // ─── Main loop ────────────────────────────────────────────────────────────────
 
 async function runLoop(): Promise<void> {
-  // Read + validate RALPH.md (or goblin.md) config
-  const ralphPath = join(__dirname, RALPH_FILE);
-  const ralphContent = readFileSync(ralphPath, 'utf8');
-  const config: RalphConfig = parseRalphConfig(ralphContent);
+  // Read + validate CLAWD.md (or goblin.md) config
+  const configPath = join(__dirname, CLAWD_CONFIG_FILE);
+  const configContent = readFileSync(configPath, 'utf8');
+  const config: ClawdConfig = parseClawdConfig(configContent);
 
   if (GOBLIN_MODE) {
     log(`\n👺 GOBLIN MODE ACTIVATED — clawd-operator harness`);
     log(`   https://github.com/x402agent/clawd-operator`);
     log(`   max_pos=${config.max_position_size_lamports} killswitch=${config.loss_killswitch_consecutive} dark_defi=armed\n`);
   } else {
-    log(`[ralph] mode=${config.mode} network=${config.network}`);
-    log(`[ralph] max_pos=${config.max_position_size_lamports} killswitch=${config.loss_killswitch_consecutive}`);
+    log(`[clawd] mode=${config.mode} network=${config.network}`);
+    log(`[clawd] max_pos=${config.max_position_size_lamports} killswitch=${config.loss_killswitch_consecutive}`);
   }
 
   // Reject mainnet
@@ -200,7 +200,7 @@ async function runLoop(): Promise<void> {
   const observer = new SynthObserver(SEED, 150_000, 20);
   let previousOiTick: { ts: number; symbol: string; markPrice: number; openInterestUsd: number } | undefined;
 
-  log(`[ralph] starting ${TICKS} ticks, sleep=${SLEEP_MS}ms, llm=${USE_LLM}, goblin=${GOBLIN_MODE}, perps_oi=${USE_PERPS_OI}`);
+  log(`[clawd] starting ${TICKS} ticks, sleep=${SLEEP_MS}ms, llm=${USE_LLM}, goblin=${GOBLIN_MODE}, perps_oi=${USE_PERPS_OI}`);
   if (TUI_MODE) {
     emit({ event: 'start', ticks: TICKS, config, goblin: GOBLIN_MODE, perps_oi: USE_PERPS_OI, perps_symbol: PERPS_SYMBOL });
   }
@@ -240,8 +240,8 @@ async function runLoop(): Promise<void> {
     // ── ORIENT / DECIDE ──────────────────────────────────────────────────────
     let rawDecision: unknown;
     try {
-      if (USE_LLM && process.env['ANTHROPIC_API_KEY']) {
-        rawDecision = await claudeDecision(obs);
+      if (USE_LLM) {
+        rawDecision = await clawdDecision(obs);
       } else if (perpsOiSignal) {
         rawDecision = signalToDecision(perpsOiSignal, state);
       } else {
@@ -290,7 +290,7 @@ async function runLoop(): Promise<void> {
       if (GOBLIN_MODE) {
         log(`\n👺 GOBLIN KILLSWITCH: ${state.consecutive_losses} consecutive losses — even goblins respect the laws\n`);
       } else {
-        log(`[ralph] KILLSWITCH: ${state.consecutive_losses} consecutive losses — halting`);
+        log(`[clawd] KILLSWITCH: ${state.consecutive_losses} consecutive losses — halting`);
       }
       process.exit(1);
     }
@@ -351,11 +351,11 @@ async function runLoop(): Promise<void> {
     log(`\n👺 GOBLIN DONE. pnl=${state.total_pnl_lamports} trades=${state.total_trades} cash=${state.book.cash_lamports}`);
     log(`   The goblin rests. The laws held. The paper gains are real in spirit.\n`);
   } else {
-    log(`\n[ralph] done. pnl=${state.total_pnl_lamports} trades=${state.total_trades} cash=${state.book.cash_lamports}`);
+    log(`\n[clawd] done. pnl=${state.total_pnl_lamports} trades=${state.total_trades} cash=${state.book.cash_lamports}`);
   }
 }
 
 runLoop().catch(err => {
-  process.stderr.write(`[ralph] fatal: ${String(err)}\n`);
+  process.stderr.write(`[clawd] fatal: ${String(err)}\n`);
   process.exit(1);
 });

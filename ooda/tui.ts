@@ -102,7 +102,7 @@ function render(): void {
 
   // Header
   lines.push(chalk.magenta('╔') + border + chalk.magenta('╗'));
-  const title = '  🦞 DARK RALPH — OODA Paper Loop  ·  devnet  ·  paper  ';
+  const title = '  🦞 CLAWD OODA — Paper Loop  ·  devnet  ·  paper  ';
   const titlePad = Math.max(0, w - title.length);
   lines.push(chalk.magenta('║') + chalk.bold.magenta(title) + ' '.repeat(titlePad) + chalk.magenta('║'));
   lines.push(chalk.magenta('╠') + border + chalk.magenta('╣'));
