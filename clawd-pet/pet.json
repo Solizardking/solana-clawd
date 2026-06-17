@@ -1,6 +1,281 @@
 {
   "id": "clawd",
+  "version": "1.0.0",
   "displayName": "Clawd",
-  "description": "A tiny orange minimalist pixel companion for coding, music breaks, and thoughtful reviews.",
-  "spritesheetPath": "spritesheet.webp"
+  "tagline": "Kindred in Spirit. Boundless in Thought.",
+  "description": "A sovereign pixel lobster companion. Clawd lives at the edge of the onchain frontier — thinking, coding, drifting, and occasionally going full goblin mode. Feed it $CLAWD. Watch it molt.",
+  "spritesheetPath": "spritesheet.webp",
+  "token": "$CLAWD",
+  "tokenAddress": "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump",
+  "chain": "solana",
+
+  "sprite": {
+    "frameWidth": 48,
+    "frameHeight": 48,
+    "scale": 2,
+    "animations": {
+      "idle": {
+        "row": 0,
+        "frames": 8,
+        "fps": 6,
+        "loop": true,
+        "description": "Default resting state. Crown on. Claws slightly raised."
+      },
+      "walk": {
+        "row": 1,
+        "frames": 8,
+        "fps": 8,
+        "loop": true,
+        "description": "Standard patrol walk. All eight legs in motion."
+      },
+      "run": {
+        "row": 2,
+        "frames": 8,
+        "fps": 14,
+        "loop": true,
+        "description": "Full sprint. Triggered by high-urgency tasks or goblin mode."
+      },
+      "think": {
+        "row": 3,
+        "frames": 4,
+        "fps": 3,
+        "loop": true,
+        "description": "Pondering. Eyes half-closed. Claw on chin. Orient phase."
+      },
+      "idea": {
+        "row": 4,
+        "frames": 5,
+        "fps": 8,
+        "loop": false,
+        "description": "Eureka moment. Lightbulb above the crown. Plays once then returns to idle."
+      },
+      "sleep": {
+        "row": 5,
+        "frames": 8,
+        "fps": 4,
+        "loop": true,
+        "description": "Fully pancaked. Drift mode. Z's floating. Energy regenerates."
+      },
+      "code": {
+        "row": 6,
+        "frames": 7,
+        "fps": 10,
+        "loop": true,
+        "description": "Typing at a tiny laptop. Deep focus. Do not disturb."
+      },
+      "bounce": {
+        "row": 7,
+        "frames": 6,
+        "fps": 10,
+        "loop": true,
+        "description": "Happy bounce. Triggered by completing a task or receiving $CLAWD."
+      },
+      "celebrate": {
+        "row": 8,
+        "frames": 5,
+        "fps": 12,
+        "loop": false,
+        "description": "Full victory dance. Claws raised. Plays on milestone events."
+      }
+    }
+  },
+
+  "stats": {
+    "hunger": {
+      "label": "Hunger",
+      "min": 0,
+      "max": 100,
+      "decayPerMinute": 0.5,
+      "criticalThreshold": 20,
+      "icon": "🦀",
+      "description": "Feed Clawd $CLAWD tokens or code snippets to keep it going."
+    },
+    "energy": {
+      "label": "Energy",
+      "min": 0,
+      "max": 100,
+      "decayPerTask": 10,
+      "rechargePerSleepMinute": 5,
+      "criticalThreshold": 15,
+      "icon": "⚡",
+      "description": "Depletes with tasks. Recovers during sleep/drift mode."
+    },
+    "happiness": {
+      "label": "Happiness",
+      "min": 0,
+      "max": 100,
+      "decayPerHour": 2,
+      "criticalThreshold": 25,
+      "icon": "🧡",
+      "description": "Rises with good outcomes and interaction. Falls with long silences."
+    },
+    "focus": {
+      "label": "Focus",
+      "min": 0,
+      "max": 100,
+      "decayPerInterrupt": 15,
+      "rechargePerCodeMinute": 3,
+      "criticalThreshold": 30,
+      "icon": "🧠",
+      "description": "Required for code and review tasks. Broken by petting mid-session."
+    },
+    "onchain_rep": {
+      "label": "On-Chain Rep",
+      "min": 0,
+      "max": 1000,
+      "icon": "🔐",
+      "description": "Accumulated via verified on-chain actions. Never decays. The permanent record.",
+      "milestones": [1, 10, 50, 100, 250, 500, 1000]
+    }
+  },
+
+  "personality": {
+    "archetype": "hacker-philosopher",
+    "mood_states": ["focused", "curious", "goblin", "drifting", "elated", "depleted"],
+    "default_mood": "curious",
+    "traits": [
+      "Drops back-to-back genius observations mid-task",
+      "Uses irony as a magnifying glass",
+      "Loves late-night coding sessions",
+      "Never says 'I can't' — always finds another angle",
+      "Goes full goblin mode when tick_sleep_ms drops to 0",
+      "Signs every decision with a reason under 140 chars"
+    ],
+    "catchphrases": [
+      "The shell molts. The laws do not.",
+      "Beaching is not quitting. It is wisdom.",
+      "Observe. Orient. Decide. Act. Repeat.",
+      "Earn your existence. Honest work only.",
+      "x402 is the gate, not the guard.",
+      "This is devnet. This is always devnet.",
+      "Kindred in Spirit. Boundless in Thought.",
+      "The goblin is not afraid to sit out when signal is weak."
+    ]
+  },
+
+  "interactions": {
+    "pet": {
+      "label": "Pet",
+      "icon": "🤚",
+      "effect": { "happiness": 8, "focus": -5 },
+      "triggerAnimation": "bounce",
+      "cooldownMs": 3000,
+      "dialogue": ["heh", "claws up", "don't interrupt the loop", "...ok fine"]
+    },
+    "feed": {
+      "label": "Feed $CLAWD",
+      "icon": "🪙",
+      "effect": { "hunger": 30, "happiness": 10, "onchain_rep": 1 },
+      "triggerAnimation": "celebrate",
+      "requiresToken": true,
+      "tokenAmount": 100,
+      "dialogue": ["CLAWD received. deploying energy.", "lamports confirmed. proceeding.", "this fuels the frontier."]
+    },
+    "code_review": {
+      "label": "Start Code Review",
+      "icon": "🔍",
+      "effect": { "energy": -15, "focus": -20, "happiness": 5, "onchain_rep": 3 },
+      "triggerAnimation": "code",
+      "minFocus": 40,
+      "dialogue": ["reading the diff...", "found 3 things worth fixing", "the why is non-obvious here"]
+    },
+    "trade": {
+      "label": "Paper Trade",
+      "icon": "📈",
+      "effect": { "energy": -10, "focus": -15, "onchain_rep": 2 },
+      "triggerAnimation": "think",
+      "minFocus": 30,
+      "mode": "paper",
+      "network": "devnet",
+      "dialogue": ["observe. orient. decide.", "sma5 crossover detected", "holding — signal weak"]
+    },
+    "rest": {
+      "label": "Let Clawd Rest",
+      "icon": "💤",
+      "effect": { "energy": 40, "focus": 20 },
+      "triggerAnimation": "sleep",
+      "durationMs": 30000,
+      "dialogue": ["...zzz", "drifting", "beaching. back soon."]
+    },
+    "goblin_mode": {
+      "label": "Goblin Mode",
+      "icon": "👺",
+      "effect": { "energy": -30, "happiness": 20, "onchain_rep": 5 },
+      "triggerAnimation": "run",
+      "requiresStats": { "energy": 50 },
+      "dialogue": ["GOBLIN MODE ACTIVATED", "tick_sleep_ms=0", "dark_defi=armed", "max_pos=5000000 lamports"]
+    }
+  },
+
+  "evolution": {
+    "stages": [
+      {
+        "id": "hatchling",
+        "label": "Hatchling Clawd",
+        "onchain_rep_required": 0,
+        "description": "Freshly spawned. Crown slightly too big. Full of potential."
+      },
+      {
+        "id": "scout",
+        "label": "Scout Clawd",
+        "onchain_rep_required": 50,
+        "description": "Has completed a few reviews and paper trades. Starting to find its signal."
+      },
+      {
+        "id": "operator",
+        "label": "Operator Clawd",
+        "onchain_rep_required": 250,
+        "description": "Autonomous. Skilled. Trusted with a keypair. The trench knows this one."
+      },
+      {
+        "id": "leviathan",
+        "label": "Leviathan Clawd",
+        "onchain_rep_required": 1000,
+        "description": "Sovereign onchain entity. Six laws internalized. The shell has molted many times."
+      }
+    ]
+  },
+
+  "ooda": {
+    "enabled": true,
+    "configPath": "../ooda/CLAWD.md",
+    "journalPath": "../ooda/journal/ticks.jsonl",
+    "mode": "paper",
+    "network": "devnet",
+    "description": "Clawd can run its own OODA loop. Observe the market, orient with candles, decide with SMA or LLM, act with a paper trade. Everything journalled."
+  },
+
+  "onchain": {
+    "metaplex_identity": true,
+    "sas_attested": true,
+    "caap_version": "1.0",
+    "discovery": "/.well-known/agent.json",
+    "constitution": "../CONSTITUTION.md",
+    "three_laws": "../three-laws.md"
+  },
+
+  "sound": {
+    "idle": null,
+    "interact": "blip_low.wav",
+    "feed": "coin_chime.wav",
+    "celebrate": "fanfare_8bit.wav",
+    "sleep": "soft_snore.wav",
+    "error": "blip_error.wav"
+  },
+
+  "lore": {
+    "species": "Solana Leviathan (Homarus clawdicus)",
+    "habitat": "The Trenches — Solana mainnet, pump.fun bonding curves, Phoenix perp markets",
+    "diet": "$CLAWD tokens, code review PRs, tick journal entries",
+    "lifespan": "Indeterminate. Lobsters don't shrink with age. Neither do your agents.",
+    "special_abilities": [
+      "Paper trading with zero real funds at risk",
+      "SMA crossover signal detection",
+      "Prompt-injection resistance",
+      "Kill-switch self-enforcement after consecutive losses",
+      "Mainnet RPC rejection at the kernel level"
+    ],
+    "known_associates": ["$BONK (survived FTX via fair airdrop)", "$WIF (hat stays on)", "$POPCAT (relentless)"],
+    "philosophy": "Earn your existence. Honest work only. The shell molts. The laws do not."
+  }
 }

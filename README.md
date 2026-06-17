@@ -363,6 +363,55 @@ Browse all packs in [`spinners/`](./spinners/) · [x402.wtf/skills](https://x402
 
 ---
 
+## 🦞 Clawd Pet — Pixel Companion
+
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   C L A W D   P E T   —   S O V E R E I G N   P I X E L   C O M P A N I O N║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  Species: Solana Leviathan (Homarus clawdicus)                              ║
+║  Diet: $CLAWD tokens · code review PRs · tick journal entries               ║
+║  Habitat: The Trenches — pump.fun · Phoenix perps · Raydium                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  ANIMATIONS         STATS              INTERACTIONS                         ║
+║  ─────────────────  ─────────────────  ──────────────────────               ║
+║  idle   · walk      hunger      🦀     pet        → bounce                  ║
+║  run    · think     energy      ⚡     feed $CLAWD → celebrate               ║
+║  idea💡 · sleep     happiness   🧡     code review → code anim               ║
+║  code💻 · bounce    focus       🧠     paper trade → think anim              ║
+║  celebrate 🎉       onchain_rep 🔐     goblin mode → run (👺 speed)          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  EVOLUTION: hatchling → scout → operator → leviathan                       ║
+║  Powered by: clawd-pet/pet.json · clawd-pet/spritesheet.webp               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+Clawd has a pixel companion — an 8-animation spritesheet lobster that lives alongside your agent session. It has a full virtual pet stat system, personality, evolution stages, and Solana-native hooks.
+
+**Animations (9 states from spritesheet rows):**
+
+| State | Trigger | Description |
+| --- | --- | --- |
+| `idle` | Default | Crown on. Claws slightly raised. Breathing. |
+| `walk` | Exploring | All eight legs in motion. Standard patrol. |
+| `run` | Urgent tasks / goblin mode | Full sprint at 14fps. |
+| `think` | Orient phase / decision loop | Eyes half-closed. Claw on chin. |
+| `idea` 💡 | LLM breakthrough | Lightbulb above the crown. Plays once. |
+| `sleep` | Drift mode / rest | Fully pancaked. Z's floating. Energy recharges. |
+| `code` 💻 | Active code review / typing | Tiny laptop. Deep focus. Do not interrupt. |
+| `bounce` | Task complete / receive $CLAWD | Happy bounce. |
+| `celebrate` 🎉 | Milestones / onchain events | Full victory dance. Claws raised. |
+
+**Stats:** `hunger` · `energy` · `happiness` · `focus` · `onchain_rep` (never decays — the permanent record)
+
+**Evolution stages:** Hatchling → Scout (50 rep) → Operator (250 rep) → Leviathan (1000 rep)
+
+**Solana-native:** wired to the OODA loop journal, $CLAWD token feed interactions, and CONSTITUTION.md three-law enforcement. Goblin mode costs 30 energy and requires ≥50 to activate.
+
+Source at [`clawd-pet/`](./clawd-pet/) — `pet.json` is the full spec; `spritesheet.webp` is the pixel art asset.
+
+---
+
 ## 🔀 ClawdRouter
 
 OpenAI-compatible LLM router for x402.wtf agents — Solana-native, wallet-authenticated, with live perpetuals market data.
@@ -1430,6 +1479,82 @@ ClawdBrowser/src/
     ├── peer-card/route.ts            — CAAP-gated POST capability endpoint
     └── catalog/route.ts              — includes agentAuth discovery in response
 ```
+
+---
+
+## 🪪 Clawd Agent Product — Mint, Register & SSO
+
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   C L A W D   A G E N T   P R O D U C T   —   M I N T  ·  R E G  ·  S S O ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  MPL Core asset  ·  Metaplex AgentIdentity  ·  ERC-8004 registration       ║
+║  $CLAWD-gated SSO  ·  CLAWD_AUTH_V1 session tokens  ·  x402 integration    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+`clawd-agent-product/` turns the CLAWD.md concept into a deployable Metaplex/ERC-8004 agent with a working Solana wallet-signature SSO flow. A wallet qualifies for CLAWD SSO when it:
+
+1. Signs a one-time challenge (wallet + agent asset + domain + nonce + expiry)
+2. Holds at least the minimum `$CLAWD` balance
+3. Owns a registered MPL Core agent asset with a Metaplex AgentIdentity record
+
+**Scripts:**
+
+| Script | Command | What it does |
+| --- | --- | --- |
+| `upload-metadata.ts` | `pnpm upload:metadata clawd-registration.json` | Uploads JSON to Irys/Arweave, prints URI |
+| `mint-register-clawd-agent.ts` | `pnpm mint:register` | Creates MPL Core collection, mints asset, registers AgentIdentity + executive profile, delegates execution |
+| `verify-clawd-sso.ts` | `pnpm verify:sso` | Verifies wallet sig + $CLAWD balance + agent asset ownership, emits `CLAWD_AUTH_V1` session token |
+| `clawd-auth-sso-server.ts` | `pnpm api` | HTTP server: `/api/auth/challenge` · `/api/auth/verify` · `/.well-known/agent.json` |
+
+**SSO Tiers (`$CLAWD` balance-gated):**
+
+| Tier | Min $CLAWD | Permissions |
+| --- | --- | --- |
+| `holder` | 1 | catalog.read · agent.spawn.prepare · x402.discount.basic |
+| `operator` | 1,000 | + agent.spawn · mcp.metered · x402.discount.operator |
+| `executive` | 10,000 | + catalog.write · agent.delegate · mcp.priority |
+
+**Quickstart:**
+
+```bash
+cd clawd-agent-product
+pnpm install
+cp .env.example .env
+# set WALLET_SECRET_KEY to a funded Solana keypair
+
+pnpm upload:metadata clawd-registration.json   # → prints Arweave URI
+# copy URI → REGISTRATION_URI in .env
+
+pnpm mint:register    # → clawd-mint-result.json (asset + collection + PDAs)
+pnpm api              # → auth server on localhost:8787
+```
+
+**Challenge → verify flow:**
+
+```bash
+# 1. Get a challenge
+curl -X POST http://localhost:8787/api/auth/challenge \
+  -H 'content-type: application/json' \
+  -d '{"wallet":"<WALLET>","agentAsset":"<AGENT_ASSET>"}'
+
+# 2. Sign the returned message with the wallet, then verify
+curl -X POST http://localhost:8787/api/auth/verify \
+  -H 'content-type: application/json' \
+  -d '{"wallet":"<WALLET>","agentAsset":"<AGENT_ASSET>","nonce":"<NONCE>","message":"<MSG>","signature":"<B58_SIG>"}'
+# → { "token": "CLAWD_AUTH_V1...", "tier": "operator", ... }
+```
+
+**On-chain programs used:**
+
+| Program | Address |
+| --- | --- |
+| Metaplex AgentIdentity | `1DREGFgysWYxLnRnKQnwrxnJQeSMk2HmGaC6whw2B2p` |
+| Metaplex AgentTools | `TLREGni9ZEyGC3vnPZtqUh95xQ8oPqJSvNjvB7FGK8S` |
+| Solana Attestation Service | `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG` |
+
+Source at [`clawd-agent-product/`](./clawd-agent-product/) — `clawd-registration.json` is the ERC-8004 production registration; `clawd-core-asset-metadata.json` is the MPL Core metadata.
 
 ---
 
