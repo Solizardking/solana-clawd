@@ -1,9 +1,9 @@
 {
-  "num_examples": 22,
+  "num_examples": 47,
   "splits": {
-    "train": 19,
-    "eval": 1,
-    "test": 2
+    "train": 42,
+    "eval": 2,
+    "test": 3
   },
   "schema": {
     "messages": "list[{role: str, content: str}]"
