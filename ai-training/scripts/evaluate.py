@@ -23,7 +23,7 @@ from typing import Any
 
 import torch
 import yaml
-from datasets import load_dataset
+from datasets import load_dataset, load_from_disk
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -75,7 +75,8 @@ def looks_like_refusal(text: str) -> bool:
 
 def main() -> None:
     args = parse_args()
-    cfg = load_config(args.config)
+    raw_cfg = load_config(args.config)
+    cfg = raw_cfg.get("eval", raw_cfg)
     if args.base:
         cfg["base_model"] = args.base
     if args.adapter:
@@ -120,8 +121,13 @@ def main() -> None:
     try:
         ds = load_dataset(dataset_repo, split=cfg.get("eval_split", "test"))
     except Exception as e:
-        print(f"  Hub load failed ({e}), falling back to local data/processed/test")
-        ds = load_dataset("data/processed", split="test")
+        local_path = raw_cfg.get("dataset_path", "data/processed")
+        print(f"  Hub load failed ({e}), falling back to local {local_path}")
+        try:
+            local_ds = load_from_disk(local_path)
+        except Exception:
+            local_ds = load_dataset(local_path)
+        ds = local_ds[cfg.get("eval_split", "test")]
     ds = ds.shuffle(seed=42).select(range(min(n, len(ds))))
     print(f"      {len(ds)} eval examples")
 

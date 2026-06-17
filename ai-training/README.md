@@ -26,7 +26,7 @@ ai-training/
 ├── requirements.txt                ← Python deps (HF stack + openai + httpx + mcp)
 ├── .gitignore                      ← excludes checkpoints / outputs / secrets
 ├── data/
-│   ├── solana_clawd_seed.jsonl     ← seed SFT pairs (32 conversations)
+│   ├── solana_clawd_seed.jsonl     ← seed SFT pairs (47 conversations)
 │   ├── solana_clawd_eval.jsonl     ← held-out eval prompts (13 conversations)
 │   ├── eval_card.md                ← eval dataset card (upload to Hub)
 │   └── processed/                  ← committed sample output of prepare_dataset.py (parquet + arrow splits)

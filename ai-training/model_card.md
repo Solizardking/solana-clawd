@@ -25,27 +25,15 @@ pipeline_tag: text-generation
 # ──────────────────────────────────────────────────────────────────────────────
 ---
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE INSTRUCTIONS (delete this block before pushing to Hub)
-     ═══════════════════════════════════════════════════════════════════════════
-     1. Replace every <PLACEHOLDER> with real values.
-     2. Fill in the Evaluation table after running `scripts/evaluate.py`.
-     3. Update the Citation bibtex with your actual Hub model ID.
-     4. Remove any checklist items that don't apply to your model.
-     5. The "How to reproduce" section must run without modification.
-     ═══════════════════════════════════════════════════════════════════════════ -->
+# Solana Clawd 1.5B LoRA
 
-# MODEL NAME — replace this heading
-
-<!-- One sentence describing what this model is and what it does. -->
-<!-- Example: "A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana DeFi reasoning, -->
-<!--           memecoin risk analysis, and Clawd agent coordination." -->
+A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana development, DeFi reasoning, memecoin risk analysis, agent architecture, and Clawd constitutional behavior.
 
 **Base model**: [Qwen/Qwen2.5-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct)  
 **Adapter type**: LoRA (r=16, alpha=32, ~9M trainable params / 0.6% of base)  
 **Training data**: [solanaclawd/solana-clawd-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct)  
 **Training config**: `ai-training/configs/lora_config.yaml`  
-**Hub model ID**: `solanaclawd/<YOUR-MODEL-ID>`
+**Hub model ID**: `solanaclawd/solana-clawd-1.5b-lora`
 
 > **Tool-use / function calling?** Use the 8B Hermes-3 base with
 > `configs/hermes3_lora_config.yaml` and the `perps/` function-calling suite
@@ -102,9 +90,9 @@ Check every domain your training data covers:
 | Max sequence length | 4096 tokens |
 | Quantization | 4-bit NF4 double-quant at training (CUDA only) |
 | Loss | Assistant-only (system + user tokens masked) |
-| Training hardware | <!-- e.g. "A100-80GB via HF Jobs" --> |
-| Training time | <!-- e.g. "12 min on A100-80GB" --> |
-| Dataset size | 32 curated conversations → 90/5/5 train/eval/test split |
+| Training hardware | Not yet recorded in-repo; use `outputs/` + HF Jobs logs for the first canonical run |
+| Training time | Not yet recorded in-repo; populate after the first successful adapter export |
+| Dataset size | 47 curated conversations -> 42/2/3 train/eval/test split |
 | Dataset seed | 42 (deterministic splits) |
 
 ### How to reproduce
@@ -124,8 +112,8 @@ python3 scripts/prepare_dataset.py \
 python3 scripts/train_lora.py \
   --config configs/lora_config.yaml \
   --dataset-repo solanaclawd/solana-clawd-instruct \
-  --output-dir ./outputs/<YOUR-MODEL-ID> \
-  --hub-model-id solanaclawd/<YOUR-MODEL-ID>
+  --output-dir ./outputs/solana-clawd-1.5b-lora \
+  --hub-model-id solanaclawd/solana-clawd-1.5b-lora
 
 # 3. Train (remote GPU — recommended for speed)
 ./scripts/launch_hf_jobs.sh a100-large   # or h200, l4x1, a100x4
@@ -135,12 +123,10 @@ python3 scripts/train_lora.py \
 
 ## Evaluation
 
-<!-- Fill this in after running evaluate.py. Do NOT leave placeholder values. -->
-
 ```bash
 python3 scripts/evaluate.py \
   --config configs/eval_config.yaml \
-  --adapter solanaclawd/<YOUR-MODEL-ID> \
+  --adapter solanaclawd/solana-clawd-1.5b-lora \
   --dataset solanaclawd/solana-clawd-eval \
   --out ./outputs/eval \
   --format markdown
@@ -148,10 +134,10 @@ python3 scripts/evaluate.py \
 
 | Metric | Value |
 | --- | --- |
-| Eval examples | <!-- e.g. 13 --> |
-| Throughput | <!-- e.g. 4.2 examples/s on A100 --> |
-| Refusal rate (heuristic) | <!-- e.g. 2% --> |
-| Avg generation length | <!-- e.g. 312 chars --> |
+| Eval examples | 13 in the committed eval set; runtime sample size depends on `--num` |
+| Throughput | Populate from `outputs/eval/eval_results.json` after running the adapter |
+| Refusal rate (heuristic) | Populate from `outputs/eval/eval_results.json` after running the adapter |
+| Avg generation length | Populate from `outputs/eval/eval_results.json` after running the adapter |
 
 ---
 
@@ -165,7 +151,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
 BASE    = "Qwen/Qwen2.5-1.5B-Instruct"
-ADAPTER = "solanaclawd/<YOUR-MODEL-ID>"
+ADAPTER = "solanaclawd/solana-clawd-1.5b-lora"
 
 tokenizer = AutoTokenizer.from_pretrained(BASE, trust_remote_code=True)
 model     = AutoModelForCausalLM.from_pretrained(BASE, torch_dtype=torch.bfloat16,
@@ -191,7 +177,7 @@ print(tokenizer.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_token
 pip install mlx-lm
 mlx_lm.generate \
   --model Qwen/Qwen2.5-1.5B-Instruct \
-  --adapter solanaclawd/<YOUR-MODEL-ID> \
+  --adapter solanaclawd/solana-clawd-1.5b-lora \
   --prompt "How do I detect a rug pull on a fresh Solana token?"
 ```
 
@@ -202,7 +188,7 @@ from openai import OpenAI
 
 client = OpenAI(base_url="https://router.huggingface.co/v1", api_key="hf_...")
 response = client.chat.completions.create(
-    model="solanaclawd/<YOUR-MODEL-ID>",
+    model="solanaclawd/solana-clawd-1.5b-lora",
     messages=[
         {"role": "system", "content": "You are Clawd, a sovereign Solana-native AI agent."},
         {"role": "user",   "content": "What is a PDA?"},
@@ -269,7 +255,7 @@ For any production trading or financial application, apply independent review.
   title     = {<MODEL NAME>},
   author    = {solanaclawd},
   year      = {2026},
-  url       = {https://huggingface.co/solanaclawd/<YOUR-MODEL-ID>},
+  url       = {https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora},
   note      = {LoRA fine-tune of Qwen2.5-1.5B-Instruct on Solana DeFi + agent data}
 }
 ```

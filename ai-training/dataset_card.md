@@ -18,7 +18,7 @@ tags:
   # - function-calling   ← if dataset includes tool-call examples
   # - code               ← if dataset includes code generation examples
 size_categories:
-  - n<1K              # 32 seed examples — update if you add more
+  - n<1K              # 47 seed examples currently committed
   # options: n<1K | 1K<n<10K | 10K<n<100K | 100K<n<1M
 pretty_name: Solana Clawd Instruct
 # ──────────────────────────────────────────────────────────────────────────────
@@ -34,12 +34,9 @@ pretty_name: Solana Clawd Instruct
      5. The Citation bibtex URL must point to a real Hub dataset.
      ═══════════════════════════════════════════════════════════════════════════ -->
 
-# DATASET NAME — replace this heading
+# Solana Clawd Instruct
 
-A curated instruction-following dataset for fine-tuning language models to be
-sovereign, helpful Solana-native AI agents in the Clawd ecosystem.
-
-Replace this paragraph with a one-sentence description of your specific dataset variant.
+A curated instruction-tuning dataset for fine-tuning models into Solana-native Clawd agents with strong Solana, DeFi, ZK, and constitutional-alignment coverage.
 
 ---
 
@@ -86,12 +83,11 @@ A separate held-out file `data/solana_clawd_eval.jsonl` is never seen during tra
 
 | Split | Examples | Use |
 | --- | --- | --- |
-| `train` | 90% of seed | SFT training |
-| `eval` | 5% of seed | Training-time validation loss |
-| `test` | 5% of seed | Held-out evaluation |
+| `train` | 42 | SFT training |
+| `eval` | 2 | Training-time validation loss |
+| `test` | 3 | Held-out smoke evaluation |
 
-Splits are deterministic (`seed=42`). Replace the percentages above with real counts
-after running `prepare_dataset.py`.
+Splits are deterministic (`seed=42`). Current committed metadata comes from `data/processed/dataset_info.json`.
 
 ### Reproduce
 
@@ -123,6 +119,7 @@ Curated from:
 - Public Solana / DeFi reference material (Anchor docs, Helius SDK, Jupiter, Phoenix)
 - Best-practice memecoin risk checklists from community tradecraft
 - Synthetic examples for edge-case constitutional scenarios
+- Local ZK references and examples from `zk-primitives/` via `scripts/add_zk_examples.py`
 
 All data is either original, derived from public docs, or a clean re-expression
 of widely-known patterns. No proprietary strategy code is included.
@@ -206,9 +203,9 @@ in your model card.
 
 ```bibtex
 @misc{solana-clawd-instruct-2026,
-  title  = {DATASET NAME},
+  title  = {Solana Clawd Instruct},
   author = {solanaclawd},
   year   = {2026},
-  url    = {https://huggingface.co/datasets/solanaclawd/YOUR-DATASET-ID}
+  url    = {https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct}
 }
 ```
