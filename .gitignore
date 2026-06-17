@@ -89,7 +89,7 @@ node_modules/
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
-
+posthog-setup-report.md
 # ----------------------------------------------------------------------------
 # Python (clawd-operator etc.)
 # ----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ pip-delete-this-directory.txt
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-
+clawd-code
 # ----------------------------------------------------------------------------
 # Build / dist artifacts
 # ----------------------------------------------------------------------------
