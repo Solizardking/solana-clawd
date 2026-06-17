@@ -419,21 +419,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`fd0eadcb`](../../commit/fd0eadcb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 🥈 | [`cf493c39`](../../commit/cf493c39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 🥉 | [`2651cd3c`](../../commit/2651cd3c) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
-| 4️⃣ | [`8808421c`](../../commit/8808421c) | afssafsafas | solizardking | Jun 16 |
-| 5️⃣ | [`6e1f4a95`](../../commit/6e1f4a95) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 6️⃣ | [`0d3931fd`](../../commit/0d3931fd) | ll | solizardking | Jun 16 |
-| 7️⃣ | [`64e4b5af`](../../commit/64e4b5af) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 8️⃣ | [`20f029d1`](../../commit/20f029d1) | spaces: clean up nested .git dirs from prior sessions (defen | solizardking | Jun 16 |
-| 9️⃣ | [`361dffac`](../../commit/361dffac) | spaces/trench-town/fly.toml: drop cheshire_data volume mount | solizardking | Jun 16 |
-| 🔟 | [`d98dcb63`](../../commit/d98dcb63) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 🥇 | [`c34bd49d`](../../commit/c34bd49d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 🥈 | [`fd0eadcb`](../../commit/fd0eadcb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 🥉 | [`cf493c39`](../../commit/cf493c39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 4️⃣ | [`2651cd3c`](../../commit/2651cd3c) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
+| 5️⃣ | [`8808421c`](../../commit/8808421c) | afssafsafas | solizardking | Jun 16 |
+| 6️⃣ | [`6e1f4a95`](../../commit/6e1f4a95) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 7️⃣ | [`0d3931fd`](../../commit/0d3931fd) | ll | solizardking | Jun 16 |
+| 8️⃣ | [`64e4b5af`](../../commit/64e4b5af) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 9️⃣ | [`20f029d1`](../../commit/20f029d1) | spaces: clean up nested .git dirs from prior sessions (defen | solizardking | Jun 16 |
+| 🔟 | [`361dffac`](../../commit/361dffac) | spaces/trench-town/fly.toml: drop cheshire_data volume mount | solizardking | Jun 16 |
+| · | [`d98dcb63`](../../commit/d98dcb63) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
 | · | [`9655caad`](../../commit/9655caad) | spaces: rebrand Cheshire Terminal → Trench Town | solizardking | Jun 16 |
 | · | [`0987cd58`](../../commit/0987cd58) | ffwffe | solizardking | Jun 16 |
 | · | [`a9d04166`](../../commit/a9d04166) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
 | · | [`3093988e`](../../commit/3093988e) | spaces/clawd-zoo: switch default backend to Pollinations (tr | solizardking | Jun 16 |
-| · | [`1843b3cd`](../../commit/1843b3cd) | m | solizardking | Jun 16 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
