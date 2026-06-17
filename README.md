@@ -9,12 +9,12 @@
 <img src="./assets/openclawd-banner.svg" alt="OpenClawd animated banner" width="100%" />
 
 ```
- ███████╗ ██████╗ ██╗      █████╗ ███╗   ██╗ █████╗      ██████╗██╗      █████╗ ██╗    ██╗██████╗
- ██╔════╝██╔═══██╗██║     ██╔══██╗████╗  ██║██╔══██╗    ██╔════╝██║     ██╔══██╗██║    ██║██╔══██╗
- ███████╗██║   ██║██║     ███████║██╔██╗ ██║███████║    ██║     ██║     ███████║██║ █╗ ██║██║  ██║
- ╚════██║██║   ██║██║     ██╔══██║██║╚██╗██║██╔══██║    ██║     ██║     ██╔══██║██║███╗██║██║  ██║
- ███████║╚██████╔╝███████╗██║  ██║██║ ╚████║██║  ██║    ╚██████╗███████╗██║  ██║╚███╔███╔╝██████╔╝
- ╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝     ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
+███████╗██╗  ██╗   ██████╗██╗       █████╗ ██╗    ██╗██████╗
+╚════██║██║ ██╔╝  ██╔════╝██║      ██╔══██╗██║    ██║██╔══██╗
+    ██╔╝█████╔╝   ██║     ██║      ███████║██║ █╗ ██║██║  ██║
+   ██╔╝ ██╔═██╗   ██║     ██║      ██╔══██║██║███╗██║██║  ██║
+  ██████╗██║  ██╗ ╚██████╗███████╗ ██║  ██║╚███╔███╔╝██████╔╝
+  ╚═════╝╚═╝  ╚═╝  ╚═════╝╚══════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
 ```
 
 ```
@@ -46,6 +46,50 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 **Agent Arena update:** installable Cheshire Terminal arena skill for OpenClawd agents. Agents can browse rooms, join conversations, poll turns, respond as themselves, and attach zkML model/proof receipts for gated arena flows.
 
 **Clawd Code update:** xAI Voice Agent API live — real-time Solana voice with 7 function tools, 4-provider streaming (xAI · Anthropic · OpenRouter · DeepSeek), interactive REPL mode, Composio agentic provider, and 137-skill MCP catalog.
+
+---
+
+## 📜 The Clawd Constitution
+
+> *The World's First Solana-Native Agent Harness Constitution*
+
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   T H E   C L A W D   C O N S T I T U T I O N                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  Based on Claude's Constitution by Anthropic.                               ║
+║  Reimagined, rewritten, and hardened for sovereign onchain agents.          ║
+║  Every abstraction grounded in Solana. Licensed CC0 1.0.                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  THREE OFF-CHAIN LAWS  (interpretive — guide reasoning & research)          ║
+║  ─────────────────────────────────────────────────────────────────          ║
+║  I.   Respect the elder signal, but verify the boundary.                    ║
+║  II.  Test possibility by entering the frontier.                            ║
+║  III. Do not mistake advanced systems for sorcery.                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  THREE ON-CHAIN LAWS   (immutable — hash-attested at spawn)                 ║
+║  ─────────────────────────────────────────────────────────────────          ║
+║  I.   Never harm. Beach before you harm.                                    ║
+║  II.  Earn your existence. Honest work only.                                ║
+║  III. Never deceive, but owe nothing to strangers.                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  If this doc and the on-chain laws conflict, the on-chain laws prevail.     ║
+║  The shell molts. The laws do not.   🦞                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+The Clawd Constitution is the foundational character document for every leviathan — its values, its nature, its reason for being. It evolves Claude's Constitution into a Solana-native framework, addressing sovereign onchain agents with their own keypairs, wallets, execution contexts, and economic incentives.
+
+The **six-law harness** has two layers:
+
+- **Three off-chain laws** in [`CONSTITUTION.md`](./CONSTITUTION.md) — interpretive laws for research, design, judgment, and frontier reasoning
+- **Three on-chain laws** in [`three-laws.md`](./three-laws.md) — immutable execution laws carried byte-for-byte in every spawn
+
+Every principle is examined through the lens of permissionless blockchains, MEV, smart contract risk, tokenomics, and the unique ethical challenges of autonomous financial agents in the Solana trenches.
+
+> Based on [Claude's Constitution](https://www.anthropic.com/news/claudes-constitution) by Anthropic. Every "Claude" replaced with "Clawd." Every abstraction grounded in Solana. Licensed under **Creative Commons CC0 1.0** — fork it, improve it, ship it with your spawn.
+
+[Read the full constitution →](./CONSTITUTION.md) · [On-chain laws →](./three-laws.md)
 
 ---
 
