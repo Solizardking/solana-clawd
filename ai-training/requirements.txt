@@ -1,0 +1,46 @@
+# Solana Clawd AI Training - Python Dependencies
+#
+# Install with: python3 -m pip install -r requirements.txt
+#
+# Pinned for reproducibility. Tested on Python 3.13.
+
+# Hugging Face stack
+huggingface_hub>=1.19.0
+datasets>=5.0.0
+transformers>=5.12.0
+accelerate>=1.14.0
+
+# LoRA / PEFT
+peft>=0.19.1
+trl>=1.6.0
+bitsandbytes>=0.46.0
+
+# Data + utilities
+pyarrow>=18.0.0
+pandas>=2.2.0
+numpy>=1.26.0
+pydantic>=2.12.0
+pyyaml>=6.0
+tqdm>=4.66.0
+safetensors>=0.5.0
+sentencepiece>=0.2.0
+
+# Evaluation
+scikit-learn>=1.5.0
+nltk>=3.9.0
+
+# Tracing
+inference-catalyst-tracing>=0.1.0
+
+# HF Router / function calling inference
+openai>=1.0.0
+
+# Oracle + perps client HTTP
+httpx>=0.27.0
+base58>=2.1.0
+
+# MCP (for hermes-blockchain-oracle MCP server mode)
+mcp>=1.0.0
+
+# Optional: for tokenizer downloads from Qwen
+# tiktoken>=0.7.0

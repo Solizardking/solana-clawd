@@ -1,0 +1,12 @@
+name = "svm-a2a"
+main = "packages/runtime/src/index.ts"
+compatibility_date = "2026-06-14"
+compatibility_flags = ["nodejs_compat"]
+
+[[durable_objects.bindings]]
+name = "SVM_A2A_AGENT"
+class_name = "SvmA2AAgent"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SvmA2AAgent"]

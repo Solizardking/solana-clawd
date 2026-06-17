@@ -1,0 +1,87 @@
+# Continued Pre-Training (CPT) config — DeepSolana-GPT2 corpus
+#
+# Uses the decoded DeepSolana-GPT2-bucket corpus as raw causal-LM pre-training
+# data on top of the Qwen2.5-1.5B-Instruct base, before the SFT LoRA pass.
+#
+# Workflow:
+#   1. python3 scripts/download_deep_solana.py --output data/deep_solana_corpus.jsonl --limit 5000
+#   2. python3 scripts/train_lora.py --config configs/deep_solana_cpt_config.yaml
+#   3. python3 scripts/train_lora.py --config configs/lora_config.yaml  # SFT on CPT output
+#
+# Or skip CPT and use DeepSolana as SFT pairs:
+#   python3 scripts/download_deep_solana.py --sft-mode --output data/solana_clawd_seed.jsonl --limit 500
+
+# Base model (same as SFT baseline — CPT output becomes the new base)
+base_model: "Qwen/Qwen2.5-1.5B-Instruct"
+model_revision: "main"
+torch_dtype: "bfloat16"
+device_map: "auto"
+
+# DeepSolana corpus (raw text — causal LM objective, not instruction format)
+dataset_path: "data/deep_solana_corpus.jsonl"
+dataset_format: "text"           # raw text field; no messages template needed
+text_field: "text"
+max_seq_length: 2048             # GPT-2 chunks are ~512 tokens; pack 4 per seq
+train_split: "train"
+eval_split: null                 # corpus files typically have no eval split
+
+# Output — CPT checkpoint becomes base for SFT LoRA
+output_dir: "./outputs/solana-clawd-1.5b-cpt"
+push_to_hub: false               # local checkpoint only; push after SFT
+hub_model_id: "solanaclawd/solana-clawd-1.5b-cpt"
+
+# LoRA — lighter rank for CPT (domain injection, not instruct alignment)
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+# Training — higher LR acceptable for CPT (no catastrophic forgetting risk with LoRA)
+training:
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  per_device_eval_batch_size: 2
+  num_train_epochs: 1            # single pass over corpus; expand if dataset is small
+  max_steps: -1
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.01
+  weight_decay: 0.0
+  optim: "adamw_torch"
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  logging_steps: 25
+  save_steps: 500
+  save_total_limit: 2
+  eval_strategy: "no"
+  seed: 42
+  remove_unused_columns: false
+  packing: true                  # pack short text chunks for efficiency
+
+# Quantization (optional — saves VRAM, slower throughput)
+quantization:
+  enabled: false                 # CPT benefits from higher precision; disable if VRAM allows
+
+# SFT config (unused for CPT, kept for documentation)
+sft:
+  packing: true
+  assistant_only_loss: false     # CPT trains on all tokens, not just assistant turns
+  chat_template_kwargs: {}
+
+# Notes on DeepSolana-GPT2-bucket:
+#   - Source: ordlibrary/DeepSolana-GPT2-bucket (HF dataset)
+#   - Format: GPT-2–tokenized binary shards; download_deep_solana.py decodes them
+#   - Content: Solana ordinals, program source, transaction data, documentation
+#   - Architecture: GPT-2 tokenized, but text is model-agnostic after decoding
+#   - Qwen2.5/Hermes-3 tokenizers re-tokenize the decoded text transparently

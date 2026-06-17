@@ -1,0 +1,27 @@
+{
+  "name": "@openclawdsolana/svm-a2a",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Solana SVM agent-to-agent framework for Clawd agents.",
+  "main": "dist/packages/runtime/src/index.js",
+  "types": "dist/packages/runtime/src/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx scripts/dev.ts",
+    "deploy": "npx wrangler deploy",
+    "mint": "tsx packages/core/src/mint.ts --live",
+    "mint:dry": "tsx packages/core/src/mint.ts",
+    "mint:live": "tsx packages/core/src/mint.ts --live",
+    "register": "tsx packages/core/src/register.ts",
+    "register:live": "tsx packages/core/src/register.ts --live"
+  },
+  "dependencies": {
+    "@metaplex-foundation/mpl-agent-registry": "^0.2.5",
+    "@metaplex-foundation/umi": "^1.5.1",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.5.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.9.3"
+  }
+}

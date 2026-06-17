@@ -1,0 +1,20 @@
+# Don't commit training artifacts, model weights, or secrets
+checkpoints/
+outputs/
+*.safetensors
+*.bin
+*.pt
+*.gguf
+*.pkl
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+env/
+.DS_Store
+*.log
+wandb/
+runs/
+.cache/
