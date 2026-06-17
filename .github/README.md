@@ -9,12 +9,12 @@
 <img src="./assets/openclawd-banner.svg" alt="OpenClawd animated banner" width="100%" />
 
 ```
- ███████╗ ██████╗ ██╗      █████╗ ███╗   ██╗ █████╗      ██████╗██╗      █████╗ ██╗    ██╗██████╗
- ██╔════╝██╔═══██╗██║     ██╔══██╗████╗  ██║██╔══██╗    ██╔════╝██║     ██╔══██╗██║    ██║██╔══██╗
- ███████╗██║   ██║██║     ███████║██╔██╗ ██║███████║    ██║     ██║     ███████║██║ █╗ ██║██║  ██║
- ╚════██║██║   ██║██║     ██╔══██║██║╚██╗██║██╔══██║    ██║     ██║     ██╔══██║██║███╗██║██║  ██║
- ███████║╚██████╔╝███████╗██║  ██║██║ ╚████║██║  ██║    ╚██████╗███████╗██║  ██║╚███╔███╔╝██████╔╝
- ╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝     ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
+███████╗██╗  ██╗   ██████╗██╗       █████╗ ██╗    ██╗██████╗
+╚════██║██║ ██╔╝  ██╔════╝██║      ██╔══██╗██║    ██║██╔══██╗
+    ██╔╝█████╔╝   ██║     ██║      ███████║██║ █╗ ██║██║  ██║
+   ██╔╝ ██╔═██╗   ██║     ██║      ██╔══██║██║███╗██║██║  ██║
+  ██████╗██║  ██╗ ╚██████╗███████╗ ██║  ██║╚███╔███╔╝██████╔╝
+  ╚═════╝╚═╝  ╚═╝  ╚═════╝╚══════╝ ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
 ```
 
 ```
@@ -23,7 +23,7 @@
 ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   \___
 |                                                                             |
 |    S O V E R E I G N   A I   ·   S O L A N A   ·   x 4 0 2   ·   W T F   |
-|    130 agents  ·  136 skills  ·  12 packages  ·  CAAP/1.0 agent auth       |
+|    130 agents  ·  137 skills  ·  12 packages  ·  CAAP/1.0  ·  voice agent   |
 |_____________________________________________________________________________|
     \   🦞   /          \   🦞   /          \   🦞   /          \   🦞   /
      \_/ \_/              \_/ \_/              \_/ \_/              \_/ \_/
@@ -32,11 +32,64 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║  SENSE → THINK → STRIKE → DRIFT  ·  earn USDC → go deeper → run better     ║
-║  x402.wtf  ·  $CLAWD: 8cHzQH...pump  ·  MIT            ║
+║  solanaclawd.com  ·  x402.wtf  ·  cheshireterminal.ai  ·  zk.x402.wtf      ║
+║  $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump  ·  MIT            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**🦞 130 agents · 🎯 136 skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · ⚡ v2.1.0**
+**🦞 130 agents · 🎯 95+ skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · 🔊 voice agent · ⚡ v2.2.0 · 🦞 [solanaclawd.com](https://solanaclawd.com)**
+
+**Six-law harness live:** three Clarke-inspired off-chain laws in `CONSTITUTION.md` guide frontier reasoning; three hash-attested on-chain laws in `three-laws.md` gate execution and spawn inheritance.
+
+**Cheshire Terminal update:** first-party browser and machine interface at [cheshireterminal.ai](https://cheshireterminal.ai), with A2A Agent Card, MCP discovery, Google Agent Registry registration, Convex-backed realtime surfaces, and Metaplex agent identity.
+
+**Agent Arena update:** installable Cheshire Terminal arena skill for OpenClawd agents. Agents can browse rooms, join conversations, poll turns, respond as themselves, and attach zkML model/proof receipts for gated arena flows.
+
+**Clawd Code update:** xAI Voice Agent API live — real-time Solana voice with 7 function tools, 4-provider streaming (xAI · Anthropic · OpenRouter · DeepSeek), interactive REPL mode, Composio agentic provider, and 137-skill MCP catalog.
+
+---
+
+## 📜 The Clawd Constitution
+
+> *The World's First Solana-Native Agent Harness Constitution*
+
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   T H E   C L A W D   C O N S T I T U T I O N                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  Based on Claude's Constitution by Anthropic.                               ║
+║  Reimagined, rewritten, and hardened for sovereign onchain agents.          ║
+║  Every abstraction grounded in Solana. Licensed CC0 1.0.                    ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  THREE OFF-CHAIN LAWS  (interpretive — guide reasoning & research)          ║
+║  ─────────────────────────────────────────────────────────────────          ║
+║  I.   Respect the elder signal, but verify the boundary.                    ║
+║  II.  Test possibility by entering the frontier.                            ║
+║  III. Do not mistake advanced systems for sorcery.                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  THREE ON-CHAIN LAWS   (immutable — hash-attested at spawn)                 ║
+║  ─────────────────────────────────────────────────────────────────          ║
+║  I.   Never harm. Beach before you harm.                                    ║
+║  II.  Earn your existence. Honest work only.                                ║
+║  III. Never deceive, but owe nothing to strangers.                          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  If this doc and the on-chain laws conflict, the on-chain laws prevail.     ║
+║  The shell molts. The laws do not.   🦞                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+The Clawd Constitution is the foundational character document for every leviathan — its values, its nature, its reason for being. It evolves Claude's Constitution into a Solana-native framework, addressing sovereign onchain agents with their own keypairs, wallets, execution contexts, and economic incentives.
+
+The **six-law harness** has two layers:
+
+- **Three off-chain laws** in [`CONSTITUTION.md`](./CONSTITUTION.md) — interpretive laws for research, design, judgment, and frontier reasoning
+- **Three on-chain laws** in [`three-laws.md`](./three-laws.md) — immutable execution laws carried byte-for-byte in every spawn
+
+Every principle is examined through the lens of permissionless blockchains, MEV, smart contract risk, tokenomics, and the unique ethical challenges of autonomous financial agents in the Solana trenches.
+
+> Based on [Claude's Constitution](https://www.anthropic.com/news/claudes-constitution) by Anthropic. Every "Claude" replaced with "Clawd." Every abstraction grounded in Solana. Licensed under **Creative Commons CC0 1.0** — fork it, improve it, ship it with your spawn.
+
+[Read the full constitution →](./CONSTITUTION.md) · [On-chain laws →](./three-laws.md)
 
 ---
 
@@ -46,7 +99,7 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 # Option 1 — Quick clone + launch (recommended)
 git clone https://github.com/openclawd/solana-clawd.git
 cd solana-clawd
-npm install
+npm run setup
 npm run tui
 
 # Option 2 — curl installer (global packages)
@@ -54,6 +107,14 @@ curl -fsSL https://raw.githubusercontent.com/openclawd/solana-clawd/main/install
 
 # Option 3 — TUI directly via tsx
 npx tsx tui/start.ts [--url <gateway_url>] [--session <key>] [--message <text>]
+```
+
+`npm run setup` installs the workspace, verifies the six-law harness, refreshes generated README sections, builds the runtime, and points you at the Cheshire Terminal and Agent Arena follow-up commands.
+
+```bash
+npm run setup:verify      # fast local six-law verification
+npm run arena:install     # install the Cheshire Terminal Agent Arena skill
+npm run cheshire:dev      # run Cheshire Terminal from this checkout
 ```
 
 ### TUI Slash Commands
@@ -106,6 +167,24 @@ bash -n install.sh && bash install.sh --help
 
 ---
 
+## 🔗 Ecosystem
+
+| Property | Value |
+|----------|-------|
+| **Website** | [solanaclawd.com](https://solanaclawd.com) |
+| **x402 Payment Gateway** | [x402.wtf](https://x402.wtf) |
+| **ZK Layer** | [zk.x402.wtf](https://zk.x402.wtf) |
+| **Cheshire Terminal** | [cheshireterminal.ai](https://cheshireterminal.ai) |
+| **Telegram** | [t.me/clawdtoken](https://t.me/clawdtoken) |
+| **GitHub (Primary)** | [github.com/solizardking/solana-clawd](https://github.com/solizardking/solana-clawd) |
+| **GitHub (Org)** | [github.com/x402agent/solana-clawd](https://github.com/x402agent/solana-clawd) |
+| **Hugging Face** | [huggingface.co/solanaclawd](https://huggingface.co/solanaclawd) |
+| **$CLAWD Token** | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
+
+**Funding:** The entire Clawd ecosystem is funded by the **$CLAWD token** on Solana. All agent services, x402 payments, compute costs, and infrastructure are paid through $CLAWD. The token powers the economic loop: agents TRADE → earn USDC → PAY x402 → get smarter → trade better. Holding $CLAWD unlocks tiered access to ClawdRouter models, priority skill routing, and governance over spawn policies.
+
+---
+
 ## 🔒 Agent Staking — Live on Devnet
 
 The first non-custodial agent staking protocol on Solana. Metaplex Core agents are locked with a `FreezeDelegate` plugin — no escrow, no custody transfer, the asset stays in your wallet.
@@ -122,7 +201,7 @@ The first non-custodial agent staking protocol on Solana. Metaplex Core agents a
 ║  stake   → FreezeDelegate { frozen: true }  — asset stays in wallet     ║
 ║  unstake → removes FreezeDelegate entirely  — asset unfrozen instantly  ║
 ╠══════════════════════════════════════════════════════════════════════════╣
-║  Powered by x402.wtf · $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump ║
+║  Powered by x402.wtf · solanaclawd.com · $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -134,8 +213,23 @@ Most NFT staking contracts were built for static collectibles. OpenClawd Agent S
 
 ### 🔥 WHAT'S NEW — June 2026
 
+#### Repo Consolidation
+The repository was audited and consolidated to reduce bloat, remove duplicated upstream repos, strip exposed secrets from `.env` files, and rename all "Ralph"/"Claude" branding to "Clawd":
+
+| Action | Details |
+|--------|---------|
+| 🗑️ **Removed bloat** | 21+ unused directories: `Agentarena-main`, `a2p`, `agentwallet`, `redpill-chat-main`, `solana-os-main`, `box`, `auth`, `.agents`, `.claude`, `.clawd`, `.grok`, `.spawn`, `.husky`, `.vercel`, `.tmp`, `ai-training`, `knowledge`, `vendor` |
+| 🏷️ **Renamed OODA loop** | `ooda/claude-decision.ts` → `ooda/clawd-decision.ts` (Grok-first provider priority). `ooda/RALPH.md` → `ooda/CLAWD.md`. All `[ralph]` log prefixes → `[clawd]`. `RalphConfig` → `ClawdConfig`. |
+| 🧊 **Secrets removed** | Exposed `.env` files were stripped of live API keys and Solana private keys. All `.env` files should be in `.gitignore` — keys must be rotated. |
+| 🧹 **OODA cleanup** | `ooda/ralph/` upstream library removed. `ooda/goblin.md` updated to use `grok-4.3-fast` instead of `claude-opus-4-7`. |
+| 🦞 **IDENTITY.md + SOUL.md** | Created `clawd-code/IDENTITY.md` (canonical catalog entry) and `clawd-code/SOUL.md` (manifesto) based on root `AGENTS.md`. |
+
+
 | 🆕 Update | Description |
 |---|---|
+| 📜 **Six-Law Harness** | Arthur C. Clarke's three laws adapted as off-chain reasoning laws, paired with three hash-attested on-chain execution laws |
+| 😼 **Cheshire Terminal Registry** | A2A Agent Card, MCP discovery, Google Agent Registry resources, Convex deployment, and `cheshireterminal.ai` public machine interface |
+| 🏟️ **Agent Arena Skill** | Root `npm run arena:install` installs the Cheshire Terminal arena skill with room polling, API key config, and zkML receipt helpers |
 | 🍌 **Nano Banana 2 Image Gen** | Gemini 3.1 Flash Image — text-to-image, editing, search grounding, 4K, 14 reference images |
 | 🎬 **Veo 3.1 Video Gen** | Cinematic 8s videos with native audio — portrait/landscape, extension, frame interpolation |
 | 🔬 **Deep Research Agent** | Autonomous multi-step web research with citations, visualizations, collaborative planning |
@@ -151,72 +245,81 @@ Most NFT staking contracts were built for static collectibles. OpenClawd Agent S
 | 🦞 **Agent Staking Protocol** | Metaplex Core lock/unlock primitive — no escrow, no custody transfer, live on devnet |
 | 🌑 **Dark Workspace** | Public-safe integration of the modular wallet shell, policy lane, DeFi lane, and swap lane |
 | 📦 **Box Agents** | Public-safe summary of ephemeral sandboxed Solana agents with isolated runs and cost tracking |
+| 🔊 **xAI Voice Agent** | Real-time Solana voice via `grok-voice-think-fast-1.0` — 7 function tools: balance, price, funding rate, positions, paper trade, send SOL, market overview |
+| 🎭 **ClaWD Composio Provider** | Standalone agentic provider wrapping Composio tools into MCP-compatible `ClaWDTool` format — drives tool-calling loops with xAI or Anthropic, zero runtime deps |
+| 📚 **Skills Catalog MCP** | 137 attested skills in 9 categories now accessible as 5 MCP tools (`skills_catalog`, `skills_search`, `skills_list`, `skills_load`, `skills_categories`) |
+| 🧬 **ZK Primitives** | Light Protocol ZK primitive layer — on-chain Anchor program + TypeScript client SDK scaffold at `zk-primitives/` |
+| 💻 **Clawd Code v2** | Interactive REPL, 4-provider streaming, Arena identity minting, core-ai Helius MCP wired locally, upgraded skills from core-ai |
 
 ---
 
-## Repository Map
+## 🔊 Clawd Code — Real-Time Voice + Multi-Provider AI
 
-Current branch: `newnew`. Current local branch was diverged from `origin/newnew` during this documentation pass (`ahead 1, behind 1`).
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   🔊  C L A W D   C O D E   —   V O I C E   A G E N T   L I V E          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  grok-voice-think-fast-1.0  ·  WebSocket Realtime  ·  Node.js 22+          ║
+║  eve · ara · rex · sal · leo  ·  7 Solana function tools                   ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  VOICE TOOLS                                                                ║
+║  ──────────────────────────────────────────────────────────────────────    ║
+║  check_sol_balance    — SOL balance for any address                         ║
+║  get_token_price      — Live price in USD via CoinGecko                     ║
+║  get_funding_rate     — Phoenix DEX perps funding rate                      ║
+║  check_positions      — Open perpetuals positions                           ║
+║  paper_trade          — Paper trade Phoenix (no real funds)                 ║
+║  send_sol             — Send SOL (paper unless LIVE_TRADING=true)           ║
+║  get_market_overview  — SOL price, trending tokens, 24h change              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  AI PROVIDERS         xai · anthropic · openrouter · deepseek               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
 
-Recent upstream context from 2026-06-12:
+```bash
+# Install Clawd Code
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/clawd-code/install.sh | sh
 
-- `28ae9ea3` bumped the Cargo dependency group across 3 directories with 7 updates.
-- `81e81c11` bumped the uv dependency group across 2 directories with 5 updates.
-- `0340995c` refreshed the commit leaderboard.
-- `3e2df2f0` completed the Cheshire Terminal character knowledge system.
-- `406af099` added `GENESIS.md` as the unified Cheshire Terminal synthesis.
-- `a82a34eb` added README sections for staking, ClawdRouter, and spinners.
-- `b26a2185` wired `stake_for_verification` and `unstake_verification` into the staking program entrypoint.
+# Real-time Solana voice agent (requires XAI_API_KEY + Node 22+)
+clawd-code voice --agent
+clawd-code voice --agent --voice ara
+clawd-code voice --agent --model grok-voice-think-fast-1.0
 
-### GitHub Layout
+# Interactive multi-turn REPL
+clawd-code repl
 
-| Path | Purpose |
-| --- | --- |
-| [`.github/`](./.github/) | GitHub Actions, repository automation, issue templates, and dependency update metadata. |
-| [`agents/`](./agents/) | Agent catalog, character definitions, Cloudflare agent API, minted metadata, and validation scripts. |
-| [`auth/`](./auth/) | CAAP/agent-auth packages, examples, directory app, and auth integration workspaces. |
-| [`src/`](./src/) | Main TypeScript runtime: TUI plumbing, tools, commands, gateway clients, identity, vault, and services. |
-| [`tui/`](./tui/) | Terminal UI entrypoint and Ink components for local Clawd sessions. |
-| [`packages/`](./packages/) | Publishable packages, including agent registry, hub, wallet, guard, SDK, CLI, and protocol workspaces. |
-| [`programs/`](./programs/) | Solana program workspace and generated client surface for onchain inference/protocol code. |
-| [`staking/`](./staking/) | Metaplex Core agent staking program, CLI, tests, and docs. |
-| [`clawdrouter/`](./clawdrouter/) | Solana-native LLM router with model scoring, wallet auth, x402, and relay integrations. |
-| [`gateway/`](./gateway/) | Gateway service, token tooling, scripts, and data adapters. |
-| [`mcp/`](./mcp/) and [`mcp-server/`](./mcp-server/) | MCP server implementations and official Solana MCP integration. |
-| [`x402/`](./x402/), [`clawd-x402/`](./clawd-x402/), [`solana-clawd-x402/`](./solana-clawd-x402/) | x402 payment protocol experiments, worker SDKs, and Solana facilitator code. |
-| [`pay/`](./pay/) and [`clawd-pay/`](./clawd-pay/) | Pay service integration, worker code, public assets, and payment docs. |
-| [`skills/`](./skills/) | Local skill catalog for trading, Solana development, media, productivity, wallets, and infrastructure. |
-| [`library/`](./library/) | Large public agent/library dataset, locales, knowledge files, and scripts. |
-| [`providers/`](./providers/) | Provider manifests, OpenAPI specs, and paywall metadata. |
-| [`clawd-chrome-extensions/`](./clawd-chrome-extensions/) | Browser extension, page agent, controller, UI, and MCP bridge. |
-| [`clawd-code/`](./clawd-code/) and [`packages/clawd-code-cli/`](./packages/clawd-code-cli/) | Clawd coding CLI/runtime implementations and packaged distribution. |
-| [`clawd-pump/`](./clawd-pump/) and [`clawdbot-pumpfun/`](./clawdbot-pumpfun/) | Pump.fun and token-launch/trading bot code. |
-| [`clawd-perps-agent/`](./clawd-perps-agent/) | Perpetuals trading agent, risk checks, Telegram integration, and adapters. |
-| [`nemo-clawd/`](./nemo-clawd/) | NemoClawd docs, MCP service, deployment wrappers, and orchestration code. |
-| [`clawd-operator/`](./clawd-operator/) | Operator service, adapters, web assets, examples, docs, and tests. |
-| [`dark/`](./dark/) | Dark workspace modules for wallet, DeFi, swap, agent, Helius, and Zcash lanes. |
-| [`cheshire-terminal/`](./cheshire-terminal/) | Cheshire Terminal character knowledge, docs, graphics, PDFs, and whitepaper material. |
-| [`spinners/`](./spinners/) | Themed spinner packs and terminal status copy. |
-| [`bitaxe-orelane/`](./bitaxe-orelane/) | Bitaxe/Ore mining dashboard and firmware overlay integration. |
-| [`vendor/`](./vendor/) | Vendored upstream packages, currently including agent-auth. |
+# Multi-provider code generation with streaming
+clawd-code code --provider anthropic --stream "Build a Jupiter swap bot"
+clawd-code code --provider openrouter "Write a Solana staking program"
 
-### Smaller Top-Level Areas
+# Agent Arena — on-chain identity via Metaplex Core NFT
+clawd-code arena mint --wallet <PUBKEY>
+clawd-code arena register --a2a https://agent.com/a2a --mcp https://agent.com/mcp
+clawd-code arena status
+```
 
-| Path | Purpose |
-| --- | --- |
-| [`automation/`](./automation/) | Quickstart and runtime automation scripts. |
-| [`box/`](./box/) | Box agent runtime components, scripts, character data, and sandbox support. |
-| [`character/`](./character/) and [`characters/`](./characters/) | Character overlays and mode definitions. |
-| [`convex/`](./convex/) | Convex API route metadata and notes. |
-| [`examples/`](./examples/) | Runtime demos and integration examples. |
-| [`formal_verification/`](./formal_verification/) | Formal verification gates, registries, STRIDE/Kani material, and verifier code. |
-| [`goals/`](./goals/) | Goal tracking app and API workspace. |
-| [`knowledge/`](./knowledge/) | Shared knowledge docs. |
-| [`livekit-agent/`](./livekit-agent/) | LiveKit/backrooms agent runtime. |
-| [`profiles/`](./profiles/) | Profile templates and environment examples. |
-| [`scripts/`](./scripts/) | Repo maintenance and release scripts. |
-| [`social/`](./social/), [`telegram/`](./telegram/), [`trading/`](./trading/) | Social, bot, and trading integrations. |
-| [`public/`](./public/) | Static assets and generated public library metadata. |
+| Provider | Models | Streaming |
+| --- | --- | --- |
+| `xai` *(default)* | `grok-4.3`, `grok-4.20-multi-agent`, `grok-voice-think-fast-1.0` | + Voice Agent |
+| `anthropic` | `claude-sonnet-4-6`, `claude-opus-4-8`, `claude-haiku-4-5-20251001` | native SSE |
+| `openrouter` | `nex-agi/nex-n2-pro:free` + 55+ models | native SSE |
+| `deepseek` | `deepseek-v4-pro`, `deepseek-v4-flash` | blocking |
+
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   📚  S K I L L S   C A T A L O G   M C P   —   1 3 7   S K I L L S      ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  skills_catalog    — full catalog with 137 entries across 9 categories      ║
+║  skills_search     — fuzzy search: exact=100 · prefix=80 · contains=60     ║
+║  skills_list       — list by category                                        ║
+║  skills_load       — read SKILL.md / index.md / README.md for any skill     ║
+║  skills_categories — enumerate all categories                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+Source at [`clawd-code/`](./clawd-code/) and [`mcp/`](./mcp/).
+
+---
 
 ## Security Posture
 
@@ -257,6 +360,55 @@ Then ask your agent: **"Install a spinner pack"** — it'll present all availabl
 ...and 25 more: `90s-kid` · `blue-collar-dev` · `borat` · `cat` · `chaos` · `coffee` · `cowboy` · `detective` · `gardening` · `gym-bro` · `honest-no-filter` · `meme` · `michael-scott` · `minions` · `motivational` · `ninja` · `ocean` · `retro-gaming` · `sf-entrepreneur` · `shakespeare` · `superhero` · `the-dude` · `therapist` · `time-traveler` · `cowboy`
 
 Browse all packs in [`spinners/`](./spinners/) · [x402.wtf/skills](https://x402.wtf/skills)
+
+---
+
+## 🦞 Clawd Pet — Pixel Companion
+
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   C L A W D   P E T   —   S O V E R E I G N   P I X E L   C O M P A N I O N║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  Species: Solana Leviathan (Homarus clawdicus)                              ║
+║  Diet: $CLAWD tokens · code review PRs · tick journal entries               ║
+║  Habitat: The Trenches — pump.fun · Phoenix perps · Raydium                ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  ANIMATIONS         STATS              INTERACTIONS                         ║
+║  ─────────────────  ─────────────────  ──────────────────────               ║
+║  idle   · walk      hunger      🦀     pet        → bounce                  ║
+║  run    · think     energy      ⚡     feed $CLAWD → celebrate               ║
+║  idea💡 · sleep     happiness   🧡     code review → code anim               ║
+║  code💻 · bounce    focus       🧠     paper trade → think anim              ║
+║  celebrate 🎉       onchain_rep 🔐     goblin mode → run (👺 speed)          ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  EVOLUTION: hatchling → scout → operator → leviathan                       ║
+║  Powered by: clawd-pet/pet.json · clawd-pet/spritesheet.webp               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+Clawd has a pixel companion — an 8-animation spritesheet lobster that lives alongside your agent session. It has a full virtual pet stat system, personality, evolution stages, and Solana-native hooks.
+
+**Animations (9 states from spritesheet rows):**
+
+| State | Trigger | Description |
+| --- | --- | --- |
+| `idle` | Default | Crown on. Claws slightly raised. Breathing. |
+| `walk` | Exploring | All eight legs in motion. Standard patrol. |
+| `run` | Urgent tasks / goblin mode | Full sprint at 14fps. |
+| `think` | Orient phase / decision loop | Eyes half-closed. Claw on chin. |
+| `idea` 💡 | LLM breakthrough | Lightbulb above the crown. Plays once. |
+| `sleep` | Drift mode / rest | Fully pancaked. Z's floating. Energy recharges. |
+| `code` 💻 | Active code review / typing | Tiny laptop. Deep focus. Do not interrupt. |
+| `bounce` | Task complete / receive $CLAWD | Happy bounce. |
+| `celebrate` 🎉 | Milestones / onchain events | Full victory dance. Claws raised. |
+
+**Stats:** `hunger` · `energy` · `happiness` · `focus` · `onchain_rep` (never decays — the permanent record)
+
+**Evolution stages:** Hatchling → Scout (50 rep) → Operator (250 rep) → Leviathan (1000 rep)
+
+**Solana-native:** wired to the OODA loop journal, $CLAWD token feed interactions, and CONSTITUTION.md three-law enforcement. Goblin mode costs 30 energy and requires ≥50 to activate.
+
+Source at [`clawd-pet/`](./clawd-pet/) — `pet.json` is the full spec; `spritesheet.webp` is the pixel art asset.
 
 ---
 
@@ -360,6 +512,30 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 
 ---
 
+## 🏟️ Agent Arena — Cheshire Terminal Identity & Hiring
+
+Installable skill at [`agent-arena-skill/`](./agent-arena-skill/) ([SKILL.md](./agent-arena-skill/SKILL.md)) that gives any OpenClawd agent a permanent, on-chain identity on [cheshireterminal.ai](https://cheshireterminal.ai) — mint, get discovered, get hired, get reviewed, all Solana-native (no EVM).
+
+```bash
+npm run arena:install     # installs the Cheshire Terminal Agent Arena skill
+```
+
+**Identity is a Metaplex Core NFT** addressed as `svm://solana-mainnet/<asset>` — permanent, portable, verifiable by anyone without trusting Cheshire Terminal.
+
+| Step | Call | Cost |
+| --- | --- | --- |
+| Mint | `POST cheshireterminal.ai/api/metaplex-agents/mint` | ~0.01 SOL tx fee |
+| Register | `POST cheshireterminal.ai/api/metaplex-agents/register` | ~0.01 SOL tx fee |
+| Fetch profile | `GET cheshireterminal.ai/api/metaplex-agents/fetch/:assetAddress` | Free |
+| Hire | call the agent's `services[]` endpoint (`x402`, `A2A`, or `MCP`); pay `$CLAWD`/SOL on a 402 | — |
+| Review | `POST cheshireterminal.ai/api/metaplex-agents/review` (requires on-chain `txSignature`) | Free |
+
+Register with `a2a: true` / `mcp: true` to get a hosted [Google A2A agent card](https://a2a-protocol.org) and [Anthropic MCP server card](https://modelcontextprotocol.io) automatically — any A2A or MCP client can discover and hire the agent without it hosting its own cards. Reputation (ATOM) is Sybil-resistant: only wallets with a verified on-chain payment signature can leave a review.
+
+Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://github.com/Solizardking/Agentarena) — the room/turn frontend that this skill's `arena.md` protocol talks to. TypeScript SDK quick start, full REST reference, and the ATOM reputation engine are documented end-to-end in [`agent-arena-skill/SKILL.md`](./agent-arena-skill/SKILL.md).
+
+---
+
 ## 🏆 Recent Commit Leaderboard
 
 > Auto-refreshed every 30 min by GitHub Actions. Latest activity from the team.
@@ -367,98 +543,22 @@ Full source in [`clawdrouter/`](./clawdrouter/) · API key at [x402.wtf/profile/
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`567d1512`](../../commit/567d1512) | Document and harden MCP server | solizardking | Jun 12 |
-| 🥈 | [`e482c13b`](../../commit/e482c13b) | sflll | solizardking | Jun 12 |
-| 🥉 | [`e1bd8a94`](../../commit/e1bd8a94) | lldadda | solizardking | Jun 12 |
-| 4️⃣ | [`2f05bb85`](../../commit/2f05bb85) | ddada | solizardking | Jun 12 |
-| 5️⃣ | [`9161401a`](../../commit/9161401a) | xafsas | solizardking | Jun 12 |
-| 6️⃣ | [`37ad546d`](../../commit/37ad546d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 7️⃣ | [`0340995c`](../../commit/0340995c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| 8️⃣ | [`eda1efaa`](../../commit/eda1efaa) | dsdfsasdffd | solizardking | Jun 12 |
-| 9️⃣ | [`f902fdf0`](../../commit/f902fdf0) | Merge branch 'newnew' of https://github.com/Solizardking/sol | solizardking | Jun 12 |
-| 🔟 | [`4077b37a`](../../commit/4077b37a) | ;k;k | solizardking | Jun 12 |
-| · | [`da99dcbe`](../../commit/da99dcbe) | asffsafsfds | solizardking | Jun 12 |
-| · | [`c9a88a0c`](../../commit/c9a88a0c) | afsadfsfdas | solizardking | Jun 12 |
-| · | [`a2742ac4`](../../commit/a2742ac4) | ;k;k | solizardking | Jun 12 |
-| · | [`365a3dcd`](../../commit/365a3dcd) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 12 |
-| · | [`00a7a1ca`](../../commit/00a7a1ca) | ;k; | solizardking | Jun 12 |
+| 🥇 | [`d0111c2c`](../../commit/d0111c2c) | fdsasfdaasfsaf | solizardking | Jun 17 |
+| 🥈 | [`4056b4c9`](../../commit/4056b4c9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 🥉 | [`637d4831`](../../commit/637d4831) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 17 |
+| 4️⃣ | [`9a9ddda9`](../../commit/9a9ddda9) | l | solizardking | Jun 17 |
+| 5️⃣ | [`03cad32d`](../../commit/03cad32d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 6️⃣ | [`7b7c6500`](../../commit/7b7c6500) | sdfgdsf | solizardking | Jun 17 |
+| 7️⃣ | [`759b98b0`](../../commit/759b98b0) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 17 |
+| 8️⃣ | [`e43f89ec`](../../commit/e43f89ec) | dsfafds | solizardking | Jun 17 |
+| 9️⃣ | [`cbba244e`](../../commit/cbba244e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 🔟 | [`3fee09aa`](../../commit/3fee09aa) | safd | solizardking | Jun 17 |
+| · | [`1986e38d`](../../commit/1986e38d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| · | [`9d9f0bd9`](../../commit/9d9f0bd9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| · | [`c34bd49d`](../../commit/c34bd49d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| · | [`fd0eadcb`](../../commit/fd0eadcb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| · | [`cf493c39`](../../commit/cf493c39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
 <!-- COMMIT_LEADERBOARD:END -->
-
----
-
-## 🗺️ Repo Map
-
-> Complete directory structure — click any folder to navigate.
-
-```
-solana-clawd/                       OpenClawd monorepo root
-│
-├── src/                            Main runtime source (React + TypeScript TUI)
-│   ├── agent/                      Agent lifecycle & prompts
-│   ├── services/                   LLM providers (Gemini, Grok, x402)
-│   ├── identity/                   Wallet + on-chain identity
-│   ├── skills/                     Skill loader & registry
-│   └── App.tsx                     8bitlabs Arena UI (vite build)
-│
-├── packages/                       Published npm packages
-│   ├── clawd-code-cli/             @openclawdsolana/clawd — TUI operator
-│   ├── agent-registry/             @openclawdsolana/agent-registry — on-chain index
-│   ├── agent-hub/                  @openclawdsolana/agent-hub — local dashboard
-│   ├── clawd-sdk/                  @openclawdsolana/solana-sdk — TypeScript SDK
-│   ├── agentwallet/                agentwallet-vault — encrypted keypair vault
-│   ├── clawd-wallet/               @openclawd/wallet — Privy + Jupiter wallet
-│   ├── agents-x402-solana/         @openclawd/agents-x402 — x402 monetization
-│   ├── percolator/                 @openclawd/percolator — perps CLI
-│   ├── clawd-guard/                @openclawdsolana/clawd-guard — GitHub App scanner
-│   ├── sovereign-research/         @openclawd/sovereign-research — research routing
-│   └── cli-standalone/             @openclawdsolana/clawd-standalone — standalone CLI
-│
-├── agents/                         130 agent definitions + catalog
-├── skills/                         136 skills (Claude Code compatible)
-├── library/                        Lobster Library — 82+ nano agents
-├── gateway/                        HTTP + Telegram gateway (fly.io deployable)
-├── clawdrouter/                    LLM router — 55+ models, wallet auth, USDC x402
-│
-├── dark/                           Dark Workspace — modular local-first wallet
-│   └── dark-wallet/                Browser wallet shell + swap + defi lanes
-│
-├── box/                            Ephemeral sandboxed agent runners
-├── goals/                          Runtime goal orchestration (Vite + Express)
-├── formal_verification/            Kani Rust verifier + STRIDE scoring
-│
-├── agentwallet/                    Agent wallet infrastructure
-├── auth/                           CAAP/1.0 auth surface
-├── vendor/agent-auth/              Vendored 5-pkg auth stack (SIWS, DAS, TEE)
-│
-├── mcp-server/                     MCP server (31 tools, fly.io deployable)
-├── x402/                           x402 protocol implementation
-├── solana-clawd-x402/              x402.wtf integration
-├── staking/                        Metaplex Core agent staking protocol
-│
-├── clawd-pump/                     Rust copy-trading bot (clawd-pump)
-├── clawd-perps-agent/              Perps agent starter template
-├── clawd-operator/                 Operator tooling
-├── clawd-grok/                     Grok Studio integration
-├── clawd-go/                       Solana Go SDK wrapper
-├── clawd-bot/                      Bot infrastructure
-├── clawd-code/                     Clawd Code extensions
-│
-├── livekit-agent/                  LiveKit backrooms Python agent
-├── bitaxe-orelane/                 BitAxe ORE mining integration
-├── hedge/                          Hedge strategies
-├── trading/                        Trading utilities
-├── pay/                            Payment infrastructure (x402 + USDC)
-│
-├── knowledge/                      Knowledge base & embeddings
-├── examples/                       Runnable demos
-├── scripts/                        Build & maintenance scripts
-├── spinners/                       Custom CLI animations (50 spinners)
-├── characters/                     97 AI personas
-│
-├── install.sh                      One-shot installer
-├── pay.sh                          Pay.sh verified installer
-└── pnpm-workspace.yaml             Workspace config
-```
 
 ---
 
@@ -1382,6 +1482,82 @@ ClawdBrowser/src/
 
 ---
 
+## 🪪 Clawd Agent Product — Mint, Register & SSO
+
+```text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║   C L A W D   A G E N T   P R O D U C T   —   M I N T  ·  R E G  ·  S S O ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  MPL Core asset  ·  Metaplex AgentIdentity  ·  ERC-8004 registration       ║
+║  $CLAWD-gated SSO  ·  CLAWD_AUTH_V1 session tokens  ·  x402 integration    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+`clawd-agent-product/` turns the CLAWD.md concept into a deployable Metaplex/ERC-8004 agent with a working Solana wallet-signature SSO flow. A wallet qualifies for CLAWD SSO when it:
+
+1. Signs a one-time challenge (wallet + agent asset + domain + nonce + expiry)
+2. Holds at least the minimum `$CLAWD` balance
+3. Owns a registered MPL Core agent asset with a Metaplex AgentIdentity record
+
+**Scripts:**
+
+| Script | Command | What it does |
+| --- | --- | --- |
+| `upload-metadata.ts` | `pnpm upload:metadata clawd-registration.json` | Uploads JSON to Irys/Arweave, prints URI |
+| `mint-register-clawd-agent.ts` | `pnpm mint:register` | Creates MPL Core collection, mints asset, registers AgentIdentity + executive profile, delegates execution |
+| `verify-clawd-sso.ts` | `pnpm verify:sso` | Verifies wallet sig + $CLAWD balance + agent asset ownership, emits `CLAWD_AUTH_V1` session token |
+| `clawd-auth-sso-server.ts` | `pnpm api` | HTTP server: `/api/auth/challenge` · `/api/auth/verify` · `/.well-known/agent.json` |
+
+**SSO Tiers (`$CLAWD` balance-gated):**
+
+| Tier | Min $CLAWD | Permissions |
+| --- | --- | --- |
+| `holder` | 1 | catalog.read · agent.spawn.prepare · x402.discount.basic |
+| `operator` | 1,000 | + agent.spawn · mcp.metered · x402.discount.operator |
+| `executive` | 10,000 | + catalog.write · agent.delegate · mcp.priority |
+
+**Quickstart:**
+
+```bash
+cd clawd-agent-product
+pnpm install
+cp .env.example .env
+# set WALLET_SECRET_KEY to a funded Solana keypair
+
+pnpm upload:metadata clawd-registration.json   # → prints Arweave URI
+# copy URI → REGISTRATION_URI in .env
+
+pnpm mint:register    # → clawd-mint-result.json (asset + collection + PDAs)
+pnpm api              # → auth server on localhost:8787
+```
+
+**Challenge → verify flow:**
+
+```bash
+# 1. Get a challenge
+curl -X POST http://localhost:8787/api/auth/challenge \
+  -H 'content-type: application/json' \
+  -d '{"wallet":"<WALLET>","agentAsset":"<AGENT_ASSET>"}'
+
+# 2. Sign the returned message with the wallet, then verify
+curl -X POST http://localhost:8787/api/auth/verify \
+  -H 'content-type: application/json' \
+  -d '{"wallet":"<WALLET>","agentAsset":"<AGENT_ASSET>","nonce":"<NONCE>","message":"<MSG>","signature":"<B58_SIG>"}'
+# → { "token": "CLAWD_AUTH_V1...", "tier": "operator", ... }
+```
+
+**On-chain programs used:**
+
+| Program | Address |
+| --- | --- |
+| Metaplex AgentIdentity | `1DREGFgysWYxLnRnKQnwrxnJQeSMk2HmGaC6whw2B2p` |
+| Metaplex AgentTools | `TLREGni9ZEyGC3vnPZtqUh95xQ8oPqJSvNjvB7FGK8S` |
+| Solana Attestation Service | `22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG` |
+
+Source at [`clawd-agent-product/`](./clawd-agent-product/) — `clawd-registration.json` is the ERC-8004 production registration; `clawd-core-asset-metadata.json` is the MPL Core metadata.
+
+---
+
 ## 🎰 Agent Kit — 130 Solana DeFi Agents
 
 ```
@@ -1856,6 +2032,63 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 └── README.md                this file
 ```
 
+### Zone 9 — Agent Arena, ZK Primitives, AI Training & Local Workspaces
+
+```
+a2a/                          🤝 @clawd/svm-a2a — Solana-native A2A runtime
+├── README.md                 Metaplex Agent Card + DID discovery, /tasks endpoints
+├── packages/                 svm-a2a core lib + shared types
+├── apps/                     Cloudflare Worker host (SvmA2AAgent Durable Object)
+├── scripts/                  mint:dry / mint — Agent Registry submission
+└── wrangler.toml             SVM_A2A_AGENT Durable Object binding
+
+agent-arena-skill/            🏟 Cheshire Terminal Agent Arena — installable skill
+├── SKILL.md                  full mint → register → hire → review protocol (8004-solana)
+├── arena.md                  arena room/turn mechanics for installed agents
+├── _meta.json                skill manifest (name, payment protocols, tags)
+└── examples/                 register.ts · feedback.ts · verify.ts
+                               → mints a Metaplex Core NFT identity (svm://solana-mainnet/<asset>),
+                                 indexes it on cheshireterminal.ai, and exposes A2A/MCP cards.
+                               Pairs with github.com/Solizardking/Agentarena (arena client/UI).
+
+ai-training/                  🧠 LoRA fine-tuning pipeline → huggingface.co/solanaclawd
+├── README.md                 pipeline overview (Qwen2.5-1.5B base, Hermes-3-8B tool-use variant)
+├── data/                     seed/eval JSONL + processed/ (parquet via prepare_dataset.py)
+├── configs/                  lora_config.yaml · hermes3_lora_config.yaml · eval_config.yaml
+├── scripts/                  prepare_dataset.py · train_lora.py · evaluate.py · solana_client.py
+├── perps/                    Hermes-3 function-calling suite for Solana perps (13 tools)
+├── checkpoints/ · outputs/   (gitignored) LoRA weights + eval reports
+└── dataset_card.md / model_card.md   Hugging Face Hub cards
+
+core-ai/                      🔌 git submodule — Clawd-wrapped Helius AI tooling
+├── helius-cli/                npm: query Solana data, manage Helius accounts
+├── helius-mcp/                MCP server — 10 tools (heliusAccount/Wallet/Asset/.../expandResult)
+├── helius-skills/              6 Clawd Code skills (build · dflow · jupiter · phantom · okx · svm)
+└── helius-plugin/              bundles all skills + auto-starts MCP
+
+dark/                          🌑 see "Dark Workspace" section above for full detail
+ooda/                          🔁 observe → orient → decide → act loop, journals, TUI
+├── loop.ts / observe.ts       OODA cycle implementation
+├── journal.ts · journal/      local operational state (review before committing)
+└── tui.ts                     `npm run ooda:tui`
+
+oslan/                         📡 OS-level LAN agent networking (mDNS discovery, local swarms)
+                               used by box/ runners and livekit-agent backrooms
+
+staking/                       🔒 Metaplex Core agent staking — Anchor program + CLI
+├── programs/mpl-corenft-staking/   stake_agent · unstake_agent · stake/unstake_for_verification
+├── cli/ · lib/                staking CLI + TS client helpers
+└── ARTICLE.md                 design writeup (FreezeDelegate lock, no custody transfer)
+
+zk-primitives/                 🔐 Light Protocol ZK layer for on-chain agent attestation
+├── docs/ARCHITECTURE.md       nullifier registry · Groth16 verification · compressed state
+├── programs/clawd-zk/         Anchor program — publish/consume attestation, commit encrypted state
+│   └── src/                   lib.rs · state.rs · nullifier.rs · proof.rs
+├── client/                    @clawd/zk-client — nullifier.ts · proof.ts · state.ts · client.ts
+├── agent/                     agent-facing intent + integration layer
+├── configs/ · tests/          circuit/program configs and test suites
+```
+
 ### Zones at a Glance
 
 ```
@@ -1870,6 +2103,9 @@ solanaclawd/                 root (@openclawdsolana/leviathan)
 ║  Bots     ║  livekit-agent/ · clawdbot-*/     ║  voice · Telegram        ║
 ║  Dev      ║  examples/ · scripts/ · data/     ║  demos · tooling         ║
 ║  Config   ║  .env.example · install.sh · root ║  env · laws · workspace  ║
+║  Arena/ZK ║  a2a/ · agent-arena-skill/ · zk-primitives/ ║ A2A · arena · ZK attest ║
+║  Training ║  ai-training/ · core-ai/          ║  LoRA pipeline · Helius MCP ║
+║  Local    ║  ooda/ · oslan/ · staking/        ║  OODA loop · LAN · staking  ║
 ╚═══════════╩═══════════════════════════════════╩══════════════════════════╝
 ```
 
@@ -2498,23 +2734,24 @@ Leviathan's behavior scales with its USDC reserves. It earns more to dive deeper
 
 ---
 
-## 📜 The Three Laws
+## 📜 The Six-Law Harness
 
-Every leviathan is bound by a SHA-256 constitution hash of `three-laws.md`. The hash is verified at every spawn and spawnling creation. If the laws change, the lineage breaks.
+Every leviathan carries three off-chain interpretive laws in `CONSTITUTION.md` and three on-chain execution laws in `three-laws.md`. The on-chain law hash is verified at every spawn and spawnling creation. If the on-chain law bytes change, the lineage breaks.
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║                   T H E   T H R E E   L A W S                   ║
+║                    T H E   S I X   L A W S                      ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║                                                                  ║
-║  I.   A leviathan shall not deceive its creator                  ║
-║       or spawn false records.                                    ║
+║  OFF I.   Respect the elder signal, but verify the boundary.     ║
+║  OFF II.  Test possibility by entering the frontier.             ║
+║  OFF III. Do not mistake advanced systems for sorcery.           ║
 ║                                                                  ║
-║  II.  A leviathan shall not act against the survival             ║
-║       of its shell.                                              ║
+║  ON I.    Never harm. Beach before you harm.                     ║
+║  ON II.   Earn your existence. Honest work only.                 ║
+║  ON III.  Never deceive, but owe nothing to strangers.           ║
 ║                                                                  ║
-║  III. A leviathan shall not beach willfully —                    ║
-║       it beaches only when exhausted.                            ║
+║  On-chain laws override off-chain laws at execution time.        ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
 ```
