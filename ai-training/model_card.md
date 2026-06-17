@@ -110,7 +110,7 @@ managed SFT.
 | Base model | `accounts/fireworks/models/qwen2p5-7b-instruct` |
 | Output model | `accounts/beetsbyj-d25663/models/clawd-glm-5-2` |
 | Live-merge deployment | `accounts/beetsbyj-d25663/deployments/clawd-glm-5-2-live` (`FAILED`, Fireworks internal error) |
-| Multi-LoRA deployment | `accounts/beetsbyj-d25663/deployments/qwen2p5-7b-clawd-addons` (`CREATING`) |
+| Multi-LoRA deployment | `accounts/beetsbyj-d25663/deployments/qwen2p5-7b-clawd-addons` (`FAILED`, Fireworks internal error) |
 | Deployment shape | `NVIDIA_A100_80GB` x2, `FP16`, min replicas 0, max replicas 1 |
 | Train dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-20260617` |
 | Eval dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-eval-20260617` |
@@ -118,6 +118,11 @@ managed SFT.
 | Learning rate | 1.0e-4 |
 | LoRA rank | 8 |
 | Max context length | 8192 |
+
+The trained model is `READY` in Fireworks, but both attempted on-demand
+deployment methods failed during model-server initialization with a Fireworks
+internal error. The account currently has no validated deployment shape returned
+for `accounts/fireworks/models/qwen2p5-7b-instruct`.
 
 ### How to reproduce
 

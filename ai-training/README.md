@@ -203,7 +203,7 @@ Current Fireworks run:
 | Base model | `accounts/fireworks/models/qwen2p5-7b-instruct` |
 | Output model | `accounts/beetsbyj-d25663/models/clawd-glm-5-2` |
 | Live-merge deployment | `accounts/beetsbyj-d25663/deployments/clawd-glm-5-2-live` (`FAILED`, Fireworks internal error) |
-| Multi-LoRA deployment | `accounts/beetsbyj-d25663/deployments/qwen2p5-7b-clawd-addons` (`CREATING`) |
+| Multi-LoRA deployment | `accounts/beetsbyj-d25663/deployments/qwen2p5-7b-clawd-addons` (`FAILED`, Fireworks internal error) |
 | Deployment shape | `NVIDIA_A100_80GB` x2, `FP16`, min replicas 0, max replicas 1 |
 | Train dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-20260617` |
 | Eval dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-eval-20260617` |
@@ -239,6 +239,11 @@ curl https://api.fireworks.ai/inference/v1/chat/completions \
     "messages": [{"role": "user", "content": "What is a PDA on Solana?"}]
   }'
 ```
+
+Both Fireworks deployment methods currently fail after creation with an
+internal Fireworks error. The model artifact itself is `READY`; serving requires
+Fireworks support to resolve the on-demand deployment failure or a different
+validated deployment shape for `qwen2p5-7b-instruct`.
 
 ## Hermes-3-Llama-3.1-8B path (tool use / function calling)
 
