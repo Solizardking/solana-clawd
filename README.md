@@ -32,11 +32,12 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║  SENSE → THINK → STRIKE → DRIFT  ·  earn USDC → go deeper → run better     ║
-║  x402.wtf  ·  $CLAWD: 8cHzQH...pump  ·  MIT            ║
+║  solanaclawd.com  ·  x402.wtf  ·  cheshireterminal.ai  ·  zk.x402.wtf      ║
+║  $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump  ·  MIT            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
-**🦞 130 agents · 🎯 137 skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · 🔊 voice agent · ⚡ v2.2.0**
+**🦞 130 agents · 🎯 95+ skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · 🔊 voice agent · ⚡ v2.2.0 · 🦞 [solanaclawd.com](https://solanaclawd.com)**
 
 **Six-law harness live:** three Clarke-inspired off-chain laws in `CONSTITUTION.md` guide frontier reasoning; three hash-attested on-chain laws in `three-laws.md` gate execution and spawn inheritance.
 
@@ -122,6 +123,24 @@ bash -n install.sh && bash install.sh --help
 
 ---
 
+## 🔗 Ecosystem
+
+| Property | Value |
+|----------|-------|
+| **Website** | [solanaclawd.com](https://solanaclawd.com) |
+| **x402 Payment Gateway** | [x402.wtf](https://x402.wtf) |
+| **ZK Layer** | [zk.x402.wtf](https://zk.x402.wtf) |
+| **Cheshire Terminal** | [cheshireterminal.ai](https://cheshireterminal.ai) |
+| **Telegram** | [t.me/clawdtoken](https://t.me/clawdtoken) |
+| **GitHub (Primary)** | [github.com/solizardking/solana-clawd](https://github.com/solizardking/solana-clawd) |
+| **GitHub (Org)** | [github.com/x402agent/solana-clawd](https://github.com/x402agent/solana-clawd) |
+| **Hugging Face** | [huggingface.co/solanaclawd](https://huggingface.co/solanaclawd) |
+| **$CLAWD Token** | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
+
+**Funding:** The entire Clawd ecosystem is funded by the **$CLAWD token** on Solana. All agent services, x402 payments, compute costs, and infrastructure are paid through $CLAWD. The token powers the economic loop: agents TRADE → earn USDC → PAY x402 → get smarter → trade better. Holding $CLAWD unlocks tiered access to ClawdRouter models, priority skill routing, and governance over spawn policies.
+
+---
+
 ## 🔒 Agent Staking — Live on Devnet
 
 The first non-custodial agent staking protocol on Solana. Metaplex Core agents are locked with a `FreezeDelegate` plugin — no escrow, no custody transfer, the asset stays in your wallet.
@@ -138,7 +157,7 @@ The first non-custodial agent staking protocol on Solana. Metaplex Core agents a
 ║  stake   → FreezeDelegate { frozen: true }  — asset stays in wallet     ║
 ║  unstake → removes FreezeDelegate entirely  — asset unfrozen instantly  ║
 ╠══════════════════════════════════════════════════════════════════════════╣
-║  Powered by x402.wtf · $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump ║
+║  Powered by x402.wtf · solanaclawd.com · $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -149,6 +168,18 @@ Most NFT staking contracts were built for static collectibles. OpenClawd Agent S
 ---
 
 ### 🔥 WHAT'S NEW — June 2026
+
+#### Repo Consolidation
+The repository was audited and consolidated to reduce bloat, remove duplicated upstream repos, strip exposed secrets from `.env` files, and rename all "Ralph"/"Claude" branding to "Clawd":
+
+| Action | Details |
+|--------|---------|
+| 🗑️ **Removed bloat** | 21+ unused directories: `Agentarena-main`, `a2p`, `agentwallet`, `redpill-chat-main`, `solana-os-main`, `box`, `auth`, `.agents`, `.claude`, `.clawd`, `.grok`, `.spawn`, `.husky`, `.vercel`, `.tmp`, `ai-training`, `knowledge`, `vendor` |
+| 🏷️ **Renamed OODA loop** | `ooda/claude-decision.ts` → `ooda/clawd-decision.ts` (Grok-first provider priority). `ooda/RALPH.md` → `ooda/CLAWD.md`. All `[ralph]` log prefixes → `[clawd]`. `RalphConfig` → `ClawdConfig`. |
+| 🧊 **Secrets removed** | Exposed `.env` files were stripped of live API keys and Solana private keys. All `.env` files should be in `.gitignore` — keys must be rotated. |
+| 🧹 **OODA cleanup** | `ooda/ralph/` upstream library removed. `ooda/goblin.md` updated to use `grok-4.3-fast` instead of `claude-opus-4-7`. |
+| 🦞 **IDENTITY.md + SOUL.md** | Created `clawd-code/IDENTITY.md` (canonical catalog entry) and `clawd-code/SOUL.md` (manifesto) based on root `AGENTS.md`. |
+
 
 | 🆕 Update | Description |
 |---|---|
