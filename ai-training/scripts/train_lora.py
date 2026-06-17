@@ -71,6 +71,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--lora-r", type=int, default=None)
     p.add_argument("--lora-alpha", type=int, default=None)
     p.add_argument("--cpt-stage", action="store_true", help="Use cpt_* dataset/training overrides from the config")
+    p.add_argument("--no-checkpoints", action="store_true", help="Disable Trainer checkpoint saving during training")
     p.add_argument("--no-push", action="store_true", help="Don't push to Hub")
     p.add_argument("--no-quant", action="store_true", help="Disable 4-bit quantization")
     p.add_argument("--no-grad-ckpt", action="store_true", help="Disable gradient checkpointing")
@@ -105,6 +106,8 @@ def apply_overrides(cfg: dict[str, Any], args: argparse.Namespace) -> dict[str, 
         cfg["lora"]["alpha"] = args.lora_alpha
     if args.no_push:
         cfg["push_to_hub"] = False
+    if args.no_checkpoints:
+        cfg["training"]["save_strategy"] = "no"
     if args.no_quant:
         cfg["quantization"]["enabled"] = False
     if args.no_grad_ckpt:
@@ -132,7 +135,7 @@ def load_local_dataset(dataset_path: str, dataset_format: str | None) -> Dataset
         if inferred_format == "json":
             loaded = load_dataset("json", data_files={"train": str(path)})
         elif inferred_format == "text":
-            loaded = load_dataset("json", data_files={"train": str(path)})
+            loaded = load_dataset("text", data_files={"train": str(path)})
         else:
             raise ValueError(f"Unsupported dataset format: {dataset_format}")
 
@@ -147,6 +150,9 @@ def resolve_dataset(cfg: dict[str, Any], use_cpt_stage: bool) -> tuple[DatasetDi
     if use_cpt_stage:
         local_path = cfg.get("cpt_dataset_path", local_path)
         local_format = cfg.get("cpt_dataset_format", local_format)
+
+    if local_path:
+        return load_local_dataset(local_path, local_format), local_path
 
     dataset_repo = cfg.get("dataset_repo")
     if dataset_repo and not use_cpt_stage:
@@ -270,6 +276,7 @@ def main() -> None:
     sft_config = SFTConfig(
         output_dir=output_dir,
         max_length=cfg.get("max_seq_length", 4096),
+        dataset_text_field=cfg.get("cpt_text_field" if args.cpt_stage else "text_field", "text"),
         packing=sft_kwargs.get("packing", False),
         assistant_only_loss=sft_kwargs.get("assistant_only_loss", True),
         report_to=train_kwargs.pop("report_to", ["none"]),
@@ -283,7 +290,6 @@ def main() -> None:
         train_dataset=train_ds,
         eval_dataset=eval_ds,
         processing_class=tokenizer,
-        dataset_text_field=cfg.get("cpt_text_field" if args.cpt_stage else "text_field"),
     )
 
     # ---- Train ----

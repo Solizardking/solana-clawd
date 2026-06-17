@@ -1,6 +1,5 @@
 ---
 # ── HF Metadata (required for Hub) ────────────────────────────────────────────
-# Replace every placeholder before pushing to the Hub.
 license: cc-by-4.0
 task_categories:
   - text-generation
@@ -23,16 +22,6 @@ size_categories:
 pretty_name: Solana Clawd Instruct
 # ──────────────────────────────────────────────────────────────────────────────
 ---
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     TEMPLATE INSTRUCTIONS (delete this block before pushing to Hub)
-     ═══════════════════════════════════════════════════════════════════════════
-     1. Replace every placeholder with real values.
-     2. Update the Splits table after running prepare_dataset.py.
-     3. Fill in the Source section with your actual data provenance.
-     4. Keep the Out-of-scope section — it protects you legally.
-     5. The Citation bibtex URL must point to a real Hub dataset.
-     ═══════════════════════════════════════════════════════════════════════════ -->
 
 # Solana Clawd Instruct
 
@@ -102,7 +91,7 @@ python3 scripts/prepare_dataset.py \
   --train-ratio 0.9 --eval-ratio 0.05 \
   --seed 42 \
   --push \
-  --repo-id solanaclawd/YOUR-DATASET-ID \
+  --repo-id solanaclawd/solana-clawd-instruct \
   --private
 ```
 
