@@ -105,7 +105,8 @@ managed SFT.
 | Field | Value |
 | --- | --- |
 | Job | `accounts/beetsbyj-d25663/supervisedFineTuningJobs/b1rgqmi9` |
-| State at submission | `JOB_STATE_RUNNING` |
+| Final state | `JOB_STATE_COMPLETED` |
+| Completed | `2026-06-17T22:59:49.848326Z` |
 | Base model | `accounts/fireworks/models/qwen2p5-7b-instruct` |
 | Output model | `accounts/beetsbyj-d25663/models/clawd-glm-5-2` |
 | Train dataset | `accounts/beetsbyj-d25663/datasets/solana-clawd-20260617` |
