@@ -6,7 +6,7 @@
 
 <div align="center">
 
-<img src="./assets/openclawd-banner.svg" alt="OpenClawd animated banner" width="100%" />
+<img src="./assets/clawd-banner.png" alt="Clawd — Sovereign Pixel Lobster" width="400" />
 
 ```
 ███████╗██╗  ██╗   ██████╗██╗       █████╗ ██╗    ██╗██████╗
