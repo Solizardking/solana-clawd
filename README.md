@@ -494,21 +494,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`3fee09aa`](../../commit/3fee09aa) | safd | solizardking | Jun 17 |
-| 🥈 | [`1986e38d`](../../commit/1986e38d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
-| 🥉 | [`9d9f0bd9`](../../commit/9d9f0bd9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
-| 4️⃣ | [`c34bd49d`](../../commit/c34bd49d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
-| 5️⃣ | [`fd0eadcb`](../../commit/fd0eadcb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 6️⃣ | [`cf493c39`](../../commit/cf493c39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 7️⃣ | [`2651cd3c`](../../commit/2651cd3c) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
-| 8️⃣ | [`8808421c`](../../commit/8808421c) | afssafsafas | solizardking | Jun 16 |
-| 9️⃣ | [`6e1f4a95`](../../commit/6e1f4a95) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| 🔟 | [`0d3931fd`](../../commit/0d3931fd) | ll | solizardking | Jun 16 |
+| 🥇 | [`7b7c6500`](../../commit/7b7c6500) | sdfgdsf | solizardking | Jun 17 |
+| 🥈 | [`759b98b0`](../../commit/759b98b0) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 17 |
+| 🥉 | [`e43f89ec`](../../commit/e43f89ec) | dsfafds | solizardking | Jun 17 |
+| 4️⃣ | [`cbba244e`](../../commit/cbba244e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 5️⃣ | [`3fee09aa`](../../commit/3fee09aa) | safd | solizardking | Jun 17 |
+| 6️⃣ | [`1986e38d`](../../commit/1986e38d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 7️⃣ | [`9d9f0bd9`](../../commit/9d9f0bd9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 8️⃣ | [`c34bd49d`](../../commit/c34bd49d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 17 |
+| 9️⃣ | [`fd0eadcb`](../../commit/fd0eadcb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| 🔟 | [`cf493c39`](../../commit/cf493c39) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| · | [`2651cd3c`](../../commit/2651cd3c) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 16 |
+| · | [`8808421c`](../../commit/8808421c) | afssafsafas | solizardking | Jun 16 |
+| · | [`6e1f4a95`](../../commit/6e1f4a95) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
+| · | [`0d3931fd`](../../commit/0d3931fd) | ll | solizardking | Jun 16 |
 | · | [`64e4b5af`](../../commit/64e4b5af) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| · | [`20f029d1`](../../commit/20f029d1) | spaces: clean up nested .git dirs from prior sessions (defen | solizardking | Jun 16 |
-| · | [`361dffac`](../../commit/361dffac) | spaces/trench-town/fly.toml: drop cheshire_data volume mount | solizardking | Jun 16 |
-| · | [`d98dcb63`](../../commit/d98dcb63) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 16 |
-| · | [`9655caad`](../../commit/9655caad) | spaces: rebrand Cheshire Terminal → Trench Town | solizardking | Jun 16 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
