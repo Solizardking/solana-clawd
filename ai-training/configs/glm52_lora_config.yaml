@@ -1,0 +1,177 @@
+# LoRA SFT config — zai-org/GLM-5.2
+#
+# Comprehensive config that consolidates all four training stages into one file.
+# Incorporates:
+#   - LoRA SFT settings (lora_config.yaml)
+#   - Hermes-3 tool-use settings (hermes3_lora_config.yaml)
+#   - DeepSolana CPT stage (deep_solana_cpt_config.yaml)
+#   - Eval settings (eval_config.yaml)
+#   - ZK-primitives training data injection
+#
+# Usage:
+#   # Stage 1: CPT on DeepSolana corpus
+#   python3 scripts/train_lora.py --config configs/glm52_lora_config.yaml \
+#     --cpt-stage --dataset-path data/deep_solana_corpus.jsonl
+#
+#   # Stage 2: SFT (default)
+#   python3 scripts/train_lora.py --config configs/glm52_lora_config.yaml
+#
+#   # Remote GPU
+#   ./scripts/launch_hf_jobs.sh a100-large --config configs/glm52_lora_config.yaml
+
+# ── Base model ──────────────────────────────────────────────────────────────
+base_model: "zai-org/GLM-5.2"
+model_revision: "main"
+torch_dtype: "bfloat16"
+device_map: "auto"
+
+# ── Dataset ─────────────────────────────────────────────────────────────────
+# Unified dataset: Solana Clawd instruct + ZK primitives examples
+# Generate ZK examples first: python3 scripts/add_zk_examples.py
+dataset_repo: "solanaclawd/solana-clawd-instruct"
+dataset_revision: "main"
+max_seq_length: 4096
+train_split: "train"
+eval_split: "test"
+
+# Local fallback (used when Hub dataset is not yet pushed)
+dataset_path: "data/processed"
+
+# DeepSolana CPT corpus (Stage 1 only)
+cpt_dataset_path: "data/deep_solana_corpus.jsonl"
+cpt_dataset_format: "text"
+cpt_text_field: "text"
+cpt_max_seq_length: 2048
+
+# ── Output ───────────────────────────────────────────────────────────────────
+output_dir: "./outputs/solana-clawd-glm52-lora"
+push_to_hub: true
+hub_model_id: "ordlibrary/Clawd-GLM-5.2"
+hub_private: false
+
+# ── LoRA ─────────────────────────────────────────────────────────────────────
+# "all-linear" targets every linear projection in the model automatically.
+# Works for any architecture (GLM, Qwen, LLaMA, Hermes, etc.) without
+# needing to know exact module names. Falls back to explicit list if needed.
+lora:
+  r: 32                     # higher rank: GLM-5.2 is ~5.2B, needs more signal
+  alpha: 64
+  dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  target_modules: "all-linear"   # auto-discovers all Linear layers in GLM-5.2
+
+# ── Training (SFT stage) ─────────────────────────────────────────────────────
+training:
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16     # effective batch = 16
+  per_device_eval_batch_size: 1
+  num_train_epochs: 3
+  max_steps: -1
+  learning_rate: 1.0e-4               # conservative for 5.2B
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  optim: "adamw_torch"
+  bf16: true
+  fp16: false
+  tf32: true
+  gradient_checkpointing: true
+  logging_steps: 10
+  save_steps: 200
+  save_total_limit: 3
+  eval_steps: 200
+  eval_strategy: "steps"
+  report_to:
+    - "none"                          # add "wandb" for remote logging
+  seed: 42
+  dataloader_num_workers: 2
+  remove_unused_columns: false
+
+# ── CPT stage overrides ───────────────────────────────────────────────────────
+# Applied when running with --cpt-stage flag (see train_lora.py)
+cpt_training:
+  num_train_epochs: 1               # single pass over DeepSolana corpus
+  learning_rate: 2.0e-4             # higher LR OK for CPT
+  warmup_ratio: 0.01
+  eval_strategy: "no"
+  packing: true                     # pack short GPT-2 chunks for efficiency
+  output_dir: "./outputs/solana-clawd-glm52-cpt"
+  push_to_hub: false                # local only; push after SFT
+
+# ── Quantization ─────────────────────────────────────────────────────────────
+# Required on 24 GB GPUs (L4, A10G). Disable on A100-80 / H200 for speed.
+quantization:
+  enabled: true
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: true
+
+# ── SFT ──────────────────────────────────────────────────────────────────────
+sft:
+  packing: false
+  assistant_only_loss: true         # only train on assistant tokens
+  chat_template_kwargs: {}
+
+# ── Evaluation ───────────────────────────────────────────────────────────────
+# Mirrors eval_config.yaml — run after training with scripts/evaluate.py
+eval:
+  base_model: "zai-org/GLM-5.2"
+  adapter_repo: "ordlibrary/Clawd-GLM-5.2"
+  eval_dataset_repo: "solanaclawd/solana-clawd-eval"
+  eval_split: "test"
+  max_eval_samples: 100
+  max_new_tokens: 512
+  temperature: 0.2
+  top_p: 0.9
+  do_sample: true
+  output_dir: "./outputs/eval-glm52"
+  report_to: "json"
+
+# ── ZK primitives data ───────────────────────────────────────────────────────
+# Run before training to inject ZK knowledge into the seed dataset:
+#   python3 scripts/add_zk_examples.py
+# This appends ~15 ZK-specific SFT pairs covering:
+#   - clawd-zk three instructions
+#   - Nullifier computation + cost model
+#   - Groth16 proof format
+#   - @clawd/zk-client SDK usage
+#   - ClawdZkAgent intent router
+#   - Light Protocol V2 tree addresses
+#   - Error codes + production checklist
+zk_examples_script: "scripts/add_zk_examples.py"
+zk_examples_source: "../zk-primitives"  # relative to ai-training/
+
+# ── Notes ────────────────────────────────────────────────────────────────────
+# GLM-5.2 model details:
+#   - Architecture: GLM (General Language Model) 5.2B parameters
+#   - Context: 4096+ tokens
+#   - Chat format: standard messages schema (system/user/assistant)
+#   - trust_remote_code: required
+#   - Module names: auto-detected via "all-linear" — covers all variants
+#     (GLM-4 uses query_key_value+dense; GLM-5.x may use q/k/v_proj)
+#
+# Full pipeline (copy-paste):
+#   cd ai-training
+#   pip install -r requirements.txt
+#   export HF_TOKEN=hf_...
+#
+#   # Optional: CPT stage
+#   python3 scripts/download_deep_solana.py --limit 5000
+#   python3 scripts/train_lora.py --config configs/glm52_lora_config.yaml --cpt-stage
+#
+#   # Inject ZK primitives data
+#   python3 scripts/add_zk_examples.py
+#
+#   # Prepare + push dataset
+#   python3 scripts/prepare_dataset.py \
+#     --input data/solana_clawd_seed.jsonl \
+#     --output data/processed \
+#     --push --repo-id solanaclawd/solana-clawd-instruct
+#
+#   # SFT training
+#   python3 scripts/train_lora.py --config configs/glm52_lora_config.yaml
+#
+#   # Evaluate
+#   python3 scripts/evaluate.py --config configs/glm52_lora_config.yaml
