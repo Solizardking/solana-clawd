@@ -75,8 +75,10 @@ echo
 
 hf jobs uv run "$ROOT_DIR/scripts/train_lora.py" \
   --flavor "$FLAVOR" \
-  --timeout 4h \
-  --secrets HF_TOKEN \
+  --timeout 6h \
+  --secrets HF_TOKEN,WANDB_API_KEY \
+  --env WANDB_PROJECT=clawd \
+  --env WANDB_ENTITY=clawdsolana-clawd \
   --env-file <(printf "HUGGING_FACE_HUB_TOKEN=%s\n" "${HF_TOKEN:-}") \
   --detach \
   -- --config "$CONFIG_PATH"

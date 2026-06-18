@@ -60,7 +60,7 @@ training:
   eval_steps: 200
   eval_strategy: "steps"
   report_to:
-    - "none"                    # add "wandb" / "tensorboard" if you want remote logging
+    - "wandb"                   # traces to clawdsolana-clawd/clawd project (WANDB_API_KEY required)
   seed: 42
   dataloader_num_workers: 2
   remove_unused_columns: false
