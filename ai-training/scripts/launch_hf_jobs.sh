@@ -78,6 +78,10 @@ hf jobs uv run "$ROOT_DIR/scripts/train_lora.py" \
   --timeout 6h \
   --env WANDB_PROJECT=clawd \
   --env WANDB_ENTITY=clawdsolana-clawd \
+  --env HF_HOME=/data/hf_cache \
+  --env TRANSFORMERS_CACHE=/data/hf_cache \
+  --env HF_DATASETS_CACHE=/data/hf_cache/datasets \
+  --env TRITON_CACHE_DIR=/data/triton_cache \
   --env-file <(printf "HUGGING_FACE_HUB_TOKEN=%s\nWANDB_API_KEY=%s\n" "${HF_TOKEN:-}" "${WANDB_API_KEY:-}") \
   --detach \
   -- --config "$CONFIG_PATH"

@@ -147,6 +147,7 @@ Clawd system prompt prepended where missing:
 | `trainingday.jsonl` | messages + `metadata` | 27,092 | Solana API/RPC docs — metadata stripped, system prompt injected |
 
 The Alpaca normalizer handles both layout variants in `solana1_yourgpt.jsonl`:
+
 - `instruction` non-empty → user = instruction (+ `\n\nContext:\n` + input if present)
 - `instruction` empty → user = `input` field (question was in the wrong column)
 
@@ -182,10 +183,11 @@ python3 scripts/prepare_dataset.py \
 This validates each example, splits 90/5/5, writes parquet for streaming
 access, and (with `--push`) uploads to the Hub dataset.
 
-**Current dataset stats** (pushed 2026-06-18):
-- Total: **36,109** examples
-- Train: **32,498** · Eval: **1,805** · Test: **1,806**
-- Parquet size: ~40.1 MB (train), ~2.3 MB (eval/test)
+**Current dataset stats** (pushed 2026-06-18, after clean_data.py):
+
+- Total: **30,365** examples (cleaned from 36,109 — removed noise, capped repetitive providers)
+- Train: **27,328** · Eval: **1,518** · Test: **1,519**
+- Parquet size: ~36.5 MB (train), ~2.0 MB (eval/test)
 
 ### 3. Train (local or remote)
 
@@ -213,24 +215,38 @@ hf jobs logs <JOB_ID> --follow
 hf jobs inspect <JOB_ID>
 ```
 
-#### Current training run (2026-06-18)
+#### Training run history
+
+| Run | Job ID | Status | Base model | Output |
+| --- | --- | --- | --- | --- |
+| Qwen2.5-1.5B (canceled) | `6a341687ef9220ea67d99583` | CANCELED (credits) | Qwen2.5-1.5B-Instruct | — |
+| DeepSolanaZKr-1 GLM-5.2 (v1) | `6a345ab22eb64285ee573432` | ERROR (ephemeral disk) | zai-org/GLM-5.2 | — |
+| **DeepSolanaZKr-1 GLM-5.2 (v2)** | **`6a345dd12eb64285ee5734b4`** | **RUNNING** | **zai-org/GLM-5.2** | **ordlibrary/DeepSolanaZKr-1** |
+
+> v1 failed with "ephemeral local storage exceeded" — GLM-5.2 weights + optimizer states filled the pod. Fixed in v2 by routing `HF_HOME`, `TRANSFORMERS_CACHE`, and `output_dir` to the mounted `/data` bucket.
+
+#### Current training run (2026-06-18) — DeepSolanaZKr-1 v2
 
 | Field | Value |
 | --- | --- |
-| Job ID | `6a341687ef9220ea67d99583` |
-| URL | [huggingface.co/jobs/ordlibrary/6a341687ef9220ea67d99583](https://huggingface.co/jobs/ordlibrary/6a341687ef9220ea67d99583) |
+| Job ID | `6a345dd12eb64285ee5734b4` |
+| URL | [huggingface.co/jobs/ordlibrary/6a345dd12eb64285ee5734b4](https://huggingface.co/jobs/ordlibrary/6a345dd12eb64285ee5734b4) |
 | Hardware | `a100-large` — NVIDIA A100 80GB |
-| Base model | `Qwen/Qwen2.5-1.5B-Instruct` |
-| Config | `configs/lora_config.yaml` — LoRA r=16, α=32, 3 epochs |
-| Dataset | `solanaclawd/solana-clawd-instruct` — 32,498 train examples |
-| Est. steps | ~6,093 (32,498 ÷ batch 16 × 3 epochs) |
-| Est. duration | ~1–2 hrs on A100 |
-| Output | `solanaclawd/solana-clawd-1.5b-lora` (pushed on completion) |
-| W&B | `clawdsolana-clawd/clawd` project |
+| Base model | `zai-org/GLM-5.2` |
+| Config | `configs/glm52_lora_config.yaml` — LoRA r=32, α=64, 3 epochs |
+| Dataset | `solanaclawd/solana-clawd-instruct` — 27,328 train examples (cleaned) |
+| Dataset changes | Removed 78 off-topic + 575 short answers; capped QN/Helius/Alchemy at 500 each; added 20 DeepSolanaZKr-1 ZK examples |
+| Est. steps | ~5,137 (27,328 ÷ batch 16 × 3 epochs) |
+| Est. duration | ~2–3 hrs on A100 (GLM-5.2 is 5.2B vs 1.5B) |
+| Output | `ordlibrary/DeepSolanaZKr-1` (pushed on completion) |
+| W&B | [`clawdsolana-clawd/clawd`](https://wandb.ai/clawdsolana-clawd/clawd) — live training metrics |
 
 ```bash
 # Watch live logs
-hf jobs logs 6a341687ef9220ea67d99583 --follow
+hf jobs logs 6a345dd12eb64285ee5734b4 --follow
+
+# Watch W&B metrics live
+# https://wandb.ai/clawdsolana-clawd/clawd
 ```
 
 ### 4. Evaluate
@@ -252,35 +268,46 @@ model served via the W&B Inference API, with structured traces in Weave.
 
 ```bash
 export WANDB_API_KEY=<your-key-from-wandb.ai/authorize>
+
+# Baseline (pre-fine-tune)
 python3 scripts/wandb_eval.py
+
+# Post-training eval against DeepSolanaZKr-1 (run after HF job 6a345dd1 completes)
+python3 scripts/wandb_eval.py --model ordlibrary/DeepSolanaZKr-1
+
 # Traces appear live at: https://wandb.ai/clawdsolana-clawd/clawd/weave
+# Run name auto-generated: eval-DeepSolanaZKr-1-hfjob-6a345dd1
 ```
 
-**Baseline eval results (2026-06-18)** — `OpenPipe/Qwen3-14B-Instruct` before fine-tune lands:
+**Eval run history:**
 
-| Metric | Result |
-| --- | --- |
-| Examples evaluated | 20 |
-| Format compliance (`<answer>` tags) | **100%** (20/20) |
-| Answer accuracy | **60%** (12/20) |
-| Mean latency | 689 ms |
-| Weave run | [019edb80-957d-70dc-9289-9a27b188e57b](https://wandb.ai/clawdsolana-clawd/clawd/r/call/019edb80-957d-70dc-9289-9a27b188e57b) |
+| Run | Model | Job | Accuracy | Format | Weave |
+| --- | --- | --- | --- | --- | --- |
+| Baseline | `OpenPipe/Qwen3-14B-Instruct` | — | **60%** (12/20) | 100% | [019edb80](https://wandb.ai/clawdsolana-clawd/clawd/r/call/019edb80-957d-70dc-9289-9a27b188e57b) |
+| Post-SFT | `ordlibrary/DeepSolanaZKr-1` | [6a345dd1](https://huggingface.co/jobs/ordlibrary/6a345dd12eb64285ee5734b4) | pending | pending | pending |
 
-Re-run after the LoRA job finishes to measure fine-tune delta against this baseline.
+Run the post-SFT eval once HF job `6a345dd12eb64285ee5734b4` completes to measure the fine-tune delta.
 
 ### 5. Deploy into Clawd agents
 
 ```python
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from peft import PeftModel
 
+# Option A — merged adapter (HF Jobs output, zero extra deps)
+pipe = pipeline("text-generation", model="ordlibrary/DeepSolanaZKr-1", trust_remote_code=True)
+messages = [{"role": "user", "content": "What is a Solana compressed account?"}]
+print(pipe(messages)[0]["generated_text"][-1]["content"])
+
+# Option B — base + LoRA adapter (if adapter-only was pushed)
 base = AutoModelForCausalLM.from_pretrained(
-    "Qwen/Qwen2.5-1.5B-Instruct",
+    "zai-org/GLM-5.2",
     torch_dtype="auto",
     device_map="auto",
+    trust_remote_code=True,
 )
-model = PeftModel.from_pretrained(base, "solanaclawd/solana-clawd-1.5b-lora")
-tokenizer = AutoTokenizer.from_pretrained("solanaclawd/solana-clawd-1.5b-lora")
+model = PeftModel.from_pretrained(base, "ordlibrary/DeepSolanaZKr-1")
+tokenizer = AutoTokenizer.from_pretrained("ordlibrary/DeepSolanaZKr-1", trust_remote_code=True)
 ```
 
 Or with `mlx-lm` on a Mac (fastest local path):
@@ -403,6 +430,7 @@ separate CPT stage entirely.
 ## Why Qwen2.5-1.5B?
 
 We picked `Qwen/Qwen2.5-1.5B-Instruct` as the base because:
+
 - **Size**: 1.5B fits in 4GB VRAM with 4-bit quantization, runs comfortably on a Mac M2 with MPS, and trains on a single 24GB GPU.
 - **Quality**: Qwen2.5 is a top-tier instruct model at this size, with strong code, reasoning, and tool-use ability.
 - **Tokenizer**: The Qwen tokenizer is multilingual and handles code / addresses / base58 well.
@@ -449,7 +477,7 @@ fine-tune is helpful training, not a replacement for the laws.
 ## Cost reference (HF Jobs, mid-2026)
 
 | Flavor | VRAM | $/hr | Use |
-|--------|-----:|-----:|-----|
+| --- | --- | --- | --- |
 | `l4x1` | 24GB | ~$0.80 | Quick checks, 1.5B-3B models |
 | `a10g-large` | 24GB | ~$1.00 | Slightly faster, same VRAM class |
 | `a100-large` | 80GB | ~$3.00 | Standard full training, 1.5B-7B |

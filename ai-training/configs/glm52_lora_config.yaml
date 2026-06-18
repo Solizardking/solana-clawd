@@ -35,7 +35,7 @@ train_split: "train"
 eval_split: "test"
 
 # Local fallback (used when Hub dataset is not yet pushed)
-dataset_path: "data/processed"
+dataset_path: "/data/processed"
 
 # DeepSolana CPT corpus (Stage 1 only)
 cpt_dataset_path: "data/deep_solana_corpus.jsonl"
@@ -44,7 +44,7 @@ cpt_text_field: "text"
 cpt_max_seq_length: 2048
 
 # ── Output ───────────────────────────────────────────────────────────────────
-output_dir: "./outputs/solana-clawd-glm52-lora"
+output_dir: "/data/outputs/solana-clawd-glm52-lora"
 push_to_hub: true
 hub_model_id: "ordlibrary/DeepSolanaZKr-1"
 hub_private: false
@@ -96,7 +96,7 @@ cpt_training:
   warmup_ratio: 0.01
   eval_strategy: "no"
   packing: true                     # pack short GPT-2 chunks for efficiency
-  output_dir: "./outputs/solana-clawd-glm52-cpt"
+  output_dir: "/data/outputs/solana-clawd-glm52-cpt"
   push_to_hub: false                # local only; push after SFT
 
 # ── Quantization ─────────────────────────────────────────────────────────────
@@ -126,7 +126,7 @@ eval:
   temperature: 0.2
   top_p: 0.9
   do_sample: true
-  output_dir: "./outputs/eval-glm52"
+  output_dir: "/data/outputs/eval-glm52"
   report_to: "json"
 
 # ── ZK primitives data ───────────────────────────────────────────────────────
