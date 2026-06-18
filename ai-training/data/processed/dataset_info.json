@@ -1,14 +1,15 @@
 {
-  "num_examples": 30365,
+  "num_examples": 30450,
   "splits": {
-    "train": 27328,
-    "eval": 1518,
-    "test": 1519
+    "train": 27405,
+    "eval": 1522,
+    "test": 1523
   },
   "schema": {
     "messages": "list[{role: str, content: str}]"
   },
   "source_files": [
-    "data/solana_clawd_merged.jsonl"
+    "data/solana_clawd_merged.jsonl",
+    "data/solana_clawd_seed.jsonl"
   ]
 }
