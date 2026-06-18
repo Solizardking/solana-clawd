@@ -369,6 +369,135 @@ ALL_TOOLS.append(get_top_holders)   # auto-registered in get_openai_tools()
 
 ---
 
+## Onchain Model Registry
+
+Every model trained with this kit gets a permanent, verifiable onchain identity anchored via the [`solana_ai_inference`](https://github.com/Solizardking/OnChain-Ai) Anchor program and indexed at [onchain.x402.wtf](https://onchain.x402.wtf). No centralized API needed — the PDA is queryable forever.
+
+### Layer 1 — Off-chain index (one curl, no wallet)
+
+The fastest path. Posts to the onchain.x402.wtf registry and returns a CAAP/1.0 JSON record. Good enough for discovery and routing.
+
+```bash
+# Auto-computes model hash from train_lora.py
+./dao/register_model.sh \
+  --hf-model "YOUR_ORG/your-model-id" \
+  --eval-accuracy 0.60 \
+  --dataset-size 36109
+
+# Dry run to preview the payload first
+./dao/register_model.sh --dry-run \
+  --hf-model "YOUR_ORG/your-model-id"
+
+# Manual curl (no shell dep)
+curl -X POST https://onchain.x402.wtf/api/register \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $HF_TOKEN" \
+  -d '{
+    "model_hash":    "sha256:<hash>",
+    "model_type":    "TextGeneration",
+    "api_endpoint":  "https://clawd-box-router.fly.dev/v1",
+    "hf_model_id":   "YOUR_ORG/your-model-id",
+    "dataset_size":  36109,
+    "eval_accuracy": 0.60,
+    "protocol":      "CAAP/1.0",
+    "clawd_token":   "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump",
+    "registered_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+  }'
+```
+
+Valid `model_type` values: `TextGeneration` | `SentimentAnalysis` | `ImageClassification` | `PricePrediction` | `DocumentUnderstanding`
+
+### Layer 2 — Onchain PDA (Anchor tx, permanent)
+
+Creates a `ModelRegistry` PDA at seeds `["model", authority.pubkey]`. Requires a funded Solana wallet (devnet) and pnpm.
+
+```bash
+# One command — the shell wrapper handles both layers automatically
+./dao/register_model.sh --onchain \
+  --hf-model   "YOUR_ORG/your-model-id" \
+  --endpoint   "https://clawd-box-router.fly.dev/v1" \
+  --cluster    devnet \
+  --keypair    ~/.config/solana/id.json
+
+# Or call the TypeScript client directly
+pnpm tsx dao/register_model.ts \
+  --model-hash  "sha256:$(sha256sum scripts/train_lora.py | awk '{print $1}')" \
+  --model-type  "TextGeneration" \
+  --endpoint    "https://clawd-box-router.fly.dev/v1" \
+  --reward-rate 1000000 \
+  --keypair     ~/.config/solana/id.json \
+  --cluster     devnet
+
+# Derive the PDA address without submitting a tx
+# seeds: ["model", authority.pubkey]
+# program: 3dLst2E3djtCSwG19mFS3REHxtZPngjyga7iYZLDL5xj
+
+# Verify the PDA after registration
+solana account <MODEL_REGISTRY_PDA> --url devnet --output json
+```
+
+### Layer 3 — ZK attestations (SAS + Light Protocol)
+
+Anchor model quality claims as verifiable, tamper-proof compressed credentials. ~0.00003 SOL per attestation with Light Protocol.
+
+```bash
+# Eval result attestation (ties W&B run to onchain PDA)
+pnpm tsx dao/attestation/create_attestation.ts \
+  --type      eval \
+  --model-id  "YOUR_ORG/your-model-id" \
+  --accuracy  0.60 \
+  --wandb-run "ktvtubjs" \
+  --keypair   ~/.config/solana/id.json \
+  --dry-run    # remove --dry-run to submit for real
+
+# Dataset snapshot attestation (Merkle root of 36K examples)
+pnpm tsx dao/attestation/create_attestation.ts \
+  --type      dataset \
+  --model-id  "YOUR_ORG/your-model-id" \
+  --size      36109 \
+  --hash      "sha256:$(sha256sum data/solana_clawd_merged.jsonl | awk '{print $1}')" \
+  --compressed \
+  --keypair   ~/.config/solana/id.json
+
+# LoRA adapter attestation (ties adapter weights to training run)
+pnpm tsx dao/attestation/create_attestation.ts \
+  --type          adapter \
+  --model-id      "YOUR_ORG/your-model-id" \
+  --base-model    "Qwen/Qwen2.5-1.5B-Instruct" \
+  --lora-r        16 \
+  --lora-alpha    32 \
+  --hash          "sha256:<adapter_sha256>" \
+  --keypair       ~/.config/solana/id.json
+```
+
+All attestation PDAs are logged to `dao/attestation/attestations.jsonl` and included in the CAAP/1.0 registry record automatically.
+
+### Query the registry
+
+```bash
+# Full index
+curl https://onchain.x402.wtf/.well-known/clawd-registry.json | python3 -m json.tool
+
+# Specific model
+curl "https://onchain.x402.wtf/api/models?hf_id=YOUR_ORG/your-model-id" | python3 -m json.tool
+
+# Verify an attestation onchain (no API trust)
+solana account <ATTESTATION_PDA> --url devnet --output json
+```
+
+### Program addresses
+
+| Address | Role |
+| --- | --- |
+| `3dLst2E3djtCSwG19mFS3REHxtZPngjyga7iYZLDL5xj` | `solana_ai_inference` Anchor program (devnet) |
+| `ATSPssFHEjvJgAXKkfAWNRqTQW9Wm6JDDVW7Ec1G3zM` | SAS attestation program |
+| `NFLx5WGPrTHHvdRNsidcrNcLxRruMC92E4yv7zhZBoT` | Light Protocol nullifier (compressed attestations) |
+| `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` | $CLAWD token mint |
+
+See [`onchainai.md`](onchainai.md) for the full skill reference including validator registration, `submit_data` attribution, and AutoResearch pipeline integration.
+
+---
+
 ## Limitations
 
 - **Small model**: 1.5B parameters — complex multi-step reasoning on obscure Solana
