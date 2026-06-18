@@ -12,6 +12,7 @@
 #   "huggingface_hub>=1.19.0",
 #   "pyyaml>=6.0",
 #   "safetensors>=0.5.0",
+#   "wandb>=0.19.0",
 # ]
 # ///
 """
@@ -55,6 +56,22 @@ from transformers import (
     BitsAndBytesConfig,
 )
 from trl import SFTConfig, SFTTrainer
+
+try:
+    import wandb  # noqa: F401
+    _WANDB_AVAILABLE = True
+except ImportError:
+    _WANDB_AVAILABLE = False
+
+
+def _resolve_report_to(report_to: list[str] | str) -> list[str]:
+    """Drop 'wandb' from report_to if wandb is not installed, avoiding a crash."""
+    if isinstance(report_to, str):
+        report_to = [report_to]
+    if not _WANDB_AVAILABLE and "wandb" in report_to:
+        print("WARNING: wandb not installed — removing from report_to. Install with: pip install wandb")
+        report_to = [r for r in report_to if r != "wandb"] or ["none"]
+    return report_to
 
 
 def parse_args() -> argparse.Namespace:
@@ -279,7 +296,7 @@ def main() -> None:
         dataset_text_field=cfg.get("cpt_text_field" if args.cpt_stage else "text_field", "text"),
         packing=sft_kwargs.get("packing", False),
         assistant_only_loss=sft_kwargs.get("assistant_only_loss", True),
-        report_to=train_kwargs.pop("report_to", ["none"]),
+        report_to=_resolve_report_to(train_kwargs.pop("report_to", ["none"])),
         **train_kwargs,
     )
 
