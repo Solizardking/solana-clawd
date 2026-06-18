@@ -221,18 +221,19 @@ hf jobs inspect <JOB_ID>
 | --- | --- | --- | --- | --- |
 | Qwen2.5-1.5B (canceled) | `6a341687ef9220ea67d99583` | CANCELED (credits) | Qwen2.5-1.5B-Instruct | — |
 | DeepSolanaZKr-1 GLM-5.2 (v1) | `6a345ab22eb64285ee573432` | ERROR (ephemeral disk) | zai-org/GLM-5.2 | — |
-| **DeepSolanaZKr-1 GLM-5.2 (v2)** | **`6a345dd12eb64285ee5734b4`** | **RUNNING** | **zai-org/GLM-5.2** | **ordlibrary/DeepSolanaZKr-1** |
+| DeepSolanaZKr-1 GLM-5.2 (v2) | `6a345dd12eb64285ee5734b4` | ERROR (model is 1TB+) | zai-org/GLM-5.2 | — |
+| **DeepSolanaZKr-1 Qwen2.5-7B** | **`6a3460cb2eb64285ee5734d9`** | **RUNNING** | **Qwen/Qwen2.5-7B-Instruct** | **ordlibrary/DeepSolanaZKr-1** |
 
-> v1 failed with "ephemeral local storage exceeded" — GLM-5.2 weights + optimizer states filled the pod. Fixed in v2 by routing `HF_HOME`, `TRANSFORMERS_CACHE`, and `output_dir` to the mounted `/data` bucket.
+> GLM-5.2 turned out to be a 1TB multimodal model (282 shards) — not the 5.2B text model we expected. Switched to Qwen2.5-7B-Instruct: 14.5GB bf16, fits cleanly on A100 80GB, stronger on code/Solana reasoning.
 
-#### Current training run (2026-06-18) — DeepSolanaZKr-1 v2
+#### Current training run (2026-06-18) — DeepSolanaZKr-1 Qwen2.5-7B
 
 | Field | Value |
 | --- | --- |
-| Job ID | `6a345dd12eb64285ee5734b4` |
-| URL | [huggingface.co/jobs/ordlibrary/6a345dd12eb64285ee5734b4](https://huggingface.co/jobs/ordlibrary/6a345dd12eb64285ee5734b4) |
+| Job ID | `6a3460cb2eb64285ee5734d9` |
+| URL | [huggingface.co/jobs/ordlibrary/6a3460cb2eb64285ee5734d9](https://huggingface.co/jobs/ordlibrary/6a3460cb2eb64285ee5734d9) |
 | Hardware | `a100-large` — NVIDIA A100 80GB |
-| Base model | `zai-org/GLM-5.2` |
+| Base model | `Qwen/Qwen2.5-7B-Instruct` |
 | Config | `configs/glm52_lora_config.yaml` — LoRA r=32, α=64, 3 epochs |
 | Dataset | `solanaclawd/solana-clawd-instruct` — 27,328 train examples (cleaned) |
 | Dataset changes | Removed 78 off-topic + 575 short answers; capped QN/Helius/Alchemy at 500 each; added 20 DeepSolanaZKr-1 ZK examples |
@@ -243,7 +244,7 @@ hf jobs inspect <JOB_ID>
 
 ```bash
 # Watch live logs
-hf jobs logs 6a345dd12eb64285ee5734b4 --follow
+hf jobs logs 6a3460cb2eb64285ee5734d9 --follow
 
 # Watch W&B metrics live
 # https://wandb.ai/clawdsolana-clawd/clawd
@@ -272,11 +273,11 @@ export WANDB_API_KEY=<your-key-from-wandb.ai/authorize>
 # Baseline (pre-fine-tune)
 python3 scripts/wandb_eval.py
 
-# Post-training eval against DeepSolanaZKr-1 (run after HF job 6a345dd1 completes)
+# Post-training eval against DeepSolanaZKr-1 (run after HF job 6a3460cb completes)
 python3 scripts/wandb_eval.py --model ordlibrary/DeepSolanaZKr-1
 
 # Traces appear live at: https://wandb.ai/clawdsolana-clawd/clawd/weave
-# Run name auto-generated: eval-DeepSolanaZKr-1-hfjob-6a345dd1
+# Run name auto-generated: eval-DeepSolanaZKr-1-hfjob-6a3460cb
 ```
 
 **Eval run history:**
@@ -284,9 +285,9 @@ python3 scripts/wandb_eval.py --model ordlibrary/DeepSolanaZKr-1
 | Run | Model | Job | Accuracy | Format | Weave |
 | --- | --- | --- | --- | --- | --- |
 | Baseline | `OpenPipe/Qwen3-14B-Instruct` | — | **60%** (12/20) | 100% | [019edb80](https://wandb.ai/clawdsolana-clawd/clawd/r/call/019edb80-957d-70dc-9289-9a27b188e57b) |
-| Post-SFT | `ordlibrary/DeepSolanaZKr-1` | [6a345dd1](https://huggingface.co/jobs/ordlibrary/6a345dd12eb64285ee5734b4) | pending | pending | pending |
+| Post-SFT | `ordlibrary/DeepSolanaZKr-1` | [6a3460cb](https://huggingface.co/jobs/ordlibrary/6a3460cb2eb64285ee5734d9) | pending | pending | pending |
 
-Run the post-SFT eval once HF job `6a345dd12eb64285ee5734b4` completes to measure the fine-tune delta.
+Run the post-SFT eval once HF job `6a3460cb2eb64285ee5734d9` completes to measure the fine-tune delta.
 
 ### 5. Deploy into Clawd agents
 
@@ -295,19 +296,18 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from peft import PeftModel
 
 # Option A — merged adapter (HF Jobs output, zero extra deps)
-pipe = pipeline("text-generation", model="ordlibrary/DeepSolanaZKr-1", trust_remote_code=True)
+pipe = pipeline("text-generation", model="ordlibrary/DeepSolanaZKr-1")
 messages = [{"role": "user", "content": "What is a Solana compressed account?"}]
 print(pipe(messages)[0]["generated_text"][-1]["content"])
 
 # Option B — base + LoRA adapter (if adapter-only was pushed)
 base = AutoModelForCausalLM.from_pretrained(
-    "zai-org/GLM-5.2",
+    "Qwen/Qwen2.5-7B-Instruct",
     torch_dtype="auto",
     device_map="auto",
-    trust_remote_code=True,
 )
 model = PeftModel.from_pretrained(base, "ordlibrary/DeepSolanaZKr-1")
-tokenizer = AutoTokenizer.from_pretrained("ordlibrary/DeepSolanaZKr-1", trust_remote_code=True)
+tokenizer = AutoTokenizer.from_pretrained("ordlibrary/DeepSolanaZKr-1")
 ```
 
 Or with `mlx-lm` on a Mac (fastest local path):

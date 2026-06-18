@@ -24,7 +24,7 @@ Dataset:   weave:///wandb/json-qa/object/json-qa:v3
 
 Training runs:
   Baseline (Qwen3-14B, pre-finetune):  019edb80-957d-70dc-9289-9a27b188e57b  accuracy=60%
-  GLM-5.2 DeepSolanaZKr-1 (job 6a345dd12eb64285ee5734b4): pending completion (relaunched with /data storage fix)
+  Qwen2.5-7B DeepSolanaZKr-1 (job 6a3460cb2eb64285ee5734d9): pending completion
 """
 
 import argparse
@@ -40,7 +40,7 @@ WANDB_PROJECT  = "clawdsolana-clawd/clawd"
 WANDB_BASE_URL = "https://api.inference.wandb.ai/v1"
 
 # Current HF Jobs training run — update after each relaunch
-CURRENT_HF_JOB = "6a345dd12eb64285ee5734b4"
+CURRENT_HF_JOB = "6a3460cb2eb64285ee5734d9"
 CURRENT_MODEL  = "ordlibrary/DeepSolanaZKr-1"
 
 

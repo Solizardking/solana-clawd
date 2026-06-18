@@ -20,7 +20,7 @@
 #   ./scripts/launch_hf_jobs.sh a100-large --config configs/glm52_lora_config.yaml
 
 # ── Base model ──────────────────────────────────────────────────────────────
-base_model: "zai-org/GLM-5.2"
+base_model: "Qwen/Qwen2.5-7B-Instruct"
 model_revision: "main"
 torch_dtype: "bfloat16"
 device_map: "auto"
@@ -117,7 +117,7 @@ sft:
 # ── Evaluation ───────────────────────────────────────────────────────────────
 # Mirrors eval_config.yaml — run after training with scripts/evaluate.py
 eval:
-  base_model: "zai-org/GLM-5.2"
+  base_model: "Qwen/Qwen2.5-7B-Instruct"
   adapter_repo: "ordlibrary/DeepSolanaZKr-1"
   eval_dataset_repo: "solanaclawd/solana-clawd-eval"
   eval_split: "test"
@@ -144,13 +144,13 @@ zk_examples_script: "scripts/add_zk_examples.py"
 zk_examples_source: "../zk-primitives"  # relative to ai-training/
 
 # ── Notes ────────────────────────────────────────────────────────────────────
-# GLM-5.2 model details:
-#   - Architecture: GLM (General Language Model) 5.2B parameters
-#   - Context: 4096+ tokens
+# Qwen2.5-7B-Instruct model details:
+#   - Architecture: Qwen2.5, 7.6B parameters
+#   - Context: 32K tokens natively (supports up to 128K with RoPE scaling)
 #   - Chat format: standard messages schema (system/user/assistant)
-#   - trust_remote_code: required
-#   - Module names: auto-detected via "all-linear" — covers all variants
-#     (GLM-4 uses query_key_value+dense; GLM-5.x may use q/k/v_proj)
+#   - trust_remote_code: not required
+#   - Module names: auto-detected via "all-linear" — covers q/k/v/o_proj + mlp
+#   - bf16 size: ~14.5GB — fits with room to spare on A100 80GB
 #
 # Full pipeline (copy-paste):
 #   cd ai-training

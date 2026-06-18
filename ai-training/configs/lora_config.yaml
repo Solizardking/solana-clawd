@@ -17,7 +17,7 @@ train_split: "train"
 eval_split: "test"
 
 # Output
-output_dir: "./outputs/solana-clawd-1.5b-lora"
+output_dir: "/data/outputs/solana-clawd-1.5b-lora"
 push_to_hub: true
 hub_model_id: "solanaclawd/solana-clawd-1.5b-lora"
 hub_private: false
