@@ -1,14 +1,9 @@
 ---
-# ── HF Metadata (required for Hub) ────────────────────────────────────────────
-# Replace every <PLACEHOLDER> before pushing to the Hub.
 language: en
 license: apache-2.0
 base_model: Qwen/Qwen2.5-1.5B-Instruct
-# Other common bases:
-#   NousResearch/Hermes-3-Llama-3.1-8B   ← tool-use / perps function calling
-#   meta-llama/Llama-3.2-1B-Instruct     ← ultra-small edge deployment
 datasets:
-  - solanaclawd/solana-clawd-instruct    # replace with your dataset repo ID
+  - solanaclawd/solana-clawd-instruct
 tags:
   - solana
   - defi
@@ -17,12 +12,8 @@ tags:
   - lora
   - peft
   - constitutional-ai
-  # add one of these if applicable:
-  # - function-calling   ← Hermes-3 tool-use model
-  # - code               ← if this model is code-specialized
 library_name: peft
 pipeline_tag: text-generation
-# ──────────────────────────────────────────────────────────────────────────────
 ---
 
 # Solana Clawd 1.5B LoRA
@@ -31,13 +22,64 @@ A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana development, DeFi reasoning
 
 **Base model**: [Qwen/Qwen2.5-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct)  
 **Adapter type**: LoRA (r=16, alpha=32, ~9M trainable params / 0.6% of base)  
-**Training data**: [solanaclawd/solana-clawd-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct)  
+**Training data**: [solanaclawd/solana-clawd-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) — 36,109 examples  
 **Training config**: `ai-training/configs/lora_config.yaml`  
 **Hub model ID**: `solanaclawd/solana-clawd-1.5b-lora`
 
 > **Tool-use / function calling?** Use the 8B Hermes-3 base with
 > `configs/hermes3_lora_config.yaml` and the `perps/` function-calling suite
 > (13 tools: funding rate, paper trade, risk assessment, Jupiter quotes).
+
+---
+
+## Fork this to train your own Clawd
+
+Everything below is a working example — swap in your own HF org, dataset, and base model to get your own fine-tuned Solana agent in one sitting.
+
+```bash
+# 0. Clone + install
+git clone https://github.com/Solizardking/solana-clawd
+cd solana-clawd/ai-training
+pip install -r requirements.txt
+export HF_TOKEN=hf_...           # huggingface.co/settings/tokens (write access)
+export WANDB_API_KEY=...         # wandb.ai/authorize (optional, enables live charts)
+
+# 1. (Optional) bring your own data — append to the merged dataset
+#    Format: {"messages": [{"role": "system", ...}, {"role": "user", ...}, {"role": "assistant", ...}]}
+#    Then re-run prepare_dataset.py with your JSONL added to the --input list.
+
+# 2. Push the dataset to your HF org (or reuse ours — skip if using solanaclawd/solana-clawd-instruct)
+python3 scripts/prepare_dataset.py \
+  --input data/solana_clawd_merged.jsonl \
+  --output data/processed \
+  --train-ratio 0.9 --eval-ratio 0.05 \
+  --seed 42 \
+  --push --repo-id YOUR_ORG/your-dataset-id
+
+# 3. Train on a remote A100 (recommended — ~$3–6 for the full 36K × 3-epoch run)
+./scripts/launch_hf_jobs.sh a100-large   # or h200, l4x1
+
+# 4. Train locally on Mac MPS (sanity check, 1 epoch)
+python3 scripts/train_lora.py --num-epochs 1 --no-quant
+
+# 5. Watch live training logs
+hf jobs ps
+hf jobs logs <JOB_ID> --follow
+
+# 6. Register your model to the onchain Clawd registry (off-chain index — no wallet needed)
+./dao/register_model.sh \
+  --hf-model "YOUR_ORG/your-model-id" \
+  --eval-accuracy 0.60 \
+  --dataset-size 36109
+
+# 7. Serve locally with Ollama
+ollama create my-clawd -f ollama/Modelfile.finetuned
+ollama run my-clawd "How do I detect a rug pull on a fresh Solana token?"
+```
+
+The entire pipeline — dataset → train → eval → onchain registry — is designed to
+be reproducible from a single clone. The only external requirement is a Hugging
+Face account with write access (free tier works).
 
 ---
 
@@ -90,9 +132,9 @@ Check every domain your training data covers:
 | Max sequence length | 4096 tokens |
 | Quantization | 4-bit NF4 double-quant at training (CUDA only) |
 | Loss | Assistant-only (system + user tokens masked) |
-| Training hardware | Not yet recorded in-repo; use `outputs/` + HF Jobs logs for the first canonical run |
-| Training time | Not yet recorded in-repo; populate after the first successful adapter export |
-| Dataset size | 47 curated conversations -> 42/2/3 train/eval/test split |
+| Training hardware | NVIDIA A100 80GB (HF Jobs `a100-large`) |
+| Training time | ~1–2 hrs on A100 for the 36K × 3-epoch run |
+| Dataset size | 36,109 conversations → 32,498 / 1,805 / 1,806 train/eval/test |
 | Dataset seed | 42 (deterministic splits) |
 
 ### Fireworks managed SFT run
@@ -131,21 +173,19 @@ cd /path/to/solana-clawd/ai-training
 pip install -r requirements.txt
 export HF_TOKEN=hf_...
 
-# 1. Prepare dataset
+# 1. Prepare dataset (uses the 36K merged file — canonical training input)
 python3 scripts/prepare_dataset.py \
-  --input data/solana_clawd_seed.jsonl \
+  --input data/solana_clawd_merged.jsonl \
   --output data/processed \
+  --train-ratio 0.9 --eval-ratio 0.05 \
+  --seed 42 \
   --push --repo-id solanaclawd/solana-clawd-instruct
 
-# 2. Train (local)
-python3 scripts/train_lora.py \
-  --config configs/lora_config.yaml \
-  --dataset-repo solanaclawd/solana-clawd-instruct \
-  --output-dir ./outputs/solana-clawd-1.5b-lora \
-  --hub-model-id solanaclawd/solana-clawd-1.5b-lora
-
-# 3. Train (remote GPU — recommended for speed)
+# 2. Train (remote GPU — recommended)
 ./scripts/launch_hf_jobs.sh a100-large   # or h200, l4x1, a100x4
+
+# 3. Train (local Mac MPS — sanity check, 1 epoch)
+python3 scripts/train_lora.py --num-epochs 1 --no-quant
 ```
 
 ---
@@ -241,6 +281,94 @@ python3 ai-training/perps/functioncall.py \
 
 ---
 
+## Solana Perps Tool Template (included in the kit)
+
+The `perps/` directory is a drop-in tool library for building Solana perpetuals
+agents. It works out of the box with **no API keys** for read-only data, and
+plugs directly into any Hermes-3 or OpenAI-compatible function-calling loop.
+
+### 13 tools included
+
+| Tool | What it does |
+| --- | --- |
+| `get_sol_price` | SOL price + 24h change from CoinGecko |
+| `get_token_price` | Any Solana token by symbol or mint |
+| `get_perp_markets` | Phoenix DEX perp markets (mark price, OI, volume, funding) |
+| `get_funding_rate` | Hourly + 8h + annualized funding rate for a market |
+| `get_orderbook` | Phoenix order book (top N bids/asks, spread) |
+| `check_positions` | Open perp positions for a wallet |
+| `check_sol_balance` | SOL + USD balance for a wallet |
+| `get_jupiter_quote` | Best swap route + price impact via Jupiter v6 |
+| `paper_trade` | Simulate a perp entry (mark price, liq price, margin, funding cost) |
+| `get_market_overview` | Snapshot: SOL price, TPS, epoch, top markets |
+| `get_trader_history` | Recent fills + realized PnL on Phoenix |
+| `send_sol` | Transfer SOL (paper mode by default; LIVE_TRADING=true for real) |
+| `assess_position_risk` | Liq price, max loss, 24h funding cost, 1–10 risk score |
+
+### Quick start
+
+```python
+# Plug the tool library into any OpenAI-compatible function-calling agent
+from perps.functions import get_openai_tools, call_function
+
+tools = get_openai_tools()   # returns all 13 tools in OpenAI tool format
+
+# Call a tool directly (no model needed)
+import json
+print(json.dumps(call_function("get_sol_price", {}), indent=2))
+print(json.dumps(call_function("assess_position_risk", {
+    "market": "SOL-PERP", "side": "long", "size_usd": 500, "leverage": 3
+}), indent=2))
+```
+
+```bash
+# Run the full Hermes-3 perps agent (HF Router — no GPU)
+python3 perps/functioncall.py --query "What's the SOL-PERP funding rate? Should I go long?"
+
+# GOAP multi-step reasoning mode
+python3 perps/functioncall.py --goap \
+  --query "Assess the risk of shorting SOL-PERP with $1000 at 5x leverage"
+
+# Local Hermes-3 (needs GPU or quantized model)
+HERMES_LOCAL=1 python3 perps/functioncall.py \
+  --query "Paper trade: long SOL-PERP $500 at 3x"
+```
+
+### Pydantic schemas (for structured output)
+
+```python
+from perps.schema import TradeOrder, RiskAssessment, MarketSignal
+
+# Force the model to emit a valid TradeOrder JSON
+# Pass schema.TradeOrder.schema_json() as the response_format to any OpenAI client
+```
+
+### Adding your own tools
+
+```python
+# perps/functions.py — add a new tool with the @tool decorator
+from functions import tool, ALL_TOOLS
+
+@tool(
+    description="Get the top token holders for a mint (uses Helius DAS).",
+    parameters={
+        "type": "object",
+        "properties": {
+            "mint": {"type": "string", "description": "Token mint address"},
+            "limit": {"type": "integer", "description": "Number of holders", "default": 10},
+        },
+        "required": ["mint"],
+    }
+)
+def get_top_holders(mint: str, limit: int = 10) -> dict:
+    # your implementation here
+    return {"mint": mint, "holders": []}
+
+ALL_TOOLS.append(get_top_holders)   # auto-registered in get_openai_tools()
+```
+
+---
+
 ## Limitations
 
 - **Small model**: 1.5B parameters — complex multi-step reasoning on obscure Solana
@@ -280,11 +408,11 @@ For any production trading or financial application, apply independent review.
 ## Citation
 
 ```bibtex
-@misc{solana-clawd-YOUR-MODEL-ID,
-  title     = {<MODEL NAME>},
+@misc{solana-clawd-1.5b-lora,
+  title     = {Solana Clawd 1.5B LoRA — Onchain Model Kit},
   author    = {solanaclawd},
   year      = {2026},
   url       = {https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora},
-  note      = {LoRA fine-tune of Qwen2.5-1.5B-Instruct on Solana DeFi + agent data}
+  note      = {LoRA fine-tune of Qwen2.5-1.5B-Instruct on 36K Solana DeFi + agent data. Part of the Onchain Model Kit.}
 }
 ```
