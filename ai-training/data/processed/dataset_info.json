@@ -1,9 +1,9 @@
 {
-  "num_examples": 36109,
+  "num_examples": 30365,
   "splits": {
-    "train": 32498,
-    "eval": 1805,
-    "test": 1806
+    "train": 27328,
+    "eval": 1518,
+    "test": 1519
   },
   "schema": {
     "messages": "list[{role: str, content: str}]"
