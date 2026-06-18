@@ -60,7 +60,7 @@ training:
   eval_steps: 200
   eval_strategy: "steps"
   report_to:
-    - "wandb"                   # traces to clawdsolana-clawd/clawd project (WANDB_API_KEY required)
+    - "none"                    # set WANDB_API_KEY locally then switch back to "wandb"
   seed: 42
   dataloader_num_workers: 2
   remove_unused_columns: false
