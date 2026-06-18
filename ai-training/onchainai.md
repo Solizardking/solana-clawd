@@ -18,6 +18,7 @@
 | Ollama | `ollama/` | Modelfile templates for local serving after weight merge |
 
 One-shot training path:
+
 ```bash
 git clone https://github.com/Solizardking/solana-clawd && cd solana-clawd/ai-training
 pip install -r requirements.txt && export HF_TOKEN=hf_...
@@ -360,7 +361,7 @@ Each cycle: fetch → summarize → append to JSONL → `submit_data` PDA onchai
 
 ## Decision tree for the agent
 
-```
+```text
 User wants to register a model?
   → No wallet / quick path   → use section 1 (curl)
   → Permanent onchain record → use section 2 (Anchor)
