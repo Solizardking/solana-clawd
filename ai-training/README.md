@@ -45,19 +45,32 @@ ai-training/
 │   ├── evaluate.py                 ← held-out inference eval
 │   ├── wandb_eval.py               ← W&B Weave benchmark eval (JSON QA, traces to clawdsolana-clawd/clawd)
 │   ├── launch_hf_jobs.sh           ← submit remote GPU job (passes WANDB_API_KEY, 6h timeout)
+│   ├── auto_research.py            ← Percolator-style recursive wiki generator (see §Percolator AutoResearch)
 │   ├── hermes3_inference.py        ← 3-mode Hermes-3 inference: HF Router / pipeline / direct
 │   ├── solana_client.py            ← 8-command Solana RPC tool (wallet/tx/token/nft/whales/stats/price)
 │   ├── download_deep_solana.py     ← DeepSolana-GPT2-bucket downloader + GPT-2→text decoder
 │   └── add_v2_examples.py          ← one-off script that seeded the v2 dataset examples
-├── perps/                          ← Hermes-3 function calling for Solana perps
+├── perps/                          ← Hermes-3 function calling for Solana perps (example agent space)
 │   ├── functions.py                ← 13 perps tools (sol price, funding rate, paper trade, risk...)
 │   ├── functioncall.py             ← HermesPerpsAgent inference loop (HF Router / local, GOAP mode)
 │   ├── schema.py                   ← Pydantic models: FunctionCall, TradeOrder, RiskAssessment...
 │   └── prompter.py                 ← system prompt builder (standard / GOAP / JSON mode)
+├── dao/                            ← Onchain AI registry + DAO governance
+│   ├── DAO_DESIGN.md               ← Architecture, safety constraints, governance flows
+│   ├── register_model.sh           ← One-shot curl model registration to onchain.x402.wtf
+│   ├── register_model.ts           ← TypeScript: initialize_model Anchor instruction
+│   └── attestation/
+│       ├── create_attestation.ts   ← SAS compressed attestation for dataset/eval/adapter artifacts
+│       └── attestations.jsonl      ← Local index of created attestations
 ├── dataset_card.md                 ← dataset README (upload to Hub)
 ├── model_card.md                   ← model README (upload to Hub)
+├── outputs/                        ← Community article, model cards (gitignored checkpoints)
+│   ├── community-article.md        ← First public announcement (HF blog)
+│   └── Clawd-GLM-5.2-README.md    ← GLM-5.2 model card
 ├── checkpoints/                    ← (gitignored) LoRA adapter weights
-└── outputs/                        ← (gitignored) eval reports
+└── data/
+    ├── research_manifest.db        ← SQLite: visited URLs for AutoResearch dedup
+    └── autoResearch.jsonl          ← AutoResearch output (appended each cycle)
 ```
 
 See also: [`skills/solana-rpc/SKILL.md`](../skills/solana-rpc/SKILL.md) — the
@@ -649,12 +662,181 @@ will pick it up automatically.
 - **Base model** (Qwen2.5): Qwen Research License
 - **Adapter** (when published): Apache-2.0
 
+## Percolator AutoResearch
+
+Continuous training data generation inspired by [percolator-meta](https://github.com/aeyakovenko/percolator-meta).
+Fetches Solana ecosystem documents recursively, extracts QA pairs using Clawd-1.5B, gates on quality,
+and appends to the training dataset — creating a self-improving loop.
+
+```text
+Seed URLs (llms.txt / docs / papers)
+  ↓ fetch → extract claims + child links
+  ↓ Clawd summarize → {"question": ..., "answer": ...}
+  ↓ eval gate (Solana-keyword relevance ≥ 2)
+  ↓ if quality → append to data/autoResearch.jsonl
+  ↓ increment DataSubmission PDA attribution (onchain)
+  ↓ recurse into child links (depth-limited, SQLite dedup)
+```
+
+```bash
+# Single research cycle — Solana + Phoenix docs
+python3 scripts/auto_research.py \
+  --seed-urls \
+    https://docs.solanalabs.com/llms.txt \
+    https://docs.phoenix.trade/llms.txt \
+    https://www.zkcompression.com/llms.txt \
+  --depth 2 \
+  --output data/autoResearch.jsonl
+
+# Continuous loop — runs every 6h, pushes new examples to Hub
+python3 scripts/auto_research.py \
+  --seed-urls https://docs.solanalabs.com/llms.txt \
+  --depth 3 \
+  --loop --interval-hours 6 \
+  --push-to-hub solanaclawd/solana-clawd-instruct
+
+# Uses ClawdRouter free tier by default (clawd_free_* key)
+# Override with: --api-base https://clawd-box-router.fly.dev/v1 --api-key $HF_TOKEN
+```
+
+The SQLite manifest at `data/research_manifest.db` tracks every visited URL — no page is fetched twice across cycles. Output goes to `data/autoResearch.jsonl` in the same `{"messages": [...]}` format as the rest of the training data and can be merged directly.
+
+---
+
+## Onchain AI Registry
+
+Every Clawd model has a permanent onchain identity anchored via the [`solana_ai_inference`](https://github.com/Solizardking/OnChain-Ai) Anchor program (`3dLst2E3djtCSwG19mFS3REHxtZPngjyga7iYZLDL5xj`) and indexed at [onchain.x402.wtf](https://onchain.x402.wtf).
+
+### One-shot curl registration (off-chain index only)
+
+```bash
+./dao/register_model.sh \
+  --hf-model "solanaclawd/solana-clawd-1.5b" \
+  --eval-accuracy 0.60 \
+  --dataset-size 36109
+
+# With auto-computed hash from train_lora.py:
+./dao/register_model.sh \
+  --hf-model "solanaclawd/solana-clawd-1.5b" \
+  --model-hash "sha256:$(sha256sum scripts/train_lora.py | awk '{print $1}')"
+```
+
+### Full onchain registration (creates ModelRegistry PDA)
+
+```bash
+# Requires: funded Solana wallet, pnpm, @coral-xyz/anchor installed
+./dao/register_model.sh --onchain \
+  --hf-model "solanaclawd/solana-clawd-1.5b" \
+  --keypair ~/.config/solana/id.json \
+  --cluster devnet
+```
+
+This calls `initialize_model(model_hash, ModelType::TextGeneration, api_endpoint, term_reward_rate)` which creates a `ModelRegistry` PDA at `["model", authority.pubkey]`. The PDA stores accuracy, validation count, training status, and the CLAWD reward rate — all queryable without a centralized API.
+
+```bash
+# Verify onchain registration
+solana account <MODEL_REGISTRY_PDA> --url devnet --output json
+```
+
+### CAAP/1.0 registry format
+
+The off-chain index at `onchain.x402.wtf/.well-known/clawd-registry.json` maps model IDs to their capabilities and onchain anchors:
+
+```json
+{
+  "protocol": "CAAP/1.0",
+  "registry": [{
+    "model_id": "solanaclawd/solana-clawd-1.5b",
+    "capabilities": ["solana-dev", "protocol-qa", "anchor-codegen"],
+    "eval_accuracy": 0.60,
+    "sas_attestation": "At1...",
+    "program_pda": "...",
+    "clawd_token_gate": "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+  }]
+}
+```
+
+---
+
+## ZK Attestations (zk.x402.wtf)
+
+Model quality claims are anchored as compressed on-chain credentials using [Solana Attestation Service (SAS)](https://github.com/solana-foundation/solana-attestation-service) and [Light Protocol V2](https://www.zkcompression.com).
+
+| Artifact | Type | Cost |
+| --- | --- | --- |
+| Dataset snapshot (36K examples Merkle root) | compressed | ~0.00003 SOL |
+| LoRA adapter checksum | compressed | ~0.00003 SOL |
+| W&B Weave eval result | standard | ~0.002 SOL |
+| Governance proposal | standard + nullifier | ~0.003 SOL |
+
+```bash
+# Create eval attestation (dry run first)
+pnpm tsx dao/attestation/create_attestation.ts \
+  --type eval \
+  --model-id "solanaclawd/solana-clawd-1.5b" \
+  --accuracy 0.60 \
+  --wandb-run "ktvtubjs" \
+  --keypair ~/.config/solana/id.json \
+  --dry-run
+
+# Create dataset attestation (compressed, mainnet)
+pnpm tsx dao/attestation/create_attestation.ts \
+  --type dataset \
+  --model-id "solanaclawd/solana-clawd-1.5b" \
+  --size 36109 \
+  --hash "sha256:$(sha256sum data/solana_clawd_merged.jsonl | awk '{print $1}')" \
+  --compressed \
+  --keypair ~/.config/solana/id.json
+```
+
+Attestation addresses are written to `dao/attestation/attestations.jsonl` and included in the CAAP/1.0 registry. Verify any attestation without trusting the Clawd team:
+
+```bash
+solana account <ATTESTATION_PDA> --url mainnet-beta --output json
+```
+
+---
+
+## DAO & Governance
+
+See [`dao/DAO_DESIGN.md`](dao/DAO_DESIGN.md) for the full architecture. Summary:
+
+**Hard constraints:**
+
+- User capital lives in Percolator insurance pools — genesis programs never touch it
+- All authority changes require 1-week Squads timelock (non-reducible, even by governance vote)
+- 3-of-5 multisig emergency pause covers trading only — withdrawals are always open
+
+**What governance controls:** model training priorities, dataset curation budget, compute allocation, registry parameters, validator slashing thresholds
+
+**Validator network** (from `solana_ai_inference` IDL):
+
+- `become_validator(stake_amount)` — register and stake
+- `submit_data(data_hash, DataType, size, metadata)` — submit training data for attribution
+- `rate_data(quality_score, term_reward)` — validators score submissions (0–100)
+- Quality × `term_reward_rate` = $CLAWD attribution per validated example
+
+---
+
+## Public announcement
+
+The first Solana Clawd community article is at [`outputs/community-article.md`](outputs/community-article.md) — ready to publish at [huggingface.co/blog/solanaclawd](https://huggingface.co/blog/solanaclawd). It covers the model family, 36K dataset, perps agent example, Percolator AutoResearch, onchain registry, ZK attestations, and DAO safety design.
+
+---
+
 ## See also
 
 - [`AGENTS.md`](../AGENTS.md) — the Clawd agent catalog
 - [`CONSTITUTION.md`](../CONSTITUTION.md) — the Clawd Constitution
 - [`three-laws.md`](../three-laws.md) — the three on-chain laws
+- [`dao/DAO_DESIGN.md`](dao/DAO_DESIGN.md) — DAO architecture and safety model
+- [onchain.x402.wtf](https://onchain.x402.wtf) — onchain AI registry
+- [zk.x402.wtf](https://zk.x402.wtf) — ZK attestation layer
+- [Percolator meta](https://github.com/aeyakovenko/percolator-meta) — recursive research pattern
+- [Vulcan CLI](https://github.com/Ellipsis-Labs/vulcan-cli) — Phoenix perps trading CLI with MCP
 - [Hugging Face `hf` CLI docs](https://huggingface.co/docs/huggingface_hub/guides/cli)
 - [TRL SFTTrainer](https://huggingface.co/docs/trl/sft_trainer)
 - [PEFT LoRA](https://huggingface.co/docs/peft/main/en/index)
 - [HF Jobs](https://huggingface.co/docs/hub/en/spaces-sdks-docker)
+- [Solana Attestation Service](https://github.com/solana-foundation/solana-attestation-service)
+- [Light Protocol ZK compression](https://www.zkcompression.com)
