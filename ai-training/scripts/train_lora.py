@@ -58,8 +58,12 @@ from transformers import (
 from trl import SFTConfig, SFTTrainer
 
 try:
-    import wandb  # noqa: F401
+    import os
+    import wandb
     _WANDB_AVAILABLE = True
+    _wandb_key = os.environ.get("WANDB_API_KEY")
+    if _wandb_key:
+        wandb.login(key=_wandb_key, relogin=True)
 except ImportError:
     _WANDB_AVAILABLE = False
 
