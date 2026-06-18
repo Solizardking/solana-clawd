@@ -17,8 +17,7 @@ tags:
   # - function-calling   ← if dataset includes tool-call examples
   # - code               ← if dataset includes code generation examples
 size_categories:
-  - n<1K              # 47 seed examples currently committed
-  # options: n<1K | 1K<n<10K | 10K<n<100K | 100K<n<1M
+  - 10K<n<100K        # 36,109 examples (32,498 train / 1,805 eval / 1,806 test)
 pretty_name: Solana Clawd Instruct
 # ──────────────────────────────────────────────────────────────────────────────
 ---
@@ -67,16 +66,16 @@ locks in to the Clawd voice and constitutional guardrails.
 
 ## Splits
 
-Produced by `scripts/prepare_dataset.py` from `data/solana_clawd_seed.jsonl` (90/5/5, seed=42).
-A separate held-out file `data/solana_clawd_eval.jsonl` is never seen during training.
+Produced by `scripts/prepare_dataset.py` from `data/solana_clawd_merged.jsonl` (90/5/5, seed=42).
+A separate held-out file `data/solana_clawd_eval.jsonl` (13 red-team + capability examples) is never seen during training.
 
 | Split | Examples | Use |
 | --- | --- | --- |
-| `train` | 42 | SFT training |
-| `eval` | 2 | Training-time validation loss |
-| `test` | 3 | Held-out smoke evaluation |
+| `train` | 32,498 | SFT training |
+| `eval` | 1,805 | Training-time validation loss |
+| `test` | 1,806 | Held-out evaluation |
 
-Splits are deterministic (`seed=42`). Current committed metadata comes from `data/processed/dataset_info.json`.
+Splits are deterministic (`seed=42`). Parquet + Arrow outputs are at `data/processed/`.
 
 ### Reproduce
 
@@ -85,14 +84,18 @@ cd /path/to/solana-clawd/ai-training
 pip install -r requirements.txt
 export HF_TOKEN=hf_...
 
+# Canonical 36K dataset
 python3 scripts/prepare_dataset.py \
-  --input data/solana_clawd_seed.jsonl \
+  --input data/solana_clawd_merged.jsonl \
   --output data/processed \
   --train-ratio 0.9 --eval-ratio 0.05 \
   --seed 42 \
   --push \
-  --repo-id solanaclawd/solana-clawd-instruct \
-  --private
+  --repo-id solanaclawd/solana-clawd-instruct
+
+# To add your own data: normalize to {"messages": [...]} format and merge in
+# cat my_source.jsonl >> data/solana_clawd_merged.jsonl
+# then re-run prepare_dataset.py
 ```
 
 ---
