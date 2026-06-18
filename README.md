@@ -39,6 +39,26 @@ ___/   🦞   \__________/   🦞   \__________/   🦞   \__________/   🦞   
 
 **🦞 130 agents · 🎯 95+ skills · 📦 12 packages · 🔐 [CAAP/1.0](https://github.com/solana-foundation/pay/pull/376) · ✅ [pay.sh](https://pay.sh/services/auth/agent) verified · 🔊 voice agent · ⚡ v2.2.0 · 🦞 [solanaclawd.com](https://solanaclawd.com)**
 
+---
+
+## 🦞 $CLAWD Token
+
+[![Buy on Phantom](https://img.shields.io/badge/Buy_%24CLAWD-Phantom-blueviolet?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iIzRFNDRDRSIvPjwvc3ZnPg==&style=for-the-badge)](https://phantom.com/tokens/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
+[![Dexscreener](https://img.shields.io/badge/Chart-Dexscreener-green?style=for-the-badge)](https://dexscreener.com/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
+[![Birdeye](https://img.shields.io/badge/Chart-Birdeye-orange?style=for-the-badge)](https://birdeye.so/token/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
+[![Jupiter](https://img.shields.io/badge/Swap-Jupiter-blue?style=for-the-badge)](https://jup.ag/swap/SOL-8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
+[![Solscan](https://img.shields.io/badge/Explorer-Solscan-lightblue?style=for-the-badge)](https://solscan.io/token/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
+
+```
+Token:    $CLAWD
+Mint:     8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump
+Network:  Solana mainnet
+```
+
+$CLAWD is the onchain token powering the Clawd ecosystem — gating premium inference tiers, agent spawning, ZK proof subsidies, and DAO governance over the model registry.
+
+---
+
 **Six-law harness live:** three Clarke-inspired off-chain laws in `CONSTITUTION.md` guide frontier reasoning; three hash-attested on-chain laws in `three-laws.md` gate execution and spawn inheritance.
 
 **Cheshire Terminal update:** first-party browser and machine interface at [cheshireterminal.ai](https://cheshireterminal.ai), with A2A Agent Card, MCP discovery, Google Agent Registry registration, Convex-backed realtime surfaces, and Metaplex agent identity.
