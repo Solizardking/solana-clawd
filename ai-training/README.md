@@ -82,6 +82,15 @@ pull the latest model + dataset in two lines.
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
 
+### Dataset viewer
+
+<iframe
+  src="https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct/embed/viewer/default/train"
+  frameborder="0"
+  width="100%"
+  height="560px"
+></iframe>
+
 ### Local CLI setup
 
 ```bash
@@ -391,18 +400,23 @@ Larger variants (3B, 7B) can be trained with the same pipeline by overriding
 
 ## Adding new training data
 
-The seed is intentionally small (~20 conversations) so the pipeline runs
-end-to-end fast. To add more data:
+The merged dataset (`data/solana_clawd_merged.jsonl`) is the canonical training
+input. To add more data, contribute to any of the three source layers and re-merge:
 
-1. **From a new skill**: when you add a skill under `skills/`, write 5-10
-   Q&A pairs that exercise it and append them to `data/solana_clawd_seed.jsonl`.
-2. **From a real user conversation**: scrub PII, distill into a
-   system+user+assistant triple, append.
-3. **From a constitutional edge case**: if a real prompt almost slipped
-   past the safety filter, add a refusal example (the model should say no,
-   and say why).
+- **New skill** → write 5–10 Q&A pairs in `{"messages": [...]}` format, append to `data/solana_clawd_seed.jsonl`
+- **New bulk source** → normalize your JSONL into messages format (see merge script), drop it at the repo root
+- **Constitutional edge case** → add a refusal example where the assistant explains why it won't help
 
-Then re-run `prepare_dataset.py --push` and re-train.
+Then re-run the merge + push:
+
+```bash
+# Re-normalize if needed, then:
+python3 scripts/prepare_dataset.py \
+  --input data/solana_clawd_merged.jsonl \
+  --push --repo-id solanaclawd/solana-clawd-instruct
+
+./scripts/launch_hf_jobs.sh a100-large
+```
 
 ## Trust gates and the Constitution
 
@@ -430,8 +444,8 @@ fine-tune is helpful training, not a replacement for the laws.
 | `a100x4` | 320GB | ~$12.00 | 13B-30B with DDP |
 | `h200x8` | 640GB | ~$32.00 | 70B+ with DDP |
 
-A full 1.5B LoRA training run on 1K examples takes ~15-30 min on A100.
-Bump to ~$1-2 per training run.
+With the current 36K-example dataset (32,498 train), a 1.5B LoRA run at 3 epochs
+takes ~1–2 hrs on A100 (~$3–6 per full training run). A 7B run takes ~4–6 hrs (~$12–18).
 
 ## Self-hosted GPU deployment
 
