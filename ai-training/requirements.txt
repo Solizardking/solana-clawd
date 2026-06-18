@@ -29,6 +29,10 @@ sentencepiece>=0.2.0
 scikit-learn>=1.5.0
 nltk>=3.9.0
 
+# W&B / Weave tracing + evaluation
+wandb>=0.19.0
+weave>=0.51.0
+
 # Tracing
 inference-catalyst-tracing>=0.1.0
 

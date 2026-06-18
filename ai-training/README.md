@@ -1,8 +1,9 @@
 # 🦞 Solana Clawd AI Training
 
 > The training pipeline for the **Solana Clawd** sovereign-agent model.
-> Lives in the [solana-clawd](https://github.com/Solizardking/solana-clawd) monorepo.
-> Models + datasets are versioned on the [Hugging Face Hub](https://huggingface.co/solanaclawd) under the `solanaclawd` org.
+> **GitHub**: [Solizardking/solana-clawd-ai-training](https://github.com/Solizardking/solana-clawd-ai-training) — standalone repo for this pipeline.
+> **Parent monorepo**: [Solizardking/solana-clawd](https://github.com/Solizardking/solana-clawd)
+> **HuggingFace org**: [solanaclawd](https://huggingface.co/solanaclawd) — models, datasets, spaces
 
 ## What this is
 
@@ -347,6 +348,201 @@ fine-tune is helpful training, not a replacement for the laws.
 
 A full 1.5B LoRA training run on 1K examples takes ~15-30 min on A100.
 Bump to ~$1-2 per training run.
+
+## Self-hosted GPU deployment
+
+Once your LoRA adapter is trained and pushed to `solanaclawd/solana-clawd-1.5b-lora`,
+you can serve it from your own GPU (on-prem, rented, or cloud VM) using any of the
+paths below. All paths start with a one-time weight merge to produce a standalone model.
+
+### Step 0 — merge the LoRA adapter into the base (do this once)
+
+```python
+# merge_and_save.py
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+
+BASE    = "Qwen/Qwen2.5-1.5B-Instruct"
+ADAPTER = "solanaclawd/solana-clawd-1.5b-lora"
+MERGED  = "./outputs/solana-clawd-1.5b-merged"
+
+model = AutoModelForCausalLM.from_pretrained(BASE, torch_dtype="auto", device_map="cpu")
+model = PeftModel.from_pretrained(model, ADAPTER)
+model = model.merge_and_unload()
+model.save_pretrained(MERGED)
+AutoTokenizer.from_pretrained(BASE).save_pretrained(MERGED)
+print(f"Merged model saved to {MERGED}")
+
+# Optionally push the merged model to the Hub
+# model.push_to_hub("solanaclawd/solana-clawd-1.5b")
+# tokenizer.push_to_hub("solanaclawd/solana-clawd-1.5b")
+```
+
+```bash
+python3 merge_and_save.py
+# or push merged weights directly:
+hf upload solanaclawd/solana-clawd-1.5b outputs/solana-clawd-1.5b-merged --repo-type model
+```
+
+---
+
+### Option A — vLLM (recommended for production, OpenAI-compatible API)
+
+vLLM is the fastest open-source inference server. Works on any NVIDIA GPU with 8GB+ VRAM.
+
+```bash
+pip install vllm
+
+# Serve the merged model (OpenAI-compatible endpoint on port 8000)
+vllm serve ./outputs/solana-clawd-1.5b-merged \
+  --served-model-name solana-clawd-1.5b \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --dtype bfloat16 \
+  --max-model-len 4096
+
+# Or serve the LoRA adapter directly on top of the base (no merge needed)
+vllm serve Qwen/Qwen2.5-1.5B-Instruct \
+  --enable-lora \
+  --lora-modules clawd=solanaclawd/solana-clawd-1.5b-lora \
+  --served-model-name solana-clawd-1.5b \
+  --host 0.0.0.0 --port 8000
+```
+
+Test it:
+
+```bash
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "solana-clawd-1.5b",
+    "messages": [{"role": "user", "content": "What is a PDA on Solana?"}],
+    "max_tokens": 256
+  }'
+```
+
+Compatible with the OpenAI Python SDK — swap `base_url` to your server IP.
+
+---
+
+### Option B — HuggingFace TGI (Text Generation Inference)
+
+HF's own serving stack. Supports continuous batching, speculative decoding, GPTQ, AWQ.
+
+```bash
+# Docker (simplest path on a Linux GPU box)
+docker run --gpus all --shm-size 1g \
+  -p 8080:80 \
+  -v $(pwd)/outputs/solana-clawd-1.5b-merged:/model \
+  ghcr.io/huggingface/text-generation-inference:latest \
+  --model-id /model \
+  --max-input-length 2048 \
+  --max-total-tokens 4096
+
+# Test
+curl http://localhost:8080/v1/chat/completions \
+  -d '{"model":"tgi","messages":[{"role":"user","content":"What is a PDA?"}]}'
+```
+
+---
+
+### Option C — Ollama (Mac / Linux, easiest local setup)
+
+```bash
+# 1. Install
+brew install ollama   # macOS
+# curl -fsSL https://ollama.com/install.sh | sh  # Linux
+
+# 2. Create a Modelfile pointing at the merged weights
+cat > Modelfile <<'EOF'
+FROM ./outputs/solana-clawd-1.5b-merged
+SYSTEM "You are Clawd, a sovereign Solana-native AI agent."
+PARAMETER temperature 0.2
+PARAMETER top_p 0.9
+EOF
+
+ollama create solana-clawd-1.5b -f Modelfile
+ollama run solana-clawd-1.5b "What is a PDA on Solana?"
+
+# Also starts an OpenAI-compatible REST server on port 11434
+ollama serve
+```
+
+---
+
+### Option D — Modal (serverless GPU, pay-per-second)
+
+[Modal](https://modal.com) lets you deploy a GPU function with no server management.
+Cold-start is ~20s; billed only when a request is in-flight.
+
+```python
+# deploy_modal.py
+import modal
+
+app = modal.App("solana-clawd-1.5b")
+image = modal.Image.debian_slim(python_version="3.11").pip_install("vllm", "huggingface_hub")
+
+@app.function(gpu="A10G", image=image, secrets=[modal.Secret.from_name("HF_TOKEN")])
+@modal.web_endpoint(method="POST")
+def infer(request: dict):
+    import os
+    from vllm import LLM, SamplingParams
+    llm = LLM("solanaclawd/solana-clawd-1.5b", dtype="bfloat16")
+    params = SamplingParams(temperature=0.2, max_tokens=512)
+    messages = request.get("messages", [])
+    prompt = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
+    return {"text": llm.generate([prompt], params)[0].outputs[0].text}
+```
+
+```bash
+modal deploy deploy_modal.py
+# Returns a public HTTPS endpoint — plug it into any OpenAI client
+```
+
+---
+
+### Option E — RunPod / Vast.ai (rented GPU, full control)
+
+Use these when you want a persistent GPU box cheaper than AWS/GCP.
+
+| Provider | Best for | Typical price |
+| --- | --- | --- |
+| [RunPod](https://runpod.io) | Persistent pods, Jupyter, SSH | $0.20–$0.60/hr (RTX 3090/4090) |
+| [Vast.ai](https://vast.ai) | Cheapest spot market, SSH | $0.10–$0.40/hr (RTX 3090/4090) |
+| [Lambda Labs](https://lambdalabs.com) | Reserved A100s, reliable | $1.10/hr (A100 80GB) |
+
+Once you have SSH access to a GPU box, use Option A (vLLM) or B (TGI) above.
+Set up a reverse proxy (Caddy or nginx) with TLS to expose it as a stable API endpoint.
+
+---
+
+### Plugging your self-hosted endpoint into Clawd agents
+
+Once your vLLM / TGI / Ollama endpoint is running, point any OpenAI-compatible
+client at it — same as the HF Router path, just swap the `base_url`:
+
+```python
+from openai import OpenAI
+
+# vLLM / TGI running on your box (replace with your IP or domain)
+client = OpenAI(base_url="http://YOUR_GPU_HOST:8000/v1", api_key="none")
+
+response = client.chat.completions.create(
+    model="solana-clawd-1.5b",
+    messages=[
+        {"role": "system", "content": "You are Clawd, a sovereign Solana-native AI agent."},
+        {"role": "user",   "content": "Analyze the risk of going long SOL-PERP at 5x."},
+    ],
+    max_tokens=512,
+)
+print(response.choices[0].message.content)
+```
+
+Set `CLAWD_INFERENCE_URL=http://YOUR_GPU_HOST:8000/v1` in your agent environment
+and the existing skill wrappers (`scripts/hermes3_inference.py`, `perps/functioncall.py`)
+will pick it up automatically.
+
+---
 
 ## License
 
