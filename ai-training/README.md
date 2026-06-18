@@ -27,20 +27,24 @@ ai-training/
 ├── requirements.txt                ← Python deps (HF stack + openai + httpx + mcp)
 ├── .gitignore                      ← excludes checkpoints / outputs / secrets
 ├── data/
-│   ├── solana_clawd_seed.jsonl     ← seed SFT pairs (47 conversations)
+│   ├── solana_clawd_seed.jsonl     ← original seed SFT pairs (47 constitutional conversations)
+│   ├── solana_clawd_merged.jsonl   ← merged dataset v2 (36,109 conversations — canonical training input)
 │   ├── solana_clawd_eval.jsonl     ← held-out eval prompts (13 conversations)
 │   ├── eval_card.md                ← eval dataset card (upload to Hub)
-│   └── processed/                  ← committed sample output of prepare_dataset.py (parquet + arrow splits)
+│   └── processed/                  ← output of prepare_dataset.py (parquet + arrow, train/eval/test)
+├── solana1_yourgpt.jsonl           ← source: 8,970 Solana Alpaca-format QA pairs (normalized into merged)
+├── trainingday.jsonl               ← source: 27,092 Solana API/RPC messages-format pairs (normalized into merged)
 ├── configs/
-│   ├── lora_config.yaml            ← LoRA + training hyperparameters (Qwen2.5-1.5B)
+│   ├── lora_config.yaml            ← LoRA + training hyperparameters (Qwen2.5-1.5B) — W&B logging enabled
 │   ├── hermes3_lora_config.yaml    ← LoRA config for Hermes-3-Llama-3.1-8B (r=32, 4-bit)
 │   ├── deep_solana_cpt_config.yaml ← continued pre-training config (DeepSolana-GPT2 corpus)
 │   └── eval_config.yaml            ← evaluation config
 ├── scripts/
-│   ├── prepare_dataset.py          ← JSONL → HF Datasets (parquet)
+│   ├── prepare_dataset.py          ← JSONL → HF Datasets (parquet), multi-file --input support
 │   ├── train_lora.py               ← LoRA SFT via TRL + PEFT
 │   ├── evaluate.py                 ← held-out inference eval
-│   ├── launch_hf_jobs.sh           ← submit remote GPU job
+│   ├── wandb_eval.py               ← W&B Weave benchmark eval (JSON QA, traces to clawdsolana-clawd/clawd)
+│   ├── launch_hf_jobs.sh           ← submit remote GPU job (passes WANDB_API_KEY, 6h timeout)
 │   ├── hermes3_inference.py        ← 3-mode Hermes-3 inference: HF Router / pipeline / direct
 │   ├── solana_client.py            ← 8-command Solana RPC tool (wallet/tx/token/nft/whales/stats/price)
 │   ├── download_deep_solana.py     ← DeepSolana-GPT2-bucket downloader + GPT-2→text decoder
@@ -71,11 +75,11 @@ pull the latest model + dataset in two lines.
 ### Repos in the `solanaclawd` org
 
 | Repo | Type | Purpose |
-|------|------|---------|
-| [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) | dataset | SFT instruction pairs (system/user/assistant) |
-| [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out evaluation prompts (red-team + capability) |
-| [`solanaclawd/solana-clawd-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) | model | LoRA adapter on Qwen2.5-1.5B-Instruct |
-| [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA) |
+| --- | --- | --- |
+| [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) | dataset | **36,109 examples** — SFT instruction pairs (system/user/assistant), 32,498/1,805/1,806 train/eval/test |
+| [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
+| [`solanaclawd/solana-clawd-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) | model | LoRA adapter on Qwen2.5-1.5B-Instruct (training in progress — see current run below) |
+| [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
 
 ### Local CLI setup
@@ -108,59 +112,139 @@ hf repos list --namespace solanaclawd
 
 ## The end-to-end pipeline
 
-### 1. Curate the seed dataset
+### 1. Curate the dataset
 
-The seed lives in `data/solana_clawd_seed.jsonl`. Each line is a
-`{"messages": [...]}` conversation. Add new examples by appending to this
-file or pointing `--input` at a new path.
+The canonical training input is `data/solana_clawd_merged.jsonl` — **36,109 conversations**
+assembled from three sources, all normalized to `{"messages": [...]}` format with the
+Clawd system prompt prepended where missing:
+
+| Source file | Format | Examples | Notes |
+| --- | --- | --- | --- |
+| `data/solana_clawd_seed.jsonl` | messages (Clawd system prompt) | 47 | Original constitutional seed |
+| `solana1_yourgpt.jsonl` | Alpaca (`instruction`/`input`/`output`) | 8,970 | Solana QA pairs — normalized by merge script |
+| `trainingday.jsonl` | messages + `metadata` | 27,092 | Solana API/RPC docs — metadata stripped, system prompt injected |
+
+The Alpaca normalizer handles both layout variants in `solana1_yourgpt.jsonl`:
+- `instruction` non-empty → user = instruction (+ `\n\nContext:\n` + input if present)
+- `instruction` empty → user = `input` field (question was in the wrong column)
+
+To add more sources, append a new JSONL to the merge command and re-run `prepare_dataset.py`:
+
+```bash
+# Re-merge after adding a new source file
+python3 - << 'EOF'
+import json
+
+SYSTEM = "You are Clawd, a sovereign Solana-native AI agent. ..."
+
+with open("data/solana_clawd_merged.jsonl", "a") as out:
+    with open("data/my_new_source.jsonl") as f:
+        for line in f:
+            obj = json.loads(line.strip())
+            # normalize and write
+EOF
+```
 
 ### 2. Prepare the dataset (parquet + Hub)
 
 ```bash
-# Local only
-python3 scripts/prepare_dataset.py --output data/processed
-
-# Push to Hub
-python3 scripts/prepare_dataset.py --push --repo-id solanaclawd/solana-clawd-instruct
+# From the merged file (canonical)
+python3 scripts/prepare_dataset.py \
+  --input data/solana_clawd_merged.jsonl \
+  --output data/processed \
+  --train-ratio 0.9 --eval-ratio 0.05 \
+  --seed 42 \
+  --push --repo-id solanaclawd/solana-clawd-instruct
 ```
 
 This validates each example, splits 90/5/5, writes parquet for streaming
 access, and (with `--push`) uploads to the Hub dataset.
 
+**Current dataset stats** (pushed 2026-06-18):
+- Total: **36,109** examples
+- Train: **32,498** · Eval: **1,805** · Test: **1,806**
+- Parquet size: ~40.1 MB (train), ~2.3 MB (eval/test)
+
 ### 3. Train (local or remote)
 
-**Local (Mac MPS, small dataset, low epoch count for sanity check)**:
+**Local (Mac MPS, sanity check)**:
+
 ```bash
 python3 scripts/train_lora.py --num-epochs 1 --no-quant
 ```
 
 **Remote (HF Jobs, A100 or H200)**:
+
 ```bash
 ./scripts/launch_hf_jobs.sh a100-large   # 80GB A100, ~$3/hr
 ./scripts/launch_hf_jobs.sh h200          # 80GB H200, ~$4/hr
 ./scripts/launch_hf_jobs.sh l4x1          # 24GB L4, ~$0.80/hr
 ```
 
-The script uses `hf jobs uv run` to spin up an HF-managed GPU container,
-install deps, and run `train_lora.py`. Monitor with:
+The script passes `WANDB_API_KEY` and `WANDB_PROJECT=clawd` into the job container
+so training metrics stream to the [clawdsolana-clawd/clawd](https://wandb.ai/clawdsolana-clawd/clawd)
+W&B project automatically. Monitor with:
+
 ```bash
 hf jobs ps
 hf jobs logs <JOB_ID> --follow
 hf jobs inspect <JOB_ID>
 ```
 
+#### Current training run (2026-06-18)
+
+| Field | Value |
+| --- | --- |
+| Job ID | `6a341687ef9220ea67d99583` |
+| URL | [huggingface.co/jobs/ordlibrary/6a341687ef9220ea67d99583](https://huggingface.co/jobs/ordlibrary/6a341687ef9220ea67d99583) |
+| Hardware | `a100-large` — NVIDIA A100 80GB |
+| Base model | `Qwen/Qwen2.5-1.5B-Instruct` |
+| Config | `configs/lora_config.yaml` — LoRA r=16, α=32, 3 epochs |
+| Dataset | `solanaclawd/solana-clawd-instruct` — 32,498 train examples |
+| Est. steps | ~6,093 (32,498 ÷ batch 16 × 3 epochs) |
+| Est. duration | ~1–2 hrs on A100 |
+| Output | `solanaclawd/solana-clawd-1.5b-lora` (pushed on completion) |
+| W&B | `clawdsolana-clawd/clawd` project |
+
+```bash
+# Watch live logs
+hf jobs logs 6a341687ef9220ea67d99583 --follow
+```
+
 ### 4. Evaluate
+
+#### 4a. Held-out inference eval (local)
 
 ```bash
 python3 scripts/evaluate.py --num 50
 # Outputs JSON + Markdown reports in outputs/eval/
 ```
 
-The eval report includes:
-- **Throughput** (examples/sec on your hardware)
-- **Refusal rate** on the red-team slice
-- **Average generation length**
-- **20 sample generations** for human review
+The report includes throughput, refusal rate on the red-team slice, average
+generation length, and 20 sample generations for human review.
+
+#### 4b. W&B Weave benchmark eval
+
+Runs the [JSON QA benchmark](https://weave.wandb.ai/wandb/json-qa) against any
+model served via the W&B Inference API, with structured traces in Weave.
+
+```bash
+export WANDB_API_KEY=<your-key-from-wandb.ai/authorize>
+python3 scripts/wandb_eval.py
+# Traces appear live at: https://wandb.ai/clawdsolana-clawd/clawd/weave
+```
+
+**Baseline eval results (2026-06-18)** — `OpenPipe/Qwen3-14B-Instruct` before fine-tune lands:
+
+| Metric | Result |
+| --- | --- |
+| Examples evaluated | 20 |
+| Format compliance (`<answer>` tags) | **100%** (20/20) |
+| Answer accuracy | **60%** (12/20) |
+| Mean latency | 689 ms |
+| Weave run | [019edb80-957d-70dc-9289-9a27b188e57b](https://wandb.ai/clawdsolana-clawd/clawd/r/call/019edb80-957d-70dc-9289-9a27b188e57b) |
+
+Re-run after the LoRA job finishes to measure fine-tune delta against this baseline.
 
 ### 5. Deploy into Clawd agents
 
