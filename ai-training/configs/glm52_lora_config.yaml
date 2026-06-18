@@ -46,7 +46,7 @@ cpt_max_seq_length: 2048
 # ── Output ───────────────────────────────────────────────────────────────────
 output_dir: "./outputs/solana-clawd-glm52-lora"
 push_to_hub: true
-hub_model_id: "ordlibrary/Clawd-GLM-5.2"
+hub_model_id: "ordlibrary/DeepSolanaZKr-1"
 hub_private: false
 
 # ── LoRA ─────────────────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ training:
   eval_steps: 200
   eval_strategy: "steps"
   report_to:
-    - "none"                          # add "wandb" for remote logging
+    - "wandb"
   seed: 42
   dataloader_num_workers: 2
   remove_unused_columns: false
@@ -118,7 +118,7 @@ sft:
 # Mirrors eval_config.yaml — run after training with scripts/evaluate.py
 eval:
   base_model: "zai-org/GLM-5.2"
-  adapter_repo: "ordlibrary/Clawd-GLM-5.2"
+  adapter_repo: "ordlibrary/DeepSolanaZKr-1"
   eval_dataset_repo: "solanaclawd/solana-clawd-eval"
   eval_split: "test"
   max_eval_samples: 100
