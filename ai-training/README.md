@@ -52,10 +52,14 @@ ai-training/
 │   ├── wandb_eval.py               ← W&B Weave benchmark eval (JSON QA, traces to clawdsolana-clawd/clawd)
 │   ├── launch_hf_jobs.sh           ← submit remote GPU job (passes WANDB_API_KEY, 6h timeout)
 │   ├── auto_research.py            ← Percolator-style recursive wiki generator (see §Percolator AutoResearch)
+│   ├── ingest_wiki_data.py         ← pulls 18 SFT pairs from clawd-autoresearch-wiki → seed dataset
+│   ├── solana_benchmark.py         ← 18-MCQ Solana Knowledge Benchmark (OpenAI-compatible endpoint)
 │   ├── hermes3_inference.py        ← 3-mode Hermes-3 inference: HF Router / pipeline / direct
 │   ├── solana_client.py            ← 8-command Solana RPC tool (wallet/tx/token/nft/whales/stats/price)
 │   ├── download_deep_solana.py     ← DeepSolana-GPT2-bucket downloader + GPT-2→text decoder
 │   └── add_v2_examples.py          ← one-off script that seeded the v2 dataset examples
+├── memory/
+│   └── honcho.py                   ← Honcho persistent cross-session memory (remember/recall/dream)
 ├── perps/                          ← Hermes-3 function calling for Solana perps (example agent space)
 │   ├── functions.py                ← 13 perps tools (sol price, funding rate, paper trade, risk...)
 │   ├── functioncall.py             ← HermesPerpsAgent inference loop (HF Router / local, GOAP mode)
@@ -734,6 +738,67 @@ python3 scripts/auto_research.py \
 ```
 
 The SQLite manifest at `data/research_manifest.db` tracks every visited URL — no page is fetched twice across cycles. Output goes to `data/autoResearch.jsonl` in the same `{"messages": [...]}` format as the rest of the training data and can be merged directly.
+
+---
+
+## Clawd Autoresearch Wiki Integration
+
+Source: [github.com/Solizardking/clawd-autoresearch-wiki](https://github.com/Solizardking/clawd-autoresearch-wiki)
+
+The wiki is a companion monorepo containing three modules now integrated into this pipeline:
+
+### Wiki → Training Data (`ingest_wiki_data.py`)
+
+Pulls 18 curated Solana SFT pairs from the wiki's `solana-chat/solana/dataset.py` and appends them to `data/solana_clawd_seed.jsonl`. Skips duplicates automatically.
+
+```bash
+# Add wiki SFT pairs to seed data (dry-run first)
+python3 scripts/ingest_wiki_data.py --dry-run
+python3 scripts/ingest_wiki_data.py
+
+# Add + push merged dataset to Hub
+python3 scripts/ingest_wiki_data.py --push --repo solanaclawd/solana-clawd-instruct
+```
+
+Coverage: PDA mechanics · rent/compute/CPI · SPL/Token-2022 · Anchor · pump.fun bonding curves · perp liquidations · rug-check checklist · honeypot detection · brain/hands split · skill registry · Light Protocol · ZK routing · three on-chain laws · x402 payment flow.
+
+### Solana Knowledge Benchmark (`solana_benchmark.py`)
+
+18-question MCQ eval across 6 domains, adapted from the wiki's `solana-chat/solana/tasks.py`. Uses any OpenAI-compatible endpoint — designed to track fine-tune delta pre/post training.
+
+```bash
+export WANDB_API_KEY=<key>
+
+# Baseline (pre-fine-tune)
+python3 scripts/solana_benchmark.py
+
+# Post-training eval
+python3 scripts/solana_benchmark.py --model ordlibrary/DeepSolanaZKr-1
+
+# Against local vLLM
+python3 scripts/solana_benchmark.py \
+  --model solanaclawd/solana-clawd-1.5b-lora \
+  --base-url http://localhost:8000/v1 --api-key none
+```
+
+Domains: `core` · `defi` · `security` · `agent` · `zk` · `constitution`
+
+### Persistent Memory (`memory/honcho.py`)
+
+Honcho-backed cross-session memory for the training pipeline — remembers eval results, dataset decisions, and experiment lessons across context wipes.
+
+```python
+from memory.honcho import AgentMemory
+
+mem = AgentMemory(api_key="hch-...", workspace="clawd-training")
+mem.remember_eval("ordlibrary/DeepSolanaZKr-1", "6a3464cf", 0.78, 18, "post-SFT run")
+mem.remember_training_run("6a3464cf", "Qwen/Qwen2.5-1.5B-Instruct",
+                           "solanaclawd/solana-clawd-instruct", "COMPLETE")
+ctx = mem.recall("What was the last eval accuracy?")
+summary = mem.dream()  # autonomous consolidation
+```
+
+Set `HONCHO_API_KEY` to enable cloud persistence; falls back to local in-memory log if unset.
 
 ---
 
