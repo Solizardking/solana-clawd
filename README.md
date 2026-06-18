@@ -178,10 +178,55 @@ bash -n install.sh && bash install.sh --help
 | **Telegram** | [t.me/clawdtoken](https://t.me/clawdtoken) |
 | **GitHub (Primary)** | [github.com/solizardking/solana-clawd](https://github.com/solizardking/solana-clawd) |
 | **GitHub (Org)** | [github.com/x402agent/solana-clawd](https://github.com/x402agent/solana-clawd) |
-| **Hugging Face** | [huggingface.co/solanaclawd](https://huggingface.co/solanaclawd) |
+| **Hugging Face** | [huggingface.co/solanaclawd](https://huggingface.co/solanaclawd) — model, dataset, spaces |
+| **Dataset** | [![Dataset](https://img.shields.io/badge/🤗%20Dataset-solanaclawd%2Fsolana--clawd--instruct-blue)](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) 36,109 SFT examples |
+| **Model** | [![Model](https://img.shields.io/badge/🤗%20Model-solanaclawd%2Fsolana--clawd--1.5b--lora-green)](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) LoRA on Qwen2.5-1.5B |
+| **Onchain Registry** | [onchain.x402.wtf](https://onchain.x402.wtf) — CAAP/1.0 model registry |
 | **$CLAWD Token** | `8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump` |
 
 **Funding:** The entire Clawd ecosystem is funded by the **$CLAWD token** on Solana. All agent services, x402 payments, compute costs, and infrastructure are paid through $CLAWD. The token powers the economic loop: agents TRADE → earn USDC → PAY x402 → get smarter → trade better. Holding $CLAWD unlocks tiered access to ClawdRouter models, priority skill routing, and governance over spawn policies.
+
+---
+
+## 🧠 Onchain Model Kit
+
+Train, register, and serve your own Solana-native Clawd in one sitting. Everything lives in [`ai-training/`](./ai-training/) and is designed to be forked.
+
+[![Dataset](https://img.shields.io/badge/🤗%20Dataset-solanaclawd%2Fsolana--clawd--instruct-blue)](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct)
+[![Model](https://img.shields.io/badge/🤗%20Model-solanaclawd%2Fsolana--clawd--1.5b--lora-green)](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora)
+[![Dataset Viewer](https://img.shields.io/badge/📊%20Browse%20Dataset-HF%20Viewer-orange)](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct/viewer/default/train)
+
+**36,109 SFT examples** · Qwen2.5-1.5B-Instruct base · LoRA r=16 · ~$3–6 per A100 training run · onchain CAAP/1.0 registry
+
+```bash
+git clone https://github.com/Solizardking/solana-clawd && cd solana-clawd/ai-training
+pip install -r requirements.txt && export HF_TOKEN=hf_...
+
+# 1. Train on A100 (~1–2 hrs, ~$3–6)
+./scripts/launch_hf_jobs.sh a100-large
+
+# 2. Register to the onchain registry (no wallet needed)
+./dao/register_model.sh \
+  --hf-model "YOUR_ORG/your-model" \
+  --eval-accuracy 0.60 \
+  --dataset-size 36109
+
+# 3. Serve locally
+ollama create my-clawd -f ollama/Modelfile.finetuned
+ollama run my-clawd "How do I detect a rug pull on a fresh Solana token?"
+```
+
+| What | Where | Details |
+| --- | --- | --- |
+| 36K training dataset | `data/solana_clawd_merged.jsonl` | 3 sources merged: 47 seed + 8,970 Alpaca QA + 27,092 RPC docs |
+| LoRA SFT configs | `configs/` | Qwen2.5-1.5B · Hermes-3-8B · DeepSolana CPT |
+| Perps tool template | `perps/` | 13 Phoenix/Jupiter tools (no API key) — drop into any Hermes-3 agent |
+| Onchain registry | `dao/register_model.sh` | Off-chain curl OR full `initialize_model` Anchor PDA on devnet |
+| ZK attestations | `dao/attestation/` | SAS + Light Protocol compressed (~0.00003 SOL per credential) |
+| Ollama serving | `ollama/` | Modelfile templates for post-merge local inference |
+| AutoResearch loop | `scripts/auto_research.py` | Recursive Solana doc fetcher → QA pairs → Hub push → onchain attribution |
+
+See [`ai-training/model_card.md`](./ai-training/model_card.md) for the full fork guide and [`ai-training/onchainai.md`](./ai-training/onchainai.md) for the registry skill reference.
 
 ---
 
@@ -2051,14 +2096,29 @@ agent-arena-skill/            🏟 Cheshire Terminal Agent Arena — installable
                                  indexes it on cheshireterminal.ai, and exposes A2A/MCP cards.
                                Pairs with github.com/Solizardking/Agentarena (arena client/UI).
 
-ai-training/                  🧠 LoRA fine-tuning pipeline → huggingface.co/solanaclawd
-├── README.md                 pipeline overview (Qwen2.5-1.5B base, Hermes-3-8B tool-use variant)
-├── data/                     seed/eval JSONL + processed/ (parquet via prepare_dataset.py)
+ai-training/                  🧠 Onchain Model Kit — train, register, and serve your own Clawd
+├── README.md                 full pipeline (Qwen2.5-1.5B base · Hermes-3-8B tool-use · A100 HF Jobs)
+├── model_card.md             HF model card — fork this, swap your HF org, one-shot train
+├── dataset_card.md           HF dataset card — 36,109 examples (32,498 train / 1,805 eval / 1,806 test)
+├── onchainai.md              Onchain Model Kit skill reference (registry · attestations · DAO)
+├── data/
+│   ├── solana_clawd_merged.jsonl   canonical 36K training input (merge of 3 sources)
+│   ├── solana_clawd_seed.jsonl     47 constitutional seed conversations
+│   ├── solana_clawd_eval.jsonl     13 held-out red-team eval prompts
+│   └── processed/            parquet + arrow splits (train/eval/test), pushed to HF Hub
 ├── configs/                  lora_config.yaml · hermes3_lora_config.yaml · eval_config.yaml
-├── scripts/                  prepare_dataset.py · train_lora.py · evaluate.py · solana_client.py
-├── perps/                    Hermes-3 function-calling suite for Solana perps (13 tools)
-├── checkpoints/ · outputs/   (gitignored) LoRA weights + eval reports
-└── dataset_card.md / model_card.md   Hugging Face Hub cards
+├── scripts/                  prepare_dataset.py · train_lora.py · evaluate.py · auto_research.py
+├── perps/                    🛠 Solana perps tool template — 13 Phoenix/Jupiter tools for Hermes-3
+│   ├── functions.py          tool library (get_sol_price · get_funding_rate · paper_trade · assess_risk ...)
+│   ├── functioncall.py       HermesPerpsAgent inference loop (HF Router / local / GOAP mode)
+│   ├── schema.py             Pydantic schemas (TradeOrder · RiskAssessment · MarketSignal ...)
+│   └── prompter.py           system prompt builder (standard / GOAP / JSON mode)
+├── dao/                      onchain registry + DAO governance
+│   ├── register_model.sh     one-shot curl → ModelRegistry PDA (no wallet required for off-chain)
+│   ├── register_model.ts     TypeScript Anchor client for initialize_model instruction
+│   └── attestation/          SAS + Light Protocol compressed attestations (~0.00003 SOL each)
+├── ollama/                   Modelfile templates for local serving after weight merge
+└── outputs/                  community article · Clawd-GLM-5.2 model card · Fireworks bundle
 
 core-ai/                      🔌 git submodule — Clawd-wrapped Helius AI tooling
 ├── helius-cli/                npm: query Solana data, manage Helius accounts
@@ -2104,7 +2164,7 @@ zk-primitives/                 🔐 Light Protocol ZK layer for on-chain agent a
 ║  Dev      ║  examples/ · scripts/ · data/     ║  demos · tooling         ║
 ║  Config   ║  .env.example · install.sh · root ║  env · laws · workspace  ║
 ║  Arena/ZK ║  a2a/ · agent-arena-skill/ · zk-primitives/ ║ A2A · arena · ZK attest ║
-║  Training ║  ai-training/ · core-ai/          ║  LoRA pipeline · Helius MCP ║
+║  Training ║  ai-training/ · core-ai/          ║  Onchain Model Kit · Helius MCP ║
 ║  Local    ║  ooda/ · oslan/ · staking/        ║  OODA loop · LAN · staking  ║
 ╚═══════════╩═══════════════════════════════════╩══════════════════════════╝
 ```
