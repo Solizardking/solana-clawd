@@ -58,6 +58,21 @@ def load_manifest(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def manifest_counts(data: dict) -> tuple[int | str, int | str]:
+    counts = data.get("counts")
+    if isinstance(counts, dict):
+        return counts.get("examples", "unknown"), counts.get("sources", "unknown")
+    stats = data.get("stats")
+    if isinstance(stats, dict):
+        examples = stats.get("total_examples") or stats.get("examples") or "unknown"
+        core_ai = stats.get("core_ai") if isinstance(stats.get("core_ai"), dict) else {}
+        sources = stats.get("source_files") or stats.get("sources") or core_ai.get("files_used") or "unknown"
+        return examples, sources
+    sources = data.get("sources")
+    source_count = len(sources) if isinstance(sources, list) else "unknown"
+    return "unknown", source_count
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", default=DEFAULT_MODEL)
@@ -109,8 +124,8 @@ def main() -> int:
             ok = False
             print(f"FAIL {path}: missing or unreadable")
             continue
-        counts = data.get("counts") or {}
-        print(f"OK   {path}: examples={counts.get('examples', 'unknown')} sources={counts.get('sources', 'unknown')}")
+        examples, sources = manifest_counts(data)
+        print(f"OK   {path}: examples={examples} sources={sources}")
 
     print("[secret-scan]")
     scan_targets = [
