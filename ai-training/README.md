@@ -256,6 +256,11 @@ Use Application Default Credentials from `gcloud auth application-default login`
 or a service-account path in your shell environment. Do not add Google OAuth
 client-secret files, ADC JSON, access tokens, or API keys to config files,
 dataset cards, manifests, commits, or Hub uploads.
+The config also sends `x-goog-user-project: x402-477302` for quota attribution;
+Document AI still requires billing to be enabled on the processor project
+(`1013652097839`). If that project returns `BILLING_DISABLED`, enable billing
+there or point `documentai_endpoint` at a processor owned by a billing-enabled
+project.
 
 **Current dataset stats** (pushed 2026-06-18, after clean_data.py):
 

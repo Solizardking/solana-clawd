@@ -511,9 +511,9 @@ def choose_pdf_extractor(settings: dict[str, Any]) -> str:
     requested = settings["pdf_extractor"]
     if requested != "auto":
         return requested
-    if settings.get("documentai_endpoint") and documentai_token_available():
+    if not settings.get("_documentai_unavailable") and settings.get("documentai_endpoint") and documentai_token_available():
         return "documentai"
-    if gemini_api_key():
+    if not settings.get("_gemini_unavailable") and gemini_api_key():
         return "gemini"
     return "pypdf"
 
@@ -820,7 +820,25 @@ def extract_pdf_texts(path: Path, source: SourceStats, settings: dict[str, Any],
     except Exception as exc:
         if settings["pdf_extractor"] != "auto":
             raise
-        print(f"WARNING: {extractor} PDF extraction failed for {path.name}; falling back to pypdf: {exc}", file=sys.stderr)
+        if extractor == "documentai" and gemini_api_key():
+            try:
+                print(
+                    f"WARNING: documentai PDF extraction failed for {path.name}; falling back to gemini: {exc}",
+                    file=sys.stderr,
+                )
+                return "gemini", extract_gemini_pdf_texts(path, source, settings)
+            except Exception as gemini_exc:
+                settings["_gemini_unavailable"] = True
+                print(
+                    f"WARNING: gemini PDF extraction failed for {path.name}; falling back to pypdf: {gemini_exc}",
+                    file=sys.stderr,
+                )
+        else:
+            if extractor == "documentai":
+                settings["_documentai_unavailable"] = True
+            elif extractor == "gemini":
+                settings["_gemini_unavailable"] = True
+            print(f"WARNING: {extractor} PDF extraction failed for {path.name}; falling back to pypdf: {exc}", file=sys.stderr)
         return "pypdf", extract_pypdf_texts(path, source, reader)
 
 
