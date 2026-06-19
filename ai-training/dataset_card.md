@@ -102,14 +102,16 @@ A third specialized dataset is generated locally by
 `scripts/build_nvidia_trading_factory_dataset.py`:
 [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct).
 
-- Total: **98** examples
-- Splits: **88 / 4 / 6** train/eval/test
+- Total: **142** examples
+- Splits: **127 / 7 / 8** train/eval/test
 - Hub status: local artifacts are ready; publish is pending an authenticated
   `HF_TOKEN` or `hf auth login` session
 - Sources: local Clawd perps tools, training docs, agent catalog, realtime
   research manifest, NVIDIA algorithmic trading factory references, NVIDIA
-  quantitative portfolio optimization references, and Solizardking/cuFOLIO
-  repo notes
+  quantitative portfolio optimization references, Solizardking/cuFOLIO source
+  snapshot, Phoenix/Vulcan strategy docs, Rise read plans, generated Vulcan
+  paper strategy specs, and Solizardking/clawd-autoresearch-wiki perps
+  references
 - Artifacts: `data/nvidia_trading_factory_sft.jsonl`,
   `data/nvidia_trading_factory_processed/*.parquet`,
   `data/nvidia_trading_factory_manifest.json`,

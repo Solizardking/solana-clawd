@@ -104,7 +104,7 @@ pull the latest model + dataset in two lines.
 | --- | --- | --- |
 | [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) | dataset | **36,109 examples** — SFT instruction pairs (system/user/assistant), 32,498/1,805/1,806 train/eval/test |
 | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
-| [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | target dataset | **98 examples staged locally; Hub publish pending auth** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, perps tool-use, and risk refusals; 88/4/6 train/eval/test |
+| [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | target dataset | **142 examples staged locally; Hub publish pending auth** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, Vulcan/Phoenix paper strategy specs, Rise read plans, autoresearch perps references, perps tool-use, and risk refusals; 127/7/8 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
 | [`solanaclawd/solana-clawd-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) | model | LoRA adapter on Qwen2.5-1.5B-Instruct (training in progress — see current run below) |
 | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | target model | Planned Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset |
@@ -322,11 +322,14 @@ python3 scripts/verify_trading_factory_release.py --local-only --strict
 
 Current local artifacts, verified with `scripts/verify_trading_factory_release.py --local-only --strict`:
 
-- `data/nvidia_trading_factory_sft.jsonl` — 98 examples
-- `data/nvidia_trading_factory_processed/{train,eval,test}.parquet` — 88/4/6
+- `data/nvidia_trading_factory_sft.jsonl` — 142 examples
+- `data/nvidia_trading_factory_processed/{train,eval,test}.parquet` — 127/7/8
 - `data/nvidia_trading_factory_manifest.json`
 - `data/nvidia_trading_factory_dataset_card.md`
 - `configs/nvidia_trading_factory_lora_config.yaml` — Hermes-3-8B LoRA config
+- `trading_factory/cufolio/` — local cuFOLIO snapshot for CVaR/scenario/rebalance references
+- `trading_factory/clawd-autoresearch-wiki/perps/` — local perps research references
+- `data/strategies/` — generated Vulcan paper TA configs, Rise read plan, cuFOLIO Mean-CVaR handoff, and command manifest
 
 Publish the dataset only after `HF_TOKEN` is available in your shell or an
 existing `hf auth login` session is active:
