@@ -556,15 +556,11 @@ def main() -> None:
             f"epochs={train_kwargs.get('num_train_epochs', 3)} "
             f"lr={train_kwargs.get('learning_rate', 2e-4)}"
         )
-        try:
-            trainer.push_to_hub(
-                repo_id=hub_model_id,
-                private=cfg.get("hub_private", False),
-                commit_message=commit_message,
-            )
-        except Exception as exc:
-            print(f"WARNING: trainer.push_to_hub failed; uploading adapter folder directly: {exc}")
-            upload_adapter_folder(output_dir, hub_model_id, cfg.get("hub_private", False), commit_message)
+        # Avoid Trainer.push_to_hub here. Recent Transformers/TRL combinations
+        # can pass Hub kwargs through create_model_card and fail after a complete
+        # training run. The folder upload path is narrower and only publishes the
+        # adapter artifacts we verified locally.
+        upload_adapter_folder(output_dir, hub_model_id, cfg.get("hub_private", False), commit_message)
 
         missing_hub = wait_for_hub_adapter_files(hub_model_id)
         if missing_hub:
