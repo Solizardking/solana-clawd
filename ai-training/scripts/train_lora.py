@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -171,6 +172,18 @@ def missing_hub_adapter_files(hub_model_id: str) -> list[str]:
 
     files = set(HfApi().list_repo_files(repo_id=hub_model_id, repo_type="model"))
     return sorted(name for name in REQUIRED_ADAPTER_FILES if name not in files)
+
+
+def wait_for_hub_adapter_files(hub_model_id: str, attempts: int = 4, delay_seconds: int = 15) -> list[str]:
+    missing: list[str] = []
+    for attempt in range(1, attempts + 1):
+        missing = missing_hub_adapter_files(hub_model_id)
+        if not missing:
+            return []
+        if attempt < attempts:
+            print(f"Hub adapter files not visible yet ({missing}); retrying in {delay_seconds}s")
+            time.sleep(delay_seconds)
+    return missing
 
 
 def upload_adapter_folder(output_dir: str, hub_model_id: str, private: bool, commit_message: str) -> None:
@@ -553,11 +566,11 @@ def main() -> None:
             print(f"WARNING: trainer.push_to_hub failed; uploading adapter folder directly: {exc}")
             upload_adapter_folder(output_dir, hub_model_id, cfg.get("hub_private", False), commit_message)
 
-        missing_hub = missing_hub_adapter_files(hub_model_id)
+        missing_hub = wait_for_hub_adapter_files(hub_model_id)
         if missing_hub:
             print(f"WARNING: Hub repo is missing {missing_hub}; retrying direct folder upload")
             upload_adapter_folder(output_dir, hub_model_id, cfg.get("hub_private", False), "Upload final LoRA adapter artifacts")
-            missing_hub = missing_hub_adapter_files(hub_model_id)
+            missing_hub = wait_for_hub_adapter_files(hub_model_id)
         if missing_hub:
             raise RuntimeError(f"Hub adapter upload incomplete for {hub_model_id}; missing files: {missing_hub}")
         print(f"Verified Hub adapter files for {hub_model_id}")

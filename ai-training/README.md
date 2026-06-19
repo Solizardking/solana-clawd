@@ -315,6 +315,22 @@ hf jobs logs <JOB_ID> --follow
 hf jobs inspect <JOB_ID>
 ```
 
+**Core AI release verification/recovery**:
+
+```bash
+# Verifies both datasets and the Core AI LoRA adapter files on Hugging Face.
+python3 scripts/verify_core_ai_release.py --strict
+
+# If the adapter is still missing, relaunches the W&B-tracked Core AI job.
+# Requires HF_TOKEN and WANDB_API_KEY in the environment.
+./scripts/recover_core_ai_release.sh a100-large 4h
+```
+
+`scripts/train_lora.py` writes the adapter model card into the output directory,
+checks that `adapter_config.json` and `adapter_model.safetensors` exist locally,
+pushes the adapter folder to the Hub, and verifies those files are present on the
+remote model repo before the job can report success.
+
 #### Training run history
 
 | Run | Job ID | Status | Base model | Output |
