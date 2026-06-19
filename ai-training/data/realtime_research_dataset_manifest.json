@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T18:05:58+00:00",
+  "generated_at": "2026-06-19T18:08:46+00:00",
   "dataset_name": "Solana Clawd Realtime Research Instruct",
   "repo_id": "solanaclawd/solana-clawd-realtime-research-instruct",
   "builder": "scripts/realtime_dataset_ingest.py",
@@ -30,7 +30,8 @@
     "chunk_overlap": 350,
     "max_context_chars": 5000,
     "min_text_chars": 120,
-    "keep_duplicate_files": false
+    "keep_duplicate_files": false,
+    "save_arrow_dataset": false
   },
   "missing_inputs": [],
   "sources": [
