@@ -281,6 +281,7 @@ def main() -> int:
     gates: dict[str, int | None] = {
         "strategy_bundle_generated": None,
         "trading_factory_dataset_rebuilt": None,
+        "trading_factory_release_bundle_built": None,
         "core_release_strict": run_quiet(["python3", "scripts/verify_core_ai_release.py", "--strict"], env=env),
         "trading_factory_hub_strict": None,
         "trading_factory_local_strict": None,
@@ -316,6 +317,10 @@ def main() -> int:
     run(["python3", "scripts/verify_core_ai_release.py"], env=env, check=False)
     gates["trading_factory_local_strict"] = run(
         ["python3", "scripts/verify_trading_factory_release.py", "--local-only", "--strict"],
+        env=env,
+    )
+    gates["trading_factory_release_bundle_built"] = run(
+        ["python3", "scripts/build_hf_release_bundle.py"],
         env=env,
     )
     if not args.skip_dry_run:
