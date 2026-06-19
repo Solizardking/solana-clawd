@@ -7,8 +7,13 @@
 #     --output data/core_ai_processed \
 #     --train-ratio 0.9 --eval-ratio 0.05 --seed 42
 #
-# Local sanity training:
-#   python3 scripts/train_lora.py --config configs/core_ai_lora_config.yaml --no-push --num-epochs 1
+# Local sanity training without Hub/W&B side effects:
+#   python3 scripts/train_lora.py --config configs/core_ai_lora_config.yaml \
+#     --no-push --no-eval --no-checkpoints --num-epochs 1
+#
+# W&B tracked training:
+#   export WANDB_API_KEY=...
+#   python3 scripts/train_lora.py --config configs/core_ai_lora_config.yaml --wandb
 
 base_model: "Qwen/Qwen2.5-1.5B-Instruct"
 model_revision: "main"
@@ -64,6 +69,7 @@ training:
   save_total_limit: 2
   eval_steps: 250
   eval_strategy: "steps"
+  # Use scripts/train_lora.py --wandb to switch this to W&B at runtime.
   report_to:
     - "none"
   seed: 42
