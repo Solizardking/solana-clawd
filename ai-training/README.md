@@ -48,6 +48,7 @@ ai-training/
 ├── scripts/
 │   ├── prepare_dataset.py          ← JSONL → HF Datasets (parquet), multi-file --input support
 │   ├── realtime_dataset_ingest.py  ← PDF/JSON/notebook/parquet/text → realtime HF dataset
+│   ├── build_nvidia_trading_factory_dataset.py ← Solana spot/perps NVIDIA trading factory SFT builder
 │   ├── submit_dataset_file.sh      ← drop-in file submit wrapper for realtime_dataset_ingest.py
 │   ├── train_lora.py               ← LoRA SFT via TRL + PEFT
 │   ├── evaluate.py                 ← held-out inference eval
@@ -103,8 +104,10 @@ pull the latest model + dataset in two lines.
 | --- | --- | --- |
 | [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) | dataset | **36,109 examples** — SFT instruction pairs (system/user/assistant), 32,498/1,805/1,806 train/eval/test |
 | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
+| [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | dataset | **98 examples** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, perps tool-use, and risk refusals; 88/4/6 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
 | [`solanaclawd/solana-clawd-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) | model | LoRA adapter on Qwen2.5-1.5B-Instruct (training in progress — see current run below) |
+| [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | model | Planned Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
 
@@ -282,6 +285,70 @@ Document AI still requires billing to be enabled on the processor project
 (`1013652097839`). If that project returns `BILLING_DISABLED`, enable billing
 there or point `documentai_endpoint` at a processor owned by a billing-enabled
 project.
+
+### 2c. Build the NVIDIA Solana trading-factory dataset
+
+`scripts/build_nvidia_trading_factory_dataset.py` creates a separate SFT lane
+for an NVIDIA-style algorithmic trading factory specialized to Solana spot and
+perpetual futures. It uses:
+
+- NVIDIA trading-factory architecture patterns: market ingestion, research,
+  optimization, inference, execution policy, and monitoring.
+- NVIDIA Quantitative Portfolio Optimization patterns: cuML KDE scenario
+  generation, RAPIDS/cuDF returns and backtesting, cuFOLIO/cuOpt Mean-CVaR
+  optimization, CVaR/leverage/budget/turnover/cardinality constraints, and
+  CVXPY/cuOpt solver handoff.
+- Local Clawd perps tools: SOL/token prices, Phoenix markets/funding/orderbook,
+  Jupiter quotes, paper trades, wallet checks, trader history, and position-risk
+  scoring.
+- Clawd trust gates: observer, dry-run/paper, delegated confirmation, and
+  strictly gated live execution.
+
+```bash
+python3 scripts/build_nvidia_trading_factory_dataset.py
+
+python3 scripts/prepare_dataset.py \
+  --input data/nvidia_trading_factory_sft.jsonl \
+  --output data/nvidia_trading_factory_processed \
+  --train-ratio 0.9 --eval-ratio 0.05 \
+  --seed 42
+
+python3 scripts/train_lora.py \
+  --config configs/nvidia_trading_factory_lora_config.yaml \
+  --dry-run
+```
+
+Current local artifacts:
+
+- `data/nvidia_trading_factory_sft.jsonl` — 98 examples
+- `data/nvidia_trading_factory_processed/{train,eval,test}.parquet` — 88/4/6
+- `data/nvidia_trading_factory_manifest.json`
+- `data/nvidia_trading_factory_dataset_card.md`
+- `configs/nvidia_trading_factory_lora_config.yaml` — Hermes-3-8B LoRA config
+
+Publish the dataset only after `HF_TOKEN` is available in your shell or an
+existing `hf auth login` session is active:
+
+```bash
+python3 scripts/prepare_dataset.py \
+  --input data/nvidia_trading_factory_sft.jsonl \
+  --output data/nvidia_trading_factory_processed \
+  --train-ratio 0.9 --eval-ratio 0.05 \
+  --seed 42 \
+  --push \
+  --repo-id solanaclawd/solana-clawd-nvidia-trading-factory-instruct
+```
+
+Launch the trading-factory LoRA as a new HF job only when you are ready. This
+helper does not cancel or modify any currently running job:
+
+```bash
+./scripts/launch_trading_factory_hf_job.sh a100-large 4h
+```
+
+Keep `HF_TOKEN`, `WANDB_API_KEY`, `NVIDIA_API_KEY`, wallet keys, ADC JSON, and
+client-secret files in your shell or secret manager only. Do not add them to
+YAML, markdown, manifests, commits, or Hub uploads.
 
 **Current dataset stats** (pushed 2026-06-18, after clean_data.py):
 

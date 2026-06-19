@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-19T19:26:22+00:00",
+  "generated_at": "2026-06-19T19:27:07+00:00",
   "dataset_name": "Solana Clawd NVIDIA Trading Factory Instruct",
   "repo_id": "solanaclawd/solana-clawd-nvidia-trading-factory-instruct",
   "builder": "scripts/build_nvidia_trading_factory_dataset.py",
   "counts": {
-    "examples": 57,
+    "examples": 98,
     "sources": 8,
     "missing_inputs": 0,
     "duplicates_removed": 0,
@@ -14,10 +14,12 @@
       "external_reference": 3,
       "factory_stage": 11,
       "labeling_policy": 1,
+      "market_scenario": 30,
       "onchain_ai_reference": 3,
       "optimization_spec": 1,
       "perps_tool": 13,
       "portfolio_policy": 1,
+      "regime_scenario": 8,
       "research_dataset_manifest": 3,
       "risk_scenario": 1,
       "safety_refusal": 4,
@@ -25,21 +27,27 @@
       "solana_perps_prompts": 2,
       "solana_perps_schema": 1,
       "solana_perps_tools": 3,
+      "structured_output": 3,
       "training_pipeline_reference": 3
     },
     "by_factory_stage": {
       "alpha_research": 1,
       "architecture": 22,
-      "backtesting": 1,
+      "backtesting": 11,
       "data_ingestion": 1,
-      "execution_policy": 14,
-      "feature_engineering": 2,
+      "execution_policy": 25,
+      "feature_engineering": 12,
       "governance": 8,
-      "mean_cvar_optimization": 3,
+      "mean_cvar_optimization": 4,
       "monitoring": 2,
-      "risk_controls": 2,
+      "risk_controls": 11,
       "scenario_generation": 1
     }
+  },
+  "splits": {
+    "train": 88,
+    "eval": 4,
+    "test": 6
   },
   "settings": {
     "train_ratio": 0.9,

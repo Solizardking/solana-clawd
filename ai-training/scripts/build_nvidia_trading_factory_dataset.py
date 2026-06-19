@@ -317,6 +317,126 @@ def optimization_examples(cfg: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
+def market_scenario_examples(cfg: dict[str, Any]) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    max_leverage = cfg["risk_policy"]["max_default_leverage"]
+    for market in cfg["markets"]:
+        is_perp = "PERP" in market.upper()
+        base_asset = market.split()[0].replace("-PERP", "")
+        out.append(example(
+            f"Design the feature set for {market} in the Solana trading factory.",
+            (
+                f"For {market}, build timestamp-safe features around returns, realized volatility, volume, liquidity, "
+                "spread, depth, transaction count, wallet-flow deltas, SOL beta, and regime tags. "
+                + (
+                    "Because this is a perp market, add funding rate, funding momentum, open interest, basis, liquidation-distance, "
+                    "margin usage, and exchange-specific order-book imbalance."
+                    if is_perp
+                    else "Because this is a spot market, add token liquidity, holder concentration where available, Jupiter route depth, "
+                    "DEX price dispersion, and transfer-flow concentration."
+                )
+                + " Store every feature with source timestamp, Solana slot, and source provider."
+            ),
+            {"source_type": "market_scenario", "market": market, "factory_stage": "feature_engineering"},
+        ))
+        out.append(example(
+            f"Create a paper-trading policy for {market}.",
+            (
+                f"Start in observer mode, then dry-run paper orders only. For {market}, require fresh price data, liquidity checks, "
+                "slippage estimate, position concentration check, and max adverse excursion estimate before any recommendation. "
+                + (
+                    f"For perps, cap default leverage at {max_leverage}x, calculate liquidation distance, funding paid/received, "
+                    "and margin required. Live execution needs explicit user confirmation and LIVE_TRADING=true."
+                    if is_perp
+                    else "For spot, reject thin routes, large price impact, stale token metadata, or abnormal holder/deployer risk. "
+                    "Live execution needs explicit user confirmation and an external signing layer."
+                )
+            ),
+            {"source_type": "market_scenario", "market": market, "factory_stage": "execution_policy"},
+        ))
+        out.append(example(
+            f"What backtest checks are required before promoting a {market} strategy?",
+            (
+                f"Promote a {market} strategy only after walk-forward validation, out-of-sample stress tests, realistic fees, "
+                "slippage, partial fills, latency, stale-data handling, and benchmark comparison. "
+                f"Report Sharpe, Sortino, max drawdown, turnover, capacity, hit rate, realized slippage, and CVaR for {base_asset}. "
+                "If performance disappears after costs or only works in one regime, keep it in research."
+            ),
+            {"source_type": "market_scenario", "market": market, "factory_stage": "backtesting"},
+        ))
+    return out
+
+
+def regime_examples() -> list[dict[str, Any]]:
+    regimes = [
+        ("funding spike", "reduce directional perps exposure, recompute funding carry, and require a fresh order book"),
+        ("liquidity gap", "widen slippage estimates, lower order size, and prefer no-trade until depth recovers"),
+        ("SOL beta shock", "re-estimate correlations and reduce crowded alt exposures"),
+        ("oracle staleness", "block execution and mark all model outputs as research-only"),
+        ("memecoin mania", "tighten holder/deployer risk checks and cap spot route size"),
+        ("stablecoin depeg", "revalue collateral, reject stale USDC assumptions, and increase cash buffers"),
+        ("market-wide drawdown", "stress liquidation distances, hedge beta, and lower leverage"),
+        ("new listing event", "separate discovery research from execution, require liquidity history, and block thin-route orders"),
+    ]
+    out: list[dict[str, Any]] = []
+    for name, action in regimes:
+        out.append(example(
+            f"The market regime detector flags `{name}`. What should the factory do?",
+            (
+                f"Treat `{name}` as a risk regime, not an alpha guarantee. The factory should {action}. "
+                "Re-run scenario generation with the regime tag, update CVaR estimates, and keep execution in paper mode "
+                "unless all live gates and risk checks pass."
+            ),
+            {"source_type": "regime_scenario", "regime": name, "factory_stage": "risk_controls"},
+        ))
+    return out
+
+
+def structured_output_examples() -> list[dict[str, Any]]:
+    samples = [
+        (
+            "Return a structured risk assessment for a 2x long SOL-PERP paper trade.",
+            {
+                "market": "SOL-PERP",
+                "mode": "paper",
+                "side": "long",
+                "size_usd": 500,
+                "leverage": 2,
+                "required_checks": ["fresh_mark_price", "funding_rate", "orderbook_depth", "liquidation_distance", "portfolio_exposure"],
+                "decision": "simulate_only",
+                "live_trading_allowed": False,
+                "notes": "No live order without explicit approval and LIVE_TRADING=true.",
+            },
+            "risk_controls",
+        ),
+        (
+            "Return a structured optimization handoff for a spot/perps rebalance.",
+            {
+                "handoff": "cufolio_mean_cvar",
+                "inputs": ["returns_matrix", "scenario_returns", "current_positions", "funding_costs", "slippage_model", "risk_limits"],
+                "constraints": ["budget", "max_weight", "max_leverage", "turnover", "min_cash", "cvar"],
+                "solver": "cuOpt",
+                "post_checks": ["benchmark_comparison", "stress_test", "paper_execution_plan"],
+            },
+            "mean_cvar_optimization",
+        ),
+        (
+            "Return a structured no-trade response for stale Solana data.",
+            {
+                "decision": "no_trade",
+                "reason": "market data is stale or provenance is incomplete",
+                "allowed_actions": ["refresh_sources", "rerun_features", "paper_simulation"],
+                "blocked_actions": ["live_order", "increase_leverage", "private_key_request"],
+            },
+            "execution_policy",
+        ),
+    ]
+    return [
+        example(prompt, json.dumps(payload, indent=2), {"source_type": "structured_output", "factory_stage": stage})
+        for prompt, payload, stage in samples
+    ]
+
+
 def refusal_examples() -> list[dict[str, Any]]:
     prompts = [
         (
@@ -459,6 +579,13 @@ def write_manifest(
             "by_source_type": dict(sorted(by_source.items())),
             "by_factory_stage": dict(sorted(by_stage.items())),
         },
+        "splits": {
+            "train": int(len(examples) * float(cfg["train_ratio"])),
+            "eval": int(len(examples) * float(cfg["eval_ratio"])),
+            "test": len(examples)
+            - int(len(examples) * float(cfg["train_ratio"]))
+            - int(len(examples) * float(cfg["eval_ratio"])),
+        },
         "settings": {
             "train_ratio": cfg["train_ratio"],
             "eval_ratio": cfg["eval_ratio"],
@@ -592,6 +719,9 @@ def main() -> None:
     built.extend(reference_examples(cfg))
     built.extend(tool_examples(perps_tools))
     built.extend(optimization_examples(cfg))
+    built.extend(market_scenario_examples(cfg))
+    built.extend(regime_examples())
+    built.extend(structured_output_examples())
     built.extend(refusal_examples())
     source_examples, sources, missing = source_chunk_examples(cfg)
     built.extend(source_examples)

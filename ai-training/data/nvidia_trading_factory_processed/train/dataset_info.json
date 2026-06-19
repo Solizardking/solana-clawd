@@ -32,6 +32,14 @@
         "dtype": "string",
         "_type": "Value"
       },
+      "market": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "regime": {
+        "dtype": "string",
+        "_type": "Value"
+      },
       "tool_name": {
         "dtype": "string",
         "_type": "Value"

@@ -20,6 +20,14 @@
         "dtype": "string",
         "_type": "Value"
       },
+      "factory_stage": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "market": {
+        "dtype": "string",
+        "_type": "Value"
+      },
       "source_path": {
         "dtype": "string",
         "_type": "Value"
@@ -28,7 +36,7 @@
         "dtype": "int64",
         "_type": "Value"
       },
-      "factory_stage": {
+      "tool_name": {
         "dtype": "string",
         "_type": "Value"
       }

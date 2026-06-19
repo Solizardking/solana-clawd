@@ -43,9 +43,9 @@ Produced by `scripts/prepare_dataset.py` with seed `42`.
 
 | Split | Examples |
 | --- | ---: |
-| train | 51 |
-| eval | 2 |
-| test | 4 |
+| train | 88 |
+| eval | 4 |
+| test | 6 |
 
 ## What It Covers
 
