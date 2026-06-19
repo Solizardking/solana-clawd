@@ -229,6 +229,29 @@ python3 scripts/realtime_dataset_ingest.py \
 Published dataset:
 [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct).
 
+NVIDIA Nemotron / NeMo Retriever extraction is supported for the PDF stage,
+following the NVIDIA Nemotron RAG document-processing pattern: extract text,
+tables as markdown, and chart elements through `nv-ingest`, then normalize the
+structured output into chat-style SFT rows.
+
+```bash
+# Keep this in your shell or secret manager only. Do not write it into YAML,
+# markdown, manifests, commits, or Hub uploads.
+export NVIDIA_API_KEY=<from-build.nvidia.com>
+
+# Install the optional NVIDIA stack only in the GPU/NIM extraction environment.
+python3 -m pip install nv-ingest==26.1.1 nv-ingest-api==26.1.1 nv-ingest-client==26.1.1
+
+python3 scripts/realtime_dataset_ingest.py \
+  --config configs/realtime_dataset_config.yaml \
+  --pdf-extractor nvidia
+```
+
+In `pdf_extractor: auto` mode, the builder tries NVIDIA first when
+`NVIDIA_API_KEY` is present, then Google Document AI/Gemini, then local
+`pypdf`. NVIDIA extraction caches provider responses under `data/nvidia_cache/`
+and records only provider/method metadata, not API keys.
+
 Google-backed PDF extraction is built in:
 
 ```bash
@@ -247,10 +270,8 @@ python3 scripts/realtime_dataset_ingest.py \
   --documentai-label client=clawd
 ```
 
-The default `pdf_extractor: auto` mode tries Document AI when Google Cloud
-OAuth credentials are available, then Gemini when `GEMINI_API_KEY` or
-`GOOGLE_API_KEY` is available, then local `pypdf`. Document AI requests use the
-processor endpoint in `configs/realtime_dataset_config.yaml`:
+When NVIDIA is not configured, the Google-backed PDF path is still available.
+Document AI requests use the processor endpoint in `configs/realtime_dataset_config.yaml`:
 `https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process`.
 Use Application Default Credentials from `gcloud auth application-default login`
 or a service-account path in your shell environment. Do not add Google OAuth

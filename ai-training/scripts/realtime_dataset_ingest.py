@@ -528,11 +528,17 @@ def choose_pdf_extractor(settings: dict[str, Any]) -> str:
     requested = settings["pdf_extractor"]
     if requested != "auto":
         return requested
+    if not settings.get("_nvidia_unavailable") and nvidia_api_key_available():
+        return "nvidia"
     if not settings.get("_documentai_unavailable") and settings.get("documentai_endpoint") and documentai_token_available():
         return "documentai"
     if not settings.get("_gemini_unavailable") and gemini_api_key():
         return "gemini"
     return "pypdf"
+
+
+def nvidia_api_key_available() -> bool:
+    return bool(os.environ.get("NVIDIA_API_KEY"))
 
 
 def documentai_token_available() -> bool:
@@ -633,6 +639,35 @@ def write_google_cache(settings: dict[str, Any], key_parts: list[Any], value: An
         path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
     except OSError as exc:
         print(f"WARNING: could not write Google extraction cache: {exc}", file=sys.stderr)
+
+
+def provider_cache_path(cache_dir: str, enabled: bool, key_parts: list[Any]) -> Path | None:
+    if not enabled:
+        return None
+    payload = json.dumps(key_parts, sort_keys=True, ensure_ascii=False)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return Path(cache_dir) / f"{digest}.json"
+
+
+def read_provider_cache(cache_dir: str, enabled: bool, key_parts: list[Any]) -> Any | None:
+    path = provider_cache_path(cache_dir, enabled, key_parts)
+    if not path or not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def write_provider_cache(cache_dir: str, enabled: bool, key_parts: list[Any], value: Any) -> None:
+    path = provider_cache_path(cache_dir, enabled, key_parts)
+    if not path:
+        return
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+    except OSError as exc:
+        print(f"WARNING: could not write provider extraction cache: {exc}", file=sys.stderr)
 
 
 def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int) -> dict[str, Any]:
@@ -807,6 +842,176 @@ def extract_gemini_pdf_texts(path: Path, source: SourceStats, settings: dict[str
     return out
 
 
+def _nvidia_item_page(item: Any) -> int | None:
+    if not isinstance(item, dict):
+        return None
+    candidates = [
+        item.get("page"),
+        item.get("page_number"),
+        item.get("page_idx"),
+        item.get("page_index"),
+    ]
+    metadata = item.get("metadata")
+    if isinstance(metadata, dict):
+        candidates.extend(
+            [
+                metadata.get("page"),
+                metadata.get("page_number"),
+                metadata.get("page_idx"),
+                metadata.get("page_index"),
+            ]
+        )
+        source_meta = metadata.get("source_metadata")
+        if isinstance(source_meta, dict):
+            candidates.extend(
+                [
+                    source_meta.get("page"),
+                    source_meta.get("page_number"),
+                    source_meta.get("page_idx"),
+                    source_meta.get("page_index"),
+                ]
+            )
+    for value in candidates:
+        try:
+            page = int(value)
+        except (TypeError, ValueError):
+            continue
+        return page + 1 if page == 0 else page
+    return None
+
+
+def _nvidia_item_type(item: Any) -> str | None:
+    if not isinstance(item, dict):
+        return None
+    for key in ("type", "content_type", "element_type", "category"):
+        value = item.get(key)
+        if isinstance(value, str) and value:
+            return value
+    metadata = item.get("metadata")
+    if isinstance(metadata, dict):
+        for key in ("type", "content_type", "element_type", "category"):
+            value = metadata.get(key)
+            if isinstance(value, str) and value:
+                return value
+    return None
+
+
+def _nvidia_text_records(value: Any, page: int | None = None, kind: str | None = None) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    if isinstance(value, str):
+        text = compact_text(value)
+        if text:
+            records.append({"text": text, "page": page, "kind": kind})
+        return records
+    if isinstance(value, list):
+        for item in value:
+            records.extend(_nvidia_text_records(item, page, kind))
+        return records
+    if not isinstance(value, dict):
+        return records
+
+    item_page = _nvidia_item_page(value) or page
+    item_kind = _nvidia_item_type(value) or kind
+    for key in (
+        "text",
+        "markdown",
+        "table_markdown",
+        "content",
+        "caption",
+        "description",
+        "document_text",
+        "extracted_text",
+    ):
+        field_value = value.get(key)
+        if isinstance(field_value, str):
+            text = compact_text(field_value)
+            if text:
+                records.append({"text": text, "page": item_page, "kind": item_kind or key})
+    for key in ("children", "elements", "items", "rows", "data"):
+        child_value = value.get(key)
+        if isinstance(child_value, (list, dict)):
+            records.extend(_nvidia_text_records(child_value, item_page, item_kind))
+    return records
+
+
+def extract_nvidia_pdf_texts(path: Path, source: SourceStats, settings: dict[str, Any]) -> list[dict[str, Any]]:
+    if not nvidia_api_key_available():
+        raise RuntimeError("NVIDIA extraction requires NVIDIA_API_KEY in the environment.")
+
+    cache_key = [
+        "nvidia",
+        "nv-ingest",
+        source.sha256,
+        settings["nvidia_extract_method"],
+        settings["nvidia_table_output_format"],
+    ]
+    cached = read_provider_cache(settings["nvidia_cache_dir"], settings["nvidia_cache"], cache_key)
+    if cached is None:
+        try:
+            from nv_ingest_client.client import NvIngestClient  # type: ignore
+            from nv_ingest_client.message_clients.simple import SimpleClient  # type: ignore
+            from nv_ingest_client.primitives import Ingestor  # type: ignore
+        except Exception as exc:
+            raise RuntimeError(
+                "NVIDIA nv-ingest packages are required for --pdf-extractor nvidia. "
+                "Install optional packages such as nv-ingest, nv-ingest-api, and nv-ingest-client, "
+                "or run the ingestion pipeline in an environment that already provides them."
+            ) from exc
+
+        if settings["nvidia_start_pipeline"]:
+            try:
+                from nv_ingest.framework.orchestration.ray.primitives.ray_pipeline import run_pipeline  # type: ignore
+
+                run_pipeline(block=False, disable_dynamic_scaling=True, run_in_subprocess=True, quiet=True)
+            except Exception as exc:
+                print(f"WARNING: could not start nv-ingest pipeline automatically: {exc}", file=sys.stderr)
+
+        client = NvIngestClient(
+            message_client_allocator=SimpleClient,
+            message_client_port=settings["nvidia_ingest_port"],
+            message_client_hostname="localhost",
+        )
+        ingestor = (
+            Ingestor(client=client)
+            .files([str(path)])
+            .extract(
+                extract_text=True,
+                extract_tables=True,
+                extract_charts=True,
+                extract_images=False,
+                extract_method=settings["nvidia_extract_method"],
+                table_output_format=settings["nvidia_table_output_format"],
+            )
+        )
+        job_results = ingestor.ingest()
+        cached = job_results[0] if isinstance(job_results, list) and job_results else job_results
+        write_provider_cache(settings["nvidia_cache_dir"], settings["nvidia_cache"], cache_key, cached)
+
+    out: list[dict[str, Any]] = []
+    for record in _nvidia_text_records(cached):
+        text = record["text"]
+        if len(text) < settings["min_text_chars"]:
+            source.skipped += 1
+            continue
+        page = record.get("page")
+        out.append(
+            {
+                "text": text,
+                "pages": [page] if isinstance(page, int) else None,
+                "extractor": "nvidia",
+                "metadata": {
+                    "nvidia_pipeline": "nv-ingest",
+                    "extract_method": settings["nvidia_extract_method"],
+                    "table_output_format": settings["nvidia_table_output_format"],
+                    "content_type": record.get("kind"),
+                },
+            }
+        )
+    if not out:
+        source.skipped += 1
+    return out
+
+
 def extract_pypdf_texts(path: Path, source: SourceStats, reader: Any | None) -> list[dict[str, Any]]:
     reader = reader or get_pdf_reader(path)
     texts: list[dict[str, Any]] = []
@@ -833,11 +1038,16 @@ def extract_pdf_texts(path: Path, source: SourceStats, settings: dict[str, Any],
             )
         if extractor == "gemini":
             return extractor, extract_gemini_pdf_texts(path, source, settings)
+        if extractor == "nvidia":
+            return extractor, extract_nvidia_pdf_texts(path, source, settings)
         return "pypdf", extract_pypdf_texts(path, source, reader)
     except Exception as exc:
         if settings["pdf_extractor"] != "auto":
             raise
-        if extractor == "documentai" and gemini_api_key():
+        if extractor == "nvidia":
+            settings["_nvidia_unavailable"] = True
+            print(f"WARNING: nvidia PDF extraction failed for {path.name}; falling back to pypdf: {exc}", file=sys.stderr)
+        elif extractor == "documentai" and gemini_api_key():
             try:
                 print(
                     f"WARNING: documentai PDF extraction failed for {path.name}; falling back to gemini: {exc}",

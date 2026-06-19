@@ -19,6 +19,12 @@ keep_duplicate_files: false
 save_arrow_dataset: false
 
 pdf_extractor: auto
+nvidia_cache_dir: data/nvidia_cache
+no_nvidia_cache: false
+nvidia_ingest_port: 7671
+nvidia_extract_method: pdfium
+nvidia_table_output_format: markdown
+no_nvidia_start_pipeline: false
 documentai_endpoint: https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process
 documentai_field_mask: text,pages.pageNumber,pages.detectedLanguages,pages.imageQualityScores
 documentai_page_batch_size: 1
