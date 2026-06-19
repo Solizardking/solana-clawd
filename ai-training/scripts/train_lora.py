@@ -92,14 +92,80 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--lora-r", type=int, default=None)
     p.add_argument("--lora-alpha", type=int, default=None)
     p.add_argument("--cpt-stage", action="store_true", help="Use cpt_* dataset/training overrides from the config")
+    p.add_argument("--dry-run", action="store_true", help="Validate config/dataset resolution without loading a model")
+    p.add_argument("--wandb", action="store_true", help="Enable Weights & Biases reporting")
+    p.add_argument("--no-eval", action="store_true", help="Disable evaluation during training")
     p.add_argument("--no-checkpoints", action="store_true", help="Disable Trainer checkpoint saving during training")
+    p.add_argument("--push", action="store_true", help="Push the adapter to the Hub after training")
     p.add_argument("--no-push", action="store_true", help="Don't push to Hub")
     p.add_argument("--no-quant", action="store_true", help="Disable 4-bit quantization")
     p.add_argument("--no-grad-ckpt", action="store_true", help="Disable gradient checkpointing")
     return p.parse_args()
 
 
+def default_config() -> dict[str, Any]:
+    """Remote-friendly default config for `hf jobs uv run scripts/train_lora.py -- --config none`."""
+    return {
+        "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
+        "dataset_repo": "solanaclawd/solana-clawd-core-ai-instruct",
+        "max_seq_length": 4096,
+        "train_split": "train",
+        "eval_split": "eval",
+        "output_dir": "/data/outputs/core-ai-clawd-1.5b-lora",
+        "push_to_hub": False,
+        "hub_model_id": "solanaclawd/solana-clawd-core-ai-1.5b-lora",
+        "hub_private": False,
+        "lora": {
+            "r": 16,
+            "alpha": 32,
+            "dropout": 0.05,
+            "bias": "none",
+            "task_type": "CAUSAL_LM",
+            "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+        },
+        "training": {
+            "per_device_train_batch_size": 1,
+            "gradient_accumulation_steps": 8,
+            "per_device_eval_batch_size": 1,
+            "num_train_epochs": 1,
+            "max_steps": -1,
+            "learning_rate": 2.0e-4,
+            "lr_scheduler_type": "cosine",
+            "warmup_ratio": 0.03,
+            "weight_decay": 0.0,
+            "optim": "adamw_torch",
+            "bf16": True,
+            "fp16": False,
+            "tf32": True,
+            "gradient_checkpointing": True,
+            "logging_steps": 10,
+            "save_steps": 250,
+            "save_total_limit": 2,
+            "eval_steps": 250,
+            "eval_strategy": "steps",
+            "report_to": ["none"],
+            "seed": 42,
+            "dataloader_num_workers": 2,
+            "remove_unused_columns": False,
+        },
+        "quantization": {
+            "enabled": True,
+            "load_in_4bit": True,
+            "bnb_4bit_compute_dtype": "bfloat16",
+            "bnb_4bit_quant_type": "nf4",
+            "bnb_4bit_use_double_quant": True,
+        },
+        "sft": {
+            "packing": False,
+            "assistant_only_loss": True,
+            "chat_template_kwargs": {},
+        },
+    }
+
+
 def load_config(path: str) -> dict[str, Any]:
+    if path.lower() in {"none", "null", "-"}:
+        return default_config()
     with open(path) as f:
         return yaml.safe_load(f)
 
@@ -125,10 +191,18 @@ def apply_overrides(cfg: dict[str, Any], args: argparse.Namespace) -> dict[str, 
         cfg["lora"]["r"] = args.lora_r
     if args.lora_alpha is not None:
         cfg["lora"]["alpha"] = args.lora_alpha
+    if args.push:
+        cfg["push_to_hub"] = True
+    if args.wandb:
+        cfg["training"]["report_to"] = ["wandb"]
     if args.no_push:
         cfg["push_to_hub"] = False
     if args.no_checkpoints:
         cfg["training"]["save_strategy"] = "no"
+    if args.no_eval:
+        cfg["eval_split"] = None
+        cfg["training"]["eval_strategy"] = "no"
+        cfg["training"].pop("eval_steps", None)
     if args.no_quant:
         cfg["quantization"]["enabled"] = False
     if args.no_grad_ckpt:
@@ -211,6 +285,19 @@ def main() -> None:
 
     device = detect_device()
     print(f"[setup] device={device}  base={base_model}  mode={'cpt' if args.cpt_stage else 'sft'}")
+
+    if args.dry_run:
+        print("[dry-run] Resolving dataset")
+        ds, dataset_label = resolve_dataset(cfg, args.cpt_stage)
+        train_split = cfg.get("train_split", "train")
+        eval_split = cfg.get("eval_split", "eval")
+        train_rows = len(ds[train_split]) if train_split in ds else 0
+        eval_rows = len(ds[eval_split]) if eval_split and eval_split in ds else 0
+        print(f"[dry-run] source={dataset_label}")
+        print(f"[dry-run] train={train_rows} eval={eval_rows}")
+        print(f"[dry-run] output_dir={output_dir}")
+        print(f"[dry-run] push_to_hub={push_to_hub} hub_model_id={hub_model_id}")
+        return
 
     # ---- Tokenizer ----
     print("[1/6] Loading tokenizer")
