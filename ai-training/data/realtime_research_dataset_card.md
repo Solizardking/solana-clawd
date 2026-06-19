@@ -134,10 +134,15 @@ The ingestion script supports Google-backed PDF extraction:
 - Document AI endpoint: `https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process`
 - Document AI field mask: `text,pages.pageNumber,pages.detectedLanguages,pages.imageQualityScores`
 - Document AI billing labels: `pipeline=solana-clawd`, `dataset=realtime-research`, `client=clawd`
+- Google quota project: `x402-477302`
 - Gemini model: `gemini-2.5-flash`
 
 Document AI's `ProcessDocument` endpoint normally requires Google Cloud OAuth
 or Application Default Credentials. API keys are used by the Gemini extractor.
+Do not publish Google OAuth client-secret files, ADC JSON, access tokens,
+authorization headers, or API keys in dataset files, manifests, cards, commits,
+or Hub uploads. If Document AI returns `BILLING_DISABLED`, enable billing on
+the processor project or switch to a processor in a billing-enabled project.
 
 ## Reproduce
 
