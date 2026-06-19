@@ -1,0 +1,14 @@
+{
+  "num_examples": 35173,
+  "splits": {
+    "train": 31655,
+    "eval": 1758,
+    "test": 1760
+  },
+  "schema": {
+    "messages": "list[{role: str, content: str}]"
+  },
+  "source_files": [
+    "data/core_ai_clawd_sft.jsonl"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "messages": {
+      "feature": {
+        "content": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "role": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      },
+      "_type": "List"
+    },
+    "metadata": {
+      "license": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "source": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "source_type": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "chunk_count": {
+        "dtype": "int64",
+        "_type": "Value"
+      },
+      "chunk_index": {
+        "dtype": "int64",
+        "_type": "Value"
+      },
+      "path": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "record_id": {
+        "dtype": "string",
+        "_type": "Value"
+      }
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
