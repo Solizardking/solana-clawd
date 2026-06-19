@@ -104,10 +104,10 @@ pull the latest model + dataset in two lines.
 | --- | --- | --- |
 | [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) | dataset | **36,109 examples** — SFT instruction pairs (system/user/assistant), 32,498/1,805/1,806 train/eval/test |
 | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
-| [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | dataset | **98 examples** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, perps tool-use, and risk refusals; 88/4/6 train/eval/test |
+| [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | target dataset | **98 examples staged locally; Hub publish pending auth** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, perps tool-use, and risk refusals; 88/4/6 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
 | [`solanaclawd/solana-clawd-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) | model | LoRA adapter on Qwen2.5-1.5B-Instruct (training in progress — see current run below) |
-| [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | model | Planned Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset |
+| [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | target model | Planned Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
 
@@ -320,7 +320,7 @@ python3 scripts/train_lora.py \
 python3 scripts/verify_trading_factory_release.py --local-only --strict
 ```
 
-Current local artifacts:
+Current local artifacts, verified with `scripts/verify_trading_factory_release.py --local-only --strict`:
 
 - `data/nvidia_trading_factory_sft.jsonl` — 98 examples
 - `data/nvidia_trading_factory_processed/{train,eval,test}.parquet` — 88/4/6
@@ -333,6 +333,26 @@ existing `hf auth login` session is active:
 
 ```bash
 ./scripts/publish_trading_factory_dataset.sh
+```
+
+After publishing, verify the Hub release:
+
+```bash
+python3 scripts/verify_trading_factory_release.py --strict
+```
+
+For a single guarded audit/publish entry point that can read simple local
+`KEY=VALUE` env files without printing secret values:
+
+```bash
+# Audit local state, Core AI Hub state, and trading-factory local readiness.
+python3 scripts/run_release_pipeline.py
+
+# After placing HF_TOKEN in your shell or a local env file:
+python3 scripts/run_release_pipeline.py --publish-trading-dataset
+
+# After the dataset is published and WANDB_API_KEY is also available:
+python3 scripts/run_release_pipeline.py --launch-trading-training
 ```
 
 Launch the trading-factory LoRA as a new HF job only when you are ready. This
