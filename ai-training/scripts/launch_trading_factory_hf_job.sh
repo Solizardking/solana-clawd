@@ -32,29 +32,36 @@ if [[ -z "${HF_TOKEN:-}" ]]; then
   fi
 fi
 
-if [[ -z "${WANDB_API_KEY:-}" ]]; then
-  echo "WANDB_API_KEY is required" >&2
-  exit 1
+JOB_SECRET_ARGS=(--secrets HF_TOKEN)
+JOB_ENV_ARGS=(
+  --env HF_HOME=/data/hf_cache
+  --env HF_DATASETS_CACHE=/data/hf_cache/datasets
+  --env TRANSFORMERS_CACHE=/data/hf_cache
+)
+TRAIN_ARGS=(
+  --config configs/nvidia_trading_factory_lora_config.yaml
+  --dataset-repo "$DATASET_REPO"
+  --base-model "$BASE_MODEL"
+  --output-dir /data/outputs/solana-nvidia-trading-factory-8b-lora
+  --hub-model-id "$HUB_MODEL_ID"
+  --num-epochs "$NUM_EPOCHS"
+  --push
+)
+
+if [[ -n "${WANDB_API_KEY:-}" ]]; then
+  JOB_SECRET_ARGS+=(--secrets WANDB_API_KEY)
+  JOB_ENV_ARGS+=(--env WANDB_PROJECT=solana-clawd-trading-factory --env "WANDB_RUN_NAME=$RUN_NAME")
+  TRAIN_ARGS+=(--wandb)
+else
+  echo "WANDB_API_KEY is not set; launching without W&B tracking." >&2
 fi
 
 hf jobs uv run scripts/train_lora.py \
   --flavor "$FLAVOR" \
   --timeout "$TIMEOUT" \
-  --secrets HF_TOKEN \
-  --secrets WANDB_API_KEY \
-  --env HF_HOME=/data/hf_cache \
-  --env HF_DATASETS_CACHE=/data/hf_cache/datasets \
-  --env TRANSFORMERS_CACHE=/data/hf_cache \
-  --env WANDB_PROJECT=solana-clawd-trading-factory \
-  --env "WANDB_RUN_NAME=$RUN_NAME" \
+  "${JOB_SECRET_ARGS[@]}" \
+  "${JOB_ENV_ARGS[@]}" \
   --label solana-clawd-trading-factory \
   --detach \
   -- \
-  --config configs/nvidia_trading_factory_lora_config.yaml \
-  --dataset-repo "$DATASET_REPO" \
-  --base-model "$BASE_MODEL" \
-  --output-dir /data/outputs/solana-nvidia-trading-factory-8b-lora \
-  --hub-model-id "$HUB_MODEL_ID" \
-  --num-epochs "$NUM_EPOCHS" \
-  --push \
-  --wandb
+  "${TRAIN_ARGS[@]}"

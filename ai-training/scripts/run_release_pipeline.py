@@ -135,6 +135,15 @@ def run_quiet(cmd: list[str], *, cwd: Path = AI_TRAINING_DIR, env: dict[str, str
 def has_hf_auth(env: dict[str, str]) -> bool:
     if env.get("HF_TOKEN"):
         return True
+    token_result = subprocess.run(
+        ["hf", "auth", "token"],
+        cwd=str(AI_TRAINING_DIR),
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if token_result.returncode == 0:
+        return True
     result = subprocess.run(
         ["hf", "auth", "whoami"],
         cwd=str(AI_TRAINING_DIR),
@@ -341,10 +350,12 @@ def main() -> int:
         )
 
     if args.launch_trading_training:
-        if not has_hf_auth(env) or not env.get("WANDB_API_KEY"):
+        if not has_hf_auth(env):
             write_report(AI_TRAINING_DIR / args.report, env, gates)
-            print("ERROR: --launch-trading-training requires HF_TOKEN or hf auth login, plus WANDB_API_KEY.", file=sys.stderr)
+            print("ERROR: --launch-trading-training requires HF_TOKEN or hf auth login.", file=sys.stderr)
             return 1
+        if not env.get("WANDB_API_KEY"):
+            print("WARNING: WANDB_API_KEY is not set; trading training will launch without W&B tracking.")
         run(["./scripts/publish_trading_factory_dataset.sh"], env=env)
         run(["python3", "scripts/verify_trading_factory_release.py", "--strict"], env=env)
         run(["./scripts/launch_trading_factory_hf_job.sh", args.flavor, args.timeout], env=env)
