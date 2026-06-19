@@ -628,6 +628,23 @@ if [ "$INSTALL_PUMP" = true ]; then
   printf "\n"
 fi
 
+if [ "$INSTALL_CORE_AI" = true ]; then
+  printf "  ${BOLD}Core AI — Helius + clawd-code:${RESET}\n"
+  printf "  ${CYAN}helius-cli config set-api-key <key>${RESET}      configure Helius API key\n"
+  printf "  ${CYAN}helius-cli balance <wallet>${RESET}               SOL balance via Helius\n"
+  printf "  ${CYAN}clawd-code code \"Build a Jupiter swap\"${RESET}    AI coding with Solana context\n"
+  printf "  ${CYAN}clawd-code trade funding${RESET}                  check Phoenix funding rate\n"
+  printf "  ${CYAN}clawd-code research \"Solana MEV\"${RESET}          web research + synthesis\n"
+  printf "  ${CYAN}clawd-code voice --persona rex${RESET}            voice mode (trading persona)\n"
+  printf "  ${CYAN}clawd-code web${RESET}                            local UI at http://localhost:3000\n"
+  printf "  ${CYAN}clawd-code arena \"explain account model\"${RESET}  multi-model benchmark\n"
+  printf "  ${DIM}Config: ~/.clawd/settings.json  (Helius MCP + ZK Compression MCP wired)${RESET}\n"
+  printf "  ${DIM}Skills: ~/.clawd/skills/  (helius, dflow, jupiter, phantom, okx, svm)${RESET}\n"
+  printf "  ${DIM}Env:    ~/.clawd/.env  (add HELIUS_API_KEY + XAI_API_KEY)${RESET}\n"
+  printf "  ${DIM}Docs:   https://github.com/Solizardking/core-ai${RESET}\n"
+  printf "\n"
+fi
+
 printf "  ${BOLD}Agent workflow:${RESET}\n"
 printf "  ${CYAN}clawd-registry list${RESET}                  list indexed agents\n"
 printf "  ${CYAN}clawd-registry add <address>${RESET}         index an on-chain agent\n"
