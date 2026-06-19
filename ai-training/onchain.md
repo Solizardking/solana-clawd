@@ -39,7 +39,7 @@ Official Hub datasets:
 | `solanaclawd/solana-clawd-realtime-research-instruct` | dataset | 29,058 examples from PDFs, notebooks, parquet data, and ZK context |
 | `solanaclawd/solana-clawd-nvidia-trading-factory-instruct` | dataset | 142 examples, 127/7/8 train/eval/test splits |
 | `solanaclawd/solana-nvidia-trading-factory-8b-lora` | model | completed adapter; HF job `ordlibrary/6a35a2ce953ed90bfb945009` |
-| `solanaclawd/solana-clawd-core-ai-1.5b-lora` | model | recovery job `ordlibrary/6a35a6833093dba73ce2a86b` running on `a100-large`; last manual checkpoint reached step `221/3957` |
+| `solanaclawd/solana-clawd-core-ai-1.5b-lora` | model | recovery job `ordlibrary/6a35a6833093dba73ce2a86b` running on `a100-large`; last manual checkpoint reached step `365/3957` |
 
 Local model-kit files to reference:
 
