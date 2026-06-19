@@ -16,16 +16,8 @@
       "_type": "List"
     },
     "metadata": {
-      "source_type": {
-        "dtype": "string",
-        "_type": "Value"
-      },
-      "source_path": {
-        "dtype": "string",
-        "_type": "Value"
-      },
       "chunk_index": {
-        "dtype": "int64",
+        "dtype": "string",
         "_type": "Value"
       },
       "factory_stage": {
@@ -33,6 +25,22 @@
         "_type": "Value"
       },
       "market": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "reference_title": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "regime": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "source_path": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "source_type": {
         "dtype": "string",
         "_type": "Value"
       },

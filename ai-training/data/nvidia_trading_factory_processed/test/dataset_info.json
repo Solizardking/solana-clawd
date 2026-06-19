@@ -16,11 +16,7 @@
       "_type": "List"
     },
     "metadata": {
-      "source_type": {
-        "dtype": "string",
-        "_type": "Value"
-      },
-      "tool_name": {
+      "chunk_index": {
         "dtype": "string",
         "_type": "Value"
       },
@@ -32,7 +28,23 @@
         "dtype": "string",
         "_type": "Value"
       },
+      "reference_title": {
+        "dtype": "string",
+        "_type": "Value"
+      },
       "regime": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "source_path": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "source_type": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "tool_name": {
         "dtype": "string",
         "_type": "Value"
       }

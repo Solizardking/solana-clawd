@@ -94,6 +94,37 @@ def validate_example(ex: dict[str, Any], min_messages: int) -> bool:
     return True
 
 
+def _metadata_value(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, sort_keys=True, ensure_ascii=False)
+    return str(value)
+
+
+def normalize_metadata(examples: list[dict[str, Any]]) -> None:
+    keys = sorted(
+        {
+            key
+            for ex in examples
+            if isinstance(ex.get("metadata"), dict)
+            for key in ex["metadata"]
+        }
+    )
+    if not keys:
+        return
+
+    for ex in examples:
+        metadata = ex.get("metadata")
+        if not isinstance(metadata, dict):
+            metadata = {}
+        ex["metadata"] = {key: _metadata_value(metadata.get(key)) for key in keys}
+        if "id" in ex and ex["id"] is not None:
+            ex["id"] = str(ex["id"])
+
+
 def main() -> None:
     args = parse_args()
     rng = random.Random(args.seed)
@@ -106,6 +137,7 @@ def main() -> None:
 
     print(f"[2/4] Validating (min_messages={args.min_messages})")
     valid = [ex for ex in raw if validate_example(ex, args.min_messages)]
+    normalize_metadata(valid)
     print(f"      {len(valid)} valid / {len(raw)} total")
 
     rng.shuffle(valid)
@@ -142,7 +174,10 @@ def main() -> None:
     info = {
         "num_examples": n,
         "splits": {"train": len(train), "eval": len(eval_), "test": len(test)},
-        "schema": {"messages": "list[{role: str, content: str}]"},
+        "schema": {
+            "messages": "list[{role: str, content: str}]",
+            "metadata": "optional dict[str, str] normalized across splits",
+        },
         "source_files": args.input,
     }
     with (out_dir / "dataset_info.json").open("w") as f:

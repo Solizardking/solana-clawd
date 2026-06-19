@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T19:55:04+00:00",
+  "generated_at": "2026-06-19T19:56:52+00:00",
   "dataset_name": "Solana Clawd NVIDIA Trading Factory Instruct",
   "repo_id": "solanaclawd/solana-clawd-nvidia-trading-factory-instruct",
   "builder": "scripts/build_nvidia_trading_factory_dataset.py",
@@ -227,7 +227,7 @@
     {
       "path": "ai-training/data/strategies/strategy_manifest.json",
       "source_type": "generated_strategy_manifest",
-      "sha256": "6dde40d1c2b3a6af97fa464c3afeb30ddcb9a1885bdc962621e2b7df625aea08",
+      "sha256": "8e612a8e6d90a3f55be1a380459851c878708dc4b6ce655e05160cd830c6b845",
       "size_bytes": 5018,
       "chunks": 2
     },

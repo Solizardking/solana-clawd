@@ -6,7 +6,8 @@
     "test": 8
   },
   "schema": {
-    "messages": "list[{role: str, content: str}]"
+    "messages": "list[{role: str, content: str}]",
+    "metadata": "optional dict[str, str] normalized across splits"
   },
   "source_files": [
     "data/nvidia_trading_factory_sft.jsonl"
