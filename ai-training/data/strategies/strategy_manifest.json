@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T19:50:13+00:00",
+  "generated_at": "2026-06-19T19:50:53+00:00",
   "optimizer_handoff": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/cufolio_mean_cvar_handoff.json",
   "purpose": "Solana Clawd NVIDIA trading factory: cuFOLIO optimization handoff plus Vulcan paper strategy specs",
   "rise_data_plan": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/rise_market_data_plan.json",
