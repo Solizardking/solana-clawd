@@ -297,6 +297,9 @@ def apply_overrides(cfg: dict[str, Any], args: argparse.Namespace) -> dict[str, 
         cfg["base_model"] = args.base_model
     if args.dataset_repo:
         cfg["dataset_repo"] = args.dataset_repo
+        if not args.dataset_path:
+            cfg.pop("dataset_path", None)
+            cfg.pop("dataset_format", None)
     if args.dataset_path:
         cfg["dataset_path"] = args.dataset_path
     if args.dataset_format:
@@ -368,10 +371,10 @@ def resolve_dataset(cfg: dict[str, Any], use_cpt_stage: bool) -> tuple[DatasetDi
         local_path = cfg.get("cpt_dataset_path", local_path)
         local_format = cfg.get("cpt_dataset_format", local_format)
 
-    if local_path:
+    dataset_repo = cfg.get("dataset_repo")
+    if local_path and Path(local_path).exists():
         return load_local_dataset(local_path, local_format), local_path
 
-    dataset_repo = cfg.get("dataset_repo")
     if dataset_repo and not use_cpt_stage:
         try:
             return load_dataset(dataset_repo), dataset_repo
@@ -380,6 +383,8 @@ def resolve_dataset(cfg: dict[str, Any], use_cpt_stage: bool) -> tuple[DatasetDi
 
     if not local_path:
         raise FileNotFoundError("No local dataset path configured and Hub dataset could not be loaded.")
+    if not Path(local_path).exists():
+        raise FileNotFoundError(f"Configured local dataset path does not exist: {local_path}")
     return load_local_dataset(local_path, local_format), local_path
 
 

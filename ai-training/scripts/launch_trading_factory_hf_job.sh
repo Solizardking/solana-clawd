@@ -6,7 +6,9 @@
 # Required:
 #   HF_TOKEN        Hugging Face token with dataset/model/job access, or
 #                   an existing `hf auth login` session
-#   WANDB_API_KEY  Weights & Biases API key
+#
+# Optional:
+#   WANDB_API_KEY  Weights & Biases API key. If absent, launch without W&B.
 #
 # Usage:
 #   ./scripts/launch_trading_factory_hf_job.sh
