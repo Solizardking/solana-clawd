@@ -206,7 +206,7 @@ python3 scripts/train_lora.py --num-epochs 1 --no-quant
 ```bash
 python3 scripts/evaluate.py \
   --config configs/eval_config.yaml \
-  --adapter solanaclawd/solana-clawd-1.5b-lora \
+  --adapter solanaclawd/solana-clawd-core-ai-1.5b-lora \
   --dataset solanaclawd/solana-clawd-eval \
   --out ./outputs/eval \
   --format markdown
@@ -257,7 +257,7 @@ print(tokenizer.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_token
 pip install mlx-lm
 mlx_lm.generate \
   --model Qwen/Qwen2.5-1.5B-Instruct \
-  --adapter solanaclawd/solana-clawd-1.5b-lora \
+  --adapter solanaclawd/solana-clawd-core-ai-1.5b-lora \
   --prompt "How do I detect a rug pull on a fresh Solana token?"
 ```
 
@@ -268,7 +268,7 @@ from openai import OpenAI
 
 client = OpenAI(base_url="https://router.huggingface.co/v1", api_key="hf_...")
 response = client.chat.completions.create(
-    model="solanaclawd/solana-clawd-1.5b-lora",
+    model="solanaclawd/solana-clawd-core-ai-1.5b-lora",
     messages=[
         {"role": "system", "content": "You are Clawd, a sovereign Solana-native AI agent."},
         {"role": "user",   "content": "What is a PDA?"},
@@ -548,11 +548,11 @@ For any production trading or financial application, apply independent review.
 ## Citation
 
 ```bibtex
-@misc{solana-clawd-1.5b-lora,
-  title     = {Solana Clawd 1.5B LoRA — Onchain Model Kit},
+@misc{solana-clawd-core-ai-1.5b-lora,
+  title     = {Solana Clawd Core AI 1.5B LoRA — Onchain Model Kit},
   author    = {solanaclawd},
   year      = {2026},
-  url       = {https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora},
-  note      = {LoRA fine-tune of Qwen2.5-1.5B-Instruct on 36K Solana DeFi + agent data. Part of the Onchain Model Kit.}
+  url       = {https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora},
+  note      = {LoRA fine-tune of Qwen2.5-1.5B-Instruct on the 35K-example Core AI Solana Clawd dataset. Part of the Onchain Model Kit.}
 }
 ```

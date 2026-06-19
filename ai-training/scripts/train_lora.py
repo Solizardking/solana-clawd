@@ -187,6 +187,22 @@ def write_adapter_model_card(
     datasets = f"  - {dataset_label}" if "/" in dataset_label and not Path(dataset_label).exists() else "  - local"
     wandb_url = _wandb_run_url()
     wandb_section = f"\n- W&B run: {wandb_url}" if wandb_url else ""
+    hub_model_id = cfg.get("hub_model_id", "local")
+    core_release_note = ""
+    if "core-ai" in f"{hub_model_id} {dataset_label}".lower():
+        core_release_note = """
+## Release Verification
+
+From the `ai-training` directory in the source repository:
+
+```bash
+python3 scripts/verify_full_goal_release.py --strict
+```
+
+The broad verifier checks the explicit `core-ai` and `ai-training` path list,
+local manifests, public Hub datasets, this adapter repo, and release-doc secret
+hygiene.
+"""
     path.write_text(
         f"""---
 license: cc-by-4.0
@@ -201,6 +217,8 @@ pipeline_tag: text-generation
 # {title}
 
 LoRA adapter trained from `{cfg["base_model"]}` on `{dataset_label}`.
+
+Hub model ID: `{hub_model_id}`
 
 ## Training
 
@@ -219,12 +237,31 @@ LoRA adapter trained from `{cfg["base_model"]}` on `{dataset_label}`.
 
 {_intended_use(cfg, dataset_label)}
 
+## Loading
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+
+base_model = "{cfg["base_model"]}"
+adapter_id = "{hub_model_id}"
+
+tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto", trust_remote_code=True)
+model = PeftModel.from_pretrained(model, adapter_id)
+```
+{core_release_note}
+
 ## Safety
 
 The dataset builder runs in public-safe mode by default and excludes common
 secret filenames, private key/token patterns, binary artifacts, dependency
 folders, lockfiles, and high-risk security records that are not suitable for
 public dataset release.
+
+This adapter is a research/developer artifact. Live trading or wallet actions
+must remain behind separate execution clients, simulation, explicit operator
+approval, and pre-trade risk gates.
 """,
         encoding="utf-8",
     )

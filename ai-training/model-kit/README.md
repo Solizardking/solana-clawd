@@ -212,12 +212,14 @@ Monitor jobs:
 ```bash
 hf jobs inspect <namespace/job-id>
 hf jobs logs <namespace/job-id>
+bash scripts/watch_core_ai_hf_job.sh ordlibrary/6a35a6833093dba73ce2a86b 60
 ```
 
 Release gate:
 
 ```bash
 cd ai-training
+python3 scripts/verify_full_goal_release.py --strict
 python3 scripts/verify_core_ai_release.py
 python3 scripts/verify_trading_factory_release.py --strict
 ```

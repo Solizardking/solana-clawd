@@ -561,7 +561,7 @@ Or with `mlx-lm` on a Mac (fastest local path):
 pip install mlx-lm
 mlx_lm.generate \
   --model Qwen/Qwen2.5-1.5B-Instruct \
-  --adapter solanaclawd/solana-clawd-1.5b-lora \
+  --adapter solanaclawd/solana-clawd-core-ai-1.5b-lora \
   --prompt "How do I detect a rug pull on a fresh Solana token?"
 ```
 
@@ -735,7 +735,7 @@ takes ~1–2 hrs on A100 (~$3–6 per full training run). A 7B run takes ~4–6 
 
 ## Self-hosted GPU deployment
 
-Once your LoRA adapter is trained and pushed to `solanaclawd/solana-clawd-1.5b-lora`,
+Once your LoRA adapter is trained and pushed to `solanaclawd/solana-clawd-core-ai-1.5b-lora`,
 you can serve it from your own GPU (on-prem, rented, or cloud VM) using any of the
 paths below. All paths start with a one-time weight merge to produce a standalone model.
 
@@ -747,7 +747,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
 BASE    = "Qwen/Qwen2.5-1.5B-Instruct"
-ADAPTER = "solanaclawd/solana-clawd-1.5b-lora"
+ADAPTER = "solanaclawd/solana-clawd-core-ai-1.5b-lora"
 MERGED  = "./outputs/solana-clawd-1.5b-merged"
 
 model = AutoModelForCausalLM.from_pretrained(BASE, torch_dtype="auto", device_map="cpu")
@@ -788,7 +788,7 @@ vllm serve ./outputs/solana-clawd-1.5b-merged \
 # Or serve the LoRA adapter directly on top of the base (no merge needed)
 vllm serve Qwen/Qwen2.5-1.5B-Instruct \
   --enable-lora \
-  --lora-modules clawd=solanaclawd/solana-clawd-1.5b-lora \
+  --lora-modules clawd=solanaclawd/solana-clawd-core-ai-1.5b-lora \
   --served-model-name solana-clawd-1.5b \
   --host 0.0.0.0 --port 8000
 ```
@@ -1012,11 +1012,34 @@ python3 scripts/solana_benchmark.py --model ordlibrary/DeepSolanaZKr-1
 
 # Against local vLLM
 python3 scripts/solana_benchmark.py \
-  --model solanaclawd/solana-clawd-1.5b-lora \
+  --model solanaclawd/solana-clawd-core-ai-1.5b-lora \
   --base-url http://localhost:8000/v1 --api-key none
 ```
 
 Domains: `core` · `defi` · `security` · `agent` · `zk` · `constitution`
+
+### Full release verifier
+
+Run the broad verifier before calling the setup/release goal complete. It checks
+the explicit `core-ai` and `ai-training` path list, local manifests, public Hub
+datasets, the Core AI adapter repo, and release-doc secret hygiene.
+
+```bash
+cd ai-training
+python3 scripts/verify_full_goal_release.py --strict
+```
+
+The full release remains pending until
+`solanaclawd/solana-clawd-core-ai-1.5b-lora` contains both
+`adapter_config.json` and `adapter_model.safetensors`.
+
+To watch the active HF recovery job without canceling or restarting it, then run
+the full verifier when it reaches a terminal success state:
+
+```bash
+cd ai-training
+bash scripts/watch_core_ai_hf_job.sh ordlibrary/6a35a6833093dba73ce2a86b 60
+```
 
 ### Persistent Memory (`memory/honcho.py`)
 
