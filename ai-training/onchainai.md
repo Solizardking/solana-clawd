@@ -12,6 +12,7 @@
 | --- | --- | --- |
 | Training pipeline | `scripts/` | Dataset prep → LoRA SFT → eval → HF Hub push |
 | Dataset | `data/solana_clawd_merged.jsonl` | 36,109 Solana SFT examples (canonical training input) |
+| Realtime dataset | `scripts/realtime_dataset_ingest.py` | Submit PDFs/JSON/notebooks/parquet/text → `solanaclawd/solana-clawd-realtime-research-instruct` |
 | Perps tool template | `perps/` | 13 Phoenix/Jupiter tools ready for Hermes-3 function calling |
 | Configs | `configs/` | LoRA, CPT, eval configs for Qwen2.5-1.5B and Hermes-3-8B |
 | Onchain registry | `dao/` | Model registration, SAS attestations, DAO governance |
@@ -169,6 +170,11 @@ await program.methods
 **DataType enum values:** `{ text: {} }` | `{ image: {} }` | `{ audio: {} }` | `{ video: {} }` | `{ tradingData: {} }` | `{ solanaTransactions: {} }` | `{ nftMetadata: {} }` | `{ defiData: {} }`
 
 **From AutoResearch (automatic):** `scripts/auto_research.py` calls this instruction for every research cycle when `--push-to-hub` is set. No manual step needed if the pipeline is running.
+
+**From realtime submissions:** `scripts/realtime_dataset_ingest.py` writes
+`data/realtime_research_dataset_manifest.json` with `dataset_sha256`, source
+SHA256s, row counts, and skipped-record counts. Use that manifest hash when
+registering submitted PDF/JSON/notebook/parquet datasets for attribution.
 
 ---
 

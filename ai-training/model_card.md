@@ -4,6 +4,7 @@ license: apache-2.0
 base_model: Qwen/Qwen2.5-1.5B-Instruct
 datasets:
   - solanaclawd/solana-clawd-instruct
+  - solanaclawd/solana-clawd-realtime-research-instruct
 tags:
   - solana
   - defi
@@ -29,6 +30,7 @@ A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana development, DeFi reasoning
 **Base model**: [Qwen/Qwen2.5-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct)  
 **Adapter type**: LoRA (r=16, alpha=32, ~9M trainable params / 0.6% of base)  
 **Training data**: [solanaclawd/solana-clawd-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) — 36,109 examples  
+**Companion realtime dataset**: [solanaclawd/solana-clawd-realtime-research-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) — 29,058 submitted PDF/notebook/parquet/ZK examples  
 **Training config**: `ai-training/configs/lora_config.yaml`  
 **Hub model ID**: `solanaclawd/solana-clawd-1.5b-lora`
 

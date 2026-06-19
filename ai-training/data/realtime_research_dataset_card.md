@@ -74,12 +74,79 @@ Rows also include non-training metadata columns: `source`, `source_type`,
 - `train-00000-of-00001.parquet` (parquet, 26843 examples)
 - `SKILL.md` (text, 3 examples)
 
+## Source Inventory
+
+### PDF Research Sources
+
+| File | What it contains | Pages | Examples | Identifier |
+| --- | --- | ---: | ---: | --- |
+| 2410.21169v5.pdf | Document Parsing Unveiled: Techniques, Challenges, and Prospects for Structured Information Extraction | 46 | 57 | https://arxiv.org/abs/2410.21169v5 |
+| 2412.04913v3.pdf | Bridging Culture and Finance: A Multimodal Analysis of Memecoins in the Web3 Ecosystem | 4 | 8 | - |
+| 2412.07591v2.pdf | CoinCLIP: A Multimodal Framework for Assessing Viability in Web3 Memecoins | 4 | 8 | - |
+| 2512.01112v3.pdf | Autodeleveraging: Impossibilities and Optimization | 103 | 104 | https://arxiv.org/abs/2512.01112v3 |
+| 2512.06505v4.pdf | Amortizing Perpetual Options | 12 | 13 | https://arxiv.org/abs/2512.06505v4 |
+| 2512.19113v2.pdf | A Unified Framework and Comparative Study of Decentralized Finance Derivatives Protocols | 36 | 37 | https://arxiv.org/abs/2512.19113v2 |
+| 2512.22476v1.pdf | AutoQuant: An Auditable Expert-System Framework for Execution-Constrained Auto-Tuning in Cryptocurrency Perpetual Futures | 67 | 68 | https://arxiv.org/abs/2512.22476v1 |
+| 2601.10812v1.pdf | Optimal Liquidation of Perpetual Contracts | 36 | 37 | https://arxiv.org/abs/2601.10812v1 |
+| 2601.17008v1.pdf | Bayesian Robust Financial Trading with Adversarial Synthetic Market Data | 12 | 19 | https://arxiv.org/abs/2601.17008v1 |
+| 2602.00776v1.pdf | Explainable Patterns in Cryptocurrency Microstructure | 28 | 29 | https://arxiv.org/abs/2602.00776v1 |
+| 2602.14860v1.pdf | Predicting the success of new crypto-tokens: the Pump.fun case | 29 | 30 | https://arxiv.org/abs/2602.14860v1 |
+| 2603.10092v1.pdf | Execution Is the New Attack Surface: Survivability-Aware Agentic Crypto Trading with OpenClaw-Style Local Executors | 26 | 27 | https://arxiv.org/abs/2603.10092v1 |
+| 2604.01431v1.pdf | Do Prediction Markets Forecast Cryptocurrency Volatility? Evidence from Kalshi Macro Contracts | 14 | 19 | https://arxiv.org/abs/2604.01431v1 |
+| 2605.05089v1.pdf | Dynamic Collateral Control for Permissionless Spot Perpetual Basis Trading | 23 | 32 | https://arxiv.org/abs/2605.05089v1 |
+| 2605.05878v1.pdf | Agentic, Context-Aware Risk Intelligence in the Internet of Value | 15 | 16 | https://arxiv.org/abs/2605.05878v1 |
+| 2605.10400v1.pdf | Resolution-Aware Perpetual Futures on Binary Prediction Markets: An Empirical Risk-Design Framework Using Polymarket Data | 86 | 87 | https://arxiv.org/abs/2605.10400v1 |
+| 2605.10428v1.pdf | A Taxonomy of Event-Linked Perpetual Futures: Variant Designs Beyond the Single-Market Binary Case | 47 | 48 | https://arxiv.org/abs/2605.10428v1 |
+| 2605.12151v2.pdf | RED-2400: A Public Benchmark of Algorithmically-Rejected Trading Events with Outcome Labels | 8 | 9 | - |
+| 2605.29174v1 (1).pdf | Paper Agents, Paper Gains: An Empirical Analysis of DeFi Investment Agents | 23 | 24 | https://arxiv.org/abs/2605.29174v1 |
+| 2605.29174v1.pdf | duplicate file skipped | - | 0 | - |
+| 2606.08232v1 (1).pdf | Hour-Aware Adaptive Risk Management for Autonomous Memecoin Trading: A Multi-Layer Intelligence Framework | 11 | 11 | - |
+| 2606.08232v1.pdf | duplicate file skipped | - | 0 | - |
+
+### Notebook Sources
+
+| File | Cells | Kernel | Examples |
+| --- | ---: | --- | ---: |
+| analysing-crypto-charts-like-pro.ipynb | 53 | Python 3 | 47 |
+| analysis-of-smart-contracts-in-blockchain.ipynb | 27 | Python 3 | 22 |
+| solana-prediction.ipynb | 67 | Python 3 | 53 |
+
+### Parquet QA Sources
+
+| File | Rows | Columns | Examples |
+| --- | ---: | --- | ---: |
+| test-00000-of-00001.parquet | 1426 | question, answer, chunk | 1407 |
+| train-00000-of-00001.parquet | 27092 | question, answer, chunk | 26843 |
+
+### Text and Skill Sources
+
+| File | Type | Details | Examples |
+| --- | --- | --- | ---: |
+| SKILL.md | text | 10506 | 3 |
+
+## Google Document Processing
+
+The ingestion script supports Google-backed PDF extraction:
+
+- `pdf_extractor: auto` tries Document AI when OAuth/ADC credentials are present,
+  then Gemini when `GEMINI_API_KEY` or `GOOGLE_API_KEY` is present, then local
+  `pypdf`.
+- Document AI endpoint: `https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process`
+- Document AI field mask: `text,pages.pageNumber,pages.detectedLanguages,pages.imageQualityScores`
+- Document AI billing labels: `pipeline=solana-clawd`, `dataset=realtime-research`, `client=clawd`
+- Gemini model: `gemini-2.5-flash`
+
+Document AI's `ProcessDocument` endpoint normally requires Google Cloud OAuth
+or Application Default Credentials. API keys are used by the Gemini extractor.
+
 ## Reproduce
 
 ```bash
 cd /path/to/solana-clawd/ai-training
 python3 scripts/realtime_dataset_ingest.py --config configs/realtime_dataset_config.yaml
 python3 scripts/realtime_dataset_ingest.py --input my.pdf my.json --push
+python3 scripts/realtime_dataset_ingest.py --pdf-extractor gemini --input my.pdf
+python3 scripts/realtime_dataset_ingest.py --pdf-extractor documentai --input my.pdf
 ```
 
 Use watch mode for drop-folder style updates:

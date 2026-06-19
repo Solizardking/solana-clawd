@@ -18,3 +18,4 @@ env/
 wandb/
 runs/
 .cache/
+data/docai_cache/

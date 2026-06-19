@@ -18,17 +18,24 @@ source basename, type, sha256, and local record/page/cell ids.
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
 import hashlib
 import json
+import os
 import random
 import re
+import shutil
+import subprocess
 import sys
 import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
+from urllib import error as urlerror
+from urllib import parse as urlparse
+from urllib import request as urlrequest
 
 import pandas as pd
 import yaml
@@ -108,6 +115,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--repo-id", help="Hugging Face dataset repo id for --push")
     p.add_argument("--private", action="store_true", help="Create/push private HF dataset")
     p.add_argument("--push", action="store_true", help="Push generated dataset to Hugging Face")
+    p.add_argument("--card-only", action="store_true", help="Regenerate only the dataset card from the manifest")
     p.add_argument("--train-ratio", type=float, default=None)
     p.add_argument("--eval-ratio", type=float, default=None)
     p.add_argument("--seed", type=int, default=None)
@@ -117,6 +125,19 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--min-text-chars", type=int, default=None, help="Skip extracted chunks shorter than this")
     p.add_argument("--keep-duplicate-files", action="store_true", help="Do not skip files with duplicate SHA256")
     p.add_argument("--save-arrow-dataset", action="store_true", help="Also write datasets.save_to_disk Arrow shards")
+    p.add_argument(
+        "--pdf-extractor",
+        choices=["auto", "pypdf", "documentai", "gemini"],
+        help="PDF extraction backend. auto: Document AI OAuth, then Gemini API key, then pypdf.",
+    )
+    p.add_argument("--documentai-endpoint", help="Full Document AI :process endpoint URL")
+    p.add_argument("--documentai-field-mask", help="Document AI field mask")
+    p.add_argument("--documentai-label", action="append", default=[], help="Document AI billing label, KEY=VALUE")
+    p.add_argument("--documentai-page-batch-size", type=int, default=None, help="Pages per sync Document AI request")
+    p.add_argument("--google-cache-dir", help="Cache directory for Google extraction responses")
+    p.add_argument("--no-google-cache", action="store_true", help="Disable Google extraction response caching")
+    p.add_argument("--gemini-model", help="Gemini model for API-key PDF extraction")
+    p.add_argument("--google-timeout-seconds", type=int, default=None, help="HTTP timeout for Google extraction calls")
     return p.parse_args()
 
 
@@ -149,6 +170,7 @@ def merged_settings(args: argparse.Namespace) -> dict[str, Any]:
         "repo_id": args.repo_id or cfg.get("repo_id") or "solanaclawd/solana-clawd-realtime-research-instruct",
         "private": bool(args.private or cfg.get("private", False)),
         "push": bool(args.push or cfg.get("push", False)),
+        "card_only": bool(args.card_only),
         "train_ratio": float(args.train_ratio if args.train_ratio is not None else cfg.get("train_ratio", 0.9)),
         "eval_ratio": float(args.eval_ratio if args.eval_ratio is not None else cfg.get("eval_ratio", 0.05)),
         "seed": int(args.seed if args.seed is not None else cfg.get("seed", 42)),
@@ -160,7 +182,55 @@ def merged_settings(args: argparse.Namespace) -> dict[str, Any]:
         "min_text_chars": int(args.min_text_chars if args.min_text_chars is not None else cfg.get("min_text_chars", 120)),
         "keep_duplicate_files": bool(args.keep_duplicate_files or cfg.get("keep_duplicate_files", False)),
         "save_arrow_dataset": bool(args.save_arrow_dataset or cfg.get("save_arrow_dataset", False)),
+        "pdf_extractor": args.pdf_extractor or cfg.get("pdf_extractor", "auto"),
+        "documentai_endpoint": args.documentai_endpoint
+        or cfg.get("documentai_endpoint")
+        or "https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process",
+        "documentai_field_mask": args.documentai_field_mask
+        or cfg.get("documentai_field_mask")
+        or "text,pages.pageNumber,pages.detectedLanguages,pages.imageQualityScores",
+        "documentai_labels": merge_labels(cfg.get("documentai_labels") or {}, args.documentai_label),
+        "documentai_page_batch_size": int(
+            args.documentai_page_batch_size
+            if args.documentai_page_batch_size is not None
+            else cfg.get("documentai_page_batch_size", 1)
+        ),
+        "google_cache_dir": args.google_cache_dir or cfg.get("google_cache_dir") or "data/docai_cache",
+        "google_cache": not bool(args.no_google_cache or cfg.get("no_google_cache", False)),
+        "gemini_model": args.gemini_model or cfg.get("gemini_model") or os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash",
+        "google_timeout_seconds": int(
+            args.google_timeout_seconds if args.google_timeout_seconds is not None else cfg.get("google_timeout_seconds", 120)
+        ),
     }
+
+
+def merge_labels(config_labels: dict[str, Any], cli_labels: list[str]) -> dict[str, str]:
+    labels = {str(k): str(v) for k, v in config_labels.items()}
+    for item in cli_labels:
+        if "=" not in item:
+            raise ValueError(f"Document AI label must be KEY=VALUE: {item}")
+        key, value = item.split("=", 1)
+        labels[key] = value
+    validate_documentai_labels(labels)
+    return labels
+
+
+def validate_documentai_labels(labels: dict[str, str]) -> None:
+    if len(labels) > 64:
+        raise ValueError("Document AI labels support at most 64 key-value pairs")
+    key_re = re.compile(r"^[a-z][a-z0-9_-]{0,62}$")
+    value_re = re.compile(r"^[a-z0-9_-]{0,63}$")
+    for key, value in labels.items():
+        if not key_re.match(key):
+            raise ValueError(
+                f"Invalid Document AI label key {key!r}. Use lowercase letters, numbers, underscores, "
+                "or dashes; start with a lowercase letter; max 63 characters."
+            )
+        if not value_re.match(value):
+            raise ValueError(
+                f"Invalid Document AI label value for {key!r}. Use lowercase letters, numbers, "
+                "underscores, or dashes; max 63 characters."
+            )
 
 
 def dedupe_preserve_order(items: Iterable[str]) -> list[str]:
@@ -399,10 +469,24 @@ def make_messages_example(
     }
 
 
-def process_pdf(path: Path, source: SourceStats, settings: dict[str, Any]) -> list[dict[str, Any]]:
+def get_pdf_reader(path: Path) -> Any:
     if PdfReader is None:
         raise RuntimeError("pypdf is required for PDF ingestion. Install it with: python3 -m pip install pypdf")
-    reader = PdfReader(str(path))
+    return PdfReader(str(path))
+
+
+def read_pdf_metadata(path: Path) -> tuple[dict[str, Any], Any | None]:
+    try:
+        reader = get_pdf_reader(path)
+    except Exception:
+        return {
+            "title": path.stem,
+            "author": None,
+            "subject": None,
+            "keywords": None,
+            "arxiv_id": None,
+            "page_count": None,
+        }, None
     raw_meta = reader.metadata or {}
     pdf_meta: dict[str, Any] = {}
     for key, value in raw_meta.items():
@@ -411,15 +495,329 @@ def process_pdf(path: Path, source: SourceStats, settings: dict[str, Any]) -> li
             pdf_meta[clean_key] = str(value)
         except Exception:
             pdf_meta[clean_key] = repr(value)
-    source.metadata = {
+    return {
         "title": pdf_meta.get("Title") or path.stem,
         "author": pdf_meta.get("Author"),
         "subject": pdf_meta.get("Subject"),
         "keywords": pdf_meta.get("Keywords"),
         "arxiv_id": pdf_meta.get("arXivID"),
         "page_count": len(reader.pages),
-    }
+    }, reader
 
+
+def choose_pdf_extractor(settings: dict[str, Any]) -> str:
+    requested = settings["pdf_extractor"]
+    if requested != "auto":
+        return requested
+    if settings.get("documentai_endpoint") and documentai_token_available():
+        return "documentai"
+    if gemini_api_key():
+        return "gemini"
+    return "pypdf"
+
+
+def documentai_token_available() -> bool:
+    if os.environ.get("GOOGLE_DOCUMENTAI_ACCESS_TOKEN") or os.environ.get("GOOGLE_OAUTH_ACCESS_TOKEN") or os.environ.get("GOOGLE_ACCESS_TOKEN"):
+        return True
+    if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+        return True
+    return bool(shutil.which("gcloud"))
+
+
+def gemini_api_key() -> str:
+    return os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or ""
+
+
+def get_documentai_token(timeout: int) -> str:
+    for name in ["GOOGLE_DOCUMENTAI_ACCESS_TOKEN", "GOOGLE_OAUTH_ACCESS_TOKEN", "GOOGLE_ACCESS_TOKEN"]:
+        token = os.environ.get(name)
+        if token:
+            return token
+
+    credentials_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    if credentials_path:
+        try:
+            from google.auth.transport.requests import Request  # type: ignore
+            from google.oauth2 import service_account  # type: ignore
+
+            credentials = service_account.Credentials.from_service_account_file(
+                credentials_path,
+                scopes=["https://www.googleapis.com/auth/cloud-platform"],
+            )
+            credentials.refresh(Request())
+            if credentials.token:
+                return credentials.token
+        except Exception as exc:
+            print(f"WARNING: GOOGLE_APPLICATION_CREDENTIALS token refresh failed: {exc}", file=sys.stderr)
+
+    gcloud = shutil.which("gcloud")
+    if gcloud:
+        proc = subprocess.run(
+            [gcloud, "auth", "print-access-token"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+        token = proc.stdout.strip()
+        if proc.returncode == 0 and token:
+            return token
+    raise RuntimeError(
+        "Document AI requires Google Cloud OAuth credentials. Set GOOGLE_DOCUMENTAI_ACCESS_TOKEN, "
+        "GOOGLE_OAUTH_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN, GOOGLE_APPLICATION_CREDENTIALS, or log in with gcloud. "
+        "GOOGLE_API_KEY/GEMINI_API_KEY are used for the Gemini extractor, not Document AI IAM."
+    )
+
+
+def google_cache_path(settings: dict[str, Any], key_parts: list[Any]) -> Path | None:
+    if not settings.get("google_cache"):
+        return None
+    payload = json.dumps(key_parts, sort_keys=True, ensure_ascii=False)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return Path(settings["google_cache_dir"]) / f"{digest}.json"
+
+
+def read_google_cache(settings: dict[str, Any], key_parts: list[Any]) -> Any | None:
+    path = google_cache_path(settings, key_parts)
+    if not path or not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def write_google_cache(settings: dict[str, Any], key_parts: list[Any], value: Any) -> None:
+    path = google_cache_path(settings, key_parts)
+    if not path:
+        return
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")
+    except OSError as exc:
+        print(f"WARNING: could not write Google extraction cache: {exc}", file=sys.stderr)
+
+
+def post_json(url: str, payload: dict[str, Any], headers: dict[str, str], timeout: int) -> dict[str, Any]:
+    data = json.dumps(payload).encode("utf-8")
+    request = urlrequest.Request(url, data=data, headers=headers, method="POST")
+    try:
+        with urlrequest.urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except urlerror.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"Google API request failed with HTTP {exc.code}: {body[:1000]}") from exc
+
+
+def page_batches(page_count: int | None, batch_size: int) -> list[list[int] | None]:
+    if not page_count or batch_size <= 0:
+        return [None]
+    batches: list[list[int] | None] = []
+    start = 1
+    while start <= page_count:
+        end = min(start + batch_size - 1, page_count)
+        batches.append(list(range(start, end + 1)))
+        start = end + 1
+    return batches
+
+
+def extract_documentai_pdf_texts(
+    path: Path,
+    source: SourceStats,
+    settings: dict[str, Any],
+    page_count: int | None,
+) -> list[dict[str, Any]]:
+    token = get_documentai_token(settings["google_timeout_seconds"])
+    content_b64 = base64.b64encode(path.read_bytes()).decode("ascii")
+    texts: list[dict[str, Any]] = []
+    batches = page_batches(page_count, settings["documentai_page_batch_size"])
+    for pages in batches:
+        cache_key = [
+            "documentai",
+            settings["documentai_endpoint"],
+            source.sha256,
+            pages,
+            settings["documentai_field_mask"],
+            settings["documentai_labels"],
+        ]
+        cached = read_google_cache(settings, cache_key)
+        if cached is None:
+            payload: dict[str, Any] = {
+                "skipHumanReview": True,
+                "rawDocument": {"mimeType": "application/pdf", "content": content_b64},
+                "fieldMask": settings["documentai_field_mask"],
+                "labels": settings["documentai_labels"],
+            }
+            if pages:
+                payload["processOptions"] = {"individualPageSelector": {"pages": pages}}
+            cached = post_json(
+                settings["documentai_endpoint"],
+                payload,
+                {
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                settings["google_timeout_seconds"],
+            )
+            write_google_cache(settings, cache_key, cached)
+        document = cached.get("document") or {}
+        text = compact_text(document.get("text") or "")
+        returned_pages = document.get("pages") or []
+        page_numbers = [p.get("pageNumber") for p in returned_pages if isinstance(p, dict) and p.get("pageNumber")]
+        if text:
+            texts.append(
+                {
+                    "text": text,
+                    "pages": page_numbers or pages,
+                    "extractor": "documentai",
+                    "metadata": {
+                        "documentai_endpoint": settings["documentai_endpoint"],
+                        "field_mask": settings["documentai_field_mask"],
+                        "labels": settings["documentai_labels"],
+                    },
+                }
+            )
+        else:
+            source.skipped += 1
+    return texts
+
+
+def extract_gemini_pdf_texts(path: Path, source: SourceStats, settings: dict[str, Any]) -> list[dict[str, Any]]:
+    api_key = gemini_api_key()
+    if not api_key:
+        raise RuntimeError("Gemini extraction requires GEMINI_API_KEY or GOOGLE_API_KEY.")
+    model = settings["gemini_model"]
+    query = urlparse.urlencode({"key": api_key})
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{urlparse.quote(model)}:generateContent?{query}"
+    cache_key = ["gemini", model, source.sha256]
+    cached = read_google_cache(settings, cache_key)
+    if cached is None:
+        payload = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [
+                        {
+                            "text": (
+                                "Extract all useful text from this PDF for a model-training dataset. "
+                                "Return JSON only with shape {\"title\": string, "
+                                "\"pages\": [{\"page\": number|null, \"text\": string}]}. "
+                                "Preserve section headings, tables as readable text, equations when possible, "
+                                "and any implementation details. Do not invent text that is not present."
+                            )
+                        },
+                        {
+                            "inline_data": {
+                                "mime_type": "application/pdf",
+                                "data": base64.b64encode(path.read_bytes()).decode("ascii"),
+                            }
+                        },
+                    ],
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0,
+                "response_mime_type": "application/json",
+            },
+        }
+        cached = post_json(
+            url,
+            payload,
+            {"Content-Type": "application/json; charset=utf-8"},
+            settings["google_timeout_seconds"],
+        )
+        write_google_cache(settings, cache_key, cached)
+
+    text = ""
+    try:
+        parts = cached["candidates"][0]["content"]["parts"]
+        text = "\n".join(part.get("text", "") for part in parts if isinstance(part, dict))
+    except Exception:
+        text = json.dumps(cached, ensure_ascii=False)
+    text = normalize_text(text)
+    if not text:
+        source.skipped += 1
+        return []
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        parsed = {"pages": [{"page": None, "text": text}]}
+    pages = parsed.get("pages") if isinstance(parsed, dict) else None
+    if not isinstance(pages, list):
+        pages = [{"page": None, "text": text}]
+    out: list[dict[str, Any]] = []
+    for item in pages:
+        if not isinstance(item, dict):
+            continue
+        page_text = compact_text(str(item.get("text") or ""))
+        if len(page_text) < settings["min_text_chars"]:
+            source.skipped += 1
+            continue
+        out.append(
+            {
+                "text": page_text,
+                "pages": [item.get("page")] if item.get("page") else None,
+                "extractor": "gemini",
+                "metadata": {"gemini_model": model},
+            }
+        )
+    return out
+
+
+def extract_pypdf_texts(path: Path, source: SourceStats, reader: Any | None) -> list[dict[str, Any]]:
+    reader = reader or get_pdf_reader(path)
+    texts: list[dict[str, Any]] = []
+    for page_index, page in enumerate(reader.pages, 1):
+        try:
+            text = page.extract_text() or ""
+        except Exception:
+            source.skipped += 1
+            continue
+        text = compact_text(text)
+        texts.append({"text": text, "pages": [page_index], "extractor": "pypdf", "metadata": {}})
+    return texts
+
+
+def extract_pdf_texts(path: Path, source: SourceStats, settings: dict[str, Any], reader: Any | None) -> tuple[str, list[dict[str, Any]]]:
+    extractor = choose_pdf_extractor(settings)
+    try:
+        if extractor == "documentai":
+            return extractor, extract_documentai_pdf_texts(
+                path,
+                source,
+                settings,
+                source.metadata.get("page_count"),
+            )
+        if extractor == "gemini":
+            return extractor, extract_gemini_pdf_texts(path, source, settings)
+        return "pypdf", extract_pypdf_texts(path, source, reader)
+    except Exception as exc:
+        if settings["pdf_extractor"] != "auto":
+            raise
+        print(f"WARNING: {extractor} PDF extraction failed for {path.name}; falling back to pypdf: {exc}", file=sys.stderr)
+        return "pypdf", extract_pypdf_texts(path, source, reader)
+
+
+def page_label(pages: list[int] | None) -> str:
+    if not pages:
+        return "document"
+    if len(pages) == 1:
+        return f"page {pages[0]}"
+    return f"pages {pages[0]}-{pages[-1]}"
+
+
+def record_page_id(pages: list[int] | None, extracted_index: int, chunk_index: int) -> str:
+    if not pages:
+        return f"document-{extracted_index:04d}-chunk-{chunk_index:03d}"
+    if len(pages) == 1:
+        return f"page-{pages[0]:04d}-chunk-{chunk_index:03d}"
+    return f"pages-{pages[0]:04d}-{pages[-1]:04d}-chunk-{chunk_index:03d}"
+
+
+def process_pdf(path: Path, source: SourceStats, settings: dict[str, Any]) -> list[dict[str, Any]]:
+    source.metadata, reader = read_pdf_metadata(path)
+    extractor, extracted = extract_pdf_texts(path, source, settings, reader)
+    source.metadata["pdf_extractor"] = extractor
     examples: list[dict[str, Any]] = []
     title = source.metadata["title"]
     metadata_answer = json.dumps({k: v for k, v in source.metadata.items() if v}, ensure_ascii=False, indent=2)
@@ -434,13 +832,10 @@ def process_pdf(path: Path, source: SourceStats, settings: dict[str, Any]) -> li
     if meta_example:
         examples.append(meta_example)
 
-    for page_index, page in enumerate(reader.pages, 1):
-        try:
-            text = page.extract_text() or ""
-        except Exception as exc:
-            source.skipped += 1
-            continue
-        text = compact_text(text)
+    for extracted_index, item in enumerate(extracted, 1):
+        text = compact_text(item.get("text") or "")
+        pages = item.get("pages")
+        item_metadata = item.get("metadata") or {}
         if len(text) < settings["min_text_chars"]:
             source.skipped += 1
             continue
@@ -453,17 +848,26 @@ def process_pdf(path: Path, source: SourceStats, settings: dict[str, Any]) -> li
                 continue
             user = (
                 f"Extract the reusable research knowledge from `{source.source_id}` "
-                f"page {page_index}, chunk {chunk_index}. Preserve concrete claims, "
+                f"{page_label(pages)}, chunk {chunk_index}. Preserve concrete claims, "
                 "definitions, methods, caveats, and implementation details."
             )
-            assistant = f"Source: {source.source_id}\nTitle: {title}\nPage: {page_index}\n\n{chunk}"
+            assistant = (
+                f"Source: {source.source_id}\nTitle: {title}\nExtractor: {item.get('extractor', extractor)}\n"
+                f"Location: {page_label(pages)}\n\n{chunk}"
+            )
             ex = make_example(
                 user=user,
                 assistant=assistant,
                 source=source,
-                record_id=f"page-{page_index:04d}-chunk-{chunk_index:03d}",
-                tags=["pdf", "research", "document-parsing"],
-                metadata={"title": title, "page": page_index, "chunk": chunk_index},
+                record_id=record_page_id(pages, extracted_index, chunk_index),
+                tags=["pdf", "research", "document-parsing", item.get("extractor", extractor)],
+                metadata={
+                    "title": title,
+                    "pages": pages,
+                    "chunk": chunk_index,
+                    "pdf_extractor": item.get("extractor", extractor),
+                    **item_metadata,
+                },
             )
             if ex:
                 examples.append(ex)
@@ -761,6 +1165,94 @@ def write_outputs(examples: list[dict[str, Any]], dataset: DatasetDict, manifest
     card_path.write_text(build_dataset_card(manifest, settings), encoding="utf-8")
 
 
+def md_cell(value: Any) -> str:
+    text = "" if value is None else str(value)
+    text = normalize_text(text).replace("\n", " ")
+    return text.replace("|", "\\|") or "-"
+
+
+def source_tables(manifest: dict[str, Any]) -> str:
+    pdf_rows: list[str] = []
+    notebook_rows: list[str] = []
+    parquet_rows: list[str] = []
+    text_rows: list[str] = []
+
+    for source in manifest["sources"]:
+        source_type = source.get("source_type")
+        metadata = source.get("metadata") or {}
+        if source_type == "pdf":
+            identifier = metadata.get("arxiv_id") or metadata.get("DOI") or metadata.get("doi") or "-"
+            topic = metadata.get("title") or ("duplicate file skipped" if metadata.get("duplicate_file") else "-")
+            pdf_rows.append(
+                "| {file} | {topic} | {pages} | {examples} | {identifier} |".format(
+                    file=md_cell(source.get("source_id")),
+                    topic=md_cell(topic),
+                    pages=md_cell(metadata.get("page_count")),
+                    examples=md_cell(source.get("records")),
+                    identifier=md_cell(identifier),
+                )
+            )
+        elif source_type == "notebook":
+            notebook_rows.append(
+                "| {file} | {cells} | {kernel} | {examples} |".format(
+                    file=md_cell(source.get("source_id")),
+                    cells=md_cell(metadata.get("cell_count")),
+                    kernel=md_cell(metadata.get("kernel")),
+                    examples=md_cell(source.get("records")),
+                )
+            )
+        elif source_type == "parquet":
+            columns = ", ".join(metadata.get("columns") or [])
+            parquet_rows.append(
+                "| {file} | {rows} | {columns} | {examples} |".format(
+                    file=md_cell(source.get("source_id")),
+                    rows=md_cell(metadata.get("rows")),
+                    columns=md_cell(columns),
+                    examples=md_cell(source.get("records")),
+                )
+            )
+        else:
+            text_rows.append(
+                "| {file} | {kind} | {details} | {examples} |".format(
+                    file=md_cell(source.get("source_id")),
+                    kind=md_cell(source_type),
+                    details=md_cell(metadata.get("chars") or metadata),
+                    examples=md_cell(source.get("records")),
+                )
+            )
+
+    sections: list[str] = []
+    if pdf_rows:
+        sections.append(
+            "### PDF Research Sources\n\n"
+            "| File | What it contains | Pages | Examples | Identifier |\n"
+            "| --- | --- | ---: | ---: | --- |\n"
+            + "\n".join(pdf_rows)
+        )
+    if notebook_rows:
+        sections.append(
+            "### Notebook Sources\n\n"
+            "| File | Cells | Kernel | Examples |\n"
+            "| --- | ---: | --- | ---: |\n"
+            + "\n".join(notebook_rows)
+        )
+    if parquet_rows:
+        sections.append(
+            "### Parquet QA Sources\n\n"
+            "| File | Rows | Columns | Examples |\n"
+            "| --- | ---: | --- | ---: |\n"
+            + "\n".join(parquet_rows)
+        )
+    if text_rows:
+        sections.append(
+            "### Text and Skill Sources\n\n"
+            "| File | Type | Details | Examples |\n"
+            "| --- | --- | --- | ---: |\n"
+            + "\n".join(text_rows)
+        )
+    return "\n\n".join(sections)
+
+
 def build_dataset_card(manifest: dict[str, Any], settings: dict[str, Any]) -> str:
     splits = manifest["splits"]
     counts = manifest["counts"]
@@ -768,6 +1260,9 @@ def build_dataset_card(manifest: dict[str, Any], settings: dict[str, Any]) -> st
         f"- `{s['source_id']}` ({s['source_type']}, {s['records']} examples)"
         for s in manifest["sources"]
     )
+    source_inventory = source_tables(manifest)
+    labels = settings.get("documentai_labels") or {}
+    labels_text = ", ".join(f"`{k}={v}`" for k, v in labels.items()) or "none configured"
     return f"""---
 license: cc-by-4.0
 task_categories:
@@ -817,12 +1312,33 @@ Rows also include non-training metadata columns: `source`, `source_type`,
 
 {source_rows}
 
+## Source Inventory
+
+{source_inventory}
+
+## Google Document Processing
+
+The ingestion script supports Google-backed PDF extraction:
+
+- `pdf_extractor: auto` tries Document AI when OAuth/ADC credentials are present,
+  then Gemini when `GEMINI_API_KEY` or `GOOGLE_API_KEY` is present, then local
+  `pypdf`.
+- Document AI endpoint: `{settings.get("documentai_endpoint", "")}`
+- Document AI field mask: `{settings.get("documentai_field_mask", "")}`
+- Document AI billing labels: {labels_text}
+- Gemini model: `{settings.get("gemini_model", "")}`
+
+Document AI's `ProcessDocument` endpoint normally requires Google Cloud OAuth
+or Application Default Credentials. API keys are used by the Gemini extractor.
+
 ## Reproduce
 
 ```bash
 cd /path/to/solana-clawd/ai-training
 python3 scripts/realtime_dataset_ingest.py --config configs/realtime_dataset_config.yaml
 python3 scripts/realtime_dataset_ingest.py --input my.pdf my.json --push
+python3 scripts/realtime_dataset_ingest.py --pdf-extractor gemini --input my.pdf
+python3 scripts/realtime_dataset_ingest.py --pdf-extractor documentai --input my.pdf
 ```
 
 Use watch mode for drop-folder style updates:
@@ -965,6 +1481,16 @@ def run_once(settings: dict[str, Any]) -> BuildResult:
     return result
 
 
+def regenerate_card_only(settings: dict[str, Any]) -> None:
+    manifest_path = Path(settings["manifest"])
+    card_path = Path(settings["dataset_card"])
+    if not manifest_path.exists():
+        raise FileNotFoundError(f"Manifest not found: {manifest_path}")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    card_path.write_text(build_dataset_card(manifest, settings), encoding="utf-8")
+    print(f"Regenerated dataset card: {card_path}")
+
+
 def watch(settings: dict[str, Any], poll_seconds: int) -> None:
     last_signature = ""
     print(f"Watching for dataset inputs every {poll_seconds}s")
@@ -980,6 +1506,9 @@ def watch(settings: dict[str, Any], poll_seconds: int) -> None:
 def main() -> None:
     args = parse_args()
     settings = merged_settings(args)
+    if settings["card_only"]:
+        regenerate_card_only(settings)
+        return
     if not settings["inputs"] and not settings["watch_dirs"]:
         print("No inputs provided. Use --input, --watch-dir, or --config.", file=sys.stderr)
         sys.exit(2)

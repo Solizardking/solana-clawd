@@ -47,6 +47,8 @@ ai-training/
 │   └── eval_config.yaml            ← evaluation config
 ├── scripts/
 │   ├── prepare_dataset.py          ← JSONL → HF Datasets (parquet), multi-file --input support
+│   ├── realtime_dataset_ingest.py  ← PDF/JSON/notebook/parquet/text → realtime HF dataset
+│   ├── submit_dataset_file.sh      ← drop-in file submit wrapper for realtime_dataset_ingest.py
 │   ├── train_lora.py               ← LoRA SFT via TRL + PEFT
 │   ├── evaluate.py                 ← held-out inference eval
 │   ├── wandb_eval.py               ← W&B Weave benchmark eval (JSON QA, traces to clawdsolana-clawd/clawd)
@@ -100,6 +102,7 @@ pull the latest model + dataset in two lines.
 | Repo | Type | Purpose |
 | --- | --- | --- |
 | [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) | dataset | **36,109 examples** — SFT instruction pairs (system/user/assistant), 32,498/1,805/1,806 train/eval/test |
+| [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
 | [`solanaclawd/solana-clawd-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) | model | LoRA adapter on Qwen2.5-1.5B-Instruct (training in progress — see current run below) |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
@@ -192,6 +195,63 @@ python3 scripts/prepare_dataset.py \
 
 This validates each example, splits 90/5/5, writes parquet for streaming
 access, and (with `--push`) uploads to the Hub dataset.
+
+### 2b. Submit PDFs/JSON/notebooks/parquet as realtime datasets
+
+`scripts/realtime_dataset_ingest.py` converts submitted files into the same
+messages schema used by the SFT trainer. It supports `.pdf`, `.json`, `.jsonl`,
+`.ipynb`, `.parquet`, `.md`, `.txt`, `.yaml`, and `.yml`, filters
+high-confidence secret patterns, dedupes duplicate files by SHA256, and writes:
+
+- `data/realtime_research_sft.jsonl`
+- `data/realtime_research_processed/{train,eval,test}.parquet`
+- `data/realtime_research_dataset_manifest.json`
+- `data/realtime_research_dataset_card.md`
+
+The current config ingests the submitted research PDFs, the Solana notebook and
+parquet dataset, and the local `zk` skill:
+
+```bash
+python3 scripts/realtime_dataset_ingest.py \
+  --config configs/realtime_dataset_config.yaml
+
+# Submit arbitrary files and push the refreshed public dataset:
+./scripts/submit_dataset_file.sh /path/to/paper.pdf /path/to/records.json -- --push
+
+# Drop-folder mode:
+python3 scripts/realtime_dataset_ingest.py \
+  --config configs/realtime_dataset_config.yaml \
+  --watch-dir data/incoming \
+  --watch \
+  --push
+```
+
+Published dataset:
+[`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct).
+
+Google-backed PDF extraction is built in:
+
+```bash
+# Gemini API-key path. Uses GEMINI_API_KEY first, then GOOGLE_API_KEY.
+export GEMINI_API_KEY=...
+python3 scripts/realtime_dataset_ingest.py \
+  --config configs/realtime_dataset_config.yaml \
+  --pdf-extractor gemini
+
+# Document AI processor path. Uses the configured :process endpoint and labels.
+# Requires OAuth/ADC, for example `gcloud auth application-default login`,
+# GOOGLE_APPLICATION_CREDENTIALS, or GOOGLE_DOCUMENTAI_ACCESS_TOKEN.
+python3 scripts/realtime_dataset_ingest.py \
+  --config configs/realtime_dataset_config.yaml \
+  --pdf-extractor documentai \
+  --documentai-label client=clawd
+```
+
+The default `pdf_extractor: auto` mode tries Document AI when Google Cloud
+OAuth credentials are available, then Gemini when `GEMINI_API_KEY` or
+`GOOGLE_API_KEY` is available, then local `pypdf`. Document AI requests use the
+processor endpoint in `configs/realtime_dataset_config.yaml`:
+`https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process`.
 
 **Current dataset stats** (pushed 2026-06-18, after clean_data.py):
 

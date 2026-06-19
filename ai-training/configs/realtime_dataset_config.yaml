@@ -18,6 +18,19 @@ min_text_chars: 120
 keep_duplicate_files: false
 save_arrow_dataset: false
 
+pdf_extractor: auto
+documentai_endpoint: https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process
+documentai_field_mask: text,pages.pageNumber,pages.detectedLanguages,pages.imageQualityScores
+documentai_page_batch_size: 1
+documentai_labels:
+  pipeline: solana-clawd
+  dataset: realtime-research
+  client: clawd
+google_cache_dir: data/docai_cache
+no_google_cache: false
+gemini_model: gemini-2.5-flash
+google_timeout_seconds: 120
+
 inputs:
   - /Users/8bit/drive/pdfs/2410.21169v5.pdf
   - /Users/8bit/drive/pdfs/2412.04913v3.pdf
