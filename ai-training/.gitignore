@@ -19,3 +19,4 @@ wandb/
 runs/
 .cache/
 data/docai_cache/
+data/nvidia_cache/

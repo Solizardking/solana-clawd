@@ -1587,7 +1587,7 @@ Rows also include non-training metadata columns: `source`, `source_type`,
 
 {source_inventory}
 
-## Google Document Processing
+## Document Processing Providers
 
 The ingestion script supports NVIDIA and Google-backed PDF extraction:
 

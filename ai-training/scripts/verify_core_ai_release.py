@@ -26,6 +26,7 @@ SECRET_PATTERNS = {
     "google_client_secret_path": re.compile(r"client_secret_\d+[-\w]+\.apps\.googleusercontent\.com\.json"),
     "google_adc_path": re.compile(r"\.config/gcloud/application_default_credentials\.json"),
     "google_oauth_token": re.compile(r"\bya29\.[A-Za-z0-9_-]{20,}"),
+    "nvidia_api_key": re.compile(r"\bnvapi-[A-Za-z0-9_-]{20,}\b"),
     "private_key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |)?PRIVATE KEY-----"),
     "wandb_key": re.compile(r"\bwandb_[A-Za-z0-9_-]{32,}\b"),
     "hf_token": re.compile(r"\bhf_[A-Za-z0-9]{30,}\b"),
