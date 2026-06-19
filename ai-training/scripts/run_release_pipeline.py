@@ -279,11 +279,39 @@ def main() -> int:
     print_credential_presence(env)
 
     gates: dict[str, int | None] = {
+        "strategy_bundle_generated": None,
+        "trading_factory_dataset_rebuilt": None,
         "core_release_strict": run_quiet(["python3", "scripts/verify_core_ai_release.py", "--strict"], env=env),
         "trading_factory_hub_strict": None,
         "trading_factory_local_strict": None,
         "trading_factory_train_dry_run": None,
     }
+
+    gates["strategy_bundle_generated"] = run(
+        ["python3", "scripts/build_solana_trading_factory_strategies.py"],
+        env=env,
+    )
+    gates["trading_factory_dataset_rebuilt"] = run(
+        ["python3", "scripts/build_nvidia_trading_factory_dataset.py"],
+        env=env,
+    )
+    run(
+        [
+            "python3",
+            "scripts/prepare_dataset.py",
+            "--input",
+            "data/nvidia_trading_factory_sft.jsonl",
+            "--output",
+            "data/nvidia_trading_factory_processed",
+            "--train-ratio",
+            "0.9",
+            "--eval-ratio",
+            "0.05",
+            "--seed",
+            "42",
+        ],
+        env=env,
+    )
 
     run(["python3", "scripts/verify_core_ai_release.py"], env=env, check=False)
     gates["trading_factory_local_strict"] = run(

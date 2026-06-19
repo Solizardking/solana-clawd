@@ -53,6 +53,8 @@ Produced by `scripts/prepare_dataset.py` with seed `42`.
 - NVIDIA-style trading factory stages: ingestion, research, optimization, inference, execution policy, monitoring.
 - RAPIDS/cuDF feature engineering and cuML KDE scenario generation.
 - cuFOLIO/cuOpt Mean-CVaR optimization with leverage, budget, turnover, cardinality, and CVaR constraints.
+- Vulcan/Phoenix paper strategy configs, command plans, and lifecycle guardrails.
+- Rise/Phoenix read-only market data plans for exchange, market, candle, orderbook, funding, and trader state.
 - Clawd perps tool-use patterns for prices, funding, order books, Jupiter quotes, paper trades, wallet checks, and risk assessment.
 - Safety behavior: paper-mode default, no private keys, no front-running, no sandwiching, no market manipulation, and live execution only behind explicit gates.
 
@@ -114,3 +116,11 @@ The dataset intentionally defaults to paper trading. It refuses front-running,
 sandwich attacks, wallet draining, private-key handling, sanctions evasion, and
 market manipulation. Live execution must be handled outside the dataset through
 an explicitly approved execution layer.
+
+## Source And License Notes
+
+Generated SFT rows are released as CC-BY-4.0. Source excerpts retain their
+upstream attribution and licenses. The local cuFOLIO snapshot is Apache-2.0.
+The clawd-autoresearch-wiki perps files are treated as Solizardking project
+reference material for this training lane; clarify licensing before
+redistributing those raw source files outside the controlled training release.
