@@ -13,7 +13,8 @@ perps training lane.
   internal research/reference material for paper trading, Rise HTTP reads, and
   Vulcan wrappers.
 - `solana_factory/` — Clawd-owned adapter layer that generates current Vulcan
-  strategy JSON, Rise read plans, and cuFOLIO Mean-CVaR handoff specs.
+  strategy JSON, Rise read plans, cuFOLIO Mean-CVaR handoff specs, and the
+  NemoClawd/NVIDIA agent plan.
 
 ## Generate Strategy Artifacts
 
@@ -31,7 +32,14 @@ This writes:
 - `data/strategies/cufolio_mean_cvar_handoff.json`
 - `data/strategies/rise_market_data_plan.json`
 - `data/strategies/vulcan_command_plans.json`
+- `data/strategies/nvidia_clawd_agent_plan.json`
 - `data/strategies/strategy_manifest.json`
+
+Regenerate only the NVIDIA/NemoClawd plan:
+
+```bash
+python3 nvidia/integration/nemo_clawd_agent.py --mode paper
+```
 
 ## Execution Policy
 
@@ -72,4 +80,12 @@ python3 scripts/prepare_dataset.py \
   --input data/nvidia_trading_factory_sft.jsonl \
   --output data/nvidia_trading_factory_processed \
   --train-ratio 0.9 --eval-ratio 0.05 --seed 42
+```
+
+The NVIDIA path adds a reviewable agent-plan and AIQ gate:
+
+```bash
+python3 nvidia/integration/nemo_clawd_agent.py
+python3 nvidia/blueprints/aiq/agent.py --strict
+python3 nvidia/scripts/verify_nvidia.py --strict
 ```

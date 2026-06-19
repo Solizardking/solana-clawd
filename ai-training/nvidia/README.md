@@ -5,15 +5,17 @@ optimization library into the Solana Clawd AI training pipeline.
 
 ## Blueprints
 
-| Blueprint | Folder | What it does for Clawd |
-|---|---|---|
-| [Transaction Foundation Model](https://build.nvidia.com/nvidia/build-your-own-transaction-foundation-model) | `blueprints/transaction-foundation-model/` | Fine-tunes a Solana-native foundation model on raw tx/block data using NeMo |
-| [Quantitative Portfolio Optimization](https://build.nvidia.com/nvidia/quantitative-portfolio-optimization) | `blueprints/portfolio-optimization/` | GPU-accelerated Mean-CVaR optimization for Solana spot + perps portfolios |
-| [AI Model Distillation for Financial Data](https://build.nvidia.com/nvidia/ai-model-distillation-for-financial-data) | `blueprints/model-distillation/` | Distills Hermes-3-8B or Qwen2.5-7B teacher into the 1.5B Clawd student |
-| [Quantitative Signal Discovery Agent](https://build.nvidia.com/nvidia/quantitative-signal-discovery-agent) | `blueprints/signal-discovery/` | AIQ agent that finds alpha signals in Solana DEX/perps on-chain data |
-| [Enterprise RAG Pipeline](https://build.nvidia.com/nvidia/build-an-enterprise-rag-pipeline) | `blueprints/enterprise-rag/` | NeMo Retriever RAG over Solana docs, skills, and protocol specs |
-| [AIQ Toolkit](https://build.nvidia.com/nvidia/aiq) | `blueprints/aiq/` | Evaluates and stress-tests Clawd agent pipelines end-to-end |
-| [cuFOLIO](https://github.com/NVIDIA-AI-Blueprints/cuFOLIO) | `cufolio/` | GPU portfolio optimization: scenarios, CVaR, rebalancing, constraint solver |
+| Folder | What it does |
+|---|---|
+| [`blueprints/transaction-foundation-model/`](https://build.nvidia.com/nvidia/build-your-own-transaction-foundation-model) | Converts Solana tx JSONL to NeMo CPT format and defines the NIM/NeMo fine-tune launch contract. |
+| [`blueprints/portfolio-optimization/`](https://build.nvidia.com/nvidia/quantitative-portfolio-optimization) | cuML KDE scenario generation plus Mean-CVaR optimizer with cuFOLIO preferred and CVXPY fallback. |
+| [`blueprints/model-distillation/`](https://build.nvidia.com/nvidia/ai-model-distillation-for-financial-data) | Response and CoT distillation from a Hermes/Nemotron teacher into the 1.5B Clawd student lane. |
+| [`blueprints/signal-discovery/`](https://build.nvidia.com/nvidia/quantitative-signal-discovery-agent) | Phoenix perps signal agent: RSI, MACD, funding rate, orderbook imbalance, and EMA divergence through `RPC_URL` plus Vulcan CLI; paper executes on accepted signals. |
+| [`blueprints/enterprise-rag/`](https://build.nvidia.com/nvidia/build-an-enterprise-rag-pipeline) | NeMo Retriever RAG contract: nv-ingest PDFs/docs to local FAISS, rerank, then NIM/Clawd generation. |
+| [`blueprints/aiq/`](https://build.nvidia.com/nvidia/aiq) | Local AIQ evaluator that scores safety, artifact completeness, and 9-role coverage. |
+| [`cufolio/`](https://github.com/NVIDIA-AI-Blueprints/cuFOLIO) | GPU portfolio optimizer with Clawd CVaR, leverage, and turnover constraints; emits Vulcan paper commands. |
+| `integration/` | NIM bridge routes NVIDIA to ClawdRouter to Ollama, signal-to-trading-factory bridge, and NVIDIA SFT dataset builder. |
+| `../perps/` | Model-facing perps tools, schemas, function-calling harness, and NVIDIA perps handoff generator. |
 
 ## Quick start
 
@@ -24,12 +26,69 @@ export NVIDIA_API_KEY=nvapi-...
 # 2. Install the NVIDIA stack
 bash nvidia/scripts/setup_nvidia.sh
 
-# 3. Run a specific blueprint
+# 3. Run a specific blueprint or perps handoff
+python3 perps/nvidia_perps.py --market SOL --mode observer
 python3 nvidia/blueprints/signal-discovery/agent.py --mode paper
 
 # 4. Verify the full integration
 python3 nvidia/scripts/verify_nvidia.py
 ```
+
+Perps signal agent quick start:
+
+```bash
+export RPC_URL=https://api.mainnet-beta.solana.com
+export NVIDIA_API_KEY=<set-in-shell-only>
+python3 nvidia/blueprints/signal-discovery/perps_signal_agent.py \
+  --market SOL \
+  --mode paper \
+  --loop
+```
+
+## NemoClawd Solana Factory Adapter
+
+The integration point is `trading_factory/solana_factory/`. The factory now
+generates one additional artifact:
+
+```bash
+python3 scripts/build_solana_trading_factory_strategies.py
+```
+
+Output:
+
+- `data/strategies/strategy_manifest.json`
+- `data/strategies/cufolio_mean_cvar_handoff.json`
+- `data/strategies/rise_market_data_plan.json`
+- `data/strategies/vulcan_command_plans.json`
+- `data/strategies/nvidia_clawd_agent_plan.json`
+
+You can regenerate only the NemoClawd/NVIDIA agent plan with:
+
+```bash
+python3 nvidia/integration/nemo_clawd_agent.py \
+  --markets SOL BTC ETH JUP PYTH JTO \
+  --mode paper
+```
+
+The generated agent plan adapts two upstream projects without vendoring their
+entire trees:
+
+| Source | What is adapted |
+|---|---|
+| `Solizardking/quantitative-signal-discovery-agent` | NeMo Agent Toolkit loop: signal agent, code agent, evaluator, retry feedback |
+| `x402agent/NemoClawd` | Blueprint lifecycle, sandbox posture, MCP tool catalog, and permission gates |
+
+The plan remains observer/paper-only by default. It does not write wallet
+passwords, private keys, OAuth files, or API tokens into generated artifacts.
+
+## Blueprint Contracts
+
+| Contract | Local producer | Local consumer |
+|---|---|---|
+| Strategy and command specs | `trading_factory/solana_factory/factory.py` | `scripts/build_solana_trading_factory_strategies.py` |
+| NemoClawd agent plan | `trading_factory/solana_factory/nvidia_agent.py` | `nvidia/integration/nemo_clawd_agent.py` |
+| Signal SFT log | `nvidia/blueprints/signal-discovery/agent.py` | `scripts/build_nvidia_trading_factory_dataset.py` |
+| AIQ release gate | `nvidia/blueprints/aiq/agent.py` | `nvidia/scripts/verify_nvidia.py` and release checks |
 
 ## Environment variables
 
@@ -51,13 +110,27 @@ Solana on-chain data
               └─► blueprints/signal-discovery/  ─── AIQ agent finds alpha
                     └─► cufolio/                ─── GPU Mean-CVaR portfolio
                           └─► blueprints/portfolio-optimization/
-                                └─► integration/trading_factory_nvidia.py
-                                      └─► ../trading_factory/ (Vulcan/Phoenix exec)
+                                └─► integration/nemo_clawd_agent.py
+                                      └─► trading_factory/solana_factory/nvidia_agent.py
 
 Solana docs + PDFs
-  └─► blueprints/enterprise-rag/               ─── NeMo Retriever RAG index
+└─► blueprints/enterprise-rag/               ─── NeMo Retriever RAG index
         └─► blueprints/aiq/                   ─── AIQ eval of full pipeline
 ```
+
+## Verification
+
+Run the local NVIDIA verifier from `ai-training/`:
+
+```bash
+python3 nvidia/scripts/verify_nvidia.py --strict
+python3 nvidia/blueprints/aiq/agent.py --strict
+```
+
+`verify_nvidia.py` checks that all six blueprint folders exist, builds the
+Solana strategy bundle in a temporary directory, confirms the NemoClawd agent
+plan is emitted, and scans the NVIDIA integration files for credential-like
+patterns.
 
 ## Folder layout
 
@@ -75,4 +148,8 @@ nvidia/
 ├── configs/                             ← NIM / NeMo / AIQ YAML configs
 ├── scripts/                             ← Setup, run, verify
 └── integration/                         ← Bridges to trading_factory + Clawd
+
+../perps/
+├── README.md                            ← Perps quickstart and safety contract
+└── nvidia_perps.py                      ← Writes data/perps/nvidia_perps_handoff.json
 ```

@@ -1,0 +1,42 @@
+{
+  "default_mode": "observer",
+  "market": "SOL",
+  "name": "Solana Clawd NVIDIA Perps Handoff",
+  "quickstart": [
+    "export RPC_URL=https://api.mainnet-beta.solana.com",
+    "export NVIDIA_API_KEY=<set-in-shell-only>",
+    "python3 nvidia/blueprints/signal-discovery/perps_signal_agent.py --market SOL --mode paper --loop"
+  ],
+  "rpc_url_default": "https://api.mainnet-beta.solana.com",
+  "rpc_url_env": "RPC_URL",
+  "safety_policy": {
+    "blocked": [
+      "wallet private-key reads",
+      "wallet password reads",
+      "live order submission",
+      "MCP secret inspection"
+    ],
+    "default_modes": [
+      "observer",
+      "paper"
+    ],
+    "live_mode": "not generated here",
+    "paper_execution": "allowed only through Vulcan paper commands"
+  },
+  "signals": [
+    "rsi",
+    "macd",
+    "funding_rate",
+    "orderbook_imbalance",
+    "ema_divergence"
+  ],
+  "source_files": {
+    "perps_schema": "perps/schema.py",
+    "perps_tools": "perps/functions.py",
+    "sft_builder": "nvidia/integration/dataset_nvidia_sft.py",
+    "signal_agent": "nvidia/blueprints/signal-discovery/perps_signal_agent.py",
+    "signals": "nvidia/blueprints/signal-discovery/signals.py",
+    "trading_factory_bridge": "nvidia/integration/trading_factory_nvidia.py"
+  },
+  "threshold": 0.35
+}

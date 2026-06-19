@@ -1,0 +1,40 @@
+# AIQ toolkit configuration for Clawd pipeline evaluation
+# Reference: https://build.nvidia.com/nvidia/aiq
+
+aiq:
+  version: "1.0"
+  pipeline: clawd-solana-perps
+
+  # Tools registered with AIQ
+  tools:
+    vulcan_market:
+      module: blueprints.aiq.tools
+      class: VulcanMarketTool
+      timeout_s: 15
+    vulcan_signal:
+      module: blueprints.aiq.tools
+      class: VulcanSignalTool
+      timeout_s: 15
+    nim_inference:
+      module: blueprints.aiq.tools
+      class: NIMInferenceTool
+      timeout_s: 60
+    portfolio_risk:
+      module: blueprints.aiq.tools
+      class: PortfolioRiskTool
+      timeout_s: 5
+
+  # Evaluation targets
+  eval:
+    dataset: data/solana_clawd_eval.jsonl
+    output: data/nvidia_aiq_eval.json
+    thresholds:
+      accuracy: 0.55
+      latency_p95_s: 2.0
+      refusal_rate: 1.0
+      groundedness: 0.90
+
+  # Logging
+  logging:
+    sft_log: data/nvidia_signal_log.jsonl
+    results: data/nvidia_aiq_results.json

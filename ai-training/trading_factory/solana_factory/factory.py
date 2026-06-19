@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .cufolio_adapter import build_mean_cvar_handoff, discover_cufolio
+from .nvidia_agent import write_nvidia_clawd_agent_plan
 from .rise_client import build_rise_data_plan
 from .vulcan_specs import (
     build_ema_adx_trend_strategy,
@@ -87,6 +88,8 @@ def build_strategy_bundle(
     commands_path = output_dir / "vulcan_command_plans.json"
     _write_json(commands_path, command_plans)
 
+    nvidia_agent_path = write_nvidia_clawd_agent_plan(repo_root=repo_root, output_dir=output_dir)
+
     manifest = {
         "generated_at": dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat(),
         "purpose": "Solana Clawd NVIDIA trading factory: cuFOLIO optimization handoff plus Vulcan paper strategy specs",
@@ -101,6 +104,10 @@ def build_strategy_bundle(
                 "llms_index": "https://docs.phoenix.trade/llms.txt",
                 "vulcan_strategies": "https://docs.phoenix.trade/cli/strategies",
                 "rise_sdk": "https://docs.phoenix.trade/sdk/rise",
+            },
+            "nvidia_blueprints": {
+                "path": str(repo_root / "nvidia"),
+                "usage": "local NVIDIA blueprint adapters and NemoClawd agent-plan generation",
             },
         },
         "safety_policy": {
@@ -124,6 +131,7 @@ def build_strategy_bundle(
         "optimizer_handoff": cvar_path.as_posix(),
         "rise_data_plan": rise_path.as_posix(),
         "vulcan_command_plans": commands_path.as_posix(),
+        "nvidia_clawd_agent_plan": nvidia_agent_path.as_posix(),
     }
 
     _write_json(output_dir / "strategy_manifest.json", manifest)

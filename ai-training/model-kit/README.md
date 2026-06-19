@@ -278,6 +278,34 @@ Only promote this to a real HF Job after the local smoke test confirms that
 `transformers`, tokenizer loading, chat templates, PEFT target modules, and
 remote-code requirements are compatible.
 
+## NVIDIA/NemoClawd Factory Adapter
+
+The Solana factory emits a single reviewable agent plan that new developers can
+inspect before running any model or trading workflow:
+
+```bash
+cd ai-training
+python3 scripts/build_solana_trading_factory_strategies.py
+python3 nvidia/integration/nemo_clawd_agent.py --mode paper
+python3 nvidia/blueprints/aiq/agent.py --strict
+python3 nvidia/scripts/verify_nvidia.py --strict
+```
+
+Primary files:
+
+| File | Purpose |
+| --- | --- |
+| `trading_factory/solana_factory/nvidia_agent.py` | Builds the Solana NemoClawd NVIDIA agent plan. |
+| `nvidia/configs/nemo_clawd_factory.yaml` | Secret-free model, artifact, workflow, and safety config. |
+| `nvidia/integration/nemo_clawd_agent.py` | CLI wrapper that writes `data/strategies/nvidia_clawd_agent_plan.json`. |
+| `nvidia/blueprints/aiq/agent.py` | Local AIQ-style evaluator for safety, role coverage, and artifact completeness. |
+
+The adapter maps NVIDIA's signal-discovery, portfolio-optimization,
+model-distillation, transaction-foundation, enterprise-RAG, and AIQ blueprints
+into the existing Vulcan/Rise/cuFOLIO factory. It also adapts NemoClawd-style
+sandbox, MCP, and permission-gate concepts without vendoring the whole
+NemoClawd repository.
+
 ## Distillation Flywheel
 
 This is our Solana version of the NVIDIA financial-data distillation blueprint.

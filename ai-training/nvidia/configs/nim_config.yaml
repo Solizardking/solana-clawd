@@ -1,0 +1,28 @@
+# NVIDIA NIM configuration for Clawd agents
+# Set NVIDIA_API_KEY in your environment — never write keys here.
+
+nim:
+  base_url: https://integrate.api.nvidia.com/v1
+  # Override with CLAWD_NIM_URL env var to point at a self-hosted NIM endpoint
+
+models:
+  # Foundation model for financial reasoning
+  foundation: meta/llama-3.1-nemotron-nano-8b-v1
+
+  # Embedding model for RAG
+  embedding: nvidia/nv-embedqa-e5-v5
+
+  # Reranker for RAG
+  reranker: nvidia/nv-rerankqa-mistral-4b-v3
+
+  # Transaction foundation model (after Blueprint 1 fine-tune)
+  tx_foundation: solana-clawd-tx-foundation
+
+defaults:
+  max_tokens: 512
+  temperature: 0.1
+  top_p: 0.9
+
+# NIM endpoint after Blueprint 1 CPT fine-tuning completes.
+# Set CLAWD_TX_NIM_URL to override.
+tx_foundation_url: ${CLAWD_TX_NIM_URL:-https://integrate.api.nvidia.com/v1}

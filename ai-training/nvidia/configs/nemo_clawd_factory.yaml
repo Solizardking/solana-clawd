@@ -1,0 +1,61 @@
+name: solana-nemoclawd-nvidia-trading-factory
+version: "2026-06-19"
+default_mode: paper
+
+models:
+  reasoning: nvidia/nemotron-3-nano-30b-a3b
+  research: nvidia/nemotron-3-super-120b-a12b
+  student: Qwen/Qwen2.5-1.5B-Instruct
+  adapter: solanaclawd/solana-clawd-core-ai-1.5b-lora
+
+inputs:
+  strategy_manifest: data/strategies/strategy_manifest.json
+  agent_plan: data/strategies/nvidia_clawd_agent_plan.json
+  cufolio_handoff: data/strategies/cufolio_mean_cvar_handoff.json
+  rise_data_plan: data/strategies/rise_market_data_plan.json
+  vulcan_command_plans: data/strategies/vulcan_command_plans.json
+  rag_sources:
+    - README.md
+    - dataset_card.md
+    - model_card.md
+    - onchain.md
+    - trading_factory/README.md
+    - nvidia/README.md
+
+workflows:
+  transaction_foundation_model:
+    enabled: true
+    output: data/nvidia_tx_foundation_cpt.jsonl
+  signal_discovery:
+    enabled: true
+    markets: [SOL, BTC, ETH, JUP, PYTH, JTO]
+    accept:
+      min_abs_ic: 0.02
+      max_p_value: 0.05
+      max_drawdown_pct: 8
+  portfolio_optimization:
+    enabled: true
+    objective: mean_cvar
+    cvar_alpha: 0.95
+    max_cvar: 0.12
+    max_leverage: 1.0
+  distillation:
+    enabled: true
+    teacher: nvidia/nemotron-3-nano-30b-a3b
+    output: data/distilled_trading_factory.jsonl
+  aiq:
+    enabled: true
+    output: data/nvidia_aiq_eval.json
+
+safety:
+  allowed_default_modes: [observer, paper]
+  live_mode_generated: false
+  secrets:
+    source: environment
+    persist_to_files: false
+  execution_gates:
+    - vulcan_preflight_ready
+    - margin_review
+    - position_review
+    - orderbook_review
+    - explicit_operator_approval

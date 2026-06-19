@@ -47,6 +47,7 @@ def main() -> None:
         "optimizer_handoff": manifest["optimizer_handoff"],
         "rise_data_plan": manifest["rise_data_plan"],
         "vulcan_command_plans": manifest["vulcan_command_plans"],
+        "nvidia_clawd_agent_plan": manifest["nvidia_clawd_agent_plan"],
     }
     print(json.dumps(summary, indent=2, sort_keys=True))
     if args.dry_run:

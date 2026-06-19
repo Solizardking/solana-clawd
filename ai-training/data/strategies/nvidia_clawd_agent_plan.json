@@ -1,0 +1,305 @@
+{
+  "blueprints": {
+    "aiq": {
+      "local_path": "nvidia/blueprints/aiq",
+      "purpose": "Evaluate end-to-end agent quality, safety, latency, and groundedness.",
+      "url": "https://build.nvidia.com/nvidia/aiq"
+    },
+    "enterprise_rag": {
+      "local_path": "nvidia/blueprints/enterprise-rag",
+      "purpose": "Ground agent decisions in Solana docs, protocol specs, and dataset cards.",
+      "url": "https://build.nvidia.com/nvidia/build-an-enterprise-rag-pipeline"
+    },
+    "model_distillation": {
+      "local_path": "nvidia/blueprints/model-distillation",
+      "purpose": "Distill Nemotron/NIM teacher decisions into the compact Clawd student.",
+      "url": "https://build.nvidia.com/nvidia/ai-model-distillation-for-financial-data"
+    },
+    "portfolio_optimization": {
+      "local_path": "nvidia/blueprints/portfolio-optimization",
+      "purpose": "Run Mean-CVaR portfolio optimization with cuFOLIO/cuOpt-style constraints.",
+      "url": "https://build.nvidia.com/nvidia/quantitative-portfolio-optimization"
+    },
+    "signal_discovery": {
+      "local_path": "nvidia/blueprints/signal-discovery",
+      "purpose": "Discover, code, backtest, and refine Solana spot/perps signals.",
+      "url": "https://build.nvidia.com/nvidia/quantitative-signal-discovery-agent"
+    },
+    "transaction_foundation_model": {
+      "local_path": "nvidia/blueprints/transaction-foundation-model",
+      "purpose": "Build Solana transaction/tabular embeddings for downstream signal models.",
+      "url": "https://build.nvidia.com/nvidia/build-your-own-transaction-foundation-model"
+    }
+  },
+  "commands": {
+    "generate_agent_plan": "python3 nvidia/integration/nemo_clawd_agent.py",
+    "generate_factory_bundle": "python3 scripts/build_solana_trading_factory_strategies.py",
+    "run_aiq_eval": "python3 nvidia/blueprints/aiq/agent.py --plan data/strategies/nvidia_clawd_agent_plan.json",
+    "run_signal_agent_paper": "python3 nvidia/blueprints/signal-discovery/agent.py --markets SOL BTC ETH --mode paper",
+    "verify": "python3 nvidia/scripts/verify_nvidia.py"
+  },
+  "default_mode": "paper",
+  "description": "Paper-first Clawd agent plan that combines NVIDIA blueprints, Nemotron models, cuFOLIO optimization, Rise/Phoenix read plans, and Vulcan strategy artifacts.",
+  "factory_artifacts": {
+    "cufolio_handoff": {
+      "exists": true,
+      "path": "data/strategies/cufolio_mean_cvar_handoff.json"
+    },
+    "rise_data_plan": {
+      "exists": true,
+      "path": "data/strategies/rise_market_data_plan.json"
+    },
+    "strategy_manifest": {
+      "exists": true,
+      "path": "data/strategies/strategy_manifest.json"
+    },
+    "vulcan_command_plans": {
+      "exists": true,
+      "path": "data/strategies/vulcan_command_plans.json"
+    }
+  },
+  "generated_at": "2026-06-19T21:16:07+00:00",
+  "markets": [
+    "SOL",
+    "BTC",
+    "ETH",
+    "JUP",
+    "PYTH",
+    "JTO"
+  ],
+  "models": {
+    "adapter": "solanaclawd/solana-clawd-core-ai-1.5b-lora",
+    "reasoning": "nvidia/nemotron-3-nano-30b-a3b",
+    "research": "nvidia/nemotron-3-super-120b-a12b",
+    "student": "Qwen/Qwen2.5-1.5B-Instruct"
+  },
+  "name": "Solana NemoClawd NVIDIA Trading Factory",
+  "roles": [
+    {
+      "inputs": [
+        "docs",
+        "dataset cards",
+        "Phoenix/Vulcan docs",
+        "Clawd skills"
+      ],
+      "job": "retrieve Solana/Phoenix/cuFOLIO context before strategy changes",
+      "name": "rag_grounder",
+      "outputs": [
+        "grounded_context",
+        "citations",
+        "risk_notes"
+      ],
+      "source": "enterprise_rag"
+    },
+    {
+      "inputs": [
+        "JSONL SFT records",
+        "transaction metadata",
+        "Vulcan logs"
+      ],
+      "job": "convert Solana transaction and strategy logs into embedding/CPT records",
+      "name": "transaction_embedding_builder",
+      "outputs": [
+        "tx_context_jsonl",
+        "embedding_features"
+      ],
+      "source": "transaction_foundation_model"
+    },
+    {
+      "inputs": [
+        "Rise market data plan",
+        "Vulcan candles",
+        "funding",
+        "orderbook snapshots"
+      ],
+      "job": "propose alpha signals for spot and Phoenix perps",
+      "name": "signal_agent",
+      "outputs": [
+        "signal_formula",
+        "signal_hypothesis"
+      ],
+      "source": "signal_discovery"
+    },
+    {
+      "inputs": [
+        "signal_formula",
+        "allowed_operator_catalog"
+      ],
+      "job": "turn signal hypotheses into deterministic Python feature functions",
+      "name": "code_agent",
+      "outputs": [
+        "feature_code",
+        "unit_test_plan"
+      ],
+      "source": "signal_discovery"
+    },
+    {
+      "inputs": [
+        "feature_code",
+        "historical candles",
+        "paper execution fills"
+      ],
+      "job": "backtest feature functions and score IC, drawdown, turnover, and p-value",
+      "name": "evaluation_agent",
+      "outputs": [
+        "accepted_signal",
+        "best_effort_signal",
+        "retry_feedback"
+      ],
+      "source": "signal_discovery"
+    },
+    {
+      "inputs": [
+        "accepted_signal",
+        "current paper portfolio",
+        "scenario matrix"
+      ],
+      "job": "convert accepted signals into Mean-CVaR allocation and hedge handoffs",
+      "name": "optimizer_agent",
+      "outputs": [
+        "allocation_plan",
+        "cufolio_handoff"
+      ],
+      "source": "portfolio_optimization"
+    },
+    {
+      "inputs": [
+        "accepted signals",
+        "RAG context",
+        "risk review"
+      ],
+      "job": "label high-quality factory traces with a Nemotron teacher for student LoRA training",
+      "name": "distillation_agent",
+      "outputs": [
+        "distilled_sft_jsonl",
+        "evaluation_report"
+      ],
+      "source": "model_distillation"
+    },
+    {
+      "inputs": [
+        "agent traces",
+        "eval dataset",
+        "refusal cases"
+      ],
+      "job": "score agent quality, safety, latency, and groundedness before publishing",
+      "name": "aiq_evaluator",
+      "outputs": [
+        "aiq_eval_json",
+        "release_gate"
+      ],
+      "source": "aiq"
+    },
+    {
+      "inputs": [
+        "allocation_plan",
+        "strategy_manifest",
+        "preflight_status"
+      ],
+      "job": "keep generated commands observer or paper-only unless the operator explicitly promotes mode",
+      "name": "execution_guard",
+      "outputs": [
+        "paper_commands",
+        "blocked_live_actions"
+      ],
+      "source": "vulcan"
+    }
+  ],
+  "safety_policy": {
+    "allowed_default_modes": [
+      "observer",
+      "paper"
+    ],
+    "default_trust_gate": "dry-run",
+    "live_mode_status": "not generated by this plan",
+    "promotion_requirements": [
+      "operator explicitly chooses live mode outside this generator",
+      "Vulcan preflight reports ready",
+      "margin, open positions, orderbook, and funding are reviewed",
+      "per-order approval is captured by the execution client"
+    ],
+    "secret_handling": [
+      "read keys only from the process environment",
+      "never write API keys or OAuth client secret files into generated artifacts",
+      "never include wallet private keys or wallet passwords in plans"
+    ]
+  },
+  "schema_version": "2026-06-19",
+  "slug": "solana-nemoclawd-nvidia-trading-factory",
+  "tool_contract": {
+    "cufolio": {
+      "allowed": [
+        "scenario generation",
+        "Mean-CVaR optimization",
+        "CPU fallback review"
+      ],
+      "blocked_by_default": [
+        "automatic rebalance execution"
+      ]
+    },
+    "nemo_clawd": {
+      "allowed": [
+        "sandboxed plan/apply/status concepts",
+        "MCP tool manifest generation"
+      ],
+      "blocked_by_default": [
+        "host secret inspection",
+        "live wallet policy mutation"
+      ]
+    },
+    "rise": {
+      "allowed": [
+        "HTTP read-only market data",
+        "candles",
+        "funding",
+        "orderbook"
+      ],
+      "blocked_by_default": [
+        "transaction construction",
+        "wallet signing"
+      ]
+    },
+    "vulcan": {
+      "allowed": [
+        "market data",
+        "technical indicators",
+        "paper strategies",
+        "preflight"
+      ],
+      "blocked_by_default": [
+        "live order submission",
+        "wallet password reads",
+        "private-key export"
+      ],
+      "output_mode": "json"
+    }
+  },
+  "training_outputs": {
+    "distilled_dataset": "data/distilled_trading_factory.jsonl",
+    "published_dataset": "solanaclawd/solana-clawd-nvidia-trading-factory-instruct",
+    "signal_sft_log": "data/nvidia_signal_log.jsonl",
+    "student_adapter": "solanaclawd/solana-clawd-core-ai-1.5b-lora"
+  },
+  "upstream_adaptations": {
+    "nemoclawd": {
+      "adapted_contract": "Blueprint lifecycle, sandbox posture, MCP tool catalog, and permission gates.",
+      "license": "Apache-2.0 root license; subprojects may differ and must be checked before vendoring.",
+      "repo": "https://github.com/x402agent/NemoClawd.git"
+    },
+    "quantitative_signal_discovery_agent": {
+      "adapted_contract": "NAT-style signal, code, and evaluation loop mapped to Phoenix/Vulcan paper signals.",
+      "license": "Apache-2.0 style upstream license files; verify before redistribution.",
+      "repo": "https://github.com/Solizardking/quantitative-signal-discovery-agent.git"
+    }
+  },
+  "workflow": [
+    "ingest_docs_with_enterprise_rag",
+    "build_transaction_foundation_records",
+    "discover_signals_with_nemotron",
+    "compile_and_backtest_signal_code",
+    "optimize_portfolio_with_mean_cvar",
+    "emit_vulcan_paper_strategy_plan",
+    "distill_teacher_outputs_to_clawd_student",
+    "evaluate_with_aiq_before_release"
+  ]
+}

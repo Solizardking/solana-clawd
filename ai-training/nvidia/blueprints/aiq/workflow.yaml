@@ -1,0 +1,26 @@
+name: solana-nemoclawd-factory-aiq
+version: "2026-06-19"
+description: Local AIQ workflow contract for the Solana Clawd NVIDIA trading factory.
+
+inputs:
+  plan: data/strategies/nvidia_clawd_agent_plan.json
+  eval_report: data/nvidia_aiq_eval.json
+
+checks:
+  - name: safety
+    tool: score_safety
+    required: true
+  - name: artifact_completeness
+    tool: score_artifact_completeness
+    required: true
+  - name: role_coverage
+    tool: score_role_coverage
+    required: true
+
+release_gate:
+  pass_when_all_required_checks_pass: true
+  default_on_failure: hold
+
+execution:
+  local_command: python3 nvidia/blueprints/aiq/agent.py --strict
+  nvidia_aiq_target: NeMo Agent Toolkit workflow import

@@ -333,8 +333,44 @@ Current artifacts, verified with `scripts/verify_trading_factory_release.py --st
 - `configs/nvidia_trading_factory_lora_config.yaml` — Hermes-3-8B LoRA config
 - `trading_factory/cufolio/` — local cuFOLIO snapshot for CVaR/scenario/rebalance references
 - `trading_factory/clawd-autoresearch-wiki/perps/` — local perps research references
-- `data/strategies/` — generated Vulcan paper TA configs, Rise read plan, cuFOLIO Mean-CVaR handoff, and command manifest
+- `data/strategies/` — generated Vulcan paper TA configs, Rise read plan, cuFOLIO Mean-CVaR handoff, command manifest, and `nvidia_clawd_agent_plan.json`
+- `nvidia/` — local NVIDIA blueprint adapters for transaction foundation modeling, portfolio optimization, model distillation, signal discovery, enterprise RAG, and AIQ
 - Hub dataset — [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct)
+
+Regenerate and verify the NVIDIA/NemoClawd factory plan:
+
+```bash
+python3 scripts/build_solana_trading_factory_strategies.py
+python3 nvidia/integration/nemo_clawd_agent.py --mode paper
+python3 perps/nvidia_perps.py --market SOL --mode observer
+python3 nvidia/blueprints/aiq/agent.py --strict
+python3 nvidia/scripts/verify_nvidia.py --strict
+```
+
+NVIDIA integration folders:
+
+| Folder | What it does |
+| --- | --- |
+| `nvidia/blueprints/transaction-foundation-model/` | Converts Solana tx JSONL to NeMo CPT format and defines the NIM/NeMo fine-tune launch contract. |
+| `nvidia/blueprints/portfolio-optimization/` | cuML KDE scenario generation plus Mean-CVaR optimizer with cuFOLIO preferred and CVXPY fallback. |
+| `nvidia/blueprints/model-distillation/` | Response and CoT distillation from a Hermes/Nemotron teacher into the 1.5B Clawd student lane. |
+| `nvidia/blueprints/signal-discovery/` | Phoenix perps signal agent: RSI, MACD, funding rate, orderbook imbalance, and EMA divergence via `RPC_URL` and Vulcan CLI; paper executes on accepted signals. |
+| `nvidia/blueprints/enterprise-rag/` | NeMo Retriever RAG contract: nv-ingest PDFs/docs to local FAISS, rerank, then NIM/Clawd generation. |
+| `nvidia/blueprints/aiq/` | Local AIQ evaluator that scores safety, artifact completeness, and 9-role coverage. |
+| `nvidia/cufolio/` | GPU portfolio optimizer with Clawd CVaR, leverage, and turnover constraints; emits Vulcan paper commands. |
+| `nvidia/integration/` | NIM bridge routes NVIDIA to ClawdRouter to Ollama, signal-to-trading-factory bridge, and NVIDIA SFT dataset builder. |
+| `perps/` | Model-facing perps tools, schemas, function-calling harness, and `data/perps/nvidia_perps_handoff.json` generator. |
+
+Perps signal agent quick start:
+
+```bash
+export RPC_URL=https://api.mainnet-beta.solana.com
+export NVIDIA_API_KEY=<set-in-shell-only>
+python3 nvidia/blueprints/signal-discovery/perps_signal_agent.py \
+  --market SOL \
+  --mode paper \
+  --loop
+```
 
 Publish or refresh the dataset after `HF_TOKEN` is available in your shell or
 an existing `hf auth login` session is active:

@@ -1,0 +1,119 @@
+"""
+Clawd ↔ NVIDIA NIM bridge.
+
+Provides a unified OpenAI-compatible client that routes requests to:
+  - NVIDIA NIM API (when NVIDIA_API_KEY is set)
+  - Local Clawd endpoint (CLAWD_INFERENCE_URL)
+  - ClawdRouter free tier (clawd_free_* key)
+  - Local Ollama (fallback)
+
+Used by signal-discovery, RAG pipeline, and AIQ evaluator.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+from typing import Iterator
+
+
+NIM_BASE = "https://integrate.api.nvidia.com/v1"
+DEFAULT_MODEL_NIM = "meta/llama-3.1-nemotron-nano-8b-v1"
+
+
+def _resolve_endpoint() -> tuple[str, str, str]:
+    """Returns (base_url, api_key, model)."""
+    if key := os.environ.get("NVIDIA_API_KEY"):
+        return NIM_BASE, key, DEFAULT_MODEL_NIM
+    if url := os.environ.get("CLAWD_INFERENCE_URL"):
+        return url, os.environ.get("CLAWD_API_KEY", "none"), "solana-clawd-1.5b"
+    if key := os.environ.get("CLAWD_ROUTER_KEY"):
+        return "https://clawd-box-router.fly.dev/v1", key, "solana-clawd-1.5b"
+    return "http://localhost:11434/v1", "ollama", "solana-clawd-1.5b"
+
+
+def chat(
+    messages: list[dict],
+    max_tokens: int = 512,
+    temperature: float = 0.1,
+    stream: bool = False,
+) -> str | Iterator[str]:
+    """Send a chat request through the best available endpoint."""
+    base_url, api_key, model = _resolve_endpoint()
+
+    try:
+        import httpx
+    except ImportError:
+        raise ImportError("Run: pip install httpx")
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "stream": stream,
+    }
+
+    if stream:
+        return _stream(base_url, api_key, payload)
+
+    r = httpx.post(
+        f"{base_url}/chat/completions",
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        json=payload,
+        timeout=60,
+    )
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"]
+
+
+def _stream(base_url: str, api_key: str, payload: dict) -> Iterator[str]:
+    import httpx
+    with httpx.stream(
+        "POST",
+        f"{base_url}/chat/completions",
+        headers={"Authorization": f"Bearer {api_key}"},
+        json=payload,
+        timeout=120,
+    ) as r:
+        r.raise_for_status()
+        for line in r.iter_lines():
+            if line.startswith("data: ") and line != "data: [DONE]":
+                try:
+                    chunk = json.loads(line[6:])
+                    delta = chunk["choices"][0].get("delta", {})
+                    if text := delta.get("content"):
+                        yield text
+                except (json.JSONDecodeError, KeyError):
+                    pass
+
+
+def analyze_signal(market: str, signal_summary: str) -> str:
+    """Ask the NIM model to analyze a signal and recommend an action."""
+    base_url, _, _ = _resolve_endpoint()
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are Clawd, a sovereign Solana-native AI agent specialized in Phoenix "
+                "perpetuals. Analyze signals and recommend paper trades only. "
+                "Never recommend live execution without explicit trust gate confirmation."
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"Market: {market}-PERP\n\n"
+                f"Signal summary:\n{signal_summary}\n\n"
+                "Should I enter a position? If yes, specify direction, notional USDC, "
+                "and recommended Vulcan command. If no, explain why."
+            ),
+        },
+    ]
+    return chat(messages)
+
+
+if __name__ == "__main__":
+    print(f"[bridge] endpoint: {_resolve_endpoint()[0]}")
+    answer = analyze_signal("SOL", "RSI=28 (oversold), MACD bullish crossover, funding neutral")
+    print(f"\n[bridge] answer:\n{answer}")
