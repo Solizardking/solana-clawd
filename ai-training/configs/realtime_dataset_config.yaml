@@ -27,6 +27,7 @@ documentai_labels:
   dataset: realtime-research
   client: clawd
 google_cache_dir: data/docai_cache
+google_quota_project: x402-477302
 no_google_cache: false
 gemini_model: gemini-2.5-flash
 google_timeout_seconds: 120

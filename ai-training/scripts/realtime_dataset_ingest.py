@@ -135,6 +135,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--documentai-label", action="append", default=[], help="Document AI billing label, KEY=VALUE")
     p.add_argument("--documentai-page-batch-size", type=int, default=None, help="Pages per sync Document AI request")
     p.add_argument("--google-cache-dir", help="Cache directory for Google extraction responses")
+    p.add_argument("--google-quota-project", help="Optional x-goog-user-project quota/billing project for Google APIs")
     p.add_argument("--no-google-cache", action="store_true", help="Disable Google extraction response caching")
     p.add_argument("--gemini-model", help="Gemini model for API-key PDF extraction")
     p.add_argument("--google-timeout-seconds", type=int, default=None, help="HTTP timeout for Google extraction calls")
@@ -196,6 +197,7 @@ def merged_settings(args: argparse.Namespace) -> dict[str, Any]:
             else cfg.get("documentai_page_batch_size", 1)
         ),
         "google_cache_dir": args.google_cache_dir or cfg.get("google_cache_dir") or "data/docai_cache",
+        "google_quota_project": args.google_quota_project or cfg.get("google_quota_project"),
         "google_cache": not bool(args.no_google_cache or cfg.get("no_google_cache", False)),
         "gemini_model": args.gemini_model or cfg.get("gemini_model") or os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash",
         "google_timeout_seconds": int(
@@ -657,6 +659,7 @@ def extract_documentai_pdf_texts(
             pages,
             settings["documentai_field_mask"],
             settings["documentai_labels"],
+            settings.get("google_quota_project"),
         ]
         cached = read_google_cache(settings, cache_key)
         if cached is None:
@@ -674,6 +677,11 @@ def extract_documentai_pdf_texts(
                 {
                     "Authorization": f"Bearer {token}",
                     "Content-Type": "application/json; charset=utf-8",
+                    **(
+                        {"x-goog-user-project": settings["google_quota_project"]}
+                        if settings.get("google_quota_project")
+                        else {}
+                    ),
                 },
                 settings["google_timeout_seconds"],
             )
