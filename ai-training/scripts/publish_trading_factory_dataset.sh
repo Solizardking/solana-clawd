@@ -22,6 +22,8 @@ if [[ -z "${HF_TOKEN:-}" ]]; then
   fi
 fi
 
+python3 scripts/build_solana_trading_factory_strategies.py
+
 python3 scripts/build_nvidia_trading_factory_dataset.py --config "$CONFIG"
 
 python3 scripts/prepare_dataset.py \

@@ -345,6 +345,7 @@ def main() -> int:
             write_report(AI_TRAINING_DIR / args.report, env, gates)
             print("ERROR: --launch-trading-training requires HF_TOKEN or hf auth login, plus WANDB_API_KEY.", file=sys.stderr)
             return 1
+        run(["./scripts/publish_trading_factory_dataset.sh"], env=env)
         run(["python3", "scripts/verify_trading_factory_release.py", "--strict"], env=env)
         run(["./scripts/launch_trading_factory_hf_job.sh", args.flavor, args.timeout], env=env)
 
