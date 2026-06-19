@@ -1,0 +1,24 @@
+# Solana Transaction Foundation Model — unified pipeline config
+# Run with: python3 nvidia/blueprints/transaction-foundation-model/pipeline.py
+
+base_model: "Qwen/Qwen2.5-1.5B-Instruct"
+output_name: "solana-tx-foundation-1.5b"
+
+# Data paths (relative to ai-training/)
+cpt_data: "data/tx_foundation_cpt.jsonl"     # 19.5K Jupiter+SFT CPT records
+sft_data: "data/solana_clawd_merged.jsonl"   # 30K instruction pairs
+
+# Training hyperparameters
+max_seq_length: 2048
+cpt_epochs: 1
+sft_epochs: 1
+learning_rate_cpt: 2.0e-4   # higher LR ok for domain injection
+learning_rate_sft: 1.0e-4
+batch_size: 2
+grad_accum: 8
+lora_r: 16
+lora_alpha: 32
+
+# Hub publishing (requires HF_TOKEN)
+push_to_hub: false
+hub_model_id: "solanaclawd/solana-tx-foundation-1.5b"
