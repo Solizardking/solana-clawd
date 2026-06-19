@@ -70,6 +70,7 @@ SUPPORTED_SUFFIXES = {
 SECRET_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |PGP )?PRIVATE KEY-----"),
     re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{24,}\b"),
+    re.compile(r"\bnvapi-[A-Za-z0-9_-]{20,}\b"),
     re.compile(r"\bhf_[A-Za-z0-9]{30,}\b"),
     re.compile(r"\bgh[pousr]_[A-Za-z0-9]{30,}\b"),
     re.compile(r"\bwandb_[A-Za-z0-9_-]{30,}\b"),
@@ -127,9 +128,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--save-arrow-dataset", action="store_true", help="Also write datasets.save_to_disk Arrow shards")
     p.add_argument(
         "--pdf-extractor",
-        choices=["auto", "pypdf", "documentai", "gemini"],
-        help="PDF extraction backend. auto: Document AI OAuth, then Gemini API key, then pypdf.",
+        choices=["auto", "pypdf", "documentai", "gemini", "nvidia"],
+        help="PDF extraction backend. auto: NVIDIA env key, then Document AI OAuth, then Gemini API key, then pypdf.",
     )
+    p.add_argument("--nvidia-cache-dir", help="Cache directory for NVIDIA extraction responses")
+    p.add_argument("--no-nvidia-cache", action="store_true", help="Disable NVIDIA extraction response caching")
+    p.add_argument("--nvidia-ingest-port", type=int, default=None, help="nv-ingest SimpleClient port")
+    p.add_argument("--nvidia-extract-method", help="nv-ingest extraction method")
+    p.add_argument("--nvidia-table-output-format", help="nv-ingest table output format")
+    p.add_argument("--no-nvidia-start-pipeline", action="store_true", help="Assume nv-ingest is already running")
     p.add_argument("--documentai-endpoint", help="Full Document AI :process endpoint URL")
     p.add_argument("--documentai-field-mask", help="Document AI field mask")
     p.add_argument("--documentai-label", action="append", default=[], help="Document AI billing label, KEY=VALUE")
@@ -184,6 +191,16 @@ def merged_settings(args: argparse.Namespace) -> dict[str, Any]:
         "keep_duplicate_files": bool(args.keep_duplicate_files or cfg.get("keep_duplicate_files", False)),
         "save_arrow_dataset": bool(args.save_arrow_dataset or cfg.get("save_arrow_dataset", False)),
         "pdf_extractor": args.pdf_extractor or cfg.get("pdf_extractor", "auto"),
+        "nvidia_cache_dir": args.nvidia_cache_dir or cfg.get("nvidia_cache_dir") or "data/nvidia_cache",
+        "nvidia_cache": not bool(args.no_nvidia_cache or cfg.get("no_nvidia_cache", False)),
+        "nvidia_ingest_port": int(
+            args.nvidia_ingest_port if args.nvidia_ingest_port is not None else cfg.get("nvidia_ingest_port", 7671)
+        ),
+        "nvidia_extract_method": args.nvidia_extract_method or cfg.get("nvidia_extract_method") or "pdfium",
+        "nvidia_table_output_format": args.nvidia_table_output_format
+        or cfg.get("nvidia_table_output_format")
+        or "markdown",
+        "nvidia_start_pipeline": not bool(args.no_nvidia_start_pipeline or cfg.get("no_nvidia_start_pipeline", False)),
         "documentai_endpoint": args.documentai_endpoint
         or cfg.get("documentai_endpoint")
         or "https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process",
