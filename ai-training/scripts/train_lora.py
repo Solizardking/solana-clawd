@@ -43,6 +43,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 from typing import Any
 
@@ -58,7 +59,6 @@ from transformers import (
 from trl import SFTConfig, SFTTrainer
 
 try:
-    import os
     import wandb
     _WANDB_AVAILABLE = True
     _wandb_key = os.environ.get("WANDB_API_KEY")
@@ -66,6 +66,8 @@ try:
         wandb.login(key=_wandb_key, relogin=True)
 except ImportError:
     _WANDB_AVAILABLE = False
+
+REQUIRED_ADAPTER_FILES = {"adapter_config.json", "adapter_model.safetensors"}
 
 
 def _resolve_report_to(report_to: list[str] | str) -> list[str]:
@@ -76,6 +78,113 @@ def _resolve_report_to(report_to: list[str] | str) -> list[str]:
         print("WARNING: wandb not installed — removing from report_to. Install with: pip install wandb")
         report_to = [r for r in report_to if r != "wandb"] or ["none"]
     return report_to
+
+
+def _wandb_run_url() -> str | None:
+    if not _WANDB_AVAILABLE:
+        return None
+    run = getattr(wandb, "run", None)
+    if not run:
+        return None
+    return getattr(run, "url", None)
+
+
+def _metrics_markdown(metrics: dict[str, Any]) -> str:
+    rows = []
+    for key in sorted(metrics):
+        value = metrics[key]
+        if isinstance(value, float):
+            value = f"{value:.6g}"
+        rows.append(f"| `{key}` | `{value}` |")
+    if not rows:
+        return "_No metrics recorded._"
+    return "\n".join(["| Metric | Value |", "| --- | --- |", *rows])
+
+
+def write_adapter_model_card(
+    output_dir: str,
+    cfg: dict[str, Any],
+    lora_cfg: dict[str, Any],
+    dataset_label: str,
+    train_rows: int,
+    eval_rows: int,
+    metrics: dict[str, Any],
+) -> None:
+    path = Path(output_dir) / "README.md"
+    tags = "\n".join(f"  - {tag}" for tag in ["solana", "clawd", "core-ai", "lora", "peft"])
+    datasets = f"  - {dataset_label}" if "/" in dataset_label and not Path(dataset_label).exists() else "  - local"
+    wandb_url = _wandb_run_url()
+    wandb_section = f"\n- W&B run: {wandb_url}" if wandb_url else ""
+    path.write_text(
+        f"""---
+license: cc-by-4.0
+base_model: {cfg["base_model"]}
+datasets:
+{datasets}
+tags:
+{tags}
+pipeline_tag: text-generation
+---
+
+# Solana Clawd Core AI LoRA
+
+LoRA adapter trained from `{cfg["base_model"]}` on `{dataset_label}`.
+
+## Training
+
+- Train rows: {train_rows}
+- Eval rows: {eval_rows}
+- Max sequence length: {cfg.get("max_seq_length", "unknown")}
+- LoRA rank/alpha: r={lora_cfg["r"]}, alpha={lora_cfg["alpha"]}
+- LoRA target modules: `{", ".join(lora_cfg.get("target_modules") or [])}`
+- Output directory: `{output_dir}`{wandb_section}
+
+## Metrics
+
+{_metrics_markdown(metrics)}
+
+## Intended Use
+
+This adapter is intended for Solana-native Clawd agents that need project-local
+context around `core-ai`, Helius integrations, Clawd Code, Clawd Grok, MCP
+server conventions, agent skills, and the existing Solana/DeFi/ZK instruction
+corpus.
+
+## Safety
+
+The dataset builder runs in public-safe mode by default and excludes common
+secret filenames, private key/token patterns, binary artifacts, dependency
+folders, lockfiles, and high-risk security records that are not suitable for
+public dataset release.
+""",
+        encoding="utf-8",
+    )
+
+
+def missing_local_adapter_files(output_dir: str) -> list[str]:
+    base = Path(output_dir)
+    return sorted(name for name in REQUIRED_ADAPTER_FILES if not (base / name).exists())
+
+
+def missing_hub_adapter_files(hub_model_id: str) -> list[str]:
+    from huggingface_hub import HfApi
+
+    files = set(HfApi().list_repo_files(repo_id=hub_model_id, repo_type="model"))
+    return sorted(name for name in REQUIRED_ADAPTER_FILES if name not in files)
+
+
+def upload_adapter_folder(output_dir: str, hub_model_id: str, private: bool, commit_message: str) -> None:
+    from huggingface_hub import HfApi
+
+    api = HfApi()
+    api.create_repo(repo_id=hub_model_id, repo_type="model", private=private, exist_ok=True)
+    api.upload_folder(
+        repo_id=hub_model_id,
+        repo_type="model",
+        folder_path=output_dir,
+        commit_message=commit_message,
+        ignore_patterns=["checkpoint-*", "runs/*", "wandb/*"],
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -412,17 +521,46 @@ def main() -> None:
     print(f"Saving adapter to {output_dir}")
     trainer.save_model(output_dir)
     tokenizer.save_pretrained(output_dir)
+    write_adapter_model_card(
+        output_dir=output_dir,
+        cfg=cfg,
+        lora_cfg=lora_cfg,
+        dataset_label=dataset_label,
+        train_rows=len(train_ds),
+        eval_rows=len(eval_ds) if eval_ds else 0,
+        metrics=metrics,
+    )
+
+    missing_local = missing_local_adapter_files(output_dir)
+    if missing_local:
+        raise RuntimeError(f"Adapter save incomplete; missing local files in {output_dir}: {missing_local}")
 
     # ---- Push to Hub ----
     if push_to_hub and hub_model_id:
         print(f"Pushing to Hub: {hub_model_id}")
-        trainer.push_to_hub(
-            repo_id=hub_model_id,
-            private=cfg.get("hub_private", False),
-            commit_message=f"LoRA r={lora_cfg['r']} alpha={lora_cfg['alpha']} "
-                           f"epochs={train_kwargs.get('num_train_epochs', 3)} "
-                           f"lr={train_kwargs.get('learning_rate', 2e-4)}",
+        commit_message = (
+            f"LoRA r={lora_cfg['r']} alpha={lora_cfg['alpha']} "
+            f"epochs={train_kwargs.get('num_train_epochs', 3)} "
+            f"lr={train_kwargs.get('learning_rate', 2e-4)}"
         )
+        try:
+            trainer.push_to_hub(
+                repo_id=hub_model_id,
+                private=cfg.get("hub_private", False),
+                commit_message=commit_message,
+            )
+        except Exception as exc:
+            print(f"WARNING: trainer.push_to_hub failed; uploading adapter folder directly: {exc}")
+            upload_adapter_folder(output_dir, hub_model_id, cfg.get("hub_private", False), commit_message)
+
+        missing_hub = missing_hub_adapter_files(hub_model_id)
+        if missing_hub:
+            print(f"WARNING: Hub repo is missing {missing_hub}; retrying direct folder upload")
+            upload_adapter_folder(output_dir, hub_model_id, cfg.get("hub_private", False), "Upload final LoRA adapter artifacts")
+            missing_hub = missing_hub_adapter_files(hub_model_id)
+        if missing_hub:
+            raise RuntimeError(f"Hub adapter upload incomplete for {hub_model_id}; missing files: {missing_hub}")
+        print(f"Verified Hub adapter files for {hub_model_id}")
 
     print("Done.")
 
