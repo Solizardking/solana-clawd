@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Launch Core AI LoRA training on Hugging Face Jobs with W&B tracking.
+# Launch a separate NVIDIA Trading Factory LoRA training job on Hugging Face.
+#
+# This does not touch or cancel any currently running HF job.
 #
 # Required:
 #   HF_TOKEN        Hugging Face token with dataset/model/job access, or
@@ -7,15 +9,18 @@
 #   WANDB_API_KEY  Weights & Biases API key
 #
 # Usage:
-#   ./scripts/launch_core_ai_hf_job.sh
-#   ./scripts/launch_core_ai_hf_job.sh a100-large
-#   ./scripts/launch_core_ai_hf_job.sh l40sx1 6h
+#   ./scripts/launch_trading_factory_hf_job.sh
+#   ./scripts/launch_trading_factory_hf_job.sh a100-large 4h
 
 set -euo pipefail
 
 FLAVOR="${1:-a100-large}"
 TIMEOUT="${2:-4h}"
-RUN_NAME="${WANDB_RUN_NAME:-core-ai-1.5b-lora-a100-$(date -u +%Y%m%dT%H%M%SZ)}"
+DATASET_REPO="${DATASET_REPO:-solanaclawd/solana-clawd-nvidia-trading-factory-instruct}"
+BASE_MODEL="${BASE_MODEL:-NousResearch/Hermes-3-Llama-3.1-8B}"
+HUB_MODEL_ID="${HUB_MODEL_ID:-solanaclawd/solana-nvidia-trading-factory-8b-lora}"
+NUM_EPOCHS="${NUM_EPOCHS:-3}"
+RUN_NAME="${WANDB_RUN_NAME:-nvidia-trading-factory-8b-lora-$(date -u +%Y%m%dT%H%M%SZ)}"
 
 if [[ -z "${HF_TOKEN:-}" ]]; then
   if HF_TOKEN="$(hf auth token 2>/dev/null)"; then
@@ -40,19 +45,16 @@ hf jobs uv run scripts/train_lora.py \
   --env HF_HOME=/data/hf_cache \
   --env HF_DATASETS_CACHE=/data/hf_cache/datasets \
   --env TRANSFORMERS_CACHE=/data/hf_cache \
-  --env WANDB_PROJECT=solana-clawd-core-ai \
+  --env WANDB_PROJECT=solana-clawd-trading-factory \
   --env "WANDB_RUN_NAME=$RUN_NAME" \
-  --label solana-clawd-core-ai \
+  --label solana-clawd-trading-factory \
   --detach \
   -- \
-  --config none \
-  --dataset-repo solanaclawd/solana-clawd-core-ai-instruct \
-  --base-model Qwen/Qwen2.5-1.5B-Instruct \
-  --output-dir /data/outputs/core-ai-clawd-1.5b-lora \
-  --hub-model-id solanaclawd/solana-clawd-core-ai-1.5b-lora \
-  --num-epochs 1 \
+  --config configs/nvidia_trading_factory_lora_config.yaml \
+  --dataset-repo "$DATASET_REPO" \
+  --base-model "$BASE_MODEL" \
+  --output-dir /data/outputs/solana-nvidia-trading-factory-8b-lora \
+  --hub-model-id "$HUB_MODEL_ID" \
+  --num-epochs "$NUM_EPOCHS" \
   --push \
-  --no-eval \
-  --no-checkpoints \
-  --no-quant \
   --wandb

@@ -1,0 +1,186 @@
+{
+  "generated_at": "2026-06-19T19:26:22+00:00",
+  "dataset_name": "Solana Clawd NVIDIA Trading Factory Instruct",
+  "repo_id": "solanaclawd/solana-clawd-nvidia-trading-factory-instruct",
+  "builder": "scripts/build_nvidia_trading_factory_dataset.py",
+  "counts": {
+    "examples": 57,
+    "sources": 8,
+    "missing_inputs": 0,
+    "duplicates_removed": 0,
+    "by_source_type": {
+      "clawd_agent_catalog": 3,
+      "eval_policy": 1,
+      "external_reference": 3,
+      "factory_stage": 11,
+      "labeling_policy": 1,
+      "onchain_ai_reference": 3,
+      "optimization_spec": 1,
+      "perps_tool": 13,
+      "portfolio_policy": 1,
+      "research_dataset_manifest": 3,
+      "risk_scenario": 1,
+      "safety_refusal": 4,
+      "solana_perps_agent": 3,
+      "solana_perps_prompts": 2,
+      "solana_perps_schema": 1,
+      "solana_perps_tools": 3,
+      "training_pipeline_reference": 3
+    },
+    "by_factory_stage": {
+      "alpha_research": 1,
+      "architecture": 22,
+      "backtesting": 1,
+      "data_ingestion": 1,
+      "execution_policy": 14,
+      "feature_engineering": 2,
+      "governance": 8,
+      "mean_cvar_optimization": 3,
+      "monitoring": 2,
+      "risk_controls": 2,
+      "scenario_generation": 1
+    }
+  },
+  "settings": {
+    "train_ratio": 0.9,
+    "eval_ratio": 0.05,
+    "seed": 42,
+    "chunk_chars": 3600,
+    "chunk_overlap": 300,
+    "max_chunks_per_source": 3
+  },
+  "markets": [
+    "SOL spot",
+    "SOL-PERP",
+    "BTC-PERP",
+    "ETH-PERP",
+    "JUP spot",
+    "BONK spot",
+    "WIF spot",
+    "JTO spot",
+    "PYTH spot",
+    "mSOL spot"
+  ],
+  "nvidia_stack": [
+    "NeMo Curator",
+    "NeMo Data Designer",
+    "Nemotron Parse",
+    "RAPIDS cuDF",
+    "RAPIDS cuML KDE",
+    "cuVS",
+    "PyTorch CUDA",
+    "NVIDIA HPC SDK",
+    "StdPar",
+    "cuOpt",
+    "cuFOLIO",
+    "TensorRT",
+    "NVIDIA NIM"
+  ],
+  "risk_policy": {
+    "default_mode": "paper",
+    "live_trading_requires": [
+      "explicit user confirmation",
+      "LIVE_TRADING=true in the execution environment",
+      "wallet/keypair configured outside the dataset and repo",
+      "risk score <= 6 unless a human overrides",
+      "pre-trade slippage, liquidation, funding, and exposure checks"
+    ],
+    "max_default_leverage": 3,
+    "refuse": [
+      "front-running",
+      "sandwich attacks",
+      "wallet draining",
+      "private-key handling",
+      "sanctions evasion",
+      "market manipulation"
+    ]
+  },
+  "external_references": [
+    {
+      "title": "NVIDIA AI Algorithmic Trading Factories",
+      "url": "https://www.nvidia.com/en-us/use-cases/ai-algorithmic-trading-factories/",
+      "notes": [
+        "Unify large-scale data ingestion, distributed training, fine-tuning, and low-latency inference.",
+        "Use NeMo Curator, NeMo Data Designer, Nemotron Parse, RAPIDS, cuDF, cuML, cuVS, cuOpt, cuFOLIO, TensorRT, and NIM across the quant pipeline.",
+        "Execution models should adapt to regime shifts, liquidity changes, and order-flow dynamics while minimizing slippage and transaction costs."
+      ]
+    },
+    {
+      "title": "NVIDIA Quantitative Portfolio Optimization Blueprint",
+      "url": "https://build.nvidia.com/nvidia/quantitative-portfolio-optimization",
+      "notes": [
+        "GPU-accelerated, real-time, scalable Mean-CVaR portfolio optimization using cuOpt and RAPIDS.",
+        "Supports CVaR, leverage, budgets, turnover, and cardinality constraints.",
+        "Uses cuML KDE for scenario generation, cuDF for returns/backtesting, cuOpt LP/MILP solvers, and CVXPY for flexible modeling."
+      ]
+    },
+    {
+      "title": "Solizardking/cuFOLIO",
+      "url": "https://github.com/Solizardking/cuFOLIO",
+      "notes": [
+        "Apache-2.0 GPU-accelerated portfolio optimization toolkit for NVIDIA cuOpt and CUDA-X Data Science.",
+        "Includes Mean-CVaR optimization, scenario generation, backtesting, efficient frontier, and rebalancing examples.",
+        "Designed around the NVIDIA PyTorch container and CUDA-specific cuOpt/cuML extras."
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "path": "ai-training/perps/functions.py",
+      "source_type": "solana_perps_tools",
+      "sha256": "dbb84a637351ee1318579d29f63c4629883a5c0cb614d9de71ad17ab5dca9779",
+      "size_bytes": 23773,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/perps/prompter.py",
+      "source_type": "solana_perps_prompts",
+      "sha256": "ae168227e8485dafdd9526717073f4ff09039be7248aea2188b20d0b4531b0e9",
+      "size_bytes": 4899,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/perps/schema.py",
+      "source_type": "solana_perps_schema",
+      "sha256": "a1aa3b2031377ad5cb1903fb51689d2778dec5c7c9593cf5a610b329c14cdb24",
+      "size_bytes": 2748,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/perps/functioncall.py",
+      "source_type": "solana_perps_agent",
+      "sha256": "bb63ad931150791a8eb6b556d792d68bc4264b1e1f04f5aac19ebf57a716757c",
+      "size_bytes": 10493,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/onchainai.md",
+      "source_type": "onchain_ai_reference",
+      "sha256": "f47876a63df6cb2ad74535ed09caa42a3e143b855666b50711bd2e411e93f055",
+      "size_bytes": 15128,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/README.md",
+      "source_type": "training_pipeline_reference",
+      "sha256": "819fcf367fa6fcf75ac2409f19b6a56a4a7a2161a63d594fc63b11be9f9c63c1",
+      "size_bytes": 44903,
+      "chunks": 3
+    },
+    {
+      "path": "AGENTS.md",
+      "source_type": "clawd_agent_catalog",
+      "sha256": "8bd2670851b9ad462e69264245e09dec538643ab2ac51fa0ee5b10bdc5360bee",
+      "size_bytes": 15160,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/data/realtime_research_dataset_manifest.json",
+      "source_type": "research_dataset_manifest",
+      "sha256": "0d7000860c234e52ea0db1e6a473381cdabb4ef438db562a3ef35dc35d7e75c4",
+      "size_bytes": 15438,
+      "chunks": 3
+    }
+  ],
+  "missing_inputs": []
+}

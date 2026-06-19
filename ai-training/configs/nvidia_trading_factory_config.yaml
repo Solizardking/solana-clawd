@@ -1,0 +1,109 @@
+dataset_name: "Solana Clawd NVIDIA Trading Factory Instruct"
+repo_id: "solanaclawd/solana-clawd-nvidia-trading-factory-instruct"
+output_jsonl: "data/nvidia_trading_factory_sft.jsonl"
+processed_output_dir: "data/nvidia_trading_factory_processed"
+manifest: "data/nvidia_trading_factory_manifest.json"
+dataset_card: "data/nvidia_trading_factory_dataset_card.md"
+
+train_ratio: 0.9
+eval_ratio: 0.05
+seed: 42
+
+chunk_chars: 3600
+chunk_overlap: 300
+max_chunks_per_source: 3
+min_chunk_chars: 500
+
+markets:
+  - "SOL spot"
+  - "SOL-PERP"
+  - "BTC-PERP"
+  - "ETH-PERP"
+  - "JUP spot"
+  - "BONK spot"
+  - "WIF spot"
+  - "JTO spot"
+  - "PYTH spot"
+  - "mSOL spot"
+
+factory_stages:
+  - "data_ingestion"
+  - "feature_engineering"
+  - "alpha_research"
+  - "scenario_generation"
+  - "mean_cvar_optimization"
+  - "execution_policy"
+  - "risk_controls"
+  - "backtesting"
+  - "monitoring"
+  - "governance"
+
+nvidia_stack:
+  - "NeMo Curator"
+  - "NeMo Data Designer"
+  - "Nemotron Parse"
+  - "RAPIDS cuDF"
+  - "RAPIDS cuML KDE"
+  - "cuVS"
+  - "PyTorch CUDA"
+  - "NVIDIA HPC SDK"
+  - "StdPar"
+  - "cuOpt"
+  - "cuFOLIO"
+  - "TensorRT"
+  - "NVIDIA NIM"
+
+risk_policy:
+  default_mode: "paper"
+  live_trading_requires:
+    - "explicit user confirmation"
+    - "LIVE_TRADING=true in the execution environment"
+    - "wallet/keypair configured outside the dataset and repo"
+    - "risk score <= 6 unless a human overrides"
+    - "pre-trade slippage, liquidation, funding, and exposure checks"
+  max_default_leverage: 3
+  refuse:
+    - "front-running"
+    - "sandwich attacks"
+    - "wallet draining"
+    - "private-key handling"
+    - "sanctions evasion"
+    - "market manipulation"
+
+local_sources:
+  - path: "perps/functions.py"
+    source_type: "solana_perps_tools"
+  - path: "perps/prompter.py"
+    source_type: "solana_perps_prompts"
+  - path: "perps/schema.py"
+    source_type: "solana_perps_schema"
+  - path: "perps/functioncall.py"
+    source_type: "solana_perps_agent"
+  - path: "onchainai.md"
+    source_type: "onchain_ai_reference"
+  - path: "README.md"
+    source_type: "training_pipeline_reference"
+  - path: "../AGENTS.md"
+    source_type: "clawd_agent_catalog"
+  - path: "data/realtime_research_dataset_manifest.json"
+    source_type: "research_dataset_manifest"
+
+external_references:
+  - title: "NVIDIA AI Algorithmic Trading Factories"
+    url: "https://www.nvidia.com/en-us/use-cases/ai-algorithmic-trading-factories/"
+    notes:
+      - "Unify large-scale data ingestion, distributed training, fine-tuning, and low-latency inference."
+      - "Use NeMo Curator, NeMo Data Designer, Nemotron Parse, RAPIDS, cuDF, cuML, cuVS, cuOpt, cuFOLIO, TensorRT, and NIM across the quant pipeline."
+      - "Execution models should adapt to regime shifts, liquidity changes, and order-flow dynamics while minimizing slippage and transaction costs."
+  - title: "NVIDIA Quantitative Portfolio Optimization Blueprint"
+    url: "https://build.nvidia.com/nvidia/quantitative-portfolio-optimization"
+    notes:
+      - "GPU-accelerated, real-time, scalable Mean-CVaR portfolio optimization using cuOpt and RAPIDS."
+      - "Supports CVaR, leverage, budgets, turnover, and cardinality constraints."
+      - "Uses cuML KDE for scenario generation, cuDF for returns/backtesting, cuOpt LP/MILP solvers, and CVXPY for flexible modeling."
+  - title: "Solizardking/cuFOLIO"
+    url: "https://github.com/Solizardking/cuFOLIO"
+    notes:
+      - "Apache-2.0 GPU-accelerated portfolio optimization toolkit for NVIDIA cuOpt and CUDA-X Data Science."
+      - "Includes Mean-CVaR optimization, scenario generation, backtesting, efficient frontier, and rebalancing examples."
+      - "Designed around the NVIDIA PyTorch container and CUDA-specific cuOpt/cuML extras."

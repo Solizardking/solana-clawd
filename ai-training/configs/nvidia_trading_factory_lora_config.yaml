@@ -1,0 +1,84 @@
+# LoRA SFT config for the Solana Clawd NVIDIA Trading Factory dataset.
+#
+# Build the dataset first:
+#   python3 scripts/build_nvidia_trading_factory_dataset.py
+#   python3 scripts/prepare_dataset.py \
+#     --input data/nvidia_trading_factory_sft.jsonl \
+#     --output data/nvidia_trading_factory_processed \
+#     --train-ratio 0.9 --eval-ratio 0.05 --seed 42
+#
+# Local dry run:
+#   python3 scripts/train_lora.py --config configs/nvidia_trading_factory_lora_config.yaml --dry-run
+#
+# Launch a separate HF job later, after the current Core AI job is done:
+#   ./scripts/launch_trading_factory_hf_job.sh a100-large 4h
+
+base_model: "NousResearch/Hermes-3-Llama-3.1-8B"
+model_revision: "main"
+torch_dtype: "bfloat16"
+device_map: "auto"
+
+dataset_repo: "solanaclawd/solana-clawd-nvidia-trading-factory-instruct"
+dataset_revision: "main"
+dataset_path: "data/nvidia_trading_factory_processed"
+max_seq_length: 4096
+train_split: "train"
+eval_split: "eval"
+
+output_dir: "outputs/solana-nvidia-trading-factory-8b-lora"
+push_to_hub: false
+hub_model_id: "solanaclawd/solana-nvidia-trading-factory-8b-lora"
+hub_private: false
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+training:
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  per_device_eval_batch_size: 1
+  num_train_epochs: 3
+  max_steps: -1
+  learning_rate: 1.5e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.05
+  weight_decay: 0.0
+  optim: "adamw_torch"
+  bf16: true
+  fp16: false
+  tf32: true
+  gradient_checkpointing: true
+  logging_steps: 5
+  save_steps: 100
+  save_total_limit: 2
+  eval_steps: 100
+  eval_strategy: "steps"
+  report_to:
+    - "none"
+  seed: 42
+  dataloader_num_workers: 2
+  remove_unused_columns: false
+
+quantization:
+  enabled: true
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: true
+
+sft:
+  packing: false
+  assistant_only_loss: true
+  chat_template_kwargs: {}

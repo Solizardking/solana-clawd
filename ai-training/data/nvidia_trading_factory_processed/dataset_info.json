@@ -1,0 +1,14 @@
+{
+  "num_examples": 57,
+  "splits": {
+    "train": 51,
+    "eval": 2,
+    "test": 4
+  },
+  "schema": {
+    "messages": "list[{role: str, content: str}]"
+  },
+  "source_files": [
+    "data/nvidia_trading_factory_sft.jsonl"
+  ]
+}
