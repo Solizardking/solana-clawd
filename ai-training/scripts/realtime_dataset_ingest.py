@@ -1589,11 +1589,14 @@ Rows also include non-training metadata columns: `source`, `source_type`,
 
 ## Google Document Processing
 
-The ingestion script supports Google-backed PDF extraction:
+The ingestion script supports NVIDIA and Google-backed PDF extraction:
 
-- `pdf_extractor: auto` tries Document AI when OAuth/ADC credentials are present,
-  then Gemini when `GEMINI_API_KEY` or `GOOGLE_API_KEY` is present, then local
-  `pypdf`.
+- `pdf_extractor: auto` tries NVIDIA `nv-ingest` when `NVIDIA_API_KEY` is present,
+  then Document AI when OAuth/ADC credentials are present, then Gemini when
+  `GEMINI_API_KEY` or `GOOGLE_API_KEY` is present, then local `pypdf`.
+- NVIDIA pipeline: `nv-ingest` with `extract_text=True`, `extract_tables=True`,
+  `extract_charts=True`, table output `{settings.get("nvidia_table_output_format", "")}`,
+  and extract method `{settings.get("nvidia_extract_method", "")}`.
 - Document AI endpoint: `{settings.get("documentai_endpoint", "")}`
 - Document AI field mask: `{settings.get("documentai_field_mask", "")}`
 - Document AI billing labels: {labels_text}
@@ -1602,10 +1605,11 @@ The ingestion script supports Google-backed PDF extraction:
 
 Document AI's `ProcessDocument` endpoint normally requires Google Cloud OAuth
 or Application Default Credentials. API keys are used by the Gemini extractor.
-Do not publish Google OAuth client-secret files, ADC JSON, access tokens,
-authorization headers, or API keys in dataset files, manifests, cards, commits,
-or Hub uploads. If Document AI returns `BILLING_DISABLED`, enable billing on
-the processor project or switch to a processor in a billing-enabled project.
+Do not publish NVIDIA API keys, Google OAuth client-secret files, ADC JSON,
+access tokens, authorization headers, or API keys in dataset files, manifests,
+cards, commits, or Hub uploads. If Document AI returns `BILLING_DISABLED`,
+enable billing on the processor project or switch to a processor in a
+billing-enabled project.
 
 ## Reproduce
 
