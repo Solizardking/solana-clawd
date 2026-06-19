@@ -458,7 +458,7 @@ Current Core AI recovery run:
 - Hardware: `a100-large`
 - Dataset: `solanaclawd/solana-clawd-core-ai-instruct`
 - Output: `solanaclawd/solana-clawd-core-ai-1.5b-lora`
-- Latest checked progress: loaded the Hub dataset, tokenized all `31,655` train rows, entered training, and reached at least step `60/3957`.
+- Latest checked progress: loaded the Hub dataset, tokenized all `31,655` train rows, entered training, and reached at least step `221/3957` with mean token accuracy around `0.79`.
 
 #### Training run history
 
