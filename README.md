@@ -608,21 +608,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`8f1ccc0`](../../commit/8f1ccc0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 🥈 | [`4057794`](../../commit/4057794) | feat: add --core-ai flag to installer | solizardking | Jun 19 |
-| 🥉 | [`30416f3`](../../commit/30416f3) | sdfdfsdsfdf | solizardking | Jun 19 |
-| 4️⃣ | [`079c96c`](../../commit/079c96c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 5️⃣ | [`c4b1d77`](../../commit/c4b1d77) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
-| 6️⃣ | [`0a922be`](../../commit/0a922be) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 7️⃣ | [`70002b2`](../../commit/70002b2) | dsfdfsdfadfs | solizardking | Jun 19 |
-| 8️⃣ | [`23b8d20`](../../commit/23b8d20) | chore: update core-ai submodule — clawd-code sync + docs | solizardking | Jun 19 |
-| 9️⃣ | [`7e4ece8`](../../commit/7e4ece8) | sfddsffdadsffds | solizardking | Jun 19 |
-| 🔟 | [`6886f7d`](../../commit/6886f7d) | fssgfsfg | solizardking | Jun 18 |
+| 🥇 | [`0d2b467`](../../commit/0d2b467) | l | solizardking | Jun 19 |
+| 🥈 | [`b4cfde1`](../../commit/b4cfde1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 🥉 | [`8f1ccc0`](../../commit/8f1ccc0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 4️⃣ | [`4057794`](../../commit/4057794) | feat: add --core-ai flag to installer | solizardking | Jun 19 |
+| 5️⃣ | [`30416f3`](../../commit/30416f3) | sdfdfsdsfdf | solizardking | Jun 19 |
+| 6️⃣ | [`079c96c`](../../commit/079c96c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 7️⃣ | [`c4b1d77`](../../commit/c4b1d77) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
+| 8️⃣ | [`0a922be`](../../commit/0a922be) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 9️⃣ | [`70002b2`](../../commit/70002b2) | dsfdfsdfadfs | solizardking | Jun 19 |
+| 🔟 | [`23b8d20`](../../commit/23b8d20) | chore: update core-ai submodule — clawd-code sync + docs | solizardking | Jun 19 |
+| · | [`7e4ece8`](../../commit/7e4ece8) | sfddsffdadsffds | solizardking | Jun 19 |
+| · | [`6886f7d`](../../commit/6886f7d) | fssgfsfg | solizardking | Jun 18 |
 | · | [`4c27aa0`](../../commit/4c27aa0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
 | · | [`6ed2109`](../../commit/6ed2109) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
 | · | [`9de53ef`](../../commit/9de53ef) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| · | [`78711e9`](../../commit/78711e9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 18 |
-| · | [`e6d2ce7`](../../commit/e6d2ce7) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 18 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
