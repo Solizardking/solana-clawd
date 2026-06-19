@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Launch Core AI LoRA training on Hugging Face Jobs with W&B tracking.
+# Launch Core AI LoRA training on Hugging Face Jobs.
 #
 # Required:
 #   HF_TOKEN        Hugging Face token with dataset/model/job access, or
 #                   an existing `hf auth login` session
-#   WANDB_API_KEY  Weights & Biases API key
+# Optional:
+#   WANDB_API_KEY  Weights & Biases API key. If absent, launch without W&B.
 #
 # Usage:
 #   ./scripts/launch_core_ai_hf_job.sh
@@ -27,32 +28,39 @@ if [[ -z "${HF_TOKEN:-}" ]]; then
   fi
 fi
 
-if [[ -z "${WANDB_API_KEY:-}" ]]; then
-  echo "WANDB_API_KEY is required" >&2
-  exit 1
+JOB_SECRET_ARGS=(--secrets HF_TOKEN)
+JOB_ENV_ARGS=(
+  --env HF_HOME=/data/hf_cache
+  --env HF_DATASETS_CACHE=/data/hf_cache/datasets
+  --env TRANSFORMERS_CACHE=/data/hf_cache
+)
+TRAIN_ARGS=(
+  --config none
+  --dataset-repo solanaclawd/solana-clawd-core-ai-instruct
+  --base-model Qwen/Qwen2.5-1.5B-Instruct
+  --output-dir /data/outputs/core-ai-clawd-1.5b-lora
+  --hub-model-id solanaclawd/solana-clawd-core-ai-1.5b-lora
+  --num-epochs 1
+  --push
+  --no-eval
+  --no-checkpoints
+  --no-quant
+)
+
+if [[ -n "${WANDB_API_KEY:-}" ]]; then
+  JOB_SECRET_ARGS+=(--secrets WANDB_API_KEY)
+  JOB_ENV_ARGS+=(--env WANDB_PROJECT=solana-clawd-core-ai --env "WANDB_RUN_NAME=$RUN_NAME")
+  TRAIN_ARGS+=(--wandb)
+else
+  echo "WANDB_API_KEY is not set; launching without W&B tracking." >&2
 fi
 
 hf jobs uv run scripts/train_lora.py \
   --flavor "$FLAVOR" \
   --timeout "$TIMEOUT" \
-  --secrets HF_TOKEN \
-  --secrets WANDB_API_KEY \
-  --env HF_HOME=/data/hf_cache \
-  --env HF_DATASETS_CACHE=/data/hf_cache/datasets \
-  --env TRANSFORMERS_CACHE=/data/hf_cache \
-  --env WANDB_PROJECT=solana-clawd-core-ai \
-  --env "WANDB_RUN_NAME=$RUN_NAME" \
+  "${JOB_SECRET_ARGS[@]}" \
+  "${JOB_ENV_ARGS[@]}" \
   --label solana-clawd-core-ai \
   --detach \
   -- \
-  --config none \
-  --dataset-repo solanaclawd/solana-clawd-core-ai-instruct \
-  --base-model Qwen/Qwen2.5-1.5B-Instruct \
-  --output-dir /data/outputs/core-ai-clawd-1.5b-lora \
-  --hub-model-id solanaclawd/solana-clawd-core-ai-1.5b-lora \
-  --num-epochs 1 \
-  --push \
-  --no-eval \
-  --no-checkpoints \
-  --no-quant \
-  --wandb
+  "${TRAIN_ARGS[@]}"

@@ -25,10 +25,5 @@ if [[ -z "${HF_TOKEN:-}" ]]; then
   fi
 fi
 
-if [[ -z "${WANDB_API_KEY:-}" ]]; then
-  echo "WANDB_API_KEY is required for W&B-tracked recovery training." >&2
-  exit 1
-fi
-
 echo "Core AI adapter is missing on the Hub; launching recovery job on ${FLAVOR} for ${TIMEOUT}."
 exec ./scripts/launch_core_ai_hf_job.sh "$FLAVOR" "$TIMEOUT"

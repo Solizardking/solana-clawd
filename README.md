@@ -250,7 +250,7 @@ bash ai-training/scripts/solana_ai_model_kit.sh \
 | Core AI SFT | [`solanaclawd/solana-clawd-core-ai-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct) | 35,173 examples from `core-ai` + `ai-training`; 2,957 `core-ai` files used |
 | Realtime research | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | 29,058 examples from PDFs, notebooks, parquet data, and ZK skill context |
 | NVIDIA trading factory | [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | 142 examples, 127/7/8 splits, published to Hub |
-| Core 1.5B LoRA | [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | Adapter upload pending recovery/retrain after the first HF job completed training but failed during Hub push |
+| Core 1.5B LoRA | [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | Recovery job `ordlibrary/6a35a6833093dba73ce2a86b` is running on `a100-large`; first job completed training but failed during Hub push |
 | Trading factory 8B LoRA | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | Completed HF job `ordlibrary/6a35a2ce953ed90bfb945009`; train loss 1.1692, eval loss 0.8064, eval token accuracy 0.8547 |
 
 OnChain-AI sidecar:

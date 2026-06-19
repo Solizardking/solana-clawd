@@ -110,7 +110,7 @@ pull the latest model + dataset in two lines.
 | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
 | [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | dataset | **142 examples published** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, Vulcan/Phoenix paper strategy specs, Rise read plans, autoresearch perps references, perps tool-use, and risk refusals; 127/7/8 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
-| [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | target model | Qwen2.5-1.5B LoRA adapter target; first HF job completed training but failed during Hub push, local trainer now uploads adapter folders directly |
+| [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | model | Qwen2.5-1.5B LoRA adapter; recovery job `ordlibrary/6a35a6833093dba73ce2a86b` is running on `a100-large` after the first HF job completed training but failed during Hub push |
 | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | model | Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset; completed HF job `ordlibrary/6a35a2ce953ed90bfb945009` |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
@@ -441,8 +441,8 @@ hf jobs inspect <JOB_ID>
 # Verifies both datasets and the Core AI LoRA adapter files on Hugging Face.
 python3 scripts/verify_core_ai_release.py --strict
 
-# If the adapter is still missing, relaunches the W&B-tracked Core AI job.
-# Requires HF_TOKEN and WANDB_API_KEY in the environment.
+# If the adapter is still missing, relaunches the Core AI job.
+# Requires HF auth; W&B is attached only when WANDB_API_KEY exists in the environment.
 ./scripts/recover_core_ai_release.sh a100-large 4h
 ```
 
@@ -450,6 +450,15 @@ python3 scripts/verify_core_ai_release.py --strict
 checks that `adapter_config.json` and `adapter_model.safetensors` exist locally,
 pushes the adapter folder to the Hub, and verifies those files are present on the
 remote model repo before the job can report success.
+
+Current Core AI recovery run:
+
+- Active retry: `ordlibrary/6a35a6833093dba73ce2a86b`
+- URL: <https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b>
+- Hardware: `a100-large`
+- Dataset: `solanaclawd/solana-clawd-core-ai-instruct`
+- Output: `solanaclawd/solana-clawd-core-ai-1.5b-lora`
+- Latest checked progress: loaded the Hub dataset, tokenized all `31,655` train rows, entered training, and reached at least step `60/3957`.
 
 #### Training run history
 
