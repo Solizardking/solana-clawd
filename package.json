@@ -304,7 +304,10 @@
     "examples:run": "echo 'Usage: npm run demo:<name>  e.g. npm run demo:ooda'",
     "audit:repo": "node scripts/audit-repo.mjs",
     "readme": "node scripts/update-readme.mjs",
-    "readme:x402": "node scripts/update-readme.mjs x402"
+    "readme:x402": "node scripts/update-readme.mjs x402",
+    "model-kit": "bash ai-training/scripts/solana_ai_model_kit.sh --local",
+    "model-kit:register": "bash ai-training/scripts/solana_ai_model_kit.sh --local --register",
+    "model-kit:train": "bash ai-training/scripts/solana_ai_model_kit.sh --local --train --trading-factory"
   },
   "dependencies": {
     "@clawd/solana-ai-inference-client": "workspace:*",

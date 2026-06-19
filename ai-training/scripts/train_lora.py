@@ -81,6 +81,45 @@ def _resolve_report_to(report_to: list[str] | str) -> list[str]:
     return report_to
 
 
+def _select_chat_template(chat_template: Any) -> str | None:
+    if isinstance(chat_template, str):
+        return chat_template
+    if isinstance(chat_template, dict):
+        for key in ("default", "chat", "tool_use"):
+            value = chat_template.get(key)
+            if isinstance(value, str):
+                return value
+        for value in chat_template.values():
+            if isinstance(value, str):
+                return value
+    return None
+
+
+def _fallback_chat_template() -> str:
+    return (
+        "{% for message in messages %}"
+        "{% if message['role'] == 'assistant' %}"
+        "{% generation %}<|im_start|>assistant\n"
+        "{{ message['content'] }}<|im_end|>\n{% endgeneration %}"
+        "{% else %}"
+        "<|im_start|>{{ message['role'] }}\n"
+        "{{ message['content'] }}<|im_end|>\n"
+        "{% endif %}"
+        "{% endfor %}"
+        "{% if add_generation_prompt %}<|im_start|>assistant\n{% endif %}"
+    )
+
+
+def normalize_tokenizer_chat_template(tokenizer: Any) -> None:
+    template = _select_chat_template(getattr(tokenizer, "chat_template", None))
+    tokenizer.chat_template = template or _fallback_chat_template()
+
+
+def supports_assistant_only_loss(chat_template: Any) -> bool:
+    template = _select_chat_template(chat_template)
+    return bool(template and "{% generation" in template)
+
+
 def _wandb_run_url() -> str | None:
     if not _WANDB_AVAILABLE:
         return None
@@ -431,15 +470,11 @@ def main() -> None:
     tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    # Set chat template if missing — Qwen-Instruct already has one
-    if not tokenizer.chat_template:
-        tokenizer.chat_template = (
-            "{% for message in messages %}"
-            "<|im_start|>{{ message['role'] }}\n"
-            "{{ message['content'] }}<|im_end|>\n"
-            "{% endfor %}"
-            "{% if add_generation_prompt %}<|im_start|>assistant\n{% endif %}"
-        )
+    normalize_tokenizer_chat_template(tokenizer)
+    sft_cfg = cfg.setdefault("sft", {})
+    if sft_cfg.get("assistant_only_loss", True) and not supports_assistant_only_loss(tokenizer.chat_template):
+        print("WARNING: tokenizer chat template has no generation markers; disabling assistant_only_loss")
+        sft_cfg["assistant_only_loss"] = False
 
     # ---- Model ----
     print("[2/6] Loading base model")

@@ -208,45 +208,77 @@ bash -n install.sh && bash install.sh --help
 
 ---
 
-## 🧠 Onchain Model Kit
+## 🧠 Solana AI Model Kit
 
-Train, register, and serve your own Solana-native Clawd in one sitting. Everything lives in [`ai-training/`](./ai-training/) and is designed to be forked.
+Train, register, and serve your own Solana-native model in one sitting. The kit lives in [`ai-training/`](./ai-training/) and ships with a curlable bootstrap, Hugging Face release pipeline, CAAP/1.0 registry payloads, and OnChain-AI sidecar commands.
 
-[![Dataset](https://img.shields.io/badge/🤗%20Dataset-solanaclawd%2Fsolana--clawd--instruct-blue)](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct)
-[![Model](https://img.shields.io/badge/🤗%20Model-solanaclawd%2Fsolana--clawd--1.5b--lora-green)](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora)
-[![Dataset Viewer](https://img.shields.io/badge/📊%20Browse%20Dataset-HF%20Viewer-orange)](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct/viewer/default/train)
+![Solana AI Model Kit](./assets/solana-ai-model-kit.svg)
 
-**36,109 SFT examples** · Qwen2.5-1.5B-Instruct base · LoRA r=16 · ~$3–6 per A100 training run · onchain CAAP/1.0 registry
+[![Core Dataset](https://img.shields.io/badge/🤗%20Core%20Dataset-35%2C173-blue)](https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct)
+[![Realtime Dataset](https://img.shields.io/badge/🤗%20Realtime%20Dataset-29%2C058-teal)](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct)
+[![Trading Factory](https://img.shields.io/badge/🤗%20Trading%20Factory-142-purple)](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct)
+[![Registry](https://img.shields.io/badge/CAAP%2F1.0-onchain.x402.wtf-green)](https://onchain.x402.wtf/.well-known/clawd-registry.json)
 
 ```bash
-git clone https://github.com/Solizardking/solana-clawd && cd solana-clawd/ai-training
-pip install -r requirements.txt && export HF_TOKEN=hf_...
+# Safe default: clone/update, audit datasets, print next commands.
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/ai-training/scripts/solana_ai_model_kit.sh | bash
 
-# 1. Train on A100 (~1–2 hrs, ~$3–6)
-./scripts/launch_hf_jobs.sh a100-large
+# From this checkout:
+npm run model-kit
 
-# 2. Register to the onchain registry (no wallet needed)
-./dao/register_model.sh \
-  --hf-model "YOUR_ORG/your-model" \
-  --eval-accuracy 0.60 \
-  --dataset-size 36109
+# Dry-run a CAAP registry payload:
+npm run model-kit:register
 
-# 3. Serve locally
-ollama create my-clawd -f ollama/Modelfile.finetuned
-ollama run my-clawd "How do I detect a rug pull on a fresh Solana token?"
+# Launch the trading-factory LoRA job after `hf auth login`:
+npm run model-kit:train
 ```
 
-| What | Where | Details |
-| --- | --- | --- |
-| 36K training dataset | `data/solana_clawd_merged.jsonl` | 3 sources merged: 47 seed + 8,970 Alpaca QA + 27,092 RPC docs |
-| LoRA SFT configs | `configs/` | Qwen2.5-1.5B · Hermes-3-8B · DeepSolana CPT |
-| Perps tool template | `perps/` | 13 Phoenix/Jupiter tools (no API key) — drop into any Hermes-3 agent |
-| Onchain registry | `dao/register_model.sh` | Off-chain curl OR full `initialize_model` Anchor PDA on devnet |
-| ZK attestations | `dao/attestation/` | SAS + Light Protocol compressed (~0.00003 SOL per credential) |
-| Ollama serving | `ollama/` | Modelfile templates for post-merge local inference |
-| AutoResearch loop | `scripts/auto_research.py` | Recursive Solana doc fetcher → QA pairs → Hub push → onchain attribution |
+Live register a model with the OnChain-AI registry:
 
-See [`ai-training/model_card.md`](./ai-training/model_card.md) for the full fork guide and [`ai-training/onchainai.md`](./ai-training/onchainai.md) for the registry skill reference.
+```bash
+bash ai-training/scripts/solana_ai_model_kit.sh \
+  --local \
+  --live-register \
+  --hf-model YOUR_ORG/your-model \
+  --endpoint https://your-router.example/v1 \
+  --eval-accuracy 0.60 \
+  --dataset-size 35173
+```
+
+| Lane | Hub artifact | Current state |
+| --- | --- | --- |
+| Core AI SFT | [`solanaclawd/solana-clawd-core-ai-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct) | 35,173 examples from `core-ai` + `ai-training`; 2,957 `core-ai` files used |
+| Realtime research | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | 29,058 examples from PDFs, notebooks, parquet data, and ZK skill context |
+| NVIDIA trading factory | [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | 142 examples, 127/7/8 splits, published to Hub |
+| Core 1.5B LoRA | [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | Adapter upload pending recovery/retrain after the first HF job completed training but failed during Hub push |
+| Trading factory 8B LoRA | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | Two HF job failures diagnosed and patched locally; next relaunch is pending HF Jobs credits |
+
+OnChain-AI sidecar:
+
+```bash
+export ONCHAIN_AI_ROOT=/Users/8bit/Downloads/OnChain-Ai-main
+
+cd "$ONCHAIN_AI_ROOT/backend"
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
+PORT=5001 python3 main.py
+
+cd "$ONCHAIN_AI_ROOT/frontend"
+npm install
+VITE_API_BASE_URL=http://localhost:5001 npm run dev
+```
+
+Registry checks:
+
+```bash
+curl -sS https://onchain.x402.wtf/.well-known/clawd-registry.json | python3 -m json.tool
+curl -sS "https://onchain.x402.wtf/api/models?hf_id=solanaclawd/solana-clawd-core-ai-1.5b-lora" | python3 -m json.tool
+```
+
+Keep `HF_TOKEN`, `WANDB_API_KEY`, `NVIDIA_API_KEY`, Google credentials, and wallet files in your shell or secret manager. Do not add them to YAML, markdown, manifests, commits, or Hub uploads.
+
+See [`ai-training/model-kit/README.md`](./ai-training/model-kit/README.md), [`ai-training/model_card.md`](./ai-training/model_card.md), and [`ai-training/onchainai.md`](./ai-training/onchainai.md) for the full fork guide and registry reference.
 
 ---
 

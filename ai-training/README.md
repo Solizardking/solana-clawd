@@ -49,6 +49,7 @@ ai-training/
 │   ├── prepare_dataset.py          ← JSONL → HF Datasets (parquet), multi-file --input support
 │   ├── realtime_dataset_ingest.py  ← PDF/JSON/notebook/parquet/text → realtime HF dataset
 │   ├── build_nvidia_trading_factory_dataset.py ← Solana spot/perps NVIDIA trading factory SFT builder
+│   ├── solana_ai_model_kit.sh      ← curlable one-shot audit/train/register bootstrap
 │   ├── submit_dataset_file.sh      ← drop-in file submit wrapper for realtime_dataset_ingest.py
 │   ├── train_lora.py               ← LoRA SFT via TRL + PEFT
 │   ├── evaluate.py                 ← held-out inference eval
@@ -77,6 +78,8 @@ ai-training/
 │       └── attestations.jsonl      ← Local index of created attestations
 ├── dataset_card.md                 ← dataset README (upload to Hub)
 ├── model_card.md                   ← model README (upload to Hub)
+├── model-kit/
+│   └── README.md                   ← public one-shot Solana AI Model Kit guide
 ├── outputs/                        ← Community article, model cards (gitignored checkpoints)
 │   ├── community-article.md        ← First public announcement (HF blog)
 │   └── Clawd-GLM-5.2-README.md    ← GLM-5.2 model card
@@ -103,11 +106,12 @@ pull the latest model + dataset in two lines.
 | Repo | Type | Purpose |
 | --- | --- | --- |
 | [`solanaclawd/solana-clawd-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) | dataset | **36,109 examples** — SFT instruction pairs (system/user/assistant), 32,498/1,805/1,806 train/eval/test |
+| [`solanaclawd/solana-clawd-core-ai-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct) | dataset | **35,173 examples** — public-safe blend of `core-ai` source chunks, `core-ai` knowledge JSONL, and the cleaned `ai-training` SFT corpus |
 | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
-| [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | target dataset | **142 examples staged locally; Hub publish pending auth** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, Vulcan/Phoenix paper strategy specs, Rise read plans, autoresearch perps references, perps tool-use, and risk refusals; 127/7/8 train/eval/test |
+| [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | dataset | **142 examples published** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, Vulcan/Phoenix paper strategy specs, Rise read plans, autoresearch perps references, perps tool-use, and risk refusals; 127/7/8 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
-| [`solanaclawd/solana-clawd-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-1.5b-lora) | model | LoRA adapter on Qwen2.5-1.5B-Instruct (training in progress — see current run below) |
-| [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | target model | Planned Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset |
+| [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | target model | Qwen2.5-1.5B LoRA adapter target; first HF job completed training but failed during Hub push, local trainer now uploads adapter folders directly |
+| [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | target model | Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset; two HF job failures diagnosed and patched locally, next relaunch pending HF Jobs credits |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
 
@@ -320,7 +324,7 @@ python3 scripts/train_lora.py \
 python3 scripts/verify_trading_factory_release.py --local-only --strict
 ```
 
-Current local artifacts, verified with `scripts/verify_trading_factory_release.py --local-only --strict`:
+Current artifacts, verified with `scripts/verify_trading_factory_release.py --strict`:
 
 - `data/nvidia_trading_factory_sft.jsonl` — 142 examples
 - `data/nvidia_trading_factory_processed/{train,eval,test}.parquet` — 127/7/8
@@ -330,9 +334,10 @@ Current local artifacts, verified with `scripts/verify_trading_factory_release.p
 - `trading_factory/cufolio/` — local cuFOLIO snapshot for CVaR/scenario/rebalance references
 - `trading_factory/clawd-autoresearch-wiki/perps/` — local perps research references
 - `data/strategies/` — generated Vulcan paper TA configs, Rise read plan, cuFOLIO Mean-CVaR handoff, and command manifest
+- Hub dataset — [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct)
 
-Publish the dataset only after `HF_TOKEN` is available in your shell or an
-existing `hf auth login` session is active:
+Publish or refresh the dataset after `HF_TOKEN` is available in your shell or
+an existing `hf auth login` session is active:
 
 ```bash
 ./scripts/publish_trading_factory_dataset.sh
@@ -354,7 +359,7 @@ python3 scripts/run_release_pipeline.py
 # After placing HF_TOKEN in your shell or a local env file:
 python3 scripts/run_release_pipeline.py --publish-trading-dataset
 
-# After the dataset is published and WANDB_API_KEY is also available:
+# Launch training. W&B is used only when WANDB_API_KEY exists in the process env.
 python3 scripts/run_release_pipeline.py --launch-trading-training
 ```
 
@@ -375,15 +380,29 @@ helper does not cancel or modify any currently running job:
 ./scripts/launch_trading_factory_hf_job.sh a100-large 4h
 ```
 
+Current trading-factory training job state:
+
+- Superseded failed job: `ordlibrary/6a359f0e953ed90bfb944faf`
+- Fixed failure: remote trainer attempted to load `/data/nvidia_trading_factory_processed`
+  from the mounted job bucket. `scripts/train_lora.py` now falls back to
+  `dataset_repo` when the configured local path is absent.
+- Superseded failed replacement: `ordlibrary/6a35a02d953ed90bfb944fe3`
+- Fixed failure: Hermes exposes `tokenizer.chat_template` as a dict and TRL
+  expects a string when assistant-only loss is enabled. `scripts/train_lora.py`
+  now normalizes dict templates and disables assistant-only loss when generation
+  markers are unavailable.
+- Next relaunch is pending Hugging Face Jobs credits. The latest launch attempt
+  returned `402 Payment Required`.
+
 Keep `HF_TOKEN`, `WANDB_API_KEY`, `NVIDIA_API_KEY`, wallet keys, ADC JSON, and
 client-secret files in your shell or secret manager only. Do not add them to
 YAML, markdown, manifests, commits, or Hub uploads.
 
-**Current canonical dataset stats** (pushed 2026-06-18, after clean_data.py):
+**Current dataset lanes**:
 
-- Total: **30,365** examples (cleaned from 36,109 — removed noise, capped repetitive providers)
-- Train: **27,328** · Eval: **1,518** · Test: **1,519**
-- Parquet size: ~36.5 MB (train), ~2.0 MB (eval/test)
+- Core AI: **35,173** examples in `solanaclawd/solana-clawd-core-ai-instruct`
+- Realtime research: **29,058** examples in `solanaclawd/solana-clawd-realtime-research-instruct`
+- Trading factory: **142** examples in `solanaclawd/solana-clawd-nvidia-trading-factory-instruct`
 
 ### 3. Train (local or remote)
 
@@ -1007,6 +1026,25 @@ Set `HONCHO_API_KEY` to enable cloud persistence; falls back to local in-memory 
 ## Onchain AI Registry
 
 Every Clawd model has a permanent onchain identity anchored via the [`solana_ai_inference`](https://github.com/Solizardking/OnChain-Ai) Anchor program (`3dLst2E3djtCSwG19mFS3REHxtZPngjyga7iYZLDL5xj`) and indexed at [onchain.x402.wtf](https://onchain.x402.wtf).
+
+### Solana AI Model Kit one-shot
+
+Safe audit-only bootstrap:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd/main/ai-training/scripts/solana_ai_model_kit.sh | bash
+```
+
+From a local checkout:
+
+```bash
+bash scripts/solana_ai_model_kit.sh --local
+bash scripts/solana_ai_model_kit.sh --local --register
+bash scripts/solana_ai_model_kit.sh --local --live-register --hf-model YOUR_ORG/your-model
+```
+
+See [`model-kit/README.md`](./model-kit/README.md) for the full fork, train,
+register, and OnChain-AI sidecar workflow.
 
 ### One-shot curl registration (off-chain index only)
 
