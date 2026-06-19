@@ -1,0 +1,63 @@
+{
+  "cadence": {
+    "grace_seconds": 5,
+    "kind": "candle_close",
+    "timeframe": "15m"
+  },
+  "margin_mode": "cross",
+  "max_concurrent_position_tokens": 2.0,
+  "max_firings": 24,
+  "rules": [
+    {
+      "cooldown": "until_condition_resets",
+      "do": {
+        "kind": "open",
+        "side": "buy",
+        "size": {
+          "notional": 150.0
+        }
+      },
+      "name": "entry-long-rsi-oversold",
+      "only_if_position": "flat",
+      "when": {
+        "compare": {
+          "left": {
+            "indicator": {
+              "kind": "rsi",
+              "period": 14,
+              "timeframe": "15m"
+            }
+          },
+          "op": "lt",
+          "right": {
+            "constant": 30.0
+          }
+        }
+      }
+    },
+    {
+      "cooldown": "until_condition_resets",
+      "do": {
+        "kind": "close"
+      },
+      "name": "exit-long-rsi-neutral",
+      "only_if_position": "long",
+      "when": {
+        "compare": {
+          "left": {
+            "indicator": {
+              "kind": "rsi",
+              "period": 14,
+              "timeframe": "15m"
+            }
+          },
+          "op": "gt",
+          "right": {
+            "constant": 55.0
+          }
+        }
+      }
+    }
+  ],
+  "symbol": "SOL"
+}

@@ -1,0 +1,74 @@
+{
+  "api_settings": {
+    "fallback": "cvxpy",
+    "preferred": "cuopt_python",
+    "time_limit_seconds": 60
+  },
+  "assets": [
+    "SOL",
+    "BTC",
+    "ETH",
+    "JUP",
+    "PYTH",
+    "JTO",
+    "SOL_PERP_HEDGE"
+  ],
+  "budget_usdc": 100000.0,
+  "cufolio_parameters": {
+    "L_tar": 3.0,
+    "T_tar": 0.15,
+    "c_max": 1.0,
+    "c_min": 0.1,
+    "cardinality": 6,
+    "class": "cufolio.cvar_parameters.CvarParameters",
+    "confidence": 0.95,
+    "risk_aversion": 2.0,
+    "w_max": {
+      "BTC": 0.25,
+      "ETH": 0.25,
+      "JTO": 0.25,
+      "JUP": 0.25,
+      "PYTH": 0.25,
+      "SOL": 0.25,
+      "SOL_PERP_HEDGE": 0.2
+    },
+    "w_min": 0.0
+  },
+  "execution": {
+    "default_mode": "paper",
+    "live_requires": [
+      "explicit user approval",
+      "vulcan strategy preflight reports READY",
+      "fresh Phoenix ticker/orderbook/funding",
+      "margin status and position list reviewed"
+    ]
+  },
+  "handoff": "cufolio_mean_cvar",
+  "inputs": {
+    "current_positions": "data/features/current_positions.parquet",
+    "funding_costs": "data/features/phoenix_funding.parquet",
+    "returns_matrix": "data/features/solana_returns.parquet",
+    "scenario_returns": "data/features/solana_scenarios.parquet",
+    "slippage_model": "data/features/slippage_model.parquet"
+  },
+  "post_optimization_checks": [
+    "timestamps_fresh",
+    "cash_buffer_met",
+    "turnover_within_cap",
+    "perp_net_exposure_within_limit",
+    "funding_cost_penalty_applied",
+    "paper_execution_plan_generated"
+  ],
+  "scenario_generation": {
+    "lookback": "90d hourly returns",
+    "samples": 10000,
+    "source": "cuFOLIO ForwardPathSimulator or RAPIDS/cuML KDE job",
+    "stress_regimes": [
+      "funding_spike",
+      "liquidity_gap",
+      "sol_beta_shock",
+      "correlation_break",
+      "oracle_staleness"
+    ]
+  }
+}

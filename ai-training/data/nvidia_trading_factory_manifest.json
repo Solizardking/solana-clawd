@@ -1,18 +1,34 @@
 {
-  "generated_at": "2026-06-19T19:27:07+00:00",
+  "generated_at": "2026-06-19T19:46:57+00:00",
   "dataset_name": "Solana Clawd NVIDIA Trading Factory Instruct",
   "repo_id": "solanaclawd/solana-clawd-nvidia-trading-factory-instruct",
   "builder": "scripts/build_nvidia_trading_factory_dataset.py",
   "counts": {
-    "examples": 98,
-    "sources": 8,
+    "examples": 142,
+    "sources": 29,
     "missing_inputs": 0,
     "duplicates_removed": 0,
     "by_source_type": {
+      "autoresearch_grid_reference": 2,
+      "autoresearch_paper_reference": 3,
+      "autoresearch_rise_reference": 1,
+      "autoresearch_ta_reference": 3,
+      "autoresearch_twap_reference": 1,
+      "autoresearch_vulcan_reference": 3,
       "clawd_agent_catalog": 3,
+      "cufolio_cvar_optimizer": 3,
+      "cufolio_cvar_parameters": 1,
+      "cufolio_optimization_handoff": 2,
+      "cufolio_rebalancing": 3,
+      "cufolio_reference": 3,
+      "cufolio_scenario_generation": 3,
       "eval_policy": 1,
-      "external_reference": 3,
+      "external_reference": 7,
       "factory_stage": 11,
+      "generated_cufolio_handoff": 1,
+      "generated_rise_data_plan": 1,
+      "generated_strategy_manifest": 2,
+      "generated_vulcan_command_plans": 1,
       "labeling_policy": 1,
       "market_scenario": 30,
       "onchain_ai_reference": 3,
@@ -21,18 +37,22 @@
       "portfolio_policy": 1,
       "regime_scenario": 8,
       "research_dataset_manifest": 3,
+      "rise_readonly_client": 1,
       "risk_scenario": 1,
       "safety_refusal": 4,
       "solana_perps_agent": 3,
       "solana_perps_prompts": 2,
       "solana_perps_schema": 1,
       "solana_perps_tools": 3,
+      "solana_trading_factory_adapter": 2,
       "structured_output": 3,
-      "training_pipeline_reference": 3
+      "trading_factory_workspace": 1,
+      "training_pipeline_reference": 3,
+      "vulcan_strategy_specs": 3
     },
     "by_factory_stage": {
       "alpha_research": 1,
-      "architecture": 22,
+      "architecture": 66,
       "backtesting": 11,
       "data_ingestion": 1,
       "execution_policy": 25,
@@ -45,9 +65,9 @@
     }
   },
   "splits": {
-    "train": 88,
-    "eval": 4,
-    "test": 6
+    "train": 127,
+    "eval": 7,
+    "test": 8
   },
   "settings": {
     "train_ratio": 0.9,
@@ -130,9 +150,192 @@
         "Includes Mean-CVaR optimization, scenario generation, backtesting, efficient frontier, and rebalancing examples.",
         "Designed around the NVIDIA PyTorch container and CUDA-specific cuOpt/cuML extras."
       ]
+    },
+    {
+      "title": "Phoenix Vulcan CLI Strategies",
+      "url": "https://docs.phoenix.trade/cli/strategies",
+      "notes": [
+        "Vulcan supports TWAP, grid, and TA-driven strategy runners over Phoenix perpetual futures.",
+        "Strategy execution modes include paper, dry-run, confirm-each, and auto-execute; paper is the default for generated Clawd specs.",
+        "TA configs are JSON rule sets and live modes require guardrails, preflight, and explicit approval."
+      ]
+    },
+    {
+      "title": "Phoenix Rise SDK",
+      "url": "https://docs.phoenix.trade/sdk/rise",
+      "notes": [
+        "Developer-facing TypeScript and Rust SDK for Phoenix perpetual futures.",
+        "Use HTTP clients for exchange, market, orderbook, trader state, candles, funding, and live market data.",
+        "Instruction construction and signing stay outside training data and require wallet-controlled execution gates."
+      ]
+    },
+    {
+      "title": "Phoenix Account Health and Leverage Tiers",
+      "url": "https://docs.phoenix.trade/phoenix/margin-and-risk/account-health",
+      "notes": [
+        "Phoenix account health is portfolio-aware and worsens with adverse price moves, funding paid, new size, risk-increasing orders, or collateral withdrawals.",
+        "Risk scores around 1000 indicate liquidation boundary pressure; generated strategies must surface these checks before live escalation.",
+        "Leverage tiers and margin review are required before live notional sizing."
+      ]
+    },
+    {
+      "title": "Solizardking/clawd-autoresearch-wiki perps",
+      "url": "https://github.com/Solizardking/clawd-autoresearch-wiki/tree/main/perps",
+      "notes": [
+        "Local perps research reference with paper, Rise, and Vulcan wrappers.",
+        "Used as internal reference material; current generated strategy specs are produced by the Clawd adapter against the latest Vulcan docs.",
+        "Live execution remains blocked until explicit operator approval and Vulcan preflight readiness."
+      ]
     }
   ],
   "sources": [
+    {
+      "path": "ai-training/trading_factory/README.md",
+      "source_type": "trading_factory_workspace",
+      "sha256": "8ab16e3f137d04b57ed7412838402b26e319fdf963da7c4e59d687db99e0f6c2",
+      "size_bytes": 2408,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/trading_factory/solana_factory/factory.py",
+      "source_type": "solana_trading_factory_adapter",
+      "sha256": "294fdad2f0700d68fb9370baacf88cb3517cdbfe1216217e7ea4256790022e46",
+      "size_bytes": 4828,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/trading_factory/solana_factory/vulcan_specs.py",
+      "source_type": "vulcan_strategy_specs",
+      "sha256": "39870fb9a71dac28bb5c23932f32c4e8be4dee04a3047f8f6f57bc2116da9f72",
+      "size_bytes": 8684,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/solana_factory/rise_client.py",
+      "source_type": "rise_readonly_client",
+      "sha256": "285db612d95d92481499a122fafa4d9f2c0dd44f2f405dc748c684abfa118d09",
+      "size_bytes": 3177,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/trading_factory/solana_factory/cufolio_adapter.py",
+      "source_type": "cufolio_optimization_handoff",
+      "sha256": "e450d4055a523b2063b4fbbecc5678e22938ab2d2c26d1115809982a1036c28a",
+      "size_bytes": 4122,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/data/strategies/strategy_manifest.json",
+      "source_type": "generated_strategy_manifest",
+      "sha256": "937bcd64f6b7815efd41a721d0c84a2df8718aaf24884c3d48ee002d7d4c4f2d",
+      "size_bytes": 5018,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/data/strategies/cufolio_mean_cvar_handoff.json",
+      "source_type": "generated_cufolio_handoff",
+      "sha256": "29cabfce2b8501b3cf612e4d21da6a44130ffc250730bff63bf2025667c1243d",
+      "size_bytes": 1827,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/data/strategies/rise_market_data_plan.json",
+      "source_type": "generated_rise_data_plan",
+      "sha256": "c2e4f7004f5632bcbb982258bc76dc5a0096c6d5a4366cbb4f6c66f6232ad4c8",
+      "size_bytes": 884,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/data/strategies/vulcan_command_plans.json",
+      "source_type": "generated_vulcan_command_plans",
+      "sha256": "fecdf629137ac451184b729442f4d676dbeae73fe347b0da78ca8673739f85d7",
+      "size_bytes": 850,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/trading_factory/cufolio/README.md",
+      "source_type": "cufolio_reference",
+      "sha256": "9500e139a13f5c96d8b2cee3217476afae7b7f3517a901376fb242e575339b96",
+      "size_bytes": 7929,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/cufolio/src/cvar_optimizer.py",
+      "source_type": "cufolio_cvar_optimizer",
+      "sha256": "cb9c45265b4ac556618f21a9b055679e32b72c1726bc0a5a42e1f0ac2522f747",
+      "size_bytes": 35030,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/cufolio/src/cvar_parameters.py",
+      "source_type": "cufolio_cvar_parameters",
+      "sha256": "b1868747b989baca9767710aaee519c20edee1d42bf38a7d85efedccc7de3e78",
+      "size_bytes": 2524,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/trading_factory/cufolio/src/scenario_generation.py",
+      "source_type": "cufolio_scenario_generation",
+      "sha256": "005b10b937179fe85d6df4af8839e83c664cc5da6d7ee9250711981ff95399de",
+      "size_bytes": 9684,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/cufolio/src/rebalance.py",
+      "source_type": "cufolio_rebalancing",
+      "sha256": "094d2a9d7d4412f701743362fda1093b8ca835aea6ab3fcf60ce4454c03edeb5",
+      "size_bytes": 36278,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/clawd-autoresearch-wiki/perps/vulcan.py",
+      "source_type": "autoresearch_vulcan_reference",
+      "sha256": "10edc489246b1219e2930727c880c5dab0f91e466ff36aabb8be885d9bd1f477",
+      "size_bytes": 17423,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/clawd-autoresearch-wiki/perps/rise.py",
+      "source_type": "autoresearch_rise_reference",
+      "sha256": "8f633835cc6f368c2a5e9df07abbfe9df0cf8ba175aa7b23db37ff51e30b3665",
+      "size_bytes": 3147,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/trading_factory/clawd-autoresearch-wiki/perps/paper.py",
+      "source_type": "autoresearch_paper_reference",
+      "sha256": "9a952a20b7ce1d7202b500f28c9f3648d37cbc97e9ddd17eb4981c2d10a12c56",
+      "size_bytes": 16887,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/clawd-autoresearch-wiki/strategy.md",
+      "source_type": "autoresearch_strategy_reference",
+      "sha256": "6a2b3b935fc8583249c86bb27a0c66c80d342ccdc49f32082e0fd33705226869",
+      "size_bytes": 458,
+      "chunks": 0
+    },
+    {
+      "path": "ai-training/trading_factory/clawd-autoresearch-wiki/strategy/ta.py",
+      "source_type": "autoresearch_ta_reference",
+      "sha256": "c698cd2a3b617e4ddd155fe807f565624c5a6e74c7c1027b19161bcb5fb4345a",
+      "size_bytes": 7855,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/trading_factory/clawd-autoresearch-wiki/strategy/grid.py",
+      "source_type": "autoresearch_grid_reference",
+      "sha256": "5f4d98a56dfae675f3c095c3cca7263dc32bc1fad7cf672f1a6e0f37f31f97f3",
+      "size_bytes": 4834,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/trading_factory/clawd-autoresearch-wiki/strategy/twap.py",
+      "source_type": "autoresearch_twap_reference",
+      "sha256": "bca3e8d0b41543b4f805f11e04e200b09543125a84482ae5effbba8d1b62f629",
+      "size_bytes": 3668,
+      "chunks": 1
+    },
     {
       "path": "ai-training/perps/functions.py",
       "source_type": "solana_perps_tools",
@@ -171,8 +374,8 @@
     {
       "path": "ai-training/README.md",
       "source_type": "training_pipeline_reference",
-      "sha256": "819fcf367fa6fcf75ac2409f19b6a56a4a7a2161a63d594fc63b11be9f9c63c1",
-      "size_bytes": 44903,
+      "sha256": "8f0ed1f90b7597573d34bd25fa79642bcaef7e044cbcb1082cb6d0154b4f0d61",
+      "size_bytes": 48964,
       "chunks": 3
     },
     {

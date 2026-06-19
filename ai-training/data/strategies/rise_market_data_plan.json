@@ -1,0 +1,39 @@
+{
+  "blocked_in_this_client": [
+    "order placement",
+    "withdrawals",
+    "wallet signing",
+    "private-key or wallet-password handling"
+  ],
+  "mode": "read_only",
+  "official_sdk": "https://docs.phoenix.trade/sdk/rise",
+  "provider": "Phoenix Rise SDK / public API",
+  "required_reads": [
+    {
+      "name": "exchange_snapshot",
+      "path": "/v1/exchange/snapshot"
+    },
+    {
+      "name": "market",
+      "path": "/exchange/market/SOL"
+    },
+    {
+      "name": "candles",
+      "params": {
+        "interval": "1h",
+        "limit": 500,
+        "symbol": "SOL"
+      },
+      "path": "/candles"
+    },
+    {
+      "name": "orderbook",
+      "via": "Vulcan market orderbook or official Rise SDK orderbook client"
+    },
+    {
+      "name": "funding_history",
+      "via": "Vulcan market funding-rates or official Rise SDK funding client"
+    }
+  ],
+  "symbol": "SOL"
+}

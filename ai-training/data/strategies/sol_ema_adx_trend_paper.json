@@ -1,0 +1,90 @@
+{
+  "cadence": {
+    "grace_seconds": 5,
+    "kind": "candle_close",
+    "timeframe": "1h"
+  },
+  "margin_mode": "cross",
+  "max_concurrent_position_tokens": 2.0,
+  "max_firings": 24,
+  "rules": [
+    {
+      "cooldown": "until_condition_resets",
+      "do": {
+        "kind": "open",
+        "side": "buy",
+        "size": {
+          "tokens": 0.5
+        }
+      },
+      "name": "entry-long-ema-cross-adx",
+      "only_if_position": "flat",
+      "when": {
+        "all": [
+          {
+            "crosses": {
+              "direction": "above",
+              "left": {
+                "indicator": {
+                  "kind": "ema",
+                  "period": 9,
+                  "timeframe": "1h"
+                }
+              },
+              "right": {
+                "indicator": {
+                  "kind": "ema",
+                  "period": 21,
+                  "timeframe": "1h"
+                }
+              }
+            }
+          },
+          {
+            "compare": {
+              "left": {
+                "indicator": {
+                  "kind": "adx",
+                  "period": 14,
+                  "timeframe": "1h"
+                }
+              },
+              "op": "gt",
+              "right": {
+                "constant": 20.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "cooldown": "until_condition_resets",
+      "do": {
+        "kind": "close"
+      },
+      "name": "exit-long-ema-cross-down",
+      "only_if_position": "long",
+      "when": {
+        "crosses": {
+          "direction": "below",
+          "left": {
+            "indicator": {
+              "kind": "ema",
+              "period": 9,
+              "timeframe": "1h"
+            }
+          },
+          "right": {
+            "indicator": {
+              "kind": "ema",
+              "period": 21,
+              "timeframe": "1h"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "symbol": "SOL"
+}

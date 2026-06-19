@@ -189,11 +189,10 @@ def paper_ta_command(config_path: str, max_ticks: int = 60, run_label: str | Non
         "paper",
         "--max-ticks",
         str(max_ticks),
-        "-o",
-        "json",
     ]
     if run_label:
         cmd.extend(["--run-label", run_label])
+    cmd.extend(["-o", "json"])
     return cmd
 
 

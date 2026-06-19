@@ -20,6 +20,10 @@
         "dtype": "string",
         "_type": "Value"
       },
+      "tool_name": {
+        "dtype": "string",
+        "_type": "Value"
+      },
       "factory_stage": {
         "dtype": "string",
         "_type": "Value"
@@ -28,15 +32,7 @@
         "dtype": "string",
         "_type": "Value"
       },
-      "source_path": {
-        "dtype": "string",
-        "_type": "Value"
-      },
-      "chunk_index": {
-        "dtype": "int64",
-        "_type": "Value"
-      },
-      "tool_name": {
+      "regime": {
         "dtype": "string",
         "_type": "Value"
       }

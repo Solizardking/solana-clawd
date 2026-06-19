@@ -1,0 +1,146 @@
+{
+  "generated_at": "2026-06-19T19:46:47+00:00",
+  "optimizer_handoff": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/cufolio_mean_cvar_handoff.json",
+  "purpose": "Solana Clawd NVIDIA trading factory: cuFOLIO optimization handoff plus Vulcan paper strategy specs",
+  "rise_data_plan": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/rise_market_data_plan.json",
+  "safety_policy": {
+    "before_any_live_launch": [
+      "ask execution-mode question",
+      "run vulcan strategy preflight",
+      "review margin status",
+      "review position list",
+      "review market info/ticker/orderbook/funding",
+      "require explicit approval and Vulcan live gate"
+    ],
+    "default_execution_mode": "paper",
+    "never_in_generator": [
+      "wallet signing",
+      "private-key export",
+      "MCP config secret inspection",
+      "live order submission"
+    ]
+  },
+  "sources": {
+    "autoresearch_perps": {
+      "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/clawd-autoresearch-wiki/perps",
+      "upstream": "https://github.com/Solizardking/clawd-autoresearch-wiki/tree/main/perps",
+      "usage": "reference only; generated Vulcan configs use current Phoenix/Vulcan docs"
+    },
+    "cufolio": {
+      "files": [
+        {
+          "exists": true,
+          "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio/README.md"
+        },
+        {
+          "exists": true,
+          "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio/src/cvar_optimizer.py"
+        },
+        {
+          "exists": true,
+          "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio/src/cvar_parameters.py"
+        },
+        {
+          "exists": true,
+          "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio/src/scenario_generation.py"
+        },
+        {
+          "exists": true,
+          "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio/src/rebalance.py"
+        },
+        {
+          "exists": true,
+          "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio/notebooks/cvar_basic.ipynb"
+        },
+        {
+          "exists": true,
+          "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio/notebooks/rebalancing_strategies.ipynb"
+        }
+      ],
+      "license": "Apache-2.0",
+      "path": "/Users/8bit/Downloads/solana-clawd/ai-training/trading_factory/cufolio",
+      "present": true,
+      "upstream": "https://github.com/Solizardking/cuFOLIO"
+    },
+    "phoenix_docs": {
+      "llms_index": "https://docs.phoenix.trade/llms.txt",
+      "rise_sdk": "https://docs.phoenix.trade/sdk/rise",
+      "vulcan_strategies": "https://docs.phoenix.trade/cli/strategies"
+    }
+  },
+  "strategies": [
+    {
+      "config_file": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/sol_rsi_mean_reversion_paper.json",
+      "default_mode": "paper",
+      "kind": "vulcan_ta",
+      "name": "sol_rsi_mean_reversion_paper",
+      "paper_command": [
+        "vulcan",
+        "strategy",
+        "ta",
+        "start",
+        "--config-file",
+        "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/sol_rsi_mean_reversion_paper.json",
+        "--mode",
+        "paper",
+        "--max-ticks",
+        "60",
+        "--run-label",
+        "sol_rsi_mean_reversion_paper",
+        "-o",
+        "json"
+      ],
+      "symbol": "SOL",
+      "validation_errors": []
+    },
+    {
+      "config_file": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/sol_ema_adx_trend_paper.json",
+      "default_mode": "paper",
+      "kind": "vulcan_ta",
+      "name": "sol_ema_adx_trend_paper",
+      "paper_command": [
+        "vulcan",
+        "strategy",
+        "ta",
+        "start",
+        "--config-file",
+        "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/sol_ema_adx_trend_paper.json",
+        "--mode",
+        "paper",
+        "--max-ticks",
+        "60",
+        "--run-label",
+        "sol_ema_adx_trend_paper",
+        "-o",
+        "json"
+      ],
+      "symbol": "SOL",
+      "validation_errors": []
+    },
+    {
+      "config_file": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/sol_macd_adx_trim_paper.json",
+      "default_mode": "paper",
+      "kind": "vulcan_ta",
+      "name": "sol_macd_adx_trim_paper",
+      "paper_command": [
+        "vulcan",
+        "strategy",
+        "ta",
+        "start",
+        "--config-file",
+        "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/sol_macd_adx_trim_paper.json",
+        "--mode",
+        "paper",
+        "--max-ticks",
+        "60",
+        "--run-label",
+        "sol_macd_adx_trim_paper",
+        "-o",
+        "json"
+      ],
+      "symbol": "SOL",
+      "validation_errors": []
+    }
+  ],
+  "vulcan_command_plans": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/vulcan_command_plans.json"
+}

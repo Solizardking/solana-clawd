@@ -32,7 +32,7 @@
         "dtype": "string",
         "_type": "Value"
       },
-      "reference_title": {
+      "market": {
         "dtype": "string",
         "_type": "Value"
       },

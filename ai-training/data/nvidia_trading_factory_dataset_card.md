@@ -43,9 +43,9 @@ Produced by `scripts/prepare_dataset.py` with seed `42`.
 
 | Split | Examples |
 | --- | ---: |
-| train | 88 |
-| eval | 4 |
-| test | 6 |
+| train | 127 |
+| eval | 7 |
+| test | 8 |
 
 ## What It Covers
 
@@ -60,6 +60,27 @@ Produced by `scripts/prepare_dataset.py` with seed `42`.
 
 | Path | Type | Chunks |
 | --- | --- | ---: |
+| `ai-training/trading_factory/README.md` | trading_factory_workspace | 1 |
+| `ai-training/trading_factory/solana_factory/factory.py` | solana_trading_factory_adapter | 2 |
+| `ai-training/trading_factory/solana_factory/vulcan_specs.py` | vulcan_strategy_specs | 3 |
+| `ai-training/trading_factory/solana_factory/rise_client.py` | rise_readonly_client | 1 |
+| `ai-training/trading_factory/solana_factory/cufolio_adapter.py` | cufolio_optimization_handoff | 2 |
+| `ai-training/data/strategies/strategy_manifest.json` | generated_strategy_manifest | 2 |
+| `ai-training/data/strategies/cufolio_mean_cvar_handoff.json` | generated_cufolio_handoff | 1 |
+| `ai-training/data/strategies/rise_market_data_plan.json` | generated_rise_data_plan | 1 |
+| `ai-training/data/strategies/vulcan_command_plans.json` | generated_vulcan_command_plans | 1 |
+| `ai-training/trading_factory/cufolio/README.md` | cufolio_reference | 3 |
+| `ai-training/trading_factory/cufolio/src/cvar_optimizer.py` | cufolio_cvar_optimizer | 3 |
+| `ai-training/trading_factory/cufolio/src/cvar_parameters.py` | cufolio_cvar_parameters | 1 |
+| `ai-training/trading_factory/cufolio/src/scenario_generation.py` | cufolio_scenario_generation | 3 |
+| `ai-training/trading_factory/cufolio/src/rebalance.py` | cufolio_rebalancing | 3 |
+| `ai-training/trading_factory/clawd-autoresearch-wiki/perps/vulcan.py` | autoresearch_vulcan_reference | 3 |
+| `ai-training/trading_factory/clawd-autoresearch-wiki/perps/rise.py` | autoresearch_rise_reference | 1 |
+| `ai-training/trading_factory/clawd-autoresearch-wiki/perps/paper.py` | autoresearch_paper_reference | 3 |
+| `ai-training/trading_factory/clawd-autoresearch-wiki/strategy.md` | autoresearch_strategy_reference | 0 |
+| `ai-training/trading_factory/clawd-autoresearch-wiki/strategy/ta.py` | autoresearch_ta_reference | 3 |
+| `ai-training/trading_factory/clawd-autoresearch-wiki/strategy/grid.py` | autoresearch_grid_reference | 2 |
+| `ai-training/trading_factory/clawd-autoresearch-wiki/strategy/twap.py` | autoresearch_twap_reference | 1 |
 | `ai-training/perps/functions.py` | solana_perps_tools | 3 |
 | `ai-training/perps/prompter.py` | solana_perps_prompts | 2 |
 | `ai-training/perps/schema.py` | solana_perps_schema | 1 |
@@ -76,6 +97,10 @@ Produced by `scripts/prepare_dataset.py` with seed `42`.
 | NVIDIA AI Algorithmic Trading Factories | https://www.nvidia.com/en-us/use-cases/ai-algorithmic-trading-factories/ |
 | NVIDIA Quantitative Portfolio Optimization Blueprint | https://build.nvidia.com/nvidia/quantitative-portfolio-optimization |
 | Solizardking/cuFOLIO | https://github.com/Solizardking/cuFOLIO |
+| Phoenix Vulcan CLI Strategies | https://docs.phoenix.trade/cli/strategies |
+| Phoenix Rise SDK | https://docs.phoenix.trade/sdk/rise |
+| Phoenix Account Health and Leverage Tiers | https://docs.phoenix.trade/phoenix/margin-and-risk/account-health |
+| Solizardking/clawd-autoresearch-wiki perps | https://github.com/Solizardking/clawd-autoresearch-wiki/tree/main/perps |
 
 ## Intended Use
 
