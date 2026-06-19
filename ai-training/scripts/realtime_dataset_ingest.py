@@ -521,6 +521,9 @@ def documentai_token_available() -> bool:
         return True
     if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
         return True
+    adc_path = Path.home() / ".config" / "gcloud" / "application_default_credentials.json"
+    if adc_path.exists():
+        return True
     return bool(shutil.which("gcloud"))
 
 
@@ -550,21 +553,36 @@ def get_documentai_token(timeout: int) -> str:
         except Exception as exc:
             print(f"WARNING: GOOGLE_APPLICATION_CREDENTIALS token refresh failed: {exc}", file=sys.stderr)
 
+    try:
+        import google.auth  # type: ignore
+        from google.auth.transport.requests import Request  # type: ignore
+
+        credentials, _ = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+        credentials.refresh(Request())
+        if credentials.token:
+            return credentials.token
+    except Exception as exc:
+        print(f"WARNING: Google ADC token refresh failed: {exc}", file=sys.stderr)
+
     gcloud = shutil.which("gcloud")
     if gcloud:
-        proc = subprocess.run(
+        for command in (
+            [gcloud, "auth", "application-default", "print-access-token"],
             [gcloud, "auth", "print-access-token"],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
-        token = proc.stdout.strip()
-        if proc.returncode == 0 and token:
-            return token
+        ):
+            proc = subprocess.run(
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+            token = proc.stdout.strip()
+            if proc.returncode == 0 and token:
+                return token
     raise RuntimeError(
         "Document AI requires Google Cloud OAuth credentials. Set GOOGLE_DOCUMENTAI_ACCESS_TOKEN, "
-        "GOOGLE_OAUTH_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN, GOOGLE_APPLICATION_CREDENTIALS, or log in with gcloud. "
+        "GOOGLE_OAUTH_ACCESS_TOKEN, GOOGLE_ACCESS_TOKEN, GOOGLE_APPLICATION_CREDENTIALS, ADC, or log in with gcloud. "
         "GOOGLE_API_KEY/GEMINI_API_KEY are used for the Gemini extractor, not Document AI IAM."
     )
 

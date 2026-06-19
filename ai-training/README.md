@@ -252,6 +252,10 @@ OAuth credentials are available, then Gemini when `GEMINI_API_KEY` or
 `GOOGLE_API_KEY` is available, then local `pypdf`. Document AI requests use the
 processor endpoint in `configs/realtime_dataset_config.yaml`:
 `https://us-documentai.googleapis.com/v1/projects/1013652097839/locations/us/processors/29a612e70aee73e1:process`.
+Use Application Default Credentials from `gcloud auth application-default login`
+or a service-account path in your shell environment. Do not add Google OAuth
+client-secret files, ADC JSON, access tokens, or API keys to config files,
+dataset cards, manifests, commits, or Hub uploads.
 
 **Current dataset stats** (pushed 2026-06-18, after clean_data.py):
 
