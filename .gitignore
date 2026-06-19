@@ -435,3 +435,4 @@ clawd-box
 *.gitignore copy
 .gitignore copy
 spaces/clawd-computer/
+clawd-agents/clawd-pump
