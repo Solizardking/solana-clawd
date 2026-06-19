@@ -3,6 +3,7 @@ language: en
 license: apache-2.0
 base_model: Qwen/Qwen2.5-1.5B-Instruct
 datasets:
+  - solanaclawd/solana-clawd-core-ai-instruct
   - solanaclawd/solana-clawd-instruct
   - solanaclawd/solana-clawd-realtime-research-instruct
 tags:
@@ -17,7 +18,7 @@ library_name: peft
 pipeline_tag: text-generation
 ---
 
-# Solana Clawd 1.5B LoRA
+# Solana Clawd Core AI 1.5B LoRA
 
 [![Buy on Phantom](https://img.shields.io/badge/Buy_%24CLAWD-Phantom-blueviolet?style=flat-square)](https://phantom.com/tokens/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 [![Dexscreener](https://img.shields.io/badge/Chart-Dexscreener-green?style=flat-square)](https://dexscreener.com/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
@@ -25,14 +26,16 @@ pipeline_tag: text-generation
 [![Jupiter](https://img.shields.io/badge/Swap-Jupiter-blue?style=flat-square)](https://jup.ag/swap/SOL-8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 [![Solscan](https://img.shields.io/badge/Token-Solscan-lightblue?style=flat-square)](https://solscan.io/token/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 
-A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana development, DeFi reasoning, memecoin risk analysis, agent architecture, and Clawd constitutional behavior.
+A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana development, DeFi reasoning, memecoin risk analysis, agent architecture, Clawd constitutional behavior, and the `core-ai` source tree.
 
 **Base model**: [Qwen/Qwen2.5-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct)  
 **Adapter type**: LoRA (r=16, alpha=32, ~9M trainable params / 0.6% of base)  
-**Training data**: [solanaclawd/solana-clawd-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) — 36,109 examples  
+**Primary training data**: [solanaclawd/solana-clawd-core-ai-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct) — 35,173 examples  
+**Legacy seed dataset**: [solanaclawd/solana-clawd-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) — 36,109 examples  
 **Companion realtime dataset**: [solanaclawd/solana-clawd-realtime-research-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) — 29,058 submitted PDF/notebook/parquet/ZK examples  
-**Training config**: `ai-training/configs/lora_config.yaml`  
-**Hub model ID**: `solanaclawd/solana-clawd-1.5b-lora`
+**Training config**: `ai-training/configs/core_ai_lora_config.yaml`  
+**Hub model ID**: `solanaclawd/solana-clawd-core-ai-1.5b-lora`  
+**Release status**: adapter files are pending until the recovery Hugging Face job `ordlibrary/6a35a6833093dba73ce2a86b` finishes and pushes `adapter_config.json` plus `adapter_model.safetensors`.
 
 > **Tool-use / function calling?** Use the 8B Hermes-3 base with
 > `configs/hermes3_lora_config.yaml` and the `perps/` function-calling suite
@@ -228,7 +231,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
 BASE    = "Qwen/Qwen2.5-1.5B-Instruct"
-ADAPTER = "solanaclawd/solana-clawd-1.5b-lora"
+ADAPTER = "solanaclawd/solana-clawd-core-ai-1.5b-lora"
 
 tokenizer = AutoTokenizer.from_pretrained(BASE, trust_remote_code=True)
 model     = AutoModelForCausalLM.from_pretrained(BASE, torch_dtype=torch.bfloat16,

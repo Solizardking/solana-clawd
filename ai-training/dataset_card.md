@@ -104,8 +104,8 @@ A third specialized dataset is generated locally by
 
 - Total: **142** examples
 - Splits: **127 / 7 / 8** train/eval/test
-- Hub status: local artifacts are ready; publish is pending an authenticated
-  `HF_TOKEN` or `hf auth login` session
+- Hub status: **published** at
+  [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct)
 - Sources: local Clawd perps tools, training docs, agent catalog, realtime
   research manifest, NVIDIA algorithmic trading factory references, NVIDIA
   quantitative portfolio optimization references, Solizardking/cuFOLIO source
