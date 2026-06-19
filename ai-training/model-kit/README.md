@@ -59,7 +59,7 @@ bash ai-training/scripts/solana_ai_model_kit.sh \
 | Realtime research dataset | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | 29,058 examples |
 | NVIDIA trading factory dataset | [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | 142 examples, 127/7/8 splits |
 | Core 1.5B LoRA | [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | adapter upload pending successful recovery/retrain |
-| Trading factory 8B LoRA | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | HF job in progress |
+| Trading factory 8B LoRA | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | Completed HF job `ordlibrary/6a35a2ce953ed90bfb945009`; train loss 1.1692, eval loss 0.8064 |
 
 ## OnChain-AI Sidecar
 

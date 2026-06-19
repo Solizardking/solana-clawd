@@ -111,7 +111,7 @@ pull the latest model + dataset in two lines.
 | [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | dataset | **142 examples published** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, Vulcan/Phoenix paper strategy specs, Rise read plans, autoresearch perps references, perps tool-use, and risk refusals; 127/7/8 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
 | [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | target model | Qwen2.5-1.5B LoRA adapter target; first HF job completed training but failed during Hub push, local trainer now uploads adapter folders directly |
-| [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | target model | Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset; two HF job failures diagnosed and patched locally, next relaunch pending HF Jobs credits |
+| [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | model | Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset; completed HF job `ordlibrary/6a35a2ce953ed90bfb945009` |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
 
@@ -391,8 +391,13 @@ Current trading-factory training job state:
   expects a string when assistant-only loss is enabled. `scripts/train_lora.py`
   now normalizes dict templates and disables assistant-only loss when generation
   markers are unavailable.
-- Next relaunch is pending Hugging Face Jobs credits. The latest launch attempt
-  returned `402 Payment Required`.
+- Successful retry: `ordlibrary/6a35a2ce953ed90bfb945009`
+- Final evidence: the retry loaded the published Hub dataset, tokenized train
+  and eval splits, built `SFTTrainer`, completed 48/48 training steps, pushed
+  `adapter_config.json` and `adapter_model.safetensors`, and verified both files
+  on Hub.
+- Final metrics: train loss `1.1692`, eval loss `0.8064`,
+  eval mean token accuracy `0.8547`.
 
 Keep `HF_TOKEN`, `WANDB_API_KEY`, `NVIDIA_API_KEY`, wallet keys, ADC JSON, and
 client-secret files in your shell or secret manager only. Do not add them to

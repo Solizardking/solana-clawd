@@ -141,6 +141,32 @@ def _metrics_markdown(metrics: dict[str, Any]) -> str:
     return "\n".join(["| Metric | Value |", "| --- | --- |", *rows])
 
 
+def _model_card_title(cfg: dict[str, Any], dataset_label: str) -> str:
+    text = f"{cfg.get('hub_model_id', '')} {dataset_label}".lower()
+    if "trading-factory" in text or "nvidia" in text:
+        return "Solana NVIDIA Trading Factory LoRA"
+    if "core-ai" in text:
+        return "Solana Clawd Core AI LoRA"
+    return "Solana Clawd LoRA"
+
+
+def _intended_use(cfg: dict[str, Any], dataset_label: str) -> str:
+    text = f"{cfg.get('hub_model_id', '')} {dataset_label}".lower()
+    if "trading-factory" in text or "nvidia" in text:
+        return (
+            "This adapter is intended for Solana-native research and execution "
+            "agents that need paper-first strategy planning over Phoenix/Vulcan "
+            "perps, Rise read plans, cuFOLIO/cuOpt Mean-CVaR portfolio handoffs, "
+            "and risk-gated spot/perps trading-factory workflows."
+        )
+    return (
+        "This adapter is intended for Solana-native Clawd agents that need "
+        "project-local context around `core-ai`, Helius integrations, Clawd Code, "
+        "Clawd Grok, MCP server conventions, agent skills, and the existing "
+        "Solana/DeFi/ZK instruction corpus."
+    )
+
+
 def write_adapter_model_card(
     output_dir: str,
     cfg: dict[str, Any],
@@ -151,7 +177,13 @@ def write_adapter_model_card(
     metrics: dict[str, Any],
 ) -> None:
     path = Path(output_dir) / "README.md"
-    tags = "\n".join(f"  - {tag}" for tag in ["solana", "clawd", "core-ai", "lora", "peft"])
+    title = _model_card_title(cfg, dataset_label)
+    tag_values = ["solana", "clawd", "lora", "peft"]
+    if "Trading Factory" in title:
+        tag_values.extend(["trading", "perps", "nvidia"])
+    else:
+        tag_values.append("core-ai")
+    tags = "\n".join(f"  - {tag}" for tag in tag_values)
     datasets = f"  - {dataset_label}" if "/" in dataset_label and not Path(dataset_label).exists() else "  - local"
     wandb_url = _wandb_run_url()
     wandb_section = f"\n- W&B run: {wandb_url}" if wandb_url else ""
@@ -166,7 +198,7 @@ tags:
 pipeline_tag: text-generation
 ---
 
-# Solana Clawd Core AI LoRA
+# {title}
 
 LoRA adapter trained from `{cfg["base_model"]}` on `{dataset_label}`.
 
@@ -185,10 +217,7 @@ LoRA adapter trained from `{cfg["base_model"]}` on `{dataset_label}`.
 
 ## Intended Use
 
-This adapter is intended for Solana-native Clawd agents that need project-local
-context around `core-ai`, Helius integrations, Clawd Code, Clawd Grok, MCP
-server conventions, agent skills, and the existing Solana/DeFi/ZK instruction
-corpus.
+{_intended_use(cfg, dataset_label)}
 
 ## Safety
 
