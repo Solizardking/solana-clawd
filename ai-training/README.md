@@ -316,6 +316,8 @@ python3 scripts/prepare_dataset.py \
 python3 scripts/train_lora.py \
   --config configs/nvidia_trading_factory_lora_config.yaml \
   --dry-run
+
+python3 scripts/verify_trading_factory_release.py --local-only --strict
 ```
 
 Current local artifacts:
@@ -330,13 +332,7 @@ Publish the dataset only after `HF_TOKEN` is available in your shell or an
 existing `hf auth login` session is active:
 
 ```bash
-python3 scripts/prepare_dataset.py \
-  --input data/nvidia_trading_factory_sft.jsonl \
-  --output data/nvidia_trading_factory_processed \
-  --train-ratio 0.9 --eval-ratio 0.05 \
-  --seed 42 \
-  --push \
-  --repo-id solanaclawd/solana-clawd-nvidia-trading-factory-instruct
+./scripts/publish_trading_factory_dataset.sh
 ```
 
 Launch the trading-factory LoRA as a new HF job only when you are ready. This
@@ -350,7 +346,7 @@ Keep `HF_TOKEN`, `WANDB_API_KEY`, `NVIDIA_API_KEY`, wallet keys, ADC JSON, and
 client-secret files in your shell or secret manager only. Do not add them to
 YAML, markdown, manifests, commits, or Hub uploads.
 
-**Current dataset stats** (pushed 2026-06-18, after clean_data.py):
+**Current canonical dataset stats** (pushed 2026-06-18, after clean_data.py):
 
 - Total: **30,365** examples (cleaned from 36,109 — removed noise, capped repetitive providers)
 - Train: **27,328** · Eval: **1,518** · Test: **1,519**
