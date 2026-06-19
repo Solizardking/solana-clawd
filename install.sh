@@ -91,6 +91,7 @@ INSTALL_PERPS=false
 INSTALL_X402=false
 INSTALL_PUMP=false
 INSTALL_GATEWAY=false
+INSTALL_CORE_AI=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -101,11 +102,13 @@ for arg in "$@"; do
     --x402)       INSTALL_X402=true ;;
     --pump)       INSTALL_PUMP=true ;;
     --gateway)    INSTALL_GATEWAY=true ;;
-    --full)       INSTALL_LEVIATHAN=true; INSTALL_SDK=true; INSTALL_PERPS=true; INSTALL_X402=true; INSTALL_PUMP=true; INSTALL_GATEWAY=true ;;
+    --core-ai)    INSTALL_CORE_AI=true ;;
+    --full)       INSTALL_LEVIATHAN=true; INSTALL_SDK=true; INSTALL_PERPS=true; INSTALL_X402=true; INSTALL_PUMP=true; INSTALL_GATEWAY=true; INSTALL_CORE_AI=true ;;
     --tui-only)   INSTALL_REGISTRY=false; INSTALL_HUB=false ;;
     --help|-h)
       printf "Usage: install.sh [flags]\n\n"
-      printf "  ${BOLD}--full${RESET}       Everything (TUI + registry + hub + leviathan + SDK + perps + x402 + pump)\n"
+      printf "  ${BOLD}--full${RESET}       Everything (TUI + registry + hub + leviathan + SDK + perps + x402 + pump + core-ai)\n"
+      printf "  ${BOLD}--core-ai${RESET}    Helius MCP + helius-cli + clawd-code CLI + MCP settings.json wiring\n"
       printf "  ${BOLD}--perps${RESET}      Solana perps via Phoenix/Vulcan CLI (Rise SDK)\n"
       printf "  ${BOLD}--x402${RESET}       x402.wtf CLI (gateway + terminal launcher)\n"
       printf "  ${BOLD}--sdk${RESET}        @openclawdsolana/solana-sdk + @openclawd/wallet\n"
@@ -117,6 +120,7 @@ for arg in "$@"; do
       printf "\n"
       printf "  ${DIM}Set SOLANA_RPC_URL in env to skip the RPC prompt during --perps.${RESET}\n"
       printf "  ${DIM}Set VAULT_PASSPHRASE to encrypt the leviathan keypair at spawn.${RESET}\n"
+      printf "  ${DIM}Set HELIUS_API_KEY in env to pre-fill the MCP server config during --core-ai.${RESET}\n"
       exit 0 ;;
   esac
 done
@@ -367,6 +371,118 @@ if [ "$INSTALL_PUMP" = true ]; then
   fi
 fi
 
+# ── Core AI — Helius MCP + clawd-code CLI ────────────────────────────────────
+if [ "$INSTALL_CORE_AI" = true ]; then
+  step "Installing Core AI — Helius MCP + clawd-code"
+  track_install_event "agent_install" "core-ai"
+
+  # 1. helius-cli
+  info "Installing helius-cli..."
+  if npm install -g helius-cli 2>&1 | tail -1; then
+    ok "helius-cli"
+  else
+    warn "helius-cli install failed — try: npm install -g helius-cli"
+  fi
+
+  # 2. clawd-code — sparse-clone core-ai/clawd-code and build
+  CORE_AI_DIR="${HOME}/.clawd-code/src"
+  if command -v clawd-code &>/dev/null; then
+    ok "clawd-code already installed ($(clawd-code --version 2>/dev/null || echo 'version unknown'))"
+  else
+    info "Installing clawd-code from core-ai..."
+    REPO_URL_CORE="https://github.com/Solizardking/core-ai.git"
+    REF_CORE="${CORE_AI_REF:-clawd-code-lobster-rebrand}"
+    rm -rf "${CORE_AI_DIR}"
+    mkdir -p "$(dirname "${CORE_AI_DIR}")"
+    if git clone --depth 1 --filter=blob:none --sparse --branch "${REF_CORE}" \
+        "${REPO_URL_CORE}" "${CORE_AI_DIR}" 2>/dev/null; then
+      if (cd "${CORE_AI_DIR}" && git sparse-checkout set clawd-code && \
+          cd clawd-code && npm install --no-audit --no-fund 2>&1 | tail -1 && \
+          npm run build 2>&1 | tail -1 && npm link 2>&1 | tail -1); then
+        ok "clawd-code installed → clawd-code"
+      else
+        warn "clawd-code build failed — check ${CORE_AI_DIR}/clawd-code"
+      fi
+    else
+      warn "Could not clone core-ai — install manually:"
+      warn "  git clone -b clawd-code-lobster-rebrand https://github.com/Solizardking/core-ai.git"
+      warn "  cd core-ai/clawd-code && npm install && npm run build && npm link"
+    fi
+  fi
+
+  # 3. Wire Helius MCP + ZK Compression MCP into ~/.clawd/settings.json
+  CLAWD_SETTINGS="${HOME}/.clawd/settings.json"
+  HELIUS_KEY_WIRE="${HELIUS_API_KEY:-}"
+  if [ ! -f "${CLAWD_SETTINGS}" ]; then
+    mkdir -p "${HOME}/.clawd"
+    cat > "${CLAWD_SETTINGS}" << SETTINGS
+{
+  "mcpServers": {
+    "helius": {
+      "command": "npx",
+      "args": ["helius-mcp@latest"],
+      "env": {
+        "HELIUS_API_KEY": "${HELIUS_KEY_WIRE}"
+      }
+    },
+    "zkcompression": {
+      "type": "http",
+      "url": "https://www.zkcompression.com/mcp"
+    }
+  }
+}
+SETTINGS
+    ok "Created ${CLAWD_SETTINGS} (Helius MCP + ZK Compression MCP)"
+  else
+    # Patch in helius entry if missing
+    if ! grep -q '"helius"' "${CLAWD_SETTINGS}" 2>/dev/null; then
+      _PY_PATCH=$(mktemp /tmp/clawd_mcp_patch.XXXXXX.py)
+      cat > "${_PY_PATCH}" << 'PY'
+import json, sys
+path, key = sys.argv[1], sys.argv[2]
+with open(path) as f: cfg = json.load(f)
+cfg.setdefault("mcpServers", {})
+cfg["mcpServers"]["helius"] = {"command": "npx", "args": ["helius-mcp@latest"], "env": {"HELIUS_API_KEY": key}}
+cfg["mcpServers"].setdefault("zkcompression", {"type": "http", "url": "https://www.zkcompression.com/mcp"})
+with open(path, "w") as f: json.dump(cfg, f, indent=2)
+PY
+      if python3 "${_PY_PATCH}" "${CLAWD_SETTINGS}" "${HELIUS_KEY_WIRE}" 2>/dev/null; then
+        ok "Patched Helius MCP into ${CLAWD_SETTINGS}"
+      else
+        warn "Could not patch ${CLAWD_SETTINGS} — add helius MCP manually (see AGENTS.md)"
+      fi
+      rm -f "${_PY_PATCH}"
+    else
+      info "Helius MCP already present in ${CLAWD_SETTINGS}"
+    fi
+  fi
+
+  # 4. Install helius skill pack into ~/.clawd/skills/
+  info "Installing helius Clawd skills..."
+  if command -v clawd-code &>/dev/null; then
+    SKILLS_DIR="${HOME}/.clawd/skills"
+    mkdir -p "${SKILLS_DIR}"
+    CORE_SRC="${CORE_AI_DIR}/helius-skills"
+    if [ -d "${CORE_SRC}" ]; then
+      cp -r "${CORE_SRC}/." "${SKILLS_DIR}/"
+      ok "Helius skills → ${SKILLS_DIR}"
+    else
+      warn "helius-skills not found in ${CORE_AI_DIR} — run after cloning core-ai"
+    fi
+  else
+    info "Skipping skill copy (clawd-code not yet in PATH — reload shell)"
+  fi
+
+  # 5. Add HELIUS_API_KEY to ~/.clawd/.env if provided
+  ENV_FILE_CORE="${HOME}/.clawd/.env"
+  if [ -n "${HELIUS_KEY_WIRE}" ] && [ -f "${ENV_FILE_CORE}" ]; then
+    if ! grep -q "^HELIUS_API_KEY=" "${ENV_FILE_CORE}" 2>/dev/null; then
+      printf "\nHELIUS_API_KEY=%s\n" "${HELIUS_KEY_WIRE}" >> "${ENV_FILE_CORE}"
+      ok "HELIUS_API_KEY written to ${ENV_FILE_CORE}"
+    fi
+  fi
+fi
+
 # ── Verify all binaries ───────────────────────────────────────────────────────
 step "Verifying binaries"
 
@@ -387,6 +503,19 @@ fi
 if [ "$INSTALL_PERPS" = true ]; then
   (command -v vulcan &>/dev/null || [ -x "${HOME}/.local/bin/vulcan" ]) && \
     ok "vulcan" || warn "vulcan not in PATH yet — reload shell: source ~/.zshrc"
+fi
+
+if [ "$INSTALL_CORE_AI" = true ]; then
+  if command -v helius-cli &>/dev/null; then
+    ok "helius-cli"
+  else
+    warn "helius-cli not in PATH (check npm global bin)"
+  fi
+  if command -v clawd-code &>/dev/null; then
+    ok "clawd-code"
+  else
+    warn "clawd-code not in PATH — reload shell or run: npm link in ${HOME}/.clawd-code/src/clawd-code"
+  fi
 fi
 
 track_install_event "install" "install.sh:complete"
@@ -520,6 +649,9 @@ if [ "$INSTALL_PUMP" = false ]; then
 fi
 if [ "$INSTALL_GATEWAY" = false ]; then
   printf "  ${DIM}CLAWD Gateway:     bash install.sh --gateway${RESET}\n"
+fi
+if [ "$INSTALL_CORE_AI" = false ]; then
+  printf "  ${DIM}Core AI (Helius):  bash install.sh --core-ai${RESET}\n"
 fi
 
 # ── CLAWD Gateway (Telegram bot + HTTP API) ──────────────────────────────────
