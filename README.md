@@ -608,21 +608,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`baf4ff6`](../../commit/baf4ff6) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 🥈 | [`a2714b3`](../../commit/a2714b3) | kll | solizardking | Jun 19 |
-| 🥉 | [`05d2ef5`](../../commit/05d2ef5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 4️⃣ | [`0d2b467`](../../commit/0d2b467) | l | solizardking | Jun 19 |
-| 5️⃣ | [`b4cfde1`](../../commit/b4cfde1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 6️⃣ | [`8f1ccc0`](../../commit/8f1ccc0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 7️⃣ | [`4057794`](../../commit/4057794) | feat: add --core-ai flag to installer | solizardking | Jun 19 |
-| 8️⃣ | [`30416f3`](../../commit/30416f3) | sdfdfsdsfdf | solizardking | Jun 19 |
-| 9️⃣ | [`079c96c`](../../commit/079c96c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 🔟 | [`c4b1d77`](../../commit/c4b1d77) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
-| · | [`0a922be`](../../commit/0a922be) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| · | [`70002b2`](../../commit/70002b2) | dsfdfsdfadfs | solizardking | Jun 19 |
-| · | [`23b8d20`](../../commit/23b8d20) | chore: update core-ai submodule — clawd-code sync + docs | solizardking | Jun 19 |
-| · | [`7e4ece8`](../../commit/7e4ece8) | sfddsffdadsffds | solizardking | Jun 19 |
-| · | [`6886f7d`](../../commit/6886f7d) | fssgfsfg | solizardking | Jun 18 |
+| 🥇 | [`ca656f3`](../../commit/ca656f3) | kkkk | solizardking | Jun 19 |
+| 🥈 | [`10d201e`](../../commit/10d201e) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
+| 🥉 | [`bc9c4bd`](../../commit/bc9c4bd) | sadfdfsfd | solizardking | Jun 19 |
+| 4️⃣ | [`59a1d5b`](../../commit/59a1d5b) | dsfdfsf | solizardking | Jun 19 |
+| 5️⃣ | [`cbaafab`](../../commit/cbaafab) | adfsdfasljlj | solizardking | Jun 19 |
+| 6️⃣ | [`e8bd341`](../../commit/e8bd341) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 7️⃣ | [`baf4ff6`](../../commit/baf4ff6) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 8️⃣ | [`a2714b3`](../../commit/a2714b3) | kll | solizardking | Jun 19 |
+| 9️⃣ | [`05d2ef5`](../../commit/05d2ef5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 🔟 | [`0d2b467`](../../commit/0d2b467) | l | solizardking | Jun 19 |
+| · | [`b4cfde1`](../../commit/b4cfde1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| · | [`8f1ccc0`](../../commit/8f1ccc0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| · | [`4057794`](../../commit/4057794) | feat: add --core-ai flag to installer | solizardking | Jun 19 |
+| · | [`30416f3`](../../commit/30416f3) | sdfdfsdsfdf | solizardking | Jun 19 |
+| · | [`079c96c`](../../commit/079c96c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
