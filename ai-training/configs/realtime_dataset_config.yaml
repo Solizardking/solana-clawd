@@ -16,6 +16,7 @@ chunk_overlap: 350
 max_context_chars: 5000
 min_text_chars: 120
 keep_duplicate_files: false
+save_arrow_dataset: false
 
 inputs:
   - /Users/8bit/drive/pdfs/2410.21169v5.pdf

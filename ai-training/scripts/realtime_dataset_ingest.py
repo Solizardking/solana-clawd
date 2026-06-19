@@ -116,6 +116,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-context-chars", type=int, default=None, help="Max context chars for parquet QA rows")
     p.add_argument("--min-text-chars", type=int, default=None, help="Skip extracted chunks shorter than this")
     p.add_argument("--keep-duplicate-files", action="store_true", help="Do not skip files with duplicate SHA256")
+    p.add_argument("--save-arrow-dataset", action="store_true", help="Also write datasets.save_to_disk Arrow shards")
     return p.parse_args()
 
 
@@ -158,6 +159,7 @@ def merged_settings(args: argparse.Namespace) -> dict[str, Any]:
         ),
         "min_text_chars": int(args.min_text_chars if args.min_text_chars is not None else cfg.get("min_text_chars", 120)),
         "keep_duplicate_files": bool(args.keep_duplicate_files or cfg.get("keep_duplicate_files", False)),
+        "save_arrow_dataset": bool(args.save_arrow_dataset or cfg.get("save_arrow_dataset", False)),
     }
 
 
@@ -743,7 +745,8 @@ def write_outputs(examples: list[dict[str, Any]], dataset: DatasetDict, manifest
         for ex in examples:
             f.write(json.dumps(ex, ensure_ascii=False) + "\n")
 
-    dataset.save_to_disk(str(output_dir))
+    if settings["save_arrow_dataset"]:
+        dataset.save_to_disk(str(output_dir))
     for split in ["train", "eval", "test"]:
         if len(dataset[split]):
             dataset[split].to_parquet(str(output_dir / f"{split}.parquet"))
@@ -841,10 +844,12 @@ def push_to_hub(dataset: DatasetDict, settings: dict[str, Any]) -> None:
 
     repo_id = settings["repo_id"]
     create_repo(repo_id, repo_type="dataset", private=settings["private"], exist_ok=True)
-    dataset.push_to_hub(repo_id, private=settings["private"])
     api = HfApi()
     uploads = [
         (settings["dataset_card"], "README.md"),
+        (Path(settings["output_dir"]) / "train.parquet", "data/train-00000-of-00001.parquet"),
+        (Path(settings["output_dir"]) / "eval.parquet", "data/eval-00000-of-00001.parquet"),
+        (Path(settings["output_dir"]) / "test.parquet", "data/test-00000-of-00001.parquet"),
         (settings["output_jsonl"], "raw/realtime_research_sft.jsonl"),
         (settings["manifest"], "metadata/realtime_research_dataset_manifest.json"),
     ]
@@ -923,6 +928,7 @@ def build_once(settings: dict[str, Any]) -> BuildResult:
             "max_context_chars": settings["max_context_chars"],
             "min_text_chars": settings["min_text_chars"],
             "keep_duplicate_files": settings["keep_duplicate_files"],
+            "save_arrow_dataset": settings["save_arrow_dataset"],
         },
         "missing_inputs": missing,
         "sources": [
