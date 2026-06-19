@@ -1,0 +1,51 @@
+dataset_name: Solana Clawd Realtime Research Instruct
+repo_id: solanaclawd/solana-clawd-realtime-research-instruct
+private: false
+push: false
+
+output_jsonl: data/realtime_research_sft.jsonl
+output_dir: data/realtime_research_processed
+manifest: data/realtime_research_dataset_manifest.json
+dataset_card: data/realtime_research_dataset_card.md
+
+train_ratio: 0.9
+eval_ratio: 0.05
+seed: 42
+chunk_chars: 4800
+chunk_overlap: 350
+max_context_chars: 5000
+min_text_chars: 120
+keep_duplicate_files: false
+
+inputs:
+  - /Users/8bit/drive/pdfs/2410.21169v5.pdf
+  - /Users/8bit/drive/pdfs/2412.04913v3.pdf
+  - /Users/8bit/drive/pdfs/2412.07591v2.pdf
+  - /Users/8bit/drive/pdfs/2512.01112v3.pdf
+  - /Users/8bit/drive/pdfs/2512.06505v4.pdf
+  - /Users/8bit/drive/pdfs/2512.19113v2.pdf
+  - /Users/8bit/drive/pdfs/2512.22476v1.pdf
+  - /Users/8bit/drive/pdfs/2601.10812v1.pdf
+  - /Users/8bit/drive/pdfs/2601.17008v1.pdf
+  - /Users/8bit/drive/pdfs/2602.00776v1.pdf
+  - /Users/8bit/drive/pdfs/2602.14860v1.pdf
+  - /Users/8bit/drive/pdfs/2603.10092v1.pdf
+  - /Users/8bit/drive/pdfs/2604.01431v1.pdf
+  - /Users/8bit/drive/pdfs/2605.05089v1.pdf
+  - /Users/8bit/drive/pdfs/2605.05878v1.pdf
+  - /Users/8bit/drive/pdfs/2605.10400v1.pdf
+  - /Users/8bit/drive/pdfs/2605.10428v1.pdf
+  - /Users/8bit/drive/pdfs/2605.12151v2.pdf
+  - "/Users/8bit/drive/pdfs/2605.29174v1 (1).pdf"
+  - /Users/8bit/drive/pdfs/2605.29174v1.pdf
+  - "/Users/8bit/drive/pdfs/2606.08232v1 (1).pdf"
+  - /Users/8bit/drive/pdfs/2606.08232v1.pdf
+  - /Users/8bit/drive/solana_dataset/analysing-crypto-charts-like-pro.ipynb
+  - /Users/8bit/drive/solana_dataset/analysis-of-smart-contracts-in-blockchain.ipynb
+  - /Users/8bit/drive/solana_dataset/solana-prediction.ipynb
+  - /Users/8bit/drive/solana_dataset/test-00000-of-00001.parquet
+  - /Users/8bit/drive/solana_dataset/train-00000-of-00001.parquet
+  - /Users/8bit/.agents/skills/zk/SKILL.md
+
+watch_dirs:
+  - data/incoming
