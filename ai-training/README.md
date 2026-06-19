@@ -355,6 +355,16 @@ python3 scripts/run_release_pipeline.py --publish-trading-dataset
 python3 scripts/run_release_pipeline.py --launch-trading-training
 ```
 
+If you want a clean local upload directory first:
+
+```bash
+python3 scripts/build_hf_release_bundle.py
+cat outputs/hf_release_bundle/UPLOAD.md
+
+# Optional full local archive for all three dataset repos:
+python3 scripts/build_hf_release_bundle.py --include-published --output outputs/hf_release_bundle_all
+```
+
 Launch the trading-factory LoRA as a new HF job only when you are ready. This
 helper does not cancel or modify any currently running job:
 

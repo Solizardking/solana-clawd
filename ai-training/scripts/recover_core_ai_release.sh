@@ -16,8 +16,13 @@ if python3 scripts/verify_core_ai_release.py --strict; then
 fi
 
 if [[ -z "${HF_TOKEN:-}" ]]; then
-  echo "HF_TOKEN is required to relaunch the missing model adapter job." >&2
-  exit 1
+  if HF_TOKEN="$(hf auth token 2>/dev/null)"; then
+    export HF_TOKEN
+    echo "Using Hugging Face token from existing hf auth session."
+  else
+    echo "HF_TOKEN is required to relaunch the missing model adapter job, or run: hf auth login" >&2
+    exit 1
+  fi
 fi
 
 if [[ -z "${WANDB_API_KEY:-}" ]]; then
