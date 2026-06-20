@@ -2,18 +2,17 @@
 FROM node:22-bookworm-slim AS deps
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
-COPY gateway/package*.json ./
+COPY services/gateway/package*.json ./
 RUN npm install --omit=dev --no-audit --no-fund
 
 # ── Stage 2: build TypeScript ─────────────────────────────────────────────────
 FROM node:22-bookworm-slim AS build
 RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
-COPY gateway/package*.json ./
+COPY services/gateway/package*.json ./
 RUN npm install --no-audit --no-fund
-COPY gateway/ ./gateway/
-COPY formal_verification/ ./formal_verification/
-WORKDIR /build/gateway
+COPY services/gateway/ ./services/gateway/
+WORKDIR /build/services/gateway
 RUN npm run build
 
 # ── Stage 3: minimal runtime image ───────────────────────────────────────────
@@ -31,8 +30,8 @@ RUN groupadd -r clawd && useradd -r -g clawd clawd \
     && install -d -o clawd -g clawd /data
 
 COPY --from=deps  --chown=clawd:clawd /build/node_modules ./node_modules
-COPY --from=build --chown=clawd:clawd /build/dist         ./dist
-COPY --chown=clawd:clawd gateway/package*.json ./
+COPY --from=build --chown=clawd:clawd /build/services/dist ./dist
+COPY --chown=clawd:clawd services/gateway/package*.json ./
 
 # /data is the Fly persistent volume mount point for sessions.json
 VOLUME ["/data"]

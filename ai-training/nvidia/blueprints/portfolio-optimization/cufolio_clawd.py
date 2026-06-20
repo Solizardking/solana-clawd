@@ -21,6 +21,7 @@ import numpy as np
 
 from scenarios import generate_scenarios, historical_returns
 from mean_cvar import optimize, OptResult
+from phoenix_prices import fetch_prices, PHOENIX_MARKETS
 
 
 TRUST_GATES = {
@@ -66,14 +67,21 @@ def build_plan(
     max_cvar: float,
     max_leverage: float,
     gate: str,
+    use_phoenix: bool = True,
+    n_days: int = 90,
 ) -> AllocationPlan:
     if gate not in TRUST_GATES:
         print(f"ERROR: unknown gate '{gate}'. Valid: {list(TRUST_GATES)}", file=sys.stderr)
         sys.exit(1)
 
-    prices = _fetch_mock_prices(assets)
+    if use_phoenix:
+        print(f"[portfolio-opt] fetching live prices ({n_days}d)...")
+        prices = fetch_prices(assets, n_days=n_days, verbose=True)
+    else:
+        prices = _fetch_mock_prices(assets)
     rets, names = historical_returns(prices)
-    sc = generate_scenarios(rets, names, n_scenarios=5000)
+    n_scen = 5000
+    sc = generate_scenarios(rets, names, n_scenarios=n_scen)
     result: OptResult = optimize(
         sc.scenarios, sc.assets,
         cvar_alpha=cvar_alpha,
@@ -122,12 +130,17 @@ def main() -> None:
     parser.add_argument("--max-leverage", type=float, default=1.0)
     parser.add_argument("--gate", default="paper", choices=list(TRUST_GATES))
     parser.add_argument("--json", action="store_true", help="Output JSON")
+    parser.add_argument("--no-phoenix", action="store_true", help="Use synthetic prices instead of live")
+    parser.add_argument("--days", type=int, default=90, help="Days of price history to fetch")
+    parser.add_argument("--n-scenarios", type=int, default=5000)
     args = parser.parse_args()
 
     print(f"[portfolio-opt] gate={args.gate}: {TRUST_GATES[args.gate]}")
     plan = build_plan(
         args.assets, args.budget, args.cvar_alpha,
         args.max_cvar, args.max_leverage, args.gate,
+        use_phoenix=not args.no_phoenix,
+        n_days=args.days,
     )
 
     if args.json:

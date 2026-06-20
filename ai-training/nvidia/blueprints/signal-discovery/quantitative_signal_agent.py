@@ -53,11 +53,39 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
+# ── Env loading ───────────────────────────────────────────────────────────────
+
+def _load_env() -> None:
+    """Load .env from project root if NVIDIA_API_KEY not already set."""
+    if os.environ.get("NVIDIA_API_KEY"):
+        return
+    for candidate in [
+        Path(__file__).parents[4] / ".env",
+        Path(__file__).parents[3] / ".env",
+        Path.home() / ".env",
+        Path.home() / ".env.master",
+    ]:
+        if candidate.exists():
+            with candidate.open() as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, _, v = line.partition("=")
+                        k = k.strip()
+                        v = v.strip().strip('"').strip("'")
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+
+_load_env()
+
 # ── Endpoint routing ──────────────────────────────────────────────────────────
 
-MODEL_HF       = "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16"
-MODEL_NIM      = "nvidia/nemotron-3-ultra-550b-a55b"
-MODEL_FALLBACK = "solana-clawd-1.5b"
+# NIM model priority: NVIDIA_MODEL env var → nano (fast/cheap) → ultra (teacher)
+MODEL_NIM_NANO  = "nvidia/nemotron-3-nano-30b-a3b"
+MODEL_NIM_ULTRA = "nvidia/nemotron-3-ultra-550b-a55b"
+MODEL_HF_NANO   = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16"
+MODEL_HF_ULTRA  = "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16"
+MODEL_FALLBACK  = "solana-clawd-1.5b"
 
 HF_BASE    = "https://api-inference.huggingface.co/v1"
 NIM_BASE   = "https://integrate.api.nvidia.com/v1"
@@ -70,16 +98,47 @@ class _Ep:
 
 
 def _resolve() -> _Ep:
-    if tok := os.environ.get("HF_TOKEN"):
-        return _Ep(HF_BASE, tok, MODEL_HF, "hf")
+    # Allow explicit model override
+    override = os.environ.get("NVIDIA_MODEL", "")
+
+    # NVIDIA NIM API (preferred when key is set — nano is fast + cheap)
     if nv := os.environ.get("NVIDIA_API_KEY"):
-        return _Ep(NIM_BASE, nv, MODEL_NIM, "nim")
+        model = override or MODEL_NIM_NANO
+        return _Ep(NIM_BASE, nv, model, "nim")
+
+    # HuggingFace Inference API (serverless, larger model)
+    if tok := os.environ.get("HF_TOKEN"):
+        model = override or MODEL_HF_ULTRA
+        return _Ep(HF_BASE, tok, model, "hf")
+
+    # Local Clawd endpoint
     if url := os.environ.get("CLAWD_INFERENCE_URL"):
         return _Ep(url, os.environ.get("CLAWD_API_KEY", "none"), MODEL_FALLBACK, "local")
+
+    # ClawdRouter free tier
     return _Ep(CLAWD_BASE, os.environ.get("CLAWD_ROUTER_KEY", "clawd_free_default"), MODEL_FALLBACK, "router")
 
 
+def _chat_pipeline(messages: list[dict], model: str, max_tokens: int) -> str:
+    """HuggingFace transformers pipeline path (local or API)."""
+    try:
+        from transformers import pipeline as hf_pipeline
+        pipe = hf_pipeline(
+            "text-generation", model=model,
+            trust_remote_code=True,
+            device_map="auto",
+        )
+        out = pipe(messages, max_new_tokens=max_tokens)
+        return out[0]["generated_text"][-1]["content"]
+    except Exception as e:
+        return f"[pipeline error: {e}]"
+
+
 def _chat(messages: list[dict], ep: _Ep, max_tokens: int = 512) -> str:
+    # Local pipeline path (when NVIDIA_USE_PIPELINE=1 is set)
+    if os.environ.get("NVIDIA_USE_PIPELINE") == "1":
+        return _chat_pipeline(messages, ep.model, max_tokens)
+
     extra: dict = {}
     if "nemotron" in ep.model.lower():
         extra["chat_template_kwargs"] = {"enable_thinking": True}
@@ -88,7 +147,8 @@ def _chat(messages: list[dict], ep: _Ep, max_tokens: int = 512) -> str:
     headers = {"Authorization": f"Bearer {ep.api_key}", "Content-Type": "application/json"}
     try:
         import httpx
-        r = httpx.post(f"{ep.base_url}/chat/completions", headers=headers, json=payload, timeout=90)
+        r = httpx.post(f"{ep.base_url}/chat/completions", headers=headers,
+                       json=payload, timeout=90)
         r.raise_for_status()
         return r.json()["choices"][0]["message"]["content"]
     except ImportError:

@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-06-20T00:40:32.944810+00:00",
+  "n_markets": 1,
+  "verdict_summary": {
+    "hold": 1
+  },
+  "regime_summary": {
+    "ranging": 1
+  },
+  "avg_confidence": 0.0,
+  "discoveries": [
+    {
+      "market": "SOL",
+      "composite_direction": "neutral",
+      "composite_strength": 0.0,
+      "verdict": "hold",
+      "confidence": 0.0,
+      "rationale": "ranging regime, composite neutral strength 0.00",
+      "risk_flags": [
+        "weak_trend"
+      ],
+      "regime": "ranging",
+      "strategy_id": null
+    }
+  ]
+}

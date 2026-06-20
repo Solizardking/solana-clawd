@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build:web",
+  "outputDirectory": "dist-web",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "framework": null,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}

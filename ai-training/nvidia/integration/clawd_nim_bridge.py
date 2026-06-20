@@ -18,13 +18,38 @@ from typing import Iterator
 
 
 NIM_BASE = "https://integrate.api.nvidia.com/v1"
-DEFAULT_MODEL_NIM = "meta/llama-3.1-nemotron-nano-8b-v1"
+HF_BASE  = "https://api-inference.huggingface.co/v1"
+
+MODEL_NIM_NANO  = "nvidia/nemotron-3-nano-30b-a3b"
+MODEL_NIM_ULTRA = "nvidia/nemotron-3-ultra-550b-a55b"
+MODEL_HF_ULTRA  = "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16"
+
+
+def _load_env() -> None:
+    from pathlib import Path
+    if os.environ.get("NVIDIA_API_KEY"):
+        return
+    for p in [Path(__file__).parents[4] / ".env", Path.home() / ".env", Path.home() / ".env.master"]:
+        if p.exists():
+            with p.open() as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, _, v = line.partition("=")
+                        k = k.strip(); v = v.strip().strip('"').strip("'")
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+
+_load_env()
 
 
 def _resolve_endpoint() -> tuple[str, str, str]:
-    """Returns (base_url, api_key, model)."""
+    """Returns (base_url, api_key, model). Priority: NIM > HF > Clawd > Ollama."""
+    override = os.environ.get("NVIDIA_MODEL", "")
     if key := os.environ.get("NVIDIA_API_KEY"):
-        return NIM_BASE, key, DEFAULT_MODEL_NIM
+        return NIM_BASE, key, override or MODEL_NIM_NANO
+    if tok := os.environ.get("HF_TOKEN"):
+        return HF_BASE, tok, override or MODEL_HF_ULTRA
     if url := os.environ.get("CLAWD_INFERENCE_URL"):
         return url, os.environ.get("CLAWD_API_KEY", "none"), "solana-clawd-1.5b"
     if key := os.environ.get("CLAWD_ROUTER_KEY"):

@@ -495,6 +495,10 @@ Core AI recovery run — **COMPLETED**:
 - Dataset: `solanaclawd/solana-clawd-core-ai-instruct` (31,655 train rows)
 - Output: `solanaclawd/solana-clawd-core-ai-1.5b-lora` — adapter files live on Hub
 - **train_loss**: 0.9008 | **mean_token_accuracy**: 82.9% | **tokens**: 24.54M
+- **Solana MCQ benchmark**: 17/18 = **94.4%** (1-epoch, local MPS eval)
+  - Perfect: agent, constitution, defi, security, zk
+  - Miss: Q3 compute unit budget (got 1.4M → correct is 200K)
+- **3-epoch retrain**: running as [`ordlibrary/6a35dd23953ed90bfb945356`](https://huggingface.co/jobs/ordlibrary/6a35dd23953ed90bfb945356) (H200, 6h timeout)
 
 #### Training run history
 

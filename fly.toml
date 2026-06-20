@@ -4,7 +4,7 @@ primary_region = "iad"
 # ── Build ──────────────────────────────────────────────────────────────────────
 [build]
   # Context is the monorepo root (directory containing fly.toml) — formal_verification/ is accessible
-  dockerfile = "gateway/Dockerfile"
+  dockerfile = "services/gateway/Dockerfile"
 
 # ── Non-secret env vars ────────────────────────────────────────────────────────
 # Secrets (API keys, private keys) must be set via:

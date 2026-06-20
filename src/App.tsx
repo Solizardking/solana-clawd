@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import type { CSSProperties, FormEvent } from "react"
 import LibraryApp from "./LibraryApp.js"
 import TournamentPanel from "./arena/TournamentPanel.js"
+import PetApp, { PetChatOverlay } from "./PetApp.js"
 
 type Agent = {
   id: string
@@ -860,6 +861,10 @@ export default function App() {
     return <LibraryApp />
   }
 
+  if (path === "/pet" || path === "/pet/") {
+    return <PetApp />
+  }
+
   return (
     <main className="arenaShell">
       <header className="arenaHeader">
@@ -875,8 +880,10 @@ export default function App() {
             Scoreboard
           </button>
           <a href="/library/">Library</a>
+          <a href="/pet">Pet</a>
         </nav>
       </header>
+      <PetChatOverlay />
 
       <section className="arenaHero" id="arena">
         <div className="arenaStage">
