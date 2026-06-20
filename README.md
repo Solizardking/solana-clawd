@@ -640,21 +640,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`a53f88a2`](../../commit/a53f88a2) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 🥈 | [`b73809b9`](../../commit/b73809b9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 🥉 | [`1bbcfbfd`](../../commit/1bbcfbfd) | sdfdfs | solizardking | Jun 19 |
-| 4️⃣ | [`0c656f01`](../../commit/0c656f01) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 5️⃣ | [`a2febac8`](../../commit/a2febac8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 6️⃣ | [`3346fa71`](../../commit/3346fa71) | sfgdafgsfgs | solizardking | Jun 19 |
-| 7️⃣ | [`f328e7d7`](../../commit/f328e7d7) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
-| 8️⃣ | [`99783e5c`](../../commit/99783e5c) | sdafdfsadsf | solizardking | Jun 19 |
-| 9️⃣ | [`ac4dc7d5`](../../commit/ac4dc7d5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| 🔟 | [`01a217ca`](../../commit/01a217ca) | asfasd | solizardking | Jun 19 |
+| 🥇 | [`d8183d9c`](../../commit/d8183d9c) | feat: Render deployment for signal discovery API + dashboard | solizardking | Jun 19 |
+| 🥈 | [`a49755d0`](../../commit/a49755d0) | feat: mark core-ai-1.5b-lora COMPLETE + Blueprint 4/TFM expa | solizardking | Jun 19 |
+| 🥉 | [`2d513b6e`](../../commit/2d513b6e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 4️⃣ | [`a53f88a2`](../../commit/a53f88a2) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 5️⃣ | [`b73809b9`](../../commit/b73809b9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 6️⃣ | [`1bbcfbfd`](../../commit/1bbcfbfd) | sdfdfs | solizardking | Jun 19 |
+| 7️⃣ | [`0c656f01`](../../commit/0c656f01) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 8️⃣ | [`a2febac8`](../../commit/a2febac8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| 9️⃣ | [`3346fa71`](../../commit/3346fa71) | sfgdafgsfgs | solizardking | Jun 19 |
+| 🔟 | [`f328e7d7`](../../commit/f328e7d7) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
+| · | [`99783e5c`](../../commit/99783e5c) | sdafdfsadsf | solizardking | Jun 19 |
+| · | [`ac4dc7d5`](../../commit/ac4dc7d5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
+| · | [`01a217ca`](../../commit/01a217ca) | asfasd | solizardking | Jun 19 |
 | · | [`1f28549b`](../../commit/1f28549b) | sffdsfsd | solizardking | Jun 19 |
 | · | [`15b87491`](../../commit/15b87491) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
-| · | [`af3551ba`](../../commit/af3551ba) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| · | [`1af641d4`](../../commit/1af641d4) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
-| · | [`790ad2b9`](../../commit/790ad2b9) | sffsfs | solizardking | Jun 19 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
