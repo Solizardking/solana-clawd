@@ -6,6 +6,8 @@ datasets:
   - solanaclawd/solana-clawd-core-ai-instruct
   - solanaclawd/solana-clawd-instruct
   - solanaclawd/solana-clawd-realtime-research-instruct
+  - solanaclawd/solana-clawd-nvidia-trading-factory-instruct
+  - solanaclawd/solana-tx-foundation-cpt
 tags:
   - solana
   - defi
@@ -14,6 +16,9 @@ tags:
   - lora
   - peft
   - constitutional-ai
+  - nvidia
+  - nemotron
+  - transaction-foundation-model
 library_name: peft
 pipeline_tag: text-generation
 ---
@@ -36,6 +41,63 @@ A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana development, DeFi reasoning
 **Training config**: `ai-training/configs/core_ai_lora_config.yaml`  
 **Hub model ID**: `solanaclawd/solana-clawd-core-ai-1.5b-lora`  
 **Release status**: Live — `adapter_config.json` + `adapter_model.safetensors` pushed to Hub on 2026-06-19T23:44Z by recovery job [`ordlibrary/6a35a6833093dba73ce2a86b`](https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b) (A100-large, 3h 14m, train\_loss=0.9008, token\_accuracy=82.9%, 24.5M tokens).
+
+---
+
+## NVIDIA Integration
+
+This model is part of a six-blueprint NVIDIA AI integration. The full model family:
+
+| Model | Type | Status | Role |
+| --- | --- | --- | --- |
+| [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | LoRA adapter | **Live** | Student — Solana/DeFi/constitutional chat |
+| `solanaclawd/solana-tx-foundation-1.5b` | Full model (CPT+SFT) | **In training** | Transaction foundation model (Blueprint 1) |
+| `nvidia/nemotron-3-nano-30b-a3b` | NIM API | External | Primary reasoning — signal verdicts, portfolio narration |
+| `nvidia/nemotron-3-super-120b-a12b` | NIM API | External | Teacher — distillation and SFT labeling (Blueprint 3) |
+| `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16` | HF pipeline | External | Local fallback when `HF_TOKEN` set, no `NVIDIA_API_KEY` |
+
+### NIM endpoint routing
+
+The signal discovery agent and NIM bridge resolve endpoints in priority order:
+
+```text
+NVIDIA_API_KEY set  →  NIM API  (nvidia/nemotron-3-nano-30b-a3b)
+HF_TOKEN set        →  HF Inference API  (nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16)
+CLAWD_INFERENCE_URL →  Self-hosted Clawd endpoint
+CLAWD_ROUTER_KEY    →  clawd-box-router.fly.dev (free tier)
+(fallback)          →  Ollama localhost:11434
+```
+
+Set `NVIDIA_USE_PIPELINE=1` to force the local HuggingFace `pipeline()` path instead of the API.
+
+```bash
+export NVIDIA_API_KEY=nvapi-...          # from build.nvidia.com
+python3 nvidia/blueprints/signal-discovery/quantitative_signal_agent.py \
+  --market SOL --mode paper
+
+# HF pipeline fallback (downloads model locally, needs ~20GB VRAM)
+export HF_TOKEN=hf_...
+export NVIDIA_USE_PIPELINE=1
+python3 nvidia/blueprints/signal-discovery/quantitative_signal_agent.py \
+  --market SOL --mode paper
+```
+
+### Transaction Foundation Model (in training)
+
+`solanaclawd/solana-tx-foundation-1.5b` is a Qwen2.5-1.5B-Instruct model fine-tuned in two stages:
+
+1. **CPT** — continued pre-training on 19,542 Solana transactions in NeMo CPT format (`solanaclawd/solana-tx-foundation-cpt`)
+2. **SFT** — instruction fine-tuning on `data/solana_clawd_merged.jsonl` (30K pairs)
+
+The Solana tokenizer (`nvidia/blueprints/transaction-foundation-model/src/tokenizer/`) encodes 8 field types: `PROG`, `IX`, `MINT`, `AMT`, `SLOT`, `SIDE`, `STATUS`, `FEE`, `vocab_size=4886`.
+
+To relaunch training from scratch:
+
+```bash
+cd ai-training
+python3 nvidia/blueprints/transaction-foundation-model/pipeline.py \
+  --stages cpt sft evaluate
+```
 
 > **Tool-use / function calling?** Use the 8B Hermes-3 base with
 > `configs/hermes3_lora_config.yaml` and the `perps/` function-calling suite

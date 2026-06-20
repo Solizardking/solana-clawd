@@ -1,9 +1,14 @@
-# 🦞 Solana Clawd AI Training
+<div align="center">
 
-> The training pipeline for the **Solana Clawd** sovereign-agent model.
-> **GitHub**: [Solizardking/solana-clawd-ai-training](https://github.com/Solizardking/solana-clawd-ai-training) — standalone repo for this pipeline.
-> **Parent monorepo**: [Solizardking/solana-clawd](https://github.com/Solizardking/solana-clawd)
-> **HuggingFace org**: [solanaclawd](https://huggingface.co/solanaclawd) — models, datasets, spaces
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=28&pause=1200&color=9945FF&center=true&vCenter=true&width=720&lines=Solana+Clawd+AI+Training;Fine-tune+%E2%86%92+Eval+%E2%86%92+Attest+Onchain;One-shot+GPU+training+pipeline;Register+models+to+onchain.x402.wtf;Open-source+Solana+AI+stack" alt="Animated header" />
+
+<br/>
+
+[![GitHub](https://img.shields.io/badge/GitHub-solana--clawd--ai--training-181717?style=for-the-badge&logo=github)](https://github.com/Solizardking/solana-clawd-ai-training)
+[![HuggingFace](https://img.shields.io/badge/HuggingFace-solanaclawd-FFD21F?style=for-the-badge&logo=huggingface&logoColor=black)](https://huggingface.co/solanaclawd)
+[![OnChain Registry](https://img.shields.io/badge/Registry-onchain.x402.wtf-9945FF?style=for-the-badge)](https://onchain.x402.wtf)
+
+<br/>
 
 [![Buy on Phantom](https://img.shields.io/badge/Buy_%24CLAWD-Phantom-blueviolet?style=flat-square)](https://phantom.com/tokens/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 [![Dexscreener](https://img.shields.io/badge/Chart-Dexscreener-green?style=flat-square)](https://dexscreener.com/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
@@ -11,7 +16,383 @@
 [![Jupiter](https://img.shields.io/badge/Swap-Jupiter-blue?style=flat-square)](https://jup.ag/swap/SOL-8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 [![Solscan](https://img.shields.io/badge/Token-Solscan-lightblue?style=flat-square)](https://solscan.io/token/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump)
 
-## What this is
+<br/>
+
+> The training pipeline for the **Solana Clawd** sovereign-agent model family.
+> Fine-tune, evaluate, and register AI models to the Solana blockchain in one session.
+
+</div>
+
+---
+
+## Models
+
+| Model | Size | Status | Links |
+|---|---|---|---|
+| `solanaclawd/solana-clawd-core-ai-1.5b-lora` | 1.5B LoRA | ✅ **Live** — train_loss 0.9008, token_acc 82.9% | [![HF](https://img.shields.io/badge/HF-model-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) |
+| `solanaclawd/solana-nvidia-trading-factory-8b-lora` | 8B LoRA | ✅ **Live** — Hermes-3, Solana perps | [![HF](https://img.shields.io/badge/HF-model-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) |
+| `solanaclawd/solana-clawd-1.5b` | 1.5B merged | ✅ **Live** — vLLM / TGI / Ollama ready | [![HF](https://img.shields.io/badge/HF-model-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/solanaclawd/solana-clawd-1.5b) |
+| `solanaclawd/solana-clawd-7b-lora` | 7B LoRA | 🔄 **Training** | [![HF](https://img.shields.io/badge/HF-model-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) |
+| `solanaclawd/solana-tx-foundation-1.5b` | 1.5B CPT+SFT | 🔄 **Training** | [![HF](https://img.shields.io/badge/HF-model-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/solanaclawd/solana-tx-foundation-1.5b) |
+
+## Datasets
+
+| Dataset | Examples | Links |
+|---|---|---|
+| `solanaclawd/solana-clawd-core-ai-instruct` | 35,173 | [![HF](https://img.shields.io/badge/HF-dataset-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct) |
+| `solanaclawd/solana-clawd-instruct` | 36,109 | [![HF](https://img.shields.io/badge/HF-dataset-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct) |
+| `solanaclawd/solana-clawd-realtime-research-instruct` | 29,058 | [![HF](https://img.shields.io/badge/HF-dataset-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) |
+| `solanaclawd/solana-clawd-nvidia-trading-factory-instruct` | 142 | [![HF](https://img.shields.io/badge/HF-dataset-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) |
+| `solanaclawd/solana-tx-foundation-cpt` | 19,542 | [![HF](https://img.shields.io/badge/HF-dataset-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/solanaclawd/solana-tx-foundation-cpt) |
+| `solanaclawd/solana-clawd-eval` | 13 | [![HF](https://img.shields.io/badge/HF-dataset-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) |
+
+## Evals
+
+| Run | Model | Score | Links |
+|---|---|---|---|
+| Solana MCQ benchmark (18Q) | `solanaclawd/solana-clawd-core-ai-1.5b-lora` | **94.4% (17/18)** | — |
+| HF Jobs A100 training | `solanaclawd/solana-clawd-core-ai-1.5b-lora` | **82.9% token acc, loss 0.9008** | [![HF Job](https://img.shields.io/badge/HF-job-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b) |
+| Trading Factory A100 | `solanaclawd/solana-nvidia-trading-factory-8b-lora` | **85.5% token acc, loss 0.8064** | [![HF Job](https://img.shields.io/badge/HF-job-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/jobs/ordlibrary/6a35a2ce953ed90bfb945009) |
+| W&B Weave baseline | `OpenPipe/Qwen3-14B-Instruct` | 60% (12/20) | [![W&B](https://img.shields.io/badge/W%26B-trace-FFBE00?logo=weightsandbiases)](https://wandb.ai/clawdsolana-clawd/clawd/r/call/019edb80-957d-70dc-9289-9a27b188e57b) |
+| W&B live metrics | all runs | — | [![W&B](https://img.shields.io/badge/W%26B-clawd-FFBE00?logo=weightsandbiases)](https://wandb.ai/clawdsolana-clawd/clawd) |
+
+## Spaces
+
+| Space | Description |
+|---|---|
+| [![HF Space](https://img.shields.io/badge/Space-brave--new--world-FFD21F?logo=huggingface&logoColor=black)](https://huggingface.co/spaces/solanaclawd/brave-new-world) | Live Clawd demo — chat, perps tools, ZK reasoning |
+
+---
+
+## One-shot bootstrap
+
+```bash
+# Audit, train, register — one command
+curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd-ai-training/main/scripts/solana_ai_model_kit.sh | bash
+
+# From clone
+git clone https://github.com/Solizardking/solana-clawd-ai-training
+cd solana-clawd-ai-training
+export HF_TOKEN=hf_...          # huggingface.co/settings/tokens
+./scripts/launch_hf_jobs.sh a100-large
+./dao/register_model.sh --hf-model "YOUR_ORG/your-model"
+```
+
+---
+
+## The Foundation — Why Blockchain + AI?
+
+We are standing at the edge of a paradigm shift. For decades, the development of artificial intelligence has been concentrated in the hands of a few: large corporations with access to proprietary datasets, enormous compute budgets, and closed feedback loops. The models that emerged were powerful — but opaque, biased, and inaccessible to most of the world.
+
+Two technologies are changing that. Together, they open a door to **On-Chain Reinforcement Learning (ORL)** — a framework in which AI models learn, improve, and are rewarded entirely on decentralized infrastructure.
+
+### Transparency and Trust
+
+Blockchain technology introduced a new paradigm for secure, decentralized, and transparent data management. Recording training data provenance on-chain means developers — and the public — can trace the lineage of every model weight, every gradient update, every reward signal.
+
+At the World Economic Forum in Davos, executives noted that blockchain could be instrumental in monitoring the data used to train AI models, thereby preventing bias. This is not a future possibility — it is an architectural decision we can make today.
+
+### The Convergence
+
+| Domain | How Blockchain + AI Applies |
+| --- | --- |
+| Healthcare | Blockchain-verified patient records, analyzed by federated AI models, enable privacy-preserving diagnosis without data leaving the hospital |
+| Sustainable Energy | AI-optimized grids, powered by tokenized renewable energy markets, reduce waste and carbon output at scale |
+| Financial Inclusion | Decentralized microfinance platforms with AI lending algorithms reach communities that traditional banks ignore |
+| Solana-Native DeFi | Thousands of TPS at sub-cent fees makes Solana uniquely suited as the settlement and coordination layer for AI training pipelines |
+
+---
+
+## Part II — Decentralized AI Training Architecture
+
+Decentralized AI training distributes the process of building AI models across multiple independent nodes in a blockchain network. Instead of relying on a centralized data repository or a single compute provider, training transactions are coordinated and recorded on-chain — ensuring data integrity and security throughout.
+
+| Component | Description |
+| --- | --- |
+| Data Sharing | Data owners contribute datasets to model training without transferring raw data off-premises. The blockchain records contributions and preserves each participant's data rights. |
+| Model Training | AI models train across multiple decentralized nodes, each on different data subsets — federated learning with a cryptographic audit trail. |
+| Aggregation | After local training, improvements (updated weights, gradients) are aggregated. Blockchain ensures this is secure, transparent, and that contributors are rewarded fairly. |
+
+**Benefits**
+
+| Benefit | Description |
+| --- | --- |
+| Privacy | Data stays local; only model updates move across the network |
+| Reduced Bias | Diverse contributors produce more generalizable models |
+| Incentivization | Token rewards drive participation from data owners and compute providers |
+| Auditability | Every training step is verifiable on-chain — forever |
+
+---
+
+## Part III — Consensus Learning: Blockchain as the Arbiter of Intelligence
+
+Consensus Learning (CL) creates decentralized AI models where participants never share raw data or model weights — only predictions. The blockchain coordinates the consensus protocol that turns individual predictions into a collectively optimal output.
+
+**Phase 1 — Individual Learning**: Each participant trains their own model on private data. No sensitive information is disclosed. After training, participants submit initial predictions through a smart contract or Proof-of-Stake mechanism.
+
+**Phase 2 — Communication**: Participants transmit predictions to peers via a gossip protocol. Each participant updates their prediction based on the quality and confidence of peers' outputs, converging on a consensus.
+
+| Project | Approach | What CL Does Differently |
+| --- | --- | --- |
+| Bittensor | Incentivized subnet inference | CL uses gossip consensus on predictions, not validator scoring |
+| FLock.io | Federated fine-tuning + rewards | CL never shares gradients or weights, only prediction outputs |
+| Ritual | AI coprocessor for contracts | CL aggregates knowledge without a trusted coprocessor |
+
+CL is Byzantine-resilient and data-confidential by design. Malicious nodes are filtered through confidence-weighted aggregation — the gossip protocol makes it safe by construction.
+
+---
+
+## Part IV — On-Chain Reinforcement Learning
+
+ORL extends Consensus Learning to the temporal, reward-driven domain — where agents learn by taking actions in an environment and receiving feedback over time.
+
+The blockchain serves three roles: **Environment Record** (every state, action, and reward written to chain, creating a tamper-proof trajectory log), **Reward Oracle** (smart contracts define the reward function: objective, transparent, and uncorrupted by any single party), and **Coordination Layer** (multiple agents learn in parallel; the chain aggregates their experiences into a shared replay buffer).
+
+**The ORL Training Loop**
+
+```
+1. Observe State    — Agent reads on-chain data: prices, liquidity, governance
+2. Take Action      — Generates prediction, executes trade, submits vote
+3. Receive Reward   — Smart contract returns transparent, immutable reward
+4. Write to Chain   — Transition (state, action, reward, next_state) → on-chain replay buffer
+5. Update Policy    — Aggregator samples replay buffer, updates shared policy weights
+6. Commit Checkpoint — Updated model committed to chain (or IPFS with on-chain hash via cNFT)
+7. Reward Participants — Stakers earn proportional to contribution quality → repeat
+```
+
+This loop creates a self-improving, collectively owned AI system — one that gets smarter as more participants contribute, and whose entire learning history is permanently auditable. **The blockchain does not just store the model. It is the model's teacher.**
+
+### Why Solana?
+
+| Feature | Value |
+| --- | --- |
+| Block time | 400ms — near-real-time environment steps recorded on-chain |
+| Transaction cost | <$0.001 — economically viable to log millions of training steps |
+| Programs | Smart contracts define complex, programmable reward functions on-chain |
+| cNFTs | Compressed NFTs for cheap, versioned model checkpoints at scale |
+
+### DeepSolana — The Reference Model
+
+DeepSolana is the first open-weight model in this lineage — a Solana-native language model trained on blockchain transaction data, protocol documentation, and on-chain events. A pretrained base for fine-tuning on task-specific reward signals, distributed via Ollama for local inference with zero cloud dependency.
+
+```bash
+ollama run 8bit/DeepSolana
+```
+
+---
+
+## Part V — Live: The Onchain Model Kit
+
+The architecture above is not theoretical. The Solana Clawd AI Training pipeline is an operational, reproducible LoRA fine-tuning system — registered on-chain, attested by validators, and served through ClawdRouter.
+
+**Published Assets**
+
+| Artifact | Type | Size |
+| --- | --- | --- |
+| `solanaclawd/solana-clawd-core-ai-instruct` | Dataset | 35,173 SFT examples |
+| `solanaclawd/solana-clawd-realtime-research-instruct` | Dataset | 29,058 examples |
+| `solanaclawd/solana-clawd-nvidia-trading-factory-instruct` | Dataset | 142 examples |
+| `solanaclawd/solana-nvidia-trading-factory-8b-lora` | Model | Hermes-3-8B · 85.5% eval accuracy |
+| `solanaclawd/solana-clawd-core-ai-1.5b-lora` | Model | Qwen2.5-1.5B · 82.9% token accuracy |
+
+**Register a Model (One Curl)**
+
+```bash
+curl -X POST https://onchain.x402.wtf/api/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model_type":    "TextGeneration",
+    "api_endpoint":  "https://clawd-box-router.fly.dev/v1",
+    "hf_model_id":   "YOUR_ORG/your-model",
+    "dataset_size":  36109,
+    "eval_accuracy": 0.60,
+    "cluster":       "devnet",
+    "protocol":      "CAAP/1.0",
+    "clawd_token":   "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+  }'
+```
+
+**Inference After Registration**
+
+```bash
+curl https://clawd-box-router.fly.dev/v1/chat/completions \
+  -H "Authorization: Bearer clawd_free_public" \
+  -d '{
+    "model": "solanaclawd/solana-clawd-1.5b",
+    "messages": [
+      {"role": "system", "content": "You are Clawd, a sovereign Solana-native AI agent."},
+      {"role": "user", "content": "What is the SOL-PERP funding rate on Phoenix?"}
+    ]
+  }'
+```
+
+Query the live registry: [onchain.x402.wtf/.well-known/clawd-registry.json](https://onchain.x402.wtf/.well-known/clawd-registry.json)
+
+---
+
+## Roadmap — Twelve Months
+
+| Quarter | Focus | Milestones |
+| --- | --- | --- |
+| Q3 2026 | Foundations | DeepSolana v1 on Jupiter tx dataset · On-chain replay buffer prototype · Consensus learning testnet (3–5 nodes) |
+| Q4 2026 | Incentive Layer | Token-gated participation · Smart-contract reward oracle · Byzantine-fault-tolerant aggregation with slashing |
+| Q1 2027 | Scale | 50+ node consensus learning network · Compressed checkpoint storage (cNFTs) · Cross-chain reward signals |
+| Q2 2027 | Open Ecosystem | Public ORL API · DeepSolana v2 (ORL fine-tuned on 6mo live data) · Bittensor cross-network evaluation |
+
+> The future is not one where a handful of companies own the intelligence layer. It is one where intelligence is grown in public, rewarded by protocol, and owned by the network.
+
+---
+
+## Ecosystem
+
+| Model / Project | Role |
+| --- | --- |
+| [DeepSolana](https://ollama.com/8bit/DeepSolana) | Solana-native base model, ORL fine-tuning reference |
+| [Bittensor](https://bittensor.com) | Incentivized subnet architecture for AI inference |
+| [FLock.io](https://flock.io) | Federated fine-tuning with on-chain rewards |
+| [Ritual](https://ritual.net) | AI coprocessor for infusing AI into smart contracts |
+| [solanaclawd/brave-new-world](https://huggingface.co/spaces/solanaclawd/brave-new-world) | Live Clawd Space — chat, perps tools, ZK reasoning |
+| [ClawdRouter](https://clawd-box-router.fly.dev) | 55+ models, 15-dimension scoring, free tier |
+
+---
+
+## Clawd: Decentralized Solana SVM AI & Compute Network
+
+### The Problem with Centralised Control over AI Creation
+
+The centralisation problem presents an overbearing barrier to AI innovation. Under the status quo, the world's largest corporations hold sway over the trajectory of AI development based on their own objectives, which do not necessarily align with the public interest.
+
+The danger of AI being controlled by centralised corporations is that their biases and values are amplified on a global scale. They decide who gains access to the models, and their value alignment often downgrades the performance of models.
+
+We consequently see low public participation, less access to computing power, amplified data bias and inaccuracies from less and lower quality training data, and a missed opportunity for AI to realise its maximal potential as a force for good.
+
+There is a pressing need for an equitable distribution of rewards for those who contribute compute, data, verification, and intelligence — powered by Solana's blazing speed and near-zero fees.
+
+---
+
+### System Design
+
+Clawd's system logic is comprised of three major components: **Clawd Arena**, **Clawd Swarm**, and **Clawd Nexus**.
+
+Upon task creation, the model is first trained and validated in the Clawd Arena — a high-speed Solana SVM-powered decentralized compute battlefield — then optionally further refined at massive scale in Clawd Swarm using participants' local hardware and private data (no raw data ever leaves the device). Finally, the optimized model is deployed and monetized in the Clawd Nexus, where real-world usage and feedback loops continuously improve it via on-chain revenue sharing.
+
+When a task is created in Clawd Arena, it is executed by Compute Nodes. These nodes train and submit models (or proofs). Verifiers evaluate submissions using standardized benchmarks and Solana-native consensus mechanisms. The fastest finality on Solana ranks the models instantly. Top models flow into Clawd Swarm for collaborative enhancement with distributed GPUs and private knowledge, producing a superior global model. The result is deployed in the Clawd Nexus as high-performance inference endpoints for apps. All participants stake $CLAWD and earn based on verifiable contribution.
+
+---
+
+### Solana Layer — Economic Engine
+
+**Incentivisation**: Anchor programs and PDAs enable lightning-fast staking, task settlement, and atomic reward distribution. Sub-second finality and near-zero fees make micro-contributions profitable — anyone with a GPU can participate and earn instantly.
+
+**Security**: Clawd combines Solana's Tower BFT + economic security with proof-of-compute mechanisms. Participants stake $CLAWD. Dishonest behaviour triggers immediate slashing visible on-chain. Solana's massive parallelism (Sealevel) allows thousands of concurrent AI tasks while keeping verification cheap and fast.
+
+| Attack | Description | Clawd Mitigation |
+| --- | --- | --- |
+| Sybil Attacks | Creating many fake identities | High $CLAWD staking + Solana account rent + performance-only rewards + VRF task assignment |
+| DoS Attacks | Overwhelming the network | Rate limiting + priority fees + Solana's built-in spam resistance |
+| Free-rider Attacks | Submitting low-effort work | Top-K reward system + verifiable compute scoring + Solana-timed epochs |
+| Lookup Attacks | Gaming validation sets | Dual hidden datasets + Solana-randomised evaluation splits |
+| Poisoning Attacks | Submitting corrupted contributions | Majority voting + slashing + verifiable GPU/TEE proofs |
+
+---
+
+### AI & Compute Layer
+
+**Clawd Arena** — A competitive, Solana-timed training battlefield. Compute Nodes race to deliver the best-performing model for any task. Leaderboards and instant ranking via Solana programs drive rapid iteration and reward the strongest contributors.
+
+**Clawd Swarm** — The decentralized high-performance compute collective. Thousands of nodes contribute GPU power and private data signals without ever sharing raw data. Solana coordinates aggregation, payments, and slashing in real time — enabling true swarm intelligence at web2 speeds and costs.
+
+**Clawd Nexus** — The production and monetization hub. Deploy models as unstoppable inference endpoints. Developers integrate via simple APIs, pay with Solana Pay, and revenue is automatically split to trainers, verifiers, data contributors, and compute providers.
+
+---
+
+### Participants
+
+**Compute Nodes** — Provide GPU/TPU resources, stake $CLAWD, train or run inference jobs, and compete for top rewards.
+
+**Verifiers** — Stake $CLAWD, run standardized benchmarks, and earn for accurate scoring. Solana's speed makes verification highly profitable.
+
+**Delegators / Patrons** — Support top nodes or verifiers by delegating $CLAWD. Earn a share of their rewards effortlessly via the Clawd dashboard (Phantom/Solflare compatible).
+
+---
+
+### Quickstart — Arena Dashboard
+
+1. Go to [arena.clawd.io](https://arena.clawd.io), connect Phantom or Solflare wallet
+2. Stake $CLAWD on a task
+3. Get your `CLAWD_API_KEY` from the dashboard
+4. Run a training node:
+
+```bash
+git clone https://github.com/Solizardking/solana-clawd-ai-training
+cd solana-clawd-ai-training
+export TASK_ID=<task-id>
+export CLAWD_API_KEY=your-key
+export HF_TOKEN=hf_...
+./scripts/launch_hf_jobs.sh a100-large    # compete on any base model with LoRA
+./dao/register_model.sh --hf-model "YOUR_ORG/your-model" --eval-accuracy 0.80
+```
+
+5. Claim rewards instantly or on epoch close via the dashboard
+
+---
+
+### Verifier Guide
+
+Stake $CLAWD → Get API key → Run verification loop with your GPU/CPU. Rewards auto-distributed via Solana.
+
+```bash
+git clone https://github.com/Solizardking/solana-clawd-ai-training
+cd solana-clawd-ai-training
+python3 scripts/solana_benchmark.py --model YOUR_ORG/submitted-model  # score a submission
+```
+
+---
+
+### Task Lifecycle
+
+```
+Task creation → Solana program registers task + bounty
+  → Compute Nodes compete → Verifiers score
+  → Top models advance to Swarm
+  → Final model listed in Nexus with revenue share enabled
+```
+
+---
+
+### Solana Programs
+
+| Program | Role |
+| --- | --- |
+| `ClawdStakeProgram` | Staking, delegation, PDAs |
+| `ClawdArenaTaskManager` | Task creation, assignment, top-K logic |
+| `ClawdSwarmCoordinator` | Role randomisation, aggregation, slashing |
+| `ClawdRewardDistributor` | Atomic payouts using SPL token extensions |
+| `ClawdNexusRegistry` | Model listing, inference revenue splitting |
+| `3dLst2E3djtCSwG19mFS3REHxtZPngjyga7iYZLDL5xj` | `solana_ai_inference` Anchor program (devnet) |
+
+All built with Anchor for maximum speed and security.
+
+---
+
+### Model API / Inference (Nexus)
+
+Use `api.nexus.clawd.io` endpoints with your API key. Revenue flows back to creators and compute providers automatically.
+
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="https://api.nexus.clawd.io/v1", api_key="your-clawd-key")
+response = client.chat.completions.create(
+    model="solanaclawd/solana-clawd-core-ai-1.5b-lora",
+    messages=[{"role": "user", "content": "How do I detect a rug pull on Solana?"}],
+)
+print(response.choices[0].message.content)
+```
+
+---
+
+## What this is (Training Pipeline)
 
 A reproducible LoRA fine-tuning pipeline that takes a base instruct model
 (`Qwen/Qwen2.5-1.5B-Instruct`, with `NousResearch/Hermes-3-Llama-3.1-8B` as a
@@ -109,11 +490,23 @@ pull the latest model + dataset in two lines.
 | [`solanaclawd/solana-clawd-core-ai-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct) | dataset | **35,173 examples** — public-safe blend of `core-ai` source chunks, `core-ai` knowledge JSONL, and the cleaned `ai-training` SFT corpus |
 | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
 | [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | dataset | **142 examples published** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, Vulcan/Phoenix paper strategy specs, Rise read plans, autoresearch perps references, perps tool-use, and risk refusals; 127/7/8 train/eval/test |
+| `solanaclawd/solana-tx-foundation-cpt` | dataset | **19,542 examples** — Solana tx records in NeMo CPT format, tokenized by `SolanaTokenizerPipeline` (vocab_size=4886); used for Blueprint 1 continued pre-training |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
 | [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | model | Qwen2.5-1.5B LoRA adapter — **LIVE** (pushed 2026-06-19T23:44Z); recovery job [`ordlibrary/6a35a6833093dba73ce2a86b`](https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b) completed on A100-large in 3h 14m; train_loss=0.9008, token_accuracy=82.9%, 24.54M tokens |
+| `solanaclawd/solana-tx-foundation-1.5b` | model | Qwen2.5-1.5B CPT+SFT model (Blueprint 1) — **in training**; base → CPT on `solana-tx-foundation-cpt` → SFT on merged 30K pairs |
 | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | model | Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset; completed HF job `ordlibrary/6a35a2ce953ed90bfb945009` |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
+
+**External NVIDIA models** used by this pipeline (via NIM API or HF Inference API — not published under `solanaclawd`):
+
+| Model | Access | Role |
+| --- | --- | --- |
+| `nvidia/nemotron-3-nano-30b-a3b` | NIM API (`NVIDIA_API_KEY`) | Primary reasoning — signal verdicts, portfolio narration, distillation |
+| `nvidia/nemotron-3-super-120b-a12b` | NIM API (`NVIDIA_API_KEY`) | Teacher model — SFT labeling and CoT distillation (Blueprint 3) |
+| `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16` | HF Inference API (`HF_TOKEN`) | Local pipeline fallback when no `NVIDIA_API_KEY`; set `NVIDIA_USE_PIPELINE=1` for local weights |
+| `nvidia/nv-embedqa-e5-v5` | NIM API | RAG embedding (Blueprint 5 — enterprise-rag) |
+| `nvidia/nv-rerankqa-mistral-4b-v3` | NIM API | RAG reranker (Blueprint 5) |
 
 ### Dataset viewer
 

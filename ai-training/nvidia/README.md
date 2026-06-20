@@ -17,6 +17,33 @@ optimization library into the Solana Clawd AI training pipeline.
 | `integration/` | NIM bridge routes NVIDIA to ClawdRouter to Ollama, signal-to-trading-factory bridge, and NVIDIA SFT dataset builder. |
 | `../perps/` | Model-facing perps tools, schemas, function-calling harness, and NVIDIA perps handoff generator. |
 
+## Models
+
+| Model | Type | Status | Role |
+| --- | --- | --- | --- |
+| `nvidia/nemotron-3-nano-30b-a3b` | NIM API | External | Primary reasoning — signal verdicts, portfolio narration (all blueprints) |
+| `nvidia/nemotron-3-super-120b-a12b` | NIM API | External | Teacher — SFT labeling and CoT distillation (Blueprint 3) |
+| `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16` | HF Inference API / local | External | Fallback when `HF_TOKEN` set and no `NVIDIA_API_KEY`; `NVIDIA_USE_PIPELINE=1` for local weights |
+| `nvidia/nv-embedqa-e5-v5` | NIM API | External | RAG embedding (Blueprint 5) |
+| `nvidia/nv-rerankqa-mistral-4b-v3` | NIM API | External | RAG reranker (Blueprint 5) |
+| `solanaclawd/solana-clawd-core-ai-1.5b-lora` | LoRA adapter | **Live** | Student — Solana/DeFi/constitutional chat |
+| `solanaclawd/solana-tx-foundation-1.5b` | Full model (CPT+SFT) | **In training** | Transaction foundation (Blueprint 1) — Qwen2.5-1.5B base |
+
+### NIM endpoint routing
+
+The signal agent and NIM bridge (`integration/clawd_nim_bridge.py`) resolve in priority order:
+
+```text
+NVIDIA_API_KEY set  →  NIM API         (nvidia/nemotron-3-nano-30b-a3b)
+HF_TOKEN set        →  HF Inference    (nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16)
+CLAWD_INFERENCE_URL →  Self-hosted Clawd endpoint
+CLAWD_ROUTER_KEY    →  clawd-box-router.fly.dev (free tier)
+(fallback)          →  Ollama localhost:11434
+```
+
+Override the resolved model: `NVIDIA_MODEL=nvidia/nemotron-3-ultra-550b-a55b`  
+Force local HF pipeline: `NVIDIA_USE_PIPELINE=1`
+
 ## Quick start
 
 ```bash

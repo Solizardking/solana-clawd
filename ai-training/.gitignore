@@ -1,4 +1,4 @@
-# Don't commit training artifacts, model weights, or secrets
+# Training artifacts & model weights
 checkpoints/
 outputs/
 *.safetensors
@@ -6,6 +6,15 @@ outputs/
 *.pt
 *.gguf
 *.pkl
+
+# Large training datasets (share via HuggingFace Hub instead)
+data/*.jsonl
+data/*_processed/
+data/incoming/
+data/perps/
+data/strategies/
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -13,6 +22,15 @@ __pycache__/
 .venv/
 venv/
 env/
+
+# Secrets — never commit these
+.env
+.env.*
+!.env.example
+*client_secret*.json
+vault/
+
+# System
 .DS_Store
 *.log
 wandb/
