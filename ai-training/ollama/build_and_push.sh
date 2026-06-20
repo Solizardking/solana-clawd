@@ -154,11 +154,11 @@ push_finetuned_core_ai() {
   local GGUF_FP16="${WORK_DIR}/solana-clawd-core-ai-1.5b-fp16.gguf"
   local GGUF_QUANT="${WORK_DIR}/solana-clawd-core-ai-1.5b-${QUANT}.gguf"
 
-  # solanaclawd/solana-clawd-1.5b is already fully merged (not LoRA)
+  # Merge LoRA adapter into base (solanaclawd/solana-clawd-1.5b is an empty repo)
   merge_and_convert \
     "core-ai" \
-    "solanaclawd/solana-clawd-1.5b" \
-    "" \
+    "Qwen/Qwen2.5-1.5B-Instruct" \
+    "solanaclawd/solana-clawd-core-ai-1.5b-lora" \
     "${MERGED_DIR}" \
     "${GGUF_FP16}" \
     "${GGUF_QUANT}" \
