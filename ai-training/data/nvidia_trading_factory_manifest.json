@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T19:56:52+00:00",
+  "generated_at": "2026-06-20T00:49:09+00:00",
   "dataset_name": "Solana Clawd NVIDIA Trading Factory Instruct",
   "repo_id": "solanaclawd/solana-clawd-nvidia-trading-factory-instruct",
   "builder": "scripts/build_nvidia_trading_factory_dataset.py",
@@ -192,15 +192,15 @@
     {
       "path": "ai-training/trading_factory/README.md",
       "source_type": "trading_factory_workspace",
-      "sha256": "8ab16e3f137d04b57ed7412838402b26e319fdf963da7c4e59d687db99e0f6c2",
-      "size_bytes": 2408,
+      "sha256": "07f9b3ac64eaa03b06a068cb9de03f8f95e4a9bfde15f7beed2f82b97261c156",
+      "size_bytes": 2826,
       "chunks": 1
     },
     {
       "path": "ai-training/trading_factory/solana_factory/factory.py",
       "source_type": "solana_trading_factory_adapter",
-      "sha256": "294fdad2f0700d68fb9370baacf88cb3517cdbfe1216217e7ea4256790022e46",
-      "size_bytes": 4828,
+      "sha256": "f8d6421b48479713c4ee62d5b3077640892ce4a68a30b0f1be70e9565c79ec7f",
+      "size_bytes": 5245,
       "chunks": 2
     },
     {
@@ -227,8 +227,8 @@
     {
       "path": "ai-training/data/strategies/strategy_manifest.json",
       "source_type": "generated_strategy_manifest",
-      "sha256": "8e612a8e6d90a3f55be1a380459851c878708dc4b6ce655e05160cd830c6b845",
-      "size_bytes": 5018,
+      "sha256": "a607203ce3ec32e545a5c7bc1a0abea5b106a9c80e3b34f8ef43be18e958f34a",
+      "size_bytes": 5332,
       "chunks": 2
     },
     {
@@ -374,8 +374,8 @@
     {
       "path": "ai-training/README.md",
       "source_type": "training_pipeline_reference",
-      "sha256": "bccc9237d23d3ebb6103188b3f20d25bb8ba13db4666a46adb2e53e81e805549",
-      "size_bytes": 49359,
+      "sha256": "808a3f90c72330ed5b2bfbdb7b407adb876602e1b1d12b9ef4a436137957fdfc",
+      "size_bytes": 55516,
       "chunks": 3
     },
     {
