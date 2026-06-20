@@ -5,12 +5,16 @@ nim:
   base_url: https://integrate.api.nvidia.com/v1
   # Override with CLAWD_NIM_URL env var to point at a self-hosted NIM endpoint
 
+# ── Model IDs ─────────────────────────────────────────────────────────────────
 models:
-  # Primary reasoning model — Nemotron Nano 30B (fast, cheap, OpenAI-compatible)
+  # Primary reasoning — Nemotron Nano 30B (fast, cheap, OpenAI-compatible)
   # Override: NVIDIA_MODEL=nvidia/nemotron-3-ultra-550b-a55b for teacher runs
   foundation: nvidia/nemotron-3-nano-30b-a3b
 
-  # Super 120B for research / distillation teacher
+  # Ultra 550B — teacher/distillation runs requiring maximum reasoning depth
+  ultra: nvidia/nemotron-3-ultra-550b-a55b
+
+  # Super 120B — balanced teacher for SFT labeling and CoT distillation
   reasoning_teacher: nvidia/nemotron-3-super-120b-a12b
 
   # Embedding model for RAG (Blueprint 5 — enterprise-rag)
@@ -25,6 +29,28 @@ models:
   # Transaction foundation model (after Blueprint 1 CPT + SFT)
   tx_foundation: solanaclawd/solana-tx-foundation-1.5b
 
+# ── HuggingFace Inference API fallback ────────────────────────────────────────
+# Used when NVIDIA_API_KEY is absent but HF_TOKEN is set.
+# Set NVIDIA_USE_PIPELINE=1 to load weights locally instead of the HF API.
+hf_inference:
+  base_url: https://api-inference.huggingface.co/v1
+  models:
+    nano:  nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
+    ultra: nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16
+
+# ── Endpoint priority chain ───────────────────────────────────────────────────
+# Resolved at runtime by integration/clawd_nim_bridge.py and
+# blueprints/signal-discovery/quantitative_signal_agent.py.
+#
+#   NVIDIA_API_KEY   →  NIM API   (models.foundation)
+#   HF_TOKEN         →  HF Inference API  (hf_inference.models.nano)
+#   CLAWD_INFERENCE_URL → self-hosted Clawd endpoint
+#   CLAWD_ROUTER_KEY →  clawd-box-router.fly.dev free tier
+#   (fallback)       →  Ollama localhost:11434
+#
+# Override active model:  NVIDIA_MODEL=nvidia/nemotron-3-ultra-550b-a55b
+# Force local pipeline:   NVIDIA_USE_PIPELINE=1
+
 defaults:
   max_tokens: 512
   temperature: 0.1
@@ -36,12 +62,12 @@ defaults:
 # Set CLAWD_TX_NIM_URL to override.
 tx_foundation_url: ${CLAWD_TX_NIM_URL:-https://integrate.api.nvidia.com/v1}
 
-# HuggingFace model/dataset IDs published from this pipeline
+# ── HuggingFace artifact registry ────────────────────────────────────────────
 hf:
   org: solanaclawd
   models:
-    - solanaclawd/solana-clawd-core-ai-1.5b-lora
-    - solanaclawd/solana-tx-foundation-1.5b
+    - solanaclawd/solana-clawd-core-ai-1.5b-lora   # live LoRA adapter
+    - solanaclawd/solana-tx-foundation-1.5b         # Blueprint 1 (in training)
   datasets:
     - solanaclawd/solana-clawd-core-ai-instruct
     - solanaclawd/solana-clawd-instruct

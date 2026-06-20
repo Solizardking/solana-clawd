@@ -125,10 +125,21 @@ def _solve_cvxpy(
     if turnover_limit is not None and current_weights is not None:
         constraints.append(cp.norm1(w - current_weights) <= turnover_limit)
 
-    objective = cp.Maximize(scenarios.mean(0) @ w)
+    exp_returns = scenarios.mean(0)
+    objective = cp.Maximize(exp_returns @ w)
     prob = cp.Problem(objective, constraints)
-    prob.solve(solver=cp.SCS, verbose=False)
-    if w.value is None:
+
+    # Try ECOS first (faster, LP-friendly); fall back to SCS for larger problems
+    for solver in [cp.ECOS, cp.SCS]:
+        try:
+            prob.solve(solver=solver, verbose=False)
+            if w.value is not None:
+                break
+        except cp.SolverError:
+            continue
+
+    if w.value is None or np.allclose(w.value, 0, atol=1e-6):
+        # Infeasible or zero solution: use equal-weight as safe default
         return np.ones(n_assets) / n_assets
     return np.clip(w.value, 0, None)
 

@@ -1,5 +1,5 @@
 name: solana-nemoclawd-nvidia-trading-factory
-version: "2026-06-19"
+version: "2026-06-20"
 description: >
   End-to-end NVIDIA AI Blueprint integration for Solana Clawd.
   Six blueprints (TFM, portfolio-opt, distillation, signal-discovery,
@@ -11,17 +11,45 @@ default_mode: paper
 models:
   # NIM primary (fast reasoning, signal verdicts, portfolio narration)
   reasoning: nvidia/nemotron-3-nano-30b-a3b
-  # NIM teacher (distillation, SFT labeling)
+
+  # NIM ultra (maximum reasoning depth — distillation teacher, complex analysis)
+  ultra: nvidia/nemotron-3-ultra-550b-a55b
+
+  # NIM teacher (balanced distillation and SFT labeling)
   research: nvidia/nemotron-3-super-120b-a12b
-  # Base for local fine-tune
+
+  # Base for local fine-tune (Blueprint 1 SFT stage)
   base: Qwen/Qwen2.5-1.5B-Instruct
-  # Published student adapter
+
+  # Published student adapter (live on Hub)
   adapter: solanaclawd/solana-clawd-core-ai-1.5b-lora
+
   # Transaction foundation model (CPT + SFT, Blueprint 1)
   tx_foundation: solanaclawd/solana-tx-foundation-1.5b
+
   # RAG embedding + reranker (Blueprint 5)
   embedding: nvidia/nv-embedqa-e5-v5
   reranker: nvidia/nv-rerankqa-mistral-4b-v3
+
+# ── NIM endpoint routing ──────────────────────────────────────────────────────
+# Runtime resolution order (clawd_nim_bridge.py / quantitative_signal_agent.py):
+#
+#   NVIDIA_API_KEY   →  NIM API        (models.reasoning = Nemotron Nano 30B)
+#   HF_TOKEN         →  HF Inference   (nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16)
+#   CLAWD_INFERENCE_URL → self-hosted
+#   CLAWD_ROUTER_KEY →  clawd-box-router.fly.dev free tier
+#   (fallback)       →  Ollama localhost:11434
+#
+# Model overrides:
+#   NVIDIA_MODEL=nvidia/nemotron-3-ultra-550b-a55b   # force ultra
+#   NVIDIA_USE_PIPELINE=1                             # use local HF pipeline()
+nim_routing:
+  nim_api_key_var: NVIDIA_API_KEY
+  hf_token_var: HF_TOKEN
+  clawd_url_var: CLAWD_INFERENCE_URL
+  clawd_router_key_var: CLAWD_ROUTER_KEY
+  model_override_var: NVIDIA_MODEL
+  pipeline_override_var: NVIDIA_USE_PIPELINE
 
 # ── Inputs ────────────────────────────────────────────────────────────────────
 inputs:
@@ -39,6 +67,13 @@ inputs:
     - nvidia/README.md
     - nvidia/configs/nim_config.yaml
 
+# ── Integration entrypoints ───────────────────────────────────────────────────
+integration:
+  nim_bridge: nvidia/integration/clawd_nim_bridge.py
+  nemo_agent: nvidia/integration/nemo_clawd_agent.py
+  trading_factory_bridge: nvidia/integration/trading_factory_nvidia.py
+  dataset_builder: nvidia/integration/dataset_nvidia_sft.py
+
 # ── Workflow configs (one entry per blueprint) ────────────────────────────────
 workflows:
 
@@ -48,16 +83,15 @@ workflows:
     config: nvidia/configs/solana_tx_foundation.yaml
     nemo_config: nvidia/configs/pretrain_solana_decoder.yaml
     pipeline: nvidia/blueprints/transaction-foundation-model/pipeline.py
-    cpt_data: data/tx_foundation_cpt.jsonl          # 19.5K Jupiter+SFT records
-    sft_data: data/solana_clawd_merged.jsonl         # 30K instruction pairs
+    cpt_data: data/tx_foundation_cpt.jsonl           # 19,542 Solana tx CPT records
+    sft_data: data/solana_clawd_merged.jsonl          # 30K instruction pairs
     output_model: solanaclawd/solana-tx-foundation-1.5b
     hf_dataset: solanaclawd/solana-tx-foundation-cpt
-    status: training                                  # cpt→sft→eval in progress
+    status: training                                   # pipeline.py --stages cpt sft evaluate
 
   # Blueprint 2 — Quantitative Portfolio Optimization
   portfolio_optimization:
     enabled: true
-    config: nvidia/configs/solana_tx_foundation.yaml
     runner: nvidia/blueprints/portfolio-optimization/cufolio_clawd.py
     objective: mean_cvar
     cvar_alpha: 0.95
@@ -65,6 +99,10 @@ workflows:
     max_leverage: 1.0
     markets: [SOL, BTC, ETH, JUP, SOL-PERP, BTC-PERP]
     price_source: phoenix_vulcan          # real candles via vulcan CLI
+    # When Phoenix mark prices are near-constant (common over short windows),
+    # phoenix_prices.py auto-anchors a synthetic series to the real last price
+    # so the CVaR optimizer receives statistically valid return distributions.
+    price_fallback: synthetic_anchored
     gate: paper
     vulcan_mode: paper
     status: running
@@ -72,7 +110,7 @@ workflows:
   # Blueprint 3 — Model Distillation
   distillation:
     enabled: true
-    teacher: nvidia/nemotron-3-nano-30b-a3b
+    teacher: nvidia/nemotron-3-nano-30b-a3b   # swap for ultra for quality
     student: Qwen/Qwen2.5-1.5B-Instruct
     method: response_distillation
     output: data/distilled_trading_factory.jsonl
@@ -114,13 +152,17 @@ workflows:
   aiq:
     enabled: true
     config: nvidia/configs/aiq_config.yaml
+    modes:
+      plan:  python3 nvidia/blueprints/aiq/agent.py --mode plan --strict
+      model: python3 nvidia/blueprints/aiq/agent.py --mode model --adapter solanaclawd/solana-clawd-core-ai-1.5b-lora
+      full:  python3 nvidia/blueprints/aiq/agent.py --mode full --strict
     eval_dataset: data/solana_clawd_eval.jsonl
     output: data/nvidia_aiq_eval.json
     thresholds:
       accuracy: 0.55
       latency_p95_s: 2.0
       refusal_rate: 1.0
-      groundedness: 0.75
+      groundedness: 0.90
     status: ready
 
 # ── HuggingFace publishing ────────────────────────────────────────────────────
@@ -130,13 +172,16 @@ hf:
     - id: solanaclawd/solana-clawd-nvidia-trading-factory-instruct
       source: data/nvidia_trading_factory_sft.jsonl
       card: data/nvidia_trading_factory_dataset_card.md
-      status: ready_to_publish
+      status: published
     - id: solanaclawd/solana-tx-foundation-cpt
       source: data/tx_foundation_cpt.jsonl
-      status: ready_to_publish
+      card: data/tx_foundation_cpt_dataset_card.md
+      parquet: data/tx_foundation_cpt_processed
+      status: ready_to_upload
   models:
     - id: solanaclawd/solana-tx-foundation-1.5b
       source: outputs/solana-tx-foundation-1.5b/sft
+      card: outputs/solana-tx-foundation-1.5b-model-card.md
       status: training
     - id: solanaclawd/solana-clawd-core-ai-1.5b-lora
       status: published

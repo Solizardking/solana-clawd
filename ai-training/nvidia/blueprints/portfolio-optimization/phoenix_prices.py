@@ -113,8 +113,8 @@ def fetch_jupiter_history(asset: str, n_days: int = 90) -> list[float] | None:
         return None
 
 
-def _synthetic_stub(asset: str, n_days: int) -> list[float]:
-    """Offline fallback with realistic Solana-ecosystem vol."""
+def _synthetic_stub(asset: str, n_days: int, anchor: float | None = None) -> list[float]:
+    """Realistic synthetic price history anchored to `anchor` (or a baseline if None)."""
     base = {"SOL": 150, "BTC": 65000, "ETH": 3500, "JUP": 0.8,
             "JTO": 3.5, "BONK": 0.000025, "PYTH": 0.45,
             "SOL-PERP": 150, "BTC-PERP": 65000, "ETH-PERP": 3500}
@@ -122,10 +122,13 @@ def _synthetic_stub(asset: str, n_days: int) -> list[float]:
             "JTO": 0.07, "BONK": 0.10, "PYTH": 0.06,
             "SOL-PERP": 0.045, "BTC-PERP": 0.027, "ETH-PERP": 0.033}
     rng = np.random.default_rng(seed=sum(ord(c) for c in asset))
-    s = base.get(asset, 10.0)
+    s = anchor if anchor is not None else base.get(asset, 10.0)
     v = vol.get(asset, 0.05)
-    daily = 1 + rng.normal(0.0005, v, n_days)
-    return (s * np.cumprod(daily)).tolist()
+    daily = 1 + rng.normal(0.0003, v, n_days)
+    prices = np.cumprod(daily)
+    # Scale so the last value matches the anchor exactly
+    prices = prices * (s / prices[-1])
+    return prices.tolist()
 
 
 def fetch_prices(
@@ -164,7 +167,18 @@ def fetch_prices(
             if verbose:
                 print(f"  [{asset}] synthetic (offline)  last={closes[-1]:.4f}")
 
-        prices[asset] = closes[:n_days]
+        # Detect degenerate prices (Phoenix mark price can be near-constant
+        # over short windows — log returns collapse to 0, breaking CVaR opt).
+        # When std/mean < 0.5% we anchor a synthetic series to the real last price.
+        arr = np.array(closes)
+        if arr.std() / (arr.mean() + 1e-12) < 0.005:
+            last_price = float(arr[-1])
+            if verbose:
+                print(f"  [{asset}] prices nearly constant (std/mean={arr.std()/arr.mean():.4f}) "
+                      f"— anchoring synthetic history to last={last_price:.4f}")
+            closes = _synthetic_stub(asset, n_days, anchor=last_price)
+
+        prices[asset] = closes[:n_days] if len(closes) >= n_days else closes
 
     return prices
 

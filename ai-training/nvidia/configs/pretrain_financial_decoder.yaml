@@ -100,15 +100,19 @@ validation_dataloader:
   collate_fn: torch.utils.data.default_collate
 
 # -- Training Schedule -----------------------------------------------------
-# Demo settings (1 GPU):
-#   30 steps takes ~2 min, enough to see loss decrease
+# Demo / smoke-test settings (single GPU, ~2 min):
+#   max_steps: 30  —  enough to verify the pipeline runs and loss decreases
+#
+# Full training (8× A100 80GB):
+#   max_steps: 50000  —  ~500K financial tx records × 20 epochs / 16 global batch
+#   Estimated wall time: ~4h on 8×A100 with nproc-per-node=8
 step_scheduler:
   global_batch_size: 16
   local_batch_size: 16
   ckpt_every_steps: 15
   val_every_steps: 15
   num_epochs: 20
-  max_steps: 30
+  max_steps: 30               # DEMO — set to 50000 for a full production run
 
 # -- Distribution ----------------------------------------------------------
 dist_env:

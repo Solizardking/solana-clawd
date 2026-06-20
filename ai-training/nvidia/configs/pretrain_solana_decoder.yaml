@@ -15,19 +15,32 @@
 
 # -- Model ----------------------------------------------------------------
 # ~29M parameter decoder. vocab_size must match SolanaTokenizerPipeline.vocab_size.
-# Run: python -c "from src.tokenizer.solana_tokenizer import SolanaTokenizerPipeline; print(SolanaTokenizerPipeline().vocab_size)"
+# Verify: python -c "from src.tokenizer.solana_tokenizer import SolanaTokenizerPipeline; print(SolanaTokenizerPipeline().vocab_size)"
+#
+# Vocab breakdown (base vocab_size=4886):
+#   PROG tokens  : 512  (program ID buckets)
+#   IX tokens    : 12   (instruction type discriminators)
+#   MINT tokens  : 4096 (mint address buckets)
+#   AMT tokens   : 64   (log-bucketed transfer amounts)
+#   FEE tokens   : 32   (log-bucketed fees)
+#   SLOT tokens  : 128  (relative slot buckets)
+#   SIDE tokens  : 2    (BUY / SELL)
+#   STATUS tokens: 2    (SUCCESS / FAIL)
+#   Special tokens: 8   (<BOS> <EOS> <PAD> <UNK> <TX> <SEP> <MASK> <CLS>)
+# Total base   : 4856 + 30 specials = 4886
+# With padding to 256-boundary: 5136 (for efficient CUDA memory alignment)
 model:
   _target_: nemo_automodel.NeMoAutoModelForCausalLM.from_config
   config:
     _target_: transformers.LlamaConfig
-    vocab_size: 5136          # SolanaTokenizerPipeline default (prog512+ix12+mint4096+amt+slot+side+status+fee + specials)
+    vocab_size: 5136          # padded to 256-boundary for CUDA alignment (base=4886)
     hidden_size: 512
     num_hidden_layers: 8
     num_attention_heads: 8
-    num_key_value_heads: 2
-    intermediate_size: 1408
+    num_key_value_heads: 2    # GQA 4:1 ratio — saves 4× KV cache vs MHA
+    intermediate_size: 1408   # SwiGLU: ~2.75× hidden (matches Llama-2 ratio)
     max_position_embeddings: 4096
-    rope_theta: 500000.0
+    rope_theta: 500000.0      # high base for long-context RoPE extrapolation
     hidden_act: silu
     rms_norm_eps: 1.0e-5
     attention_dropout: 0.0
@@ -61,13 +74,15 @@ validation_dataloader:
   collate_fn: torch.utils.data.default_collate
 
 # -- Training Schedule -----------------------------------------------------
+# Full training: 19,542 records × 3 epochs / 32 global batch ≈ 1,831 steps
+# Demo (single GPU, quick test): set max_steps: 30
 step_scheduler:
   global_batch_size: 32
-  local_batch_size: 8
+  local_batch_size: 8         # 4× grad accum gives effective batch of 32
   ckpt_every_steps: 500
   val_every_steps: 250
   num_epochs: 3
-  max_steps: 5000             # ~19.5K CPT records × 3 epochs / 32 batch
+  max_steps: 1831             # full 3-epoch run; set to 30 for a quick smoke test
 
 # -- Distribution ----------------------------------------------------------
 dist_env:
@@ -110,4 +125,5 @@ checkpoint:
   checkpoint_dir: outputs/solana-tx-foundation/checkpoints/
   model_save_format: safetensors
   save_consolidated: true
-  model_repo_id: solanaclawd/solana-tx-foundation-decoder
+  # Hub model ID for the NeMo decoder variant (distinct from the Qwen2.5 TRL path)
+  model_repo_id: solanaclawd/solana-tx-foundation-decoder-29m
