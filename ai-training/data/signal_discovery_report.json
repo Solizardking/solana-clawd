@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-06-20T00:40:32.944810+00:00",
-  "n_markets": 1,
+  "timestamp": "2026-06-20T00:46:27.456345+00:00",
+  "n_markets": 3,
   "verdict_summary": {
-    "hold": 1
+    "hold": 3
   },
   "regime_summary": {
-    "ranging": 1
+    "ranging": 3
   },
   "avg_confidence": 0.0,
   "discoveries": [
@@ -15,9 +15,35 @@
       "composite_strength": 0.0,
       "verdict": "hold",
       "confidence": 0.0,
-      "rationale": "ranging regime, composite neutral strength 0.00",
+      "rationale": "parse error",
       "risk_flags": [
-        "weak_trend"
+        "parse_error"
+      ],
+      "regime": "ranging",
+      "strategy_id": null
+    },
+    {
+      "market": "BTC",
+      "composite_direction": "neutral",
+      "composite_strength": 0.0,
+      "verdict": "hold",
+      "confidence": 0.0,
+      "rationale": "parse error",
+      "risk_flags": [
+        "parse_error"
+      ],
+      "regime": "ranging",
+      "strategy_id": null
+    },
+    {
+      "market": "ETH",
+      "composite_direction": "neutral",
+      "composite_strength": 0.0,
+      "verdict": "hold",
+      "confidence": 0.0,
+      "rationale": "parse error",
+      "risk_flags": [
+        "parse_error"
       ],
       "regime": "ranging",
       "strategy_id": null
