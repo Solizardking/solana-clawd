@@ -23,6 +23,11 @@ __pycache__/
 venv/
 env/
 
+# Rust / Anchor
+target/
+platform-tools/
+platform-tools-*.tar.bz2
+
 # Secrets — never commit these
 .env
 .env.*

