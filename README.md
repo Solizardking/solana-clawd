@@ -640,21 +640,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`88950b62`](../../commit/88950b62) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 🥈 | [`d6cb81e8`](../../commit/d6cb81e8) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
-| 🥉 | [`c992492d`](../../commit/c992492d) | sdfgfgdsfgds | solizardking | Jun 19 |
-| 4️⃣ | [`6d6a2f3a`](../../commit/6d6a2f3a) | sdffd | solizardking | Jun 19 |
-| 5️⃣ | [`325c441d`](../../commit/325c441d) | fdsdfs | solizardking | Jun 19 |
-| 6️⃣ | [`1ce72029`](../../commit/1ce72029) | sadfdfsa | solizardking | Jun 19 |
-| 7️⃣ | [`a3d110e5`](../../commit/a3d110e5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 8️⃣ | [`c08abd77`](../../commit/c08abd77) | fix: render.yaml static site doesn't support region or plan | solizardking | Jun 19 |
-| 9️⃣ | [`b70756a1`](../../commit/b70756a1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 🔟 | [`d8183d9c`](../../commit/d8183d9c) | feat: Render deployment for signal discovery API + dashboard | solizardking | Jun 19 |
+| 🥇 | [`ed6c1197`](../../commit/ed6c1197) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 🥈 | [`88950b62`](../../commit/88950b62) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 🥉 | [`d6cb81e8`](../../commit/d6cb81e8) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
+| 4️⃣ | [`c992492d`](../../commit/c992492d) | sdfgfgdsfgds | solizardking | Jun 19 |
+| 5️⃣ | [`6d6a2f3a`](../../commit/6d6a2f3a) | sdffd | solizardking | Jun 19 |
+| 6️⃣ | [`325c441d`](../../commit/325c441d) | fdsdfs | solizardking | Jun 19 |
+| 7️⃣ | [`1ce72029`](../../commit/1ce72029) | sadfdfsa | solizardking | Jun 19 |
+| 8️⃣ | [`a3d110e5`](../../commit/a3d110e5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 9️⃣ | [`c08abd77`](../../commit/c08abd77) | fix: render.yaml static site doesn't support region or plan | solizardking | Jun 19 |
+| 🔟 | [`b70756a1`](../../commit/b70756a1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| · | [`d8183d9c`](../../commit/d8183d9c) | feat: Render deployment for signal discovery API + dashboard | solizardking | Jun 19 |
 | · | [`a49755d0`](../../commit/a49755d0) | feat: mark core-ai-1.5b-lora COMPLETE + Blueprint 4/TFM expa | solizardking | Jun 19 |
 | · | [`2d513b6e`](../../commit/2d513b6e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
 | · | [`a53f88a2`](../../commit/a53f88a2) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
 | · | [`b73809b9`](../../commit/b73809b9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 19 |
-| · | [`1bbcfbfd`](../../commit/1bbcfbfd) | sdfdfs | solizardking | Jun 19 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
