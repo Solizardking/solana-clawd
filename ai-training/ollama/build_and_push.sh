@@ -1,136 +1,256 @@
 #!/usr/bin/env bash
-# Clawd Ollama build and push pipeline
+# Clawd Ollama — build and push all models
 #
-# Two modes:
-#   ./build_and_push.sh preview     # push qwen2.5:1.5b base + Clawd system prompt (now)
-#   ./build_and_push.sh finetuned   # merge LoRA → GGUF → push fine-tuned model (post-training)
+# Usage:
+#   ./build_and_push.sh preview                    # push ALL preview models
+#   ./build_and_push.sh preview  core-ai           # push only core-ai preview
+#   ./build_and_push.sh preview  trading-factory   # push only trading-factory preview
+#   ./build_and_push.sh finetuned                  # build + push ALL fine-tuned GGUF models
+#   ./build_and_push.sh finetuned core-ai          # build + push core-ai fine-tuned only
+#   ./build_and_push.sh finetuned trading-factory  # build + push trading-factory fine-tuned only
+#   ./build_and_push.sh all                        # preview + finetuned for all models
 #
-# Requirements for 'finetuned' mode:
-#   pip install transformers peft torch
-#   git clone https://github.com/ggerganov/llama.cpp   (at LLAMA_CPP_DIR)
-#   cd llama.cpp && cmake -B build && cmake --build build --target llama-quantize llama-gguf-split
-#   ollama account linked at ollama.com (ollama push requires login)
+# Requirements for 'finetuned':
+#   brew install llama.cpp
+#   pip install transformers peft torch accelerate huggingface_hub
+#   ollama account linked at ollama.com
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OLLAMA_NAMESPACE="${OLLAMA_NAMESPACE:-8bit}"
-HF_LORA_REPO="${HF_LORA_REPO:-solanaclawd/solana-clawd-1.5b-lora}"
-HF_BASE_MODEL="${HF_BASE_MODEL:-Qwen/Qwen2.5-1.5B-Instruct}"
-LLAMA_CPP_DIR="${LLAMA_CPP_DIR:-$HOME/llama.cpp}"
+OLLAMA_NS="${OLLAMA_NS:-8bit}"
 WORK_DIR="${SCRIPT_DIR}/build"
 QUANT="${QUANT:-Q4_K_M}"
+HF_TOKEN="${HF_TOKEN:-}"
+
+# llama.cpp tools (brew install llama.cpp)
+LLAMA_QUANTIZE="$(command -v llama-quantize 2>/dev/null || echo '')"
+CONVERT_SCRIPT="$(find /opt/homebrew/Cellar/llama.cpp -name 'convert_hf_to_gguf.py' 2>/dev/null | head -1 || echo '')"
 
 MODE="${1:-preview}"
+TARGET="${2:-all}"   # all | core-ai | trading-factory
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
-info()  { echo "[clawd] $*"; }
-die()   { echo "[clawd] ERROR: $*" >&2; exit 1; }
+info()  { echo -e "\033[1;36m[clawd]\033[0m $*"; }
+ok()    { echo -e "\033[1;32m[✓]\033[0m $*"; }
+die()   { echo -e "\033[1;31m[✗]\033[0m $*" >&2; exit 1; }
 
-require_cmd() { command -v "$1" &>/dev/null || die "$1 not found — install it first"; }
+require_cmd() { command -v "$1" &>/dev/null || die "'$1' not found — install it first"; }
 
-# ── Preview mode: base + system prompt ────────────────────────────────────────
-push_preview() {
-  info "Pulling qwen2.5:1.5b base..."
+# ── Preview: pull base + system prompt ────────────────────────────────────────
+push_preview_core_ai() {
+  info "=== Core AI 1.5B — preview ==="
+  info "Pulling qwen2.5:1.5b..."
   ollama pull qwen2.5:1.5b
 
-  info "Creating 8bit/solana-clawd:preview..."
-  ollama create "${OLLAMA_NAMESPACE}/solana-clawd:preview" \
-    -f "${SCRIPT_DIR}/Modelfile.preview"
+  info "Building ${OLLAMA_NS}/solana-clawd-core-ai:preview..."
+  ollama create "${OLLAMA_NS}/solana-clawd-core-ai:preview" \
+    -f "${SCRIPT_DIR}/Modelfile.core-ai-preview"
 
-  info "Testing locally..."
-  ollama run "${OLLAMA_NAMESPACE}/solana-clawd:preview" \
-    "What is a PDA on Solana? Answer in one sentence." --nowordwrap
+  info "Smoke test..."
+  ollama run "${OLLAMA_NS}/solana-clawd-core-ai:preview" \
+    "What is a PDA on Solana? One sentence." --nowordwrap
 
   info "Pushing to ollama.com..."
-  ollama push "${OLLAMA_NAMESPACE}/solana-clawd:preview"
-
-  info "Done — preview live at https://ollama.com/${OLLAMA_NAMESPACE}/solana-clawd:preview"
+  ollama push "${OLLAMA_NS}/solana-clawd-core-ai:preview"
+  ok "https://ollama.com/${OLLAMA_NS}/solana-clawd-core-ai:preview"
 }
 
-# ── Fine-tuned mode: merge → GGUF → quantize → push ──────────────────────────
-push_finetuned() {
-  require_cmd python3
-  require_cmd ollama
+push_preview_trading_factory() {
+  info "=== Trading Factory 8B — preview ==="
+  info "Pulling hermes3:8b..."
+  ollama pull hermes3:8b
+
+  info "Building ${OLLAMA_NS}/solana-trading-factory:preview..."
+  ollama create "${OLLAMA_NS}/solana-trading-factory:preview" \
+    -f "${SCRIPT_DIR}/Modelfile.trading-factory-preview"
+
+  info "Smoke test..."
+  ollama run "${OLLAMA_NS}/solana-trading-factory:preview" \
+    "What is the SOL-PERP funding rate used for on Phoenix?" --nowordwrap
+
+  info "Pushing to ollama.com..."
+  ollama push "${OLLAMA_NS}/solana-trading-factory:preview"
+  ok "https://ollama.com/${OLLAMA_NS}/solana-trading-factory:preview"
+}
+
+# ── Fine-tuned: download → merge (if needed) → GGUF → quantize → push ────────
+merge_and_convert() {
+  local LABEL="$1"
+  local HF_BASE="$2"
+  local HF_ADAPTER="$3"   # empty string = already merged (just download directly)
+  local MERGED_DIR="$4"
+  local GGUF_FP16="$5"
+  local GGUF_QUANT="$6"
+  local QUANT_TYPE="$7"
 
   mkdir -p "${WORK_DIR}"
-  MERGED_DIR="${WORK_DIR}/solana-clawd-1.5b-merged"
-  GGUF_FP16="${WORK_DIR}/solana-clawd-1.5b-fp16.gguf"
-  GGUF_QUANT="${WORK_DIR}/solana-clawd-1.5b-${QUANT}.gguf"
 
-  # ── Step 1: Merge LoRA into base ──────────────────────────────────────────
-  info "Step 1/4 — Merging LoRA adapter into base model..."
-  python3 - <<PYEOF
+  if [[ -n "${HF_ADAPTER}" ]]; then
+    info "Step 1/4 [${LABEL}] — Merging LoRA adapter into base..."
+    python3 - <<PYEOF
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
-import torch
+import torch, os
 
-BASE    = "${HF_BASE_MODEL}"
-ADAPTER = "${HF_LORA_REPO}"
+BASE    = "${HF_BASE}"
+ADAPTER = "${HF_ADAPTER}"
 MERGED  = "${MERGED_DIR}"
+TOKEN   = os.environ.get("HF_TOKEN", "")
 
-print(f"Loading base: {BASE}")
-model = AutoModelForCausalLM.from_pretrained(BASE, torch_dtype=torch.bfloat16, device_map="cpu")
-print(f"Applying adapter: {ADAPTER}")
-model = PeftModel.from_pretrained(model, ADAPTER)
+print(f"  base:    {BASE}")
+print(f"  adapter: {ADAPTER}")
+model = AutoModelForCausalLM.from_pretrained(
+    BASE, torch_dtype=torch.bfloat16, device_map="cpu",
+    token=TOKEN if TOKEN else None,
+)
+model = PeftModel.from_pretrained(model, ADAPTER, token=TOKEN if TOKEN else None)
 model = model.merge_and_unload()
-print(f"Saving merged model to {MERGED}")
 model.save_pretrained(MERGED)
-AutoTokenizer.from_pretrained(ADAPTER).save_pretrained(MERGED)
-print("Merge complete.")
+AutoTokenizer.from_pretrained(ADAPTER, token=TOKEN if TOKEN else None).save_pretrained(MERGED)
+print(f"  merged → {MERGED}")
 PYEOF
+  else
+    info "Step 1/4 [${LABEL}] — Downloading merged model from HF (${HF_BASE})..."
+    python3 - <<PYEOF
+from huggingface_hub import snapshot_download
+import os
 
-  # ── Step 2: Convert to GGUF (fp16) ───────────────────────────────────────
-  info "Step 2/4 — Converting to GGUF fp16..."
-  [[ -d "${LLAMA_CPP_DIR}" ]] || die "llama.cpp not found at ${LLAMA_CPP_DIR} — set LLAMA_CPP_DIR env var"
+REPO   = "${HF_BASE}"
+DEST   = "${MERGED_DIR}"
+TOKEN  = os.environ.get("HF_TOKEN", "")
 
-  python3 "${LLAMA_CPP_DIR}/convert_hf_to_gguf.py" \
+print(f"  downloading {REPO} → {DEST}")
+snapshot_download(
+    repo_id=REPO,
+    local_dir=DEST,
+    token=TOKEN if TOKEN else None,
+    ignore_patterns=["*.msgpack", "*.h5", "flax_model*", "tf_model*"],
+)
+print("  download complete")
+PYEOF
+  fi
+
+  [[ -n "${CONVERT_SCRIPT}" ]] || die "convert_hf_to_gguf.py not found — brew install llama.cpp"
+  info "Step 2/4 [${LABEL}] — Converting to GGUF fp16..."
+  python3 "${CONVERT_SCRIPT}" \
     "${MERGED_DIR}" \
     --outfile "${GGUF_FP16}" \
     --outtype f16
-  info "GGUF fp16: ${GGUF_FP16}"
+  ok "GGUF fp16: ${GGUF_FP16} ($(du -sh "${GGUF_FP16}" | awk '{print $1}'))"
 
-  # ── Step 3: Quantize to Q4_K_M ────────────────────────────────────────────
-  info "Step 3/4 — Quantizing to ${QUANT}..."
-  QUANTIZE_BIN="${LLAMA_CPP_DIR}/build/bin/llama-quantize"
-  [[ -f "${QUANTIZE_BIN}" ]] || QUANTIZE_BIN="${LLAMA_CPP_DIR}/quantize"  # older builds
-  [[ -f "${QUANTIZE_BIN}" ]] || die "llama-quantize binary not found — build llama.cpp first"
+  [[ -n "${LLAMA_QUANTIZE}" ]] || die "llama-quantize not found — brew install llama.cpp"
+  info "Step 3/4 [${LABEL}] — Quantizing to ${QUANT_TYPE}..."
+  "${LLAMA_QUANTIZE}" "${GGUF_FP16}" "${GGUF_QUANT}" "${QUANT_TYPE}"
+  ok "Quantized: ${GGUF_QUANT} ($(du -sh "${GGUF_QUANT}" | awk '{print $1}'))"
+}
 
-  "${QUANTIZE_BIN}" "${GGUF_FP16}" "${GGUF_QUANT}" "${QUANT}"
-  info "Quantized GGUF: ${GGUF_QUANT} ($(du -sh "${GGUF_QUANT}" | awk '{print $1}'))"
+push_finetuned_core_ai() {
+  info "=== Core AI 1.5B — fine-tuned GGUF ==="
+  require_cmd ollama
+  require_cmd python3
 
-  # ── Step 4: Create + push to Ollama ──────────────────────────────────────
-  info "Step 4/4 — Building Ollama model and pushing..."
+  local MERGED_DIR="${WORK_DIR}/solana-clawd-core-ai-1.5b-merged"
+  local GGUF_FP16="${WORK_DIR}/solana-clawd-core-ai-1.5b-fp16.gguf"
+  local GGUF_QUANT="${WORK_DIR}/solana-clawd-core-ai-1.5b-${QUANT}.gguf"
 
-  # Copy Modelfile to work dir alongside the GGUF so relative path resolves
-  cp "${SCRIPT_DIR}/Modelfile.finetuned" "${WORK_DIR}/Modelfile"
-  # Patch the FROM line to point at the quant file
-  sed -i.bak "s|FROM ./solana-clawd-1.5b-q4_K_M.gguf|FROM ${GGUF_QUANT}|" "${WORK_DIR}/Modelfile"
+  # solanaclawd/solana-clawd-1.5b is already fully merged (not LoRA)
+  merge_and_convert \
+    "core-ai" \
+    "solanaclawd/solana-clawd-1.5b" \
+    "" \
+    "${MERGED_DIR}" \
+    "${GGUF_FP16}" \
+    "${GGUF_QUANT}" \
+    "${QUANT}"
 
-  ollama create "${OLLAMA_NAMESPACE}/solana-clawd:latest" \
-    -f "${WORK_DIR}/Modelfile"
+  info "Step 4/4 [core-ai] — Building Ollama model and pushing..."
+  # Write Modelfile with absolute GGUF path
+  local MF="${WORK_DIR}/Modelfile.core-ai"
+  sed "s|FROM ./solana-clawd-core-ai-1.5b-Q4_K_M.gguf|FROM ${GGUF_QUANT}|" \
+    "${SCRIPT_DIR}/Modelfile.core-ai-finetuned" > "${MF}"
 
-  info "Testing locally..."
-  ollama run "${OLLAMA_NAMESPACE}/solana-clawd:latest" \
-    "What is the SOL-PERP funding rate used for on Phoenix?" --nowordwrap
+  ollama create "${OLLAMA_NS}/solana-clawd-core-ai:latest" -f "${MF}"
 
-  ollama push "${OLLAMA_NAMESPACE}/solana-clawd:latest"
+  info "Smoke test..."
+  ollama run "${OLLAMA_NS}/solana-clawd-core-ai:latest" \
+    "Explain Solana's turbine block propagation. Be concise." --nowordwrap
 
-  # Also tag as versioned
+  ollama push "${OLLAMA_NS}/solana-clawd-core-ai:latest"
+
   local VERSION
-  VERSION="1.5b-lora-$(date +%Y%m%d)"
-  ollama cp "${OLLAMA_NAMESPACE}/solana-clawd:latest" "${OLLAMA_NAMESPACE}/solana-clawd:${VERSION}"
-  ollama push "${OLLAMA_NAMESPACE}/solana-clawd:${VERSION}"
+  VERSION="1.5b-merged-$(date +%Y%m%d)"
+  ollama cp "${OLLAMA_NS}/solana-clawd-core-ai:latest" "${OLLAMA_NS}/solana-clawd-core-ai:${VERSION}"
+  ollama push "${OLLAMA_NS}/solana-clawd-core-ai:${VERSION}"
 
-  info "Done!"
-  info "  latest  → https://ollama.com/${OLLAMA_NAMESPACE}/solana-clawd"
-  info "  version → https://ollama.com/${OLLAMA_NAMESPACE}/solana-clawd:${VERSION}"
+  ok "https://ollama.com/${OLLAMA_NS}/solana-clawd-core-ai"
+  ok "https://ollama.com/${OLLAMA_NS}/solana-clawd-core-ai:${VERSION}"
+  info "GGUF kept at: ${GGUF_QUANT}"
+}
+
+push_finetuned_trading_factory() {
+  info "=== Trading Factory 8B — fine-tuned GGUF ==="
+  require_cmd ollama
+  require_cmd python3
+
+  local MERGED_DIR="${WORK_DIR}/solana-trading-factory-8b-merged"
+  local GGUF_FP16="${WORK_DIR}/solana-trading-factory-8b-fp16.gguf"
+  local GGUF_QUANT="${WORK_DIR}/solana-trading-factory-8b-${QUANT}.gguf"
+
+  merge_and_convert \
+    "trading-factory" \
+    "NousResearch/Hermes-3-Llama-3.1-8B" \
+    "solanaclawd/solana-nvidia-trading-factory-8b-lora" \
+    "${MERGED_DIR}" \
+    "${GGUF_FP16}" \
+    "${GGUF_QUANT}" \
+    "${QUANT}"
+
+  info "Step 4/4 [trading-factory] — Building Ollama model and pushing..."
+  local MF="${WORK_DIR}/Modelfile.trading-factory"
+  sed "s|FROM ./solana-trading-factory-8b-Q4_K_M.gguf|FROM ${GGUF_QUANT}|" \
+    "${SCRIPT_DIR}/Modelfile.trading-factory-finetuned" > "${MF}"
+
+  ollama create "${OLLAMA_NS}/solana-trading-factory:latest" -f "${MF}"
+
+  info "Smoke test..."
+  ollama run "${OLLAMA_NS}/solana-trading-factory:latest" \
+    "What signals should I check before opening a SOL-PERP long?" --nowordwrap
+
+  ollama push "${OLLAMA_NS}/solana-trading-factory:latest"
+
+  local VERSION
+  VERSION="8b-lora-$(date +%Y%m%d)"
+  ollama cp "${OLLAMA_NS}/solana-trading-factory:latest" "${OLLAMA_NS}/solana-trading-factory:${VERSION}"
+  ollama push "${OLLAMA_NS}/solana-trading-factory:${VERSION}"
+
+  ok "https://ollama.com/${OLLAMA_NS}/solana-trading-factory"
+  ok "https://ollama.com/${OLLAMA_NS}/solana-trading-factory:${VERSION}"
   info "GGUF kept at: ${GGUF_QUANT}"
 }
 
 # ── Dispatch ──────────────────────────────────────────────────────────────────
+run_preview() {
+  case "${TARGET}" in
+    all)              push_preview_core_ai; push_preview_trading_factory ;;
+    core-ai)          push_preview_core_ai ;;
+    trading-factory)  push_preview_trading_factory ;;
+    *)                die "Unknown target '${TARGET}'. Use: all | core-ai | trading-factory" ;;
+  esac
+}
+
+run_finetuned() {
+  case "${TARGET}" in
+    all)              push_finetuned_core_ai; push_finetuned_trading_factory ;;
+    core-ai)          push_finetuned_core_ai ;;
+    trading-factory)  push_finetuned_trading_factory ;;
+    *)                die "Unknown target '${TARGET}'. Use: all | core-ai | trading-factory" ;;
+  esac
+}
+
 case "${MODE}" in
-  preview)   push_preview   ;;
-  finetuned) push_finetuned ;;
-  *)         die "Unknown mode '${MODE}'. Use: preview | finetuned" ;;
+  preview)   run_preview   ;;
+  finetuned) run_finetuned ;;
+  all)       run_preview; run_finetuned ;;
+  *)         die "Unknown mode '${MODE}'. Use: preview | finetuned | all" ;;
 esac
