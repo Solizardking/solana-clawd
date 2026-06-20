@@ -640,21 +640,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`16e93416`](../../commit/16e93416) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 🥈 | [`29b4f82e`](../../commit/29b4f82e) | ljkl | solizardking | Jun 20 |
-| 🥉 | [`6ea0f064`](../../commit/6ea0f064) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 20 |
-| 4️⃣ | [`5531b6ee`](../../commit/5531b6ee) | feat: add HF Space — solanaclawd/clawd-model-kit | solizardking | Jun 20 |
-| 5️⃣ | [`548fa9b3`](../../commit/548fa9b3) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 6️⃣ | [`417857cb`](../../commit/417857cb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 7️⃣ | [`be377c42`](../../commit/be377c42) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 8️⃣ | [`8e875325`](../../commit/8e875325) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 9️⃣ | [`180f90d0`](../../commit/180f90d0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 🔟 | [`d3a7f2ad`](../../commit/d3a7f2ad) | dfsafds | solizardking | Jun 20 |
+| 🥇 | [`5ff92a2a`](../../commit/5ff92a2a) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 20 |
+| 🥈 | [`1f32d558`](../../commit/1f32d558) | feat: add solana-tx-foundation-cpt dataset card + fix bundle | solizardking | Jun 20 |
+| 🥉 | [`db858f55`](../../commit/db858f55) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 4️⃣ | [`16e93416`](../../commit/16e93416) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 5️⃣ | [`29b4f82e`](../../commit/29b4f82e) | ljkl | solizardking | Jun 20 |
+| 6️⃣ | [`6ea0f064`](../../commit/6ea0f064) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 20 |
+| 7️⃣ | [`5531b6ee`](../../commit/5531b6ee) | feat: add HF Space — solanaclawd/clawd-model-kit | solizardking | Jun 20 |
+| 8️⃣ | [`548fa9b3`](../../commit/548fa9b3) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 9️⃣ | [`417857cb`](../../commit/417857cb) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 🔟 | [`be377c42`](../../commit/be377c42) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| · | [`8e875325`](../../commit/8e875325) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| · | [`180f90d0`](../../commit/180f90d0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| · | [`d3a7f2ad`](../../commit/d3a7f2ad) | dfsafds | solizardking | Jun 20 |
 | · | [`0856d47b`](../../commit/0856d47b) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 20 |
 | · | [`80ba47b5`](../../commit/80ba47b5) | /kl;k; | solizardking | Jun 20 |
-| · | [`944044c8`](../../commit/944044c8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| · | [`3f41d5f1`](../../commit/3f41d5f1) | ljl | solizardking | Jun 20 |
-| · | [`530555b1`](../../commit/530555b1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
