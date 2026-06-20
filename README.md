@@ -640,21 +640,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`dfbbb099`](../../commit/dfbbb099) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 🥈 | [`5d4e1d32`](../../commit/5d4e1d32) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 🥉 | [`ed6c1197`](../../commit/ed6c1197) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 4️⃣ | [`88950b62`](../../commit/88950b62) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
-| 5️⃣ | [`d6cb81e8`](../../commit/d6cb81e8) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
-| 6️⃣ | [`c992492d`](../../commit/c992492d) | sdfgfgdsfgds | solizardking | Jun 19 |
-| 7️⃣ | [`6d6a2f3a`](../../commit/6d6a2f3a) | sdffd | solizardking | Jun 19 |
-| 8️⃣ | [`325c441d`](../../commit/325c441d) | fdsdfs | solizardking | Jun 19 |
-| 9️⃣ | [`1ce72029`](../../commit/1ce72029) | sadfdfsa | solizardking | Jun 19 |
-| 🔟 | [`a3d110e5`](../../commit/a3d110e5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 🥇 | [`552e3cb7`](../../commit/552e3cb7) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 🥈 | [`dfbbb099`](../../commit/dfbbb099) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 🥉 | [`5d4e1d32`](../../commit/5d4e1d32) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 4️⃣ | [`ed6c1197`](../../commit/ed6c1197) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 5️⃣ | [`88950b62`](../../commit/88950b62) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
+| 6️⃣ | [`d6cb81e8`](../../commit/d6cb81e8) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 19 |
+| 7️⃣ | [`c992492d`](../../commit/c992492d) | sdfgfgdsfgds | solizardking | Jun 19 |
+| 8️⃣ | [`6d6a2f3a`](../../commit/6d6a2f3a) | sdffd | solizardking | Jun 19 |
+| 9️⃣ | [`325c441d`](../../commit/325c441d) | fdsdfs | solizardking | Jun 19 |
+| 🔟 | [`1ce72029`](../../commit/1ce72029) | sadfdfsa | solizardking | Jun 19 |
+| · | [`a3d110e5`](../../commit/a3d110e5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
 | · | [`c08abd77`](../../commit/c08abd77) | fix: render.yaml static site doesn't support region or plan | solizardking | Jun 19 |
 | · | [`b70756a1`](../../commit/b70756a1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
 | · | [`d8183d9c`](../../commit/d8183d9c) | feat: Render deployment for signal discovery API + dashboard | solizardking | Jun 19 |
 | · | [`a49755d0`](../../commit/a49755d0) | feat: mark core-ai-1.5b-lora COMPLETE + Blueprint 4/TFM expa | solizardking | Jun 19 |
-| · | [`2d513b6e`](../../commit/2d513b6e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 20 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
