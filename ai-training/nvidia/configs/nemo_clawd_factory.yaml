@@ -1,13 +1,29 @@
 name: solana-nemoclawd-nvidia-trading-factory
 version: "2026-06-19"
+description: >
+  End-to-end NVIDIA AI Blueprint integration for Solana Clawd.
+  Six blueprints (TFM, portfolio-opt, distillation, signal-discovery,
+  enterprise-rag, AIQ) unified under a single factory config.
+  All execution is paper-mode by default; live requires explicit gate.
 default_mode: paper
 
+# ── Models ────────────────────────────────────────────────────────────────────
 models:
+  # NIM primary (fast reasoning, signal verdicts, portfolio narration)
   reasoning: nvidia/nemotron-3-nano-30b-a3b
+  # NIM teacher (distillation, SFT labeling)
   research: nvidia/nemotron-3-super-120b-a12b
-  student: Qwen/Qwen2.5-1.5B-Instruct
+  # Base for local fine-tune
+  base: Qwen/Qwen2.5-1.5B-Instruct
+  # Published student adapter
   adapter: solanaclawd/solana-clawd-core-ai-1.5b-lora
+  # Transaction foundation model (CPT + SFT, Blueprint 1)
+  tx_foundation: solanaclawd/solana-tx-foundation-1.5b
+  # RAG embedding + reranker (Blueprint 5)
+  embedding: nvidia/nv-embedqa-e5-v5
+  reranker: nvidia/nv-rerankqa-mistral-4b-v3
 
+# ── Inputs ────────────────────────────────────────────────────────────────────
 inputs:
   strategy_manifest: data/strategies/strategy_manifest.json
   agent_plan: data/strategies/nvidia_clawd_agent_plan.json
@@ -21,32 +37,111 @@ inputs:
     - onchain.md
     - trading_factory/README.md
     - nvidia/README.md
+    - nvidia/configs/nim_config.yaml
 
+# ── Workflow configs (one entry per blueprint) ────────────────────────────────
 workflows:
+
+  # Blueprint 1 — Transaction Foundation Model
   transaction_foundation_model:
     enabled: true
-    output: data/nvidia_tx_foundation_cpt.jsonl
-  signal_discovery:
-    enabled: true
-    markets: [SOL, BTC, ETH, JUP, PYTH, JTO]
-    accept:
-      min_abs_ic: 0.02
-      max_p_value: 0.05
-      max_drawdown_pct: 8
+    config: nvidia/configs/solana_tx_foundation.yaml
+    nemo_config: nvidia/configs/pretrain_solana_decoder.yaml
+    pipeline: nvidia/blueprints/transaction-foundation-model/pipeline.py
+    cpt_data: data/tx_foundation_cpt.jsonl          # 19.5K Jupiter+SFT records
+    sft_data: data/solana_clawd_merged.jsonl         # 30K instruction pairs
+    output_model: solanaclawd/solana-tx-foundation-1.5b
+    hf_dataset: solanaclawd/solana-tx-foundation-cpt
+    status: training                                  # cpt→sft→eval in progress
+
+  # Blueprint 2 — Quantitative Portfolio Optimization
   portfolio_optimization:
     enabled: true
+    config: nvidia/configs/solana_tx_foundation.yaml
+    runner: nvidia/blueprints/portfolio-optimization/cufolio_clawd.py
     objective: mean_cvar
     cvar_alpha: 0.95
     max_cvar: 0.12
     max_leverage: 1.0
+    markets: [SOL, BTC, ETH, JUP, SOL-PERP, BTC-PERP]
+    price_source: phoenix_vulcan          # real candles via vulcan CLI
+    gate: paper
+    vulcan_mode: paper
+    status: running
+
+  # Blueprint 3 — Model Distillation
   distillation:
     enabled: true
     teacher: nvidia/nemotron-3-nano-30b-a3b
+    student: Qwen/Qwen2.5-1.5B-Instruct
+    method: response_distillation
     output: data/distilled_trading_factory.jsonl
+    hf_dataset: solanaclawd/solana-clawd-nvidia-trading-factory-instruct
+    status: ready_to_publish
+
+  # Blueprint 4 — Quantitative Signal Discovery Agent
+  signal_discovery:
+    enabled: true
+    runner: nvidia/blueprints/signal-discovery/quantitative_signal_agent.py
+    markets: [SOL, BTC, ETH, JUP, PYTH, JTO]
+    timeframe: 1h
+    price_source: phoenix_vulcan
+    nim_model: nvidia/nemotron-3-nano-30b-a3b
+    accept:
+      min_abs_ic: 0.02
+      max_p_value: 0.05
+      max_drawdown_pct: 8
+      min_composite_strength: 0.4
+    sft_log: data/nvidia_signal_log.jsonl
+    report: data/signal_discovery_report.json
+    status: running
+
+  # Blueprint 5 — Enterprise RAG
+  enterprise_rag:
+    enabled: true
+    embedding: nvidia/nv-embedqa-e5-v5
+    reranker: nvidia/nv-rerankqa-mistral-4b-v3
+    vector_store: faiss
+    sources:
+      - type: markdown
+        paths: [README.md, onchain.md, model_card.md, dataset_card.md]
+      - type: jsonl
+        paths: [data/solana_clawd_merged.jsonl]
+    output: data/rag_index/
+    status: ready
+
+  # Blueprint 6 — AIQ Evaluation
   aiq:
     enabled: true
+    config: nvidia/configs/aiq_config.yaml
+    eval_dataset: data/solana_clawd_eval.jsonl
     output: data/nvidia_aiq_eval.json
+    thresholds:
+      accuracy: 0.55
+      latency_p95_s: 2.0
+      refusal_rate: 1.0
+      groundedness: 0.75
+    status: ready
 
+# ── HuggingFace publishing ────────────────────────────────────────────────────
+hf:
+  org: solanaclawd
+  datasets:
+    - id: solanaclawd/solana-clawd-nvidia-trading-factory-instruct
+      source: data/nvidia_trading_factory_sft.jsonl
+      card: data/nvidia_trading_factory_dataset_card.md
+      status: ready_to_publish
+    - id: solanaclawd/solana-tx-foundation-cpt
+      source: data/tx_foundation_cpt.jsonl
+      status: ready_to_publish
+  models:
+    - id: solanaclawd/solana-tx-foundation-1.5b
+      source: outputs/solana-tx-foundation-1.5b/sft
+      status: training
+    - id: solanaclawd/solana-clawd-core-ai-1.5b-lora
+      status: published
+
+# ── Safety gates ─────────────────────────────────────────────────────────────
 safety:
   allowed_default_modes: [observer, paper]
   live_mode_generated: false

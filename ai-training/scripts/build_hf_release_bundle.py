@@ -37,6 +37,13 @@ DATASET_SPECS = {
         "jsonl": ROOT / "data" / "nvidia_trading_factory_sft.jsonl",
         "processed": ROOT / "data" / "nvidia_trading_factory_processed",
     },
+    "tx_foundation_cpt": {
+        "repo_id": "solanaclawd/solana-tx-foundation-cpt",
+        "card": ROOT / "nvidia" / "blueprints" / "transaction-foundation-model" / "README.md",
+        "manifest": ROOT / "data" / "nvidia_trading_factory_manifest.json",  # reuse until dedicated manifest exists
+        "jsonl": ROOT / "data" / "tx_foundation_cpt.jsonl",
+        "processed": ROOT / "data" / "nvidia_trading_factory_processed",      # parquet placeholder
+    },
     "core_ai": {
         "repo_id": "solanaclawd/solana-clawd-core-ai-instruct",
         "card": ROOT / "data" / "core_ai_dataset_card.md",
@@ -52,6 +59,16 @@ DATASET_SPECS = {
         "processed": ROOT / "data" / "realtime_research_processed",
     },
 }
+
+# NVIDIA configs to include in every bundle (redacted of secrets)
+NVIDIA_CONFIGS = [
+    ROOT / "nvidia" / "configs" / "nim_config.yaml",
+    ROOT / "nvidia" / "configs" / "nemo_clawd_factory.yaml",
+    ROOT / "nvidia" / "configs" / "aiq_config.yaml",
+    ROOT / "nvidia" / "configs" / "solana_tx_foundation.yaml",
+    ROOT / "nvidia" / "configs" / "pretrain_solana_decoder.yaml",
+    ROOT / "nvidia" / "configs" / "pretrain_financial_decoder.yaml",
+]
 
 
 def scan_text(path: Path) -> list[str]:
@@ -111,6 +128,17 @@ def build_dataset_bundle(name: str, spec: dict[str, object], out_dir: Path) -> d
         copy_file(src, dst)
         parquet_files.append(dst.relative_to(out_dir).as_posix())
 
+    # Copy NVIDIA configs into bundle
+    cfg_dir = dataset_dir / "nvidia_configs"
+    cfg_dir.mkdir(parents=True, exist_ok=True)
+    for cfg_path in NVIDIA_CONFIGS:
+        if cfg_path.exists():
+            secrets = scan_text(cfg_path)
+            if secrets:
+                print(f"  [skip] {cfg_path.name} contains secret pattern: {secrets}")
+                continue
+            shutil.copy2(cfg_path, cfg_dir / cfg_path.name)
+
     return {
         "name": name,
         "repo_id": spec["repo_id"],
@@ -121,6 +149,10 @@ def build_dataset_bundle(name: str, spec: dict[str, object], out_dir: Path) -> d
             (dataset_dir / "source.jsonl").relative_to(out_dir).as_posix(),
             *parquet_files,
         ],
+        "nvidia_configs": [
+            (cfg_dir / f.name).relative_to(out_dir).as_posix()
+            for f in NVIDIA_CONFIGS if (cfg_dir / f.name).exists()
+        ],
     }
 
 
@@ -128,29 +160,31 @@ def write_upload_readme(out_dir: Path, bundles: list[dict[str, object]]) -> None
     lines = [
         "# Hugging Face Release Bundle",
         "",
-        "Generated bundle directories are secret-scanned before copy. Authenticate first:",
+        "Secret-scanned bundle. Authenticate first:",
         "",
         "```bash",
-        "hf auth login",
+        "huggingface-cli login",
         "```",
         "",
-        "Run upload commands from this bundle directory:",
-        "",
-        "```bash",
+        f"```bash",
         f"cd {out_dir}",
         "```",
         "",
-        "Upload commands:",
+        "## Upload commands",
         "",
     ]
     for bundle in bundles:
+        n_configs = len(bundle.get("nvidia_configs", []))
         lines.extend(
             [
-                f"## {bundle['name']}",
+                f"### {bundle['name']} → `{bundle['repo_id']}`",
+                "",
+                f"Includes {len(bundle['files'])} data files + {n_configs} NVIDIA configs.",
                 "",
                 "```bash",
-                f"hf upload {bundle['repo_id']} {bundle['directory']} . --type dataset "
-                f"--commit-message \"Upload {bundle['name']} release bundle\"",
+                f"huggingface-cli upload {bundle['repo_id']} {bundle['directory']} . "
+                f"--repo-type dataset "
+                f"--commit-message \"chore: upload {bundle['name']} release bundle\"",
                 "```",
                 "",
             ]
@@ -170,9 +204,9 @@ def main() -> int:
     parser.add_argument("--include-published", action="store_true", help="Also bundle core_ai and realtime_research")
     args = parser.parse_args()
 
-    selected = args.dataset or ["trading_factory"]
+    selected = args.dataset or ["trading_factory", "tx_foundation_cpt"]
     if args.include_published:
-        selected = ["trading_factory", "core_ai", "realtime_research"]
+        selected = list(DATASET_SPECS.keys())
 
     out_dir = Path(args.output).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)

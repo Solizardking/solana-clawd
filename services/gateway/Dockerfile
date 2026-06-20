@@ -1,33 +1,31 @@
 # ── Stage 1: install production deps ─────────────────────────────────────────
-FROM node:22-bookworm-slim AS deps
-RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
+FROM node:22-alpine AS deps
+RUN apk upgrade --no-cache
 WORKDIR /build
 COPY services/gateway/package*.json ./
 RUN npm install --omit=dev --no-audit --no-fund
 
 # ── Stage 2: build TypeScript ─────────────────────────────────────────────────
-FROM node:22-bookworm-slim AS build
-RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
+FROM node:22-alpine AS build
+RUN apk upgrade --no-cache
 WORKDIR /build
 COPY services/gateway/package*.json ./
 RUN npm install --no-audit --no-fund
 COPY services/gateway/ ./services/gateway/
+COPY trading/formal_verification/ ./services/formal_verification/
 WORKDIR /build/services/gateway
 RUN npm run build
 
 # ── Stage 3: minimal runtime image ───────────────────────────────────────────
-FROM node:22-bookworm-slim AS runtime
-RUN apt-get update \
-    && apt-get upgrade -y --no-install-recommends \
-    && apt-get install -y --no-install-recommends dumb-init \
-    && rm -rf /var/lib/apt/lists/*
+FROM node:22-alpine AS runtime
+RUN apk add --no-cache dumb-init
 
 WORKDIR /app
 ENV NODE_ENV=production
 
 # Non-root user for reduced attack surface
-RUN groupadd -r clawd && useradd -r -g clawd clawd \
-    && install -d -o clawd -g clawd /data
+RUN addgroup -S clawd && adduser -S -G clawd clawd \
+    && mkdir -p /data && chown clawd:clawd /data
 
 COPY --from=deps  --chown=clawd:clawd /build/node_modules ./node_modules
 COPY --from=build --chown=clawd:clawd /build/services/dist ./dist
