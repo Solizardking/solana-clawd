@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 declare_id!("7pN4CMWDkZEg5CVJmuEFnV28GfN3413FAfRqo4CzL6p2");
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// Constants
 
 pub const MAX_PROTOCOL_FEE_BPS: u16 = 500; // 5 % hard cap
 pub const MAX_ROYALTY_BPS: u16 = 1_000; // 10 % hard cap
@@ -15,13 +15,13 @@ pub const MAX_RESULT_URI_BYTES: usize = 512;
 pub const DIGEST_LEN: usize = 32; // SHA-256 bytes
 pub const NONCE_LEN: usize = 32;
 
-// ─── Program ──────────────────────────────────────────────────────────────────
+// Program
 
 #[program]
 pub mod clawd_core {
     use super::*;
 
-    // ── Protocol administration ───────────────────────────────────────────────
+    // Protocol administration
 
     pub fn initialize_protocol(
         ctx: Context<InitializeProtocol>,
@@ -70,7 +70,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Provider registration ─────────────────────────────────────────────────
+    // Provider registration
 
     pub fn register_provider(
         ctx: Context<RegisterProvider>,
@@ -116,7 +116,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Capability management ─────────────────────────────────────────────────
+    // Capability management
 
     pub fn publish_capability(
         ctx: Context<PublishCapability>,
@@ -162,7 +162,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Job lifecycle ─────────────────────────────────────────────────────────
+    // Job lifecycle
 
     pub fn create_job(
         ctx: Context<CreateJob>,
@@ -279,7 +279,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Bidding ───────────────────────────────────────────────────────────────
+    // Bidding
 
     pub fn submit_bid(
         ctx: Context<SubmitBid>,
@@ -374,7 +374,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Result commitment ─────────────────────────────────────────────────────
+    // Result commitment
 
     pub fn commit_result(
         ctx: Context<CommitResult>,
@@ -433,7 +433,7 @@ pub mod clawd_core {
             ClaError::RevealExpired
         );
 
-        // Verify nonce + uris hash matches commitment — preimage check
+        // Verify nonce + uris hash matches commitment preimage.
         let mut hasher_input = Vec::with_capacity(NONCE_LEN + output_artifact_uris.len() * 64);
         hasher_input.extend_from_slice(&nonce);
         for uri in &output_artifact_uris {
@@ -457,7 +457,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Audit ─────────────────────────────────────────────────────────────────
+    // Audit
 
     pub fn select_auditors(
         ctx: Context<SelectAuditors>,
@@ -524,7 +524,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Challenge ─────────────────────────────────────────────────────────────
+    // Challenge
 
     pub fn open_challenge(
         ctx: Context<OpenChallenge>,
@@ -596,7 +596,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Settlement ────────────────────────────────────────────────────────────
+    // Settlement
 
     pub fn settle_job(ctx: Context<SettleJob>) -> Result<()> {
         let job = &ctx.accounts.job;
@@ -683,7 +683,7 @@ pub mod clawd_core {
         Ok(())
     }
 
-    // ── Reputation ────────────────────────────────────────────────────────────
+    // Reputation
 
     pub fn record_reputation_event(
         ctx: Context<RecordReputation>,
@@ -703,7 +703,7 @@ pub mod clawd_core {
     }
 }
 
-// ─── State Accounts ───────────────────────────────────────────────────────────
+// State accounts
 
 #[account]
 #[derive(Default)]
@@ -839,7 +839,7 @@ pub struct ReputationEvent {
     pub bump: u8,
 }
 
-// ─── Enums ────────────────────────────────────────────────────────────────────
+// Enums
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq, Default)]
 pub enum JobState {
@@ -890,7 +890,7 @@ pub enum RepEventType {
     VerifiedCapabilityUpdate,
 }
 
-// ─── Contexts ─────────────────────────────────────────────────────────────────
+// Contexts
 
 #[derive(Accounts)]
 pub struct InitializeProtocol<'info> {
@@ -1287,7 +1287,7 @@ pub struct RecordReputation<'info> {
     pub system_program: Program<'info, System>,
 }
 
-// ─── Events ───────────────────────────────────────────────────────────────────
+// Events
 
 #[event]
 pub struct ProtocolInitialized {
@@ -1387,7 +1387,7 @@ pub struct ReputationRecorded {
     pub timestamp: i64,
 }
 
-// ─── Errors ───────────────────────────────────────────────────────────────────
+// Errors
 
 #[error_code]
 pub enum ClaError {
