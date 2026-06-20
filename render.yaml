@@ -1,0 +1,42 @@
+services:
+  # ── Signal Discovery API (FastAPI + Vulcan CLI) ────────────────────────────
+  - type: web
+    name: clawd-signal-api
+    runtime: python
+    region: ohio
+    plan: free
+    rootDir: ai-training/nvidia/blueprints/signal-discovery
+    buildCommand: bash build.sh
+    startCommand: export PATH="$HOME/.local/bin:$PATH" && uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: PATH_EXTRA
+        value: "/opt/render/project/.local/bin"
+      - key: VULCAN_WALLET
+        sync: false
+      - key: RPC_URL
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: HF_TOKEN
+        sync: false
+
+  # ── Signal Dashboard (React static site) ──────────────────────────────────
+  - type: web
+    name: clawd-signal-dashboard
+    runtime: static
+    region: ohio
+    plan: free
+    rootDir: apps/signal-dashboard
+    buildCommand: npm install && VITE_API_URL=https://clawd-signal-api.onrender.com npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

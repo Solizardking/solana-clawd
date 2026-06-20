@@ -25,6 +25,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -119,13 +120,39 @@ def _signal_results_to_dict(market: str, timeframe: str = "1h") -> dict:
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
+VULCAN_AVAILABLE = shutil.which("vulcan") is not None
+
+
 @app.get("/api/health")
 def health():
-    return {"ok": True, "timestamp": _now(), "agent": "signal-discovery-v2"}
+    return {
+        "ok": True,
+        "timestamp": _now(),
+        "agent": "signal-discovery-v2",
+        "vulcan": VULCAN_AVAILABLE,
+        "env": os.environ.get("RENDER_SERVICE_NAME", "local"),
+    }
+
+
+@app.get("/api/status")
+def status():
+    return {
+        "timestamp": _now(),
+        "vulcan_available": VULCAN_AVAILABLE,
+        "vulcan_path": shutil.which("vulcan"),
+        "data_dir": str(DATA),
+        "python": sys.version,
+        "env": {
+            "RENDER": os.environ.get("RENDER", ""),
+            "SERVICE": os.environ.get("RENDER_SERVICE_NAME", "local"),
+        },
+    }
 
 
 @app.get("/api/signals/{market}")
 def get_signals(market: str, timeframe: str = "1h"):
+    if not VULCAN_AVAILABLE:
+        raise HTTPException(status_code=503, detail="vulcan CLI not available")
     try:
         return _signal_results_to_dict(market.upper(), timeframe)
     except Exception as e:

@@ -2,7 +2,7 @@ import type {
   ScanResult, MarketScan, StrategyList, TrainingStatus, EvolutionLog,
 } from "./types"
 
-const BASE = "/api"
+const BASE = (import.meta.env.VITE_API_URL ?? "") + "/api"
 
 async function get<T>(path: string): Promise<T> {
   const r = await fetch(`${BASE}${path}`)
