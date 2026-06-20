@@ -431,17 +431,8 @@ HEADER = """
 """
 
 with gr.Blocks(
-    theme=gr.themes.Base(
-        primary_hue="violet",
-        neutral_hue="slate",
-        font=gr.themes.GoogleFont("JetBrains Mono"),
-    ),
-    css="""
-    body, .gradio-container { background: #0f1117 !important; }
-    .tab-nav button { font-family: monospace !important; }
-    .message { font-family: monospace !important; }
-    footer { display: none !important; }
-    """,
+    theme=gr.themes.Soft(primary_hue="violet", neutral_hue="slate"),
+    css="footer { display: none !important; }",
     title="Clawd Model Kit",
 ) as demo:
 
