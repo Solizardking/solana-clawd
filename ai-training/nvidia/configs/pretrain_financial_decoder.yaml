@@ -1,0 +1,157 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Financial Foundation Model Pretraining — Decoder-Only
+#
+# NeMo AutoModel configuration for pretraining a decoder foundation model on
+# financial transaction sequences using causal language modeling.
+# Swap in any HuggingFace-compatible decoder architecture by updating the
+# model._target_ and model.config._target_ fields below.
+#
+# This example uses a Llama config, but the pipeline is architecture-agnostic.
+# Key architectural choices (vs GPT-2):
+#   - RoPE (Rotary Position Embeddings) instead of learned absolute
+#   - GQA (Grouped Query Attention): 8 query heads, 2 KV heads
+#   - SwiGLU activation instead of GELU
+#   - RMSNorm instead of LayerNorm
+#   - No dropout
+#   - 8192 max context (RoPE allows extrapolation beyond training length)
+#
+# Parameter count: ~29M
+#
+# Launch methods:
+#
+#   1. Multi-GPU (recommended):
+#      torchrun --nproc-per-node=8 scripts/train_decoder_model.py \
+#          -c configs/pretrain_financial_decoder.yaml \
+#          --dataset.data_path data/decoder_corpus/train_corpus.txt \
+#          --validation_dataset.data_path data/decoder_corpus/val_corpus.txt
+#
+#   2. Single GPU (testing):
+#      python scripts/train_decoder_model.py \
+#          -c configs/pretrain_financial_decoder.yaml \
+#          --dataset.data_path data/decoder_corpus/train_corpus.txt
+#
+# NOTE: Use torchrun directly (not automodel CLI) for multi-GPU.
+# The automodel CLI misinterprets --nproc-per-node as a recipe config
+# override instead of passing it to torchrun.
+#
+# Key design choices:
+#   - Decoder architecture with custom config (~29M params)
+#   - 4096-token context window (~315 transactions per sequence)
+#   - Vocab size ~6,251 (domain-specific financial tokenizer)
+#   - Next-token prediction (every token is a training signal)
+
+# -- Model ----------------------------------------------------------------
+# Randomly initialized decoder model with custom dimensions to match our data regime.
+# vocab_size must match FinancialTabularTokenizer output.
+model:
+  _target_: nemo_automodel.NeMoAutoModelForCausalLM.from_config
+  config:
+    _target_: transformers.LlamaConfig
+    vocab_size: 6251
+    hidden_size: 512
+    num_hidden_layers: 8
+    num_attention_heads: 8
+    num_key_value_heads: 2        # GQA: 4:1 ratio (8 Q heads, 2 KV heads)
+    intermediate_size: 1408       # SwiGLU FFN; ~same param count as GPT-2's 2048 GELU
+    max_position_embeddings: 8192 # RoPE allows extrapolation beyond this
+    rope_theta: 500000.0          # High base for long-context
+    hidden_act: silu
+    rms_norm_eps: 1.0e-5
+    attention_dropout: 0.0
+    tie_word_embeddings: false
+    bos_token_id: 1
+    eos_token_id: 2
+    pad_token_id: 0
+
+# -- Training Dataset -----------------------------------------------------
+dataset:
+  _target_: src/clm_data.py:build_financial_clm_dataset
+  data_path: null
+  merchant_hash_size: 2000
+  seq_length: 4096
+
+dataloader:
+  _target_: torchdata.stateful_dataloader.StatefulDataLoader
+  collate_fn: torch.utils.data.default_collate
+
+# -- Validation Dataset ----------------------------------------------------
+validation_dataset:
+  _target_: src/clm_data.py:build_financial_clm_dataset
+  data_path: null
+  merchant_hash_size: 2000
+  seq_length: 4096
+
+validation_dataloader:
+  _target_: torchdata.stateful_dataloader.StatefulDataLoader
+  collate_fn: torch.utils.data.default_collate
+
+# -- Training Schedule -----------------------------------------------------
+# Demo settings (1 GPU):
+#   30 steps takes ~2 min, enough to see loss decrease
+step_scheduler:
+  global_batch_size: 16
+  local_batch_size: 16
+  ckpt_every_steps: 15
+  val_every_steps: 15
+  num_epochs: 20
+  max_steps: 30
+
+# -- Distribution ----------------------------------------------------------
+dist_env:
+  backend: nccl
+  timeout_minutes: 5
+
+distributed:
+  _target_: nemo_automodel.components.distributed.fsdp2.FSDP2Manager
+  dp_size: none
+  dp_replicate_size: 1
+  tp_size: 1
+  cp_size: 1
+  sequence_parallel: false
+
+# -- Loss ------------------------------------------------------------------
+loss_fn:
+  _target_: nemo_automodel.components.loss.masked_ce.MaskedCrossEntropy
+
+# -- Optimizer -------------------------------------------------------------
+optimizer:
+  _target_: torch.optim.AdamW
+  betas: [0.9, 0.95]
+  lr: 0.0002
+  weight_decay: 0.077
+
+lr_scheduler:
+  lr_decay_style: cosine
+  lr_warmup_steps: 10
+  min_lr: 0.0000065
+
+# -- RNG -------------------------------------------------------------------
+rng:
+  _target_: nemo_automodel.components.training.rng.StatefulRNG
+  seed: 42
+  ranked: true
+
+# -- Checkpointing ---------------------------------------------------------
+# model_repo_id is required by NeMo's consolidated checkpoint writer.
+# For from-scratch models (from_config), there's no HF Hub download, so
+# we provide a dummy name that triggers the single-file consolidation fallback.
+checkpoint:
+  enabled: true
+  checkpoint_dir: models/decoder-demo/checkpoints/
+  model_save_format: safetensors
+  save_consolidated: true
+  model_repo_id: custom-financial-decoder

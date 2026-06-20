@@ -1,0 +1,37 @@
+# Solana Transaction Foundation Model — dependencies
+# GPU path (optional): install cudf + cupy via RAPIDS conda
+#   conda install -c rapidsai -c conda-forge cudf cupy cuda-version=12.x
+
+# Core training
+torch>=2.3.0
+transformers>=4.48.0
+datasets>=3.0.0
+accelerate>=0.34.0
+peft>=0.12.0
+
+# NeMo AutoModel (for pretrain_financial_decoder.yaml path)
+# Install separately: pip install nemo-automodel
+# See: https://github.com/NVIDIA/NeMo
+
+# Data processing (CPU fallback when cudf unavailable)
+pandas>=2.0.0
+numpy>=1.26.0
+
+# Evaluation & visualization (upstream NVIDIA notebooks)
+xgboost>=2.0.0
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+seaborn>=0.13.0
+plotly>=5.18.0
+ipywidgets>=8.0.0
+
+# Solana data collection (collect.py / jupiter_tx_collector.py)
+httpx>=0.27.0
+aiohttp>=3.9.0
+
+# Experiment tracking
+wandb>=0.17.0
+
+# Misc
+tqdm>=4.66.0
+pyyaml>=6.0.0

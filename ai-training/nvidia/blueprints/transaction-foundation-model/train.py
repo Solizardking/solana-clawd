@@ -43,9 +43,9 @@ from pathlib import Path
 
 import yaml
 
-ROOT = Path(__file__).parents[4]
+ROOT = Path(__file__).parents[2]   # ai-training/
 DATA = ROOT / "data"
-OUTPUTS = Path("outputs")
+OUTPUTS = ROOT / "outputs"
 
 DEFAULT_CONFIG = {
     "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
@@ -128,9 +128,9 @@ def _load_sft_dataset(path: Path, max_examples: int | None = None):
 def run_cpt(cfg: dict, dry_run: bool) -> Path:
     """Stage 1: Continued Pre-Training on tx corpus."""
     import torch
-    from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
+    from transformers import AutoModelForCausalLM, AutoTokenizer
     from peft import LoraConfig, get_peft_model
-    from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
+    from trl import SFTTrainer
 
     print(f"\n[CPT] base={cfg['base_model']}  data={cfg['cpt_data']}")
     if dry_run:
@@ -158,22 +158,6 @@ def run_cpt(cfg: dict, dry_run: bool) -> Path:
     model = get_peft_model(model, lora_cfg)
     model.print_trainable_parameters()
 
-    training_args = TrainingArguments(
-        output_dir=str(out_dir),
-        num_train_epochs=cfg["cpt_epochs"],
-        per_device_train_batch_size=cfg["batch_size"],
-        gradient_accumulation_steps=cfg["grad_accum"],
-        learning_rate=cfg["learning_rate_cpt"],
-        lr_scheduler_type="cosine",
-        warmup_ratio=0.01,
-        bf16=True,
-        logging_steps=10,
-        save_steps=200,
-        save_total_limit=2,
-        remove_unused_columns=False,
-        report_to="none",
-    )
-
     from trl import SFTConfig, SFTTrainer
     sft_cfg = SFTConfig(
         output_dir=str(out_dir),
@@ -182,18 +166,18 @@ def run_cpt(cfg: dict, dry_run: bool) -> Path:
         gradient_accumulation_steps=cfg["grad_accum"],
         learning_rate=cfg["learning_rate_cpt"],
         lr_scheduler_type="cosine",
-        warmup_ratio=0.01,
+        warmup_steps=10,
         bf16=True,
         logging_steps=10,
         save_steps=200,
         save_total_limit=2,
         remove_unused_columns=False,
-        max_seq_length=cfg["max_seq_length"],
+        max_length=cfg["max_seq_length"],
         packing=True,
         dataset_text_field="text",
     )
 
-    trainer = SFTTrainer(model=model, args=sft_cfg, train_dataset=dataset, tokenizer=tokenizer)
+    trainer = SFTTrainer(model=model, args=sft_cfg, train_dataset=dataset, processing_class=tokenizer)
     trainer.train()
     trainer.save_model(str(out_dir))
     tokenizer.save_pretrained(str(out_dir))
@@ -241,13 +225,13 @@ def run_sft(cfg: dict, cpt_checkpoint: Path | None, dry_run: bool) -> Path:
         gradient_accumulation_steps=cfg["grad_accum"],
         learning_rate=cfg["learning_rate_sft"],
         lr_scheduler_type="cosine",
-        warmup_ratio=0.03,
+        warmup_steps=50,
         bf16=True,
         logging_steps=25,
         save_steps=500,
         save_total_limit=2,
         remove_unused_columns=False,
-        max_seq_length=cfg["max_seq_length"],
+        max_length=cfg["max_seq_length"],
     )
 
     trainer = SFTTrainer(
@@ -256,7 +240,7 @@ def run_sft(cfg: dict, cpt_checkpoint: Path | None, dry_run: bool) -> Path:
         peft_config=lora_cfg,
         train_dataset=splits["train"],
         eval_dataset=splits["test"],
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
     )
     trainer.train()
     trainer.save_model(str(out_dir))

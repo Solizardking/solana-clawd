@@ -110,7 +110,7 @@ pull the latest model + dataset in two lines.
 | [`solanaclawd/solana-clawd-realtime-research-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) | dataset | **29,058 examples** — submitted PDFs, notebooks, parquet Solana QA, and ZK skill context; 26,152/1,452/1,454 train/eval/test |
 | [`solanaclawd/solana-clawd-nvidia-trading-factory-instruct`](https://huggingface.co/datasets/solanaclawd/solana-clawd-nvidia-trading-factory-instruct) | dataset | **142 examples published** — NVIDIA trading-factory stage plans, Solana spot/perps market scenarios, cuFOLIO/cuOpt Mean-CVaR specs, Vulcan/Phoenix paper strategy specs, Rise read plans, autoresearch perps references, perps tool-use, and risk refusals; 127/7/8 train/eval/test |
 | [`solanaclawd/solana-clawd-eval`](https://huggingface.co/datasets/solanaclawd/solana-clawd-eval) | dataset | Held-out eval prompts (red-team + capability, 13 conversations) |
-| [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | model | Qwen2.5-1.5B LoRA adapter; recovery job `ordlibrary/6a35a6833093dba73ce2a86b` is running on `a100-large` after the first HF job completed training but failed during Hub push |
+| [`solanaclawd/solana-clawd-core-ai-1.5b-lora`](https://huggingface.co/solanaclawd/solana-clawd-core-ai-1.5b-lora) | model | Qwen2.5-1.5B LoRA adapter — **LIVE** (pushed 2026-06-19T23:44Z); recovery job [`ordlibrary/6a35a6833093dba73ce2a86b`](https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b) completed on A100-large in 3h 14m; train_loss=0.9008, token_accuracy=82.9%, 24.54M tokens |
 | [`solanaclawd/solana-nvidia-trading-factory-8b-lora`](https://huggingface.co/solanaclawd/solana-nvidia-trading-factory-8b-lora) | model | Hermes-3-8B LoRA adapter for the Solana NVIDIA trading factory dataset; completed HF job `ordlibrary/6a35a2ce953ed90bfb945009` |
 | [`solanaclawd/solana-clawd-1.5b`](https://huggingface.co/solanaclawd/solana-clawd-1.5b) | model | Merged bf16 model (base + LoRA), vllm-ready |
 | [`solanaclawd/solana-clawd-7b-lora`](https://huggingface.co/solanaclawd/solana-clawd-7b-lora) | model | Optional larger variant (Qwen2.5-7B-Instruct) |
@@ -487,14 +487,14 @@ checks that `adapter_config.json` and `adapter_model.safetensors` exist locally,
 pushes the adapter folder to the Hub, and verifies those files are present on the
 remote model repo before the job can report success.
 
-Current Core AI recovery run:
+Core AI recovery run — **COMPLETED**:
 
-- Active retry: `ordlibrary/6a35a6833093dba73ce2a86b`
-- URL: <https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b>
+- Job: [`ordlibrary/6a35a6833093dba73ce2a86b`](https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b)
 - Hardware: `a100-large`
-- Dataset: `solanaclawd/solana-clawd-core-ai-instruct`
-- Output: `solanaclawd/solana-clawd-core-ai-1.5b-lora`
-- Latest checked progress: loaded the Hub dataset, tokenized all `31,655` train rows, entered training, and reached at least step `365/3957`; step `360` reported loss `0.98` and mean token accuracy `0.7931`.
+- Started: `2026-06-19T20:29Z` — Finished: `2026-06-19T23:44Z` (3h 14m)
+- Dataset: `solanaclawd/solana-clawd-core-ai-instruct` (31,655 train rows)
+- Output: `solanaclawd/solana-clawd-core-ai-1.5b-lora` — adapter files live on Hub
+- **train_loss**: 0.9008 | **mean_token_accuracy**: 82.9% | **tokens**: 24.54M
 
 #### Training run history
 
@@ -1065,16 +1065,12 @@ cd ai-training
 python3 scripts/verify_full_goal_release.py --strict
 ```
 
-The full release remains pending until
-`solanaclawd/solana-clawd-core-ai-1.5b-lora` contains both
-`adapter_config.json` and `adapter_model.safetensors`.
-
-To watch the active HF recovery job without canceling or restarting it, then run
-the full verifier when it reaches a terminal success state:
+**Release complete** — `solanaclawd/solana-clawd-core-ai-1.5b-lora` contains
+`adapter_config.json` and `adapter_model.safetensors` (pushed 2026-06-19T23:44Z).
 
 ```bash
 cd ai-training
-bash scripts/watch_core_ai_hf_job.sh ordlibrary/6a35a6833093dba73ce2a86b 60
+python3 scripts/verify_full_goal_release.py --strict   # should now pass
 ```
 
 ### Persistent Memory (`memory/honcho.py`)

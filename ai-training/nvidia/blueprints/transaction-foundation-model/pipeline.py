@@ -34,11 +34,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT    = Path(__file__).parents[4]
-DATA    = ROOT / "data"
 HERE    = Path(__file__).parent
-CONFIG  = ROOT / "nvidia" / "configs" / "solana_tx_foundation.yaml"
-OUTPUTS = Path("outputs") / "solana-tx-foundation-1.5b"
+# pipeline.py is at ai-training/nvidia/blueprints/transaction-foundation-model/
+# parents[2] = ai-training/
+AI_TRAINING = HERE.parents[2]
+DATA         = AI_TRAINING / "data"
+CONFIG  = AI_TRAINING / "nvidia" / "configs" / "solana_tx_foundation.yaml"
+OUTPUTS = AI_TRAINING / "outputs" / "solana-tx-foundation-1.5b"
 
 CPT_DATA  = DATA / "tx_foundation_cpt.jsonl"
 SFT_DATA  = DATA / "solana_clawd_merged.jsonl"

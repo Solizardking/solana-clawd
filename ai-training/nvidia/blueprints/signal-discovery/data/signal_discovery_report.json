@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-06-19T23:21:21.278769+00:00",
+  "n_markets": 2,
+  "verdict_summary": {
+    "hold": 2
+  },
+  "regime_summary": {
+    "trending": 1,
+    "ranging": 1
+  },
+  "avg_confidence": 0.0,
+  "discoveries": [
+    {
+      "market": "SOL",
+      "composite_direction": "neutral",
+      "composite_strength": 0.0,
+      "verdict": "hold",
+      "confidence": 0.0,
+      "rationale": "trending regime, composite neutral strength 0.00",
+      "risk_flags": [],
+      "regime": "trending",
+      "strategy_id": null
+    },
+    {
+      "market": "BTC",
+      "composite_direction": "neutral",
+      "composite_strength": 0.0,
+      "verdict": "hold",
+      "confidence": 0.0,
+      "rationale": "ranging regime, composite neutral strength 0.00",
+      "risk_flags": [
+        "weak_trend"
+      ],
+      "regime": "ranging",
+      "strategy_id": null
+    }
+  ]
+}

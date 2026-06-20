@@ -1,0 +1,113 @@
+# Solana Transaction Foundation Model — NeMo AutoModel decoder pretraining config
+#
+# Adapted from NVIDIA's pretrain_financial_decoder.yaml for Solana/Jupiter/Phoenix data.
+# Tokenizer: SolanaTokenizerPipeline (src/tokenizer/solana_tokenizer.py)
+#
+# Launch (single GPU):
+#   python blueprints/transaction-foundation-model/train_decoder_model.py \
+#       -c configs/pretrain_solana_decoder.yaml \
+#       --dataset.data_path data/tx_foundation_cpt.jsonl
+#
+# Launch (multi-GPU):
+#   torchrun --nproc-per-node=4 blueprints/transaction-foundation-model/train_decoder_model.py \
+#       -c configs/pretrain_solana_decoder.yaml \
+#       --dataset.data_path data/tx_foundation_cpt.jsonl
+
+# -- Model ----------------------------------------------------------------
+# ~29M parameter decoder. vocab_size must match SolanaTokenizerPipeline.vocab_size.
+# Run: python -c "from src.tokenizer.solana_tokenizer import SolanaTokenizerPipeline; print(SolanaTokenizerPipeline().vocab_size)"
+model:
+  _target_: nemo_automodel.NeMoAutoModelForCausalLM.from_config
+  config:
+    _target_: transformers.LlamaConfig
+    vocab_size: 5136          # SolanaTokenizerPipeline default (prog512+ix12+mint4096+amt+slot+side+status+fee + specials)
+    hidden_size: 512
+    num_hidden_layers: 8
+    num_attention_heads: 8
+    num_key_value_heads: 2
+    intermediate_size: 1408
+    max_position_embeddings: 4096
+    rope_theta: 500000.0
+    hidden_act: silu
+    rms_norm_eps: 1.0e-5
+    attention_dropout: 0.0
+    tie_word_embeddings: false
+    bos_token_id: 1
+    eos_token_id: 2
+    pad_token_id: 0
+
+# -- Training Dataset -----------------------------------------------------
+dataset:
+  _target_: src/solana_clm_data.py:build_solana_clm_dataset
+  data_path: null             # override via --dataset.data_path
+  seq_length: 512             # ~46 txs per sequence (11 tokens/tx)
+  prog_hash_size: 512
+  mint_hash_size: 4096
+
+dataloader:
+  _target_: torchdata.stateful_dataloader.StatefulDataLoader
+  collate_fn: torch.utils.data.default_collate
+
+# -- Validation Dataset ----------------------------------------------------
+validation_dataset:
+  _target_: src/solana_clm_data.py:build_solana_clm_dataset
+  data_path: null
+  seq_length: 512
+  prog_hash_size: 512
+  mint_hash_size: 4096
+
+validation_dataloader:
+  _target_: torchdata.stateful_dataloader.StatefulDataLoader
+  collate_fn: torch.utils.data.default_collate
+
+# -- Training Schedule -----------------------------------------------------
+step_scheduler:
+  global_batch_size: 32
+  local_batch_size: 8
+  ckpt_every_steps: 500
+  val_every_steps: 250
+  num_epochs: 3
+  max_steps: 5000             # ~19.5K CPT records × 3 epochs / 32 batch
+
+# -- Distribution ----------------------------------------------------------
+dist_env:
+  backend: nccl
+  timeout_minutes: 10
+
+distributed:
+  _target_: nemo_automodel.components.distributed.fsdp2.FSDP2Manager
+  dp_size: none
+  dp_replicate_size: 1
+  tp_size: 1
+  cp_size: 1
+  sequence_parallel: false
+
+# -- Loss ------------------------------------------------------------------
+loss_fn:
+  _target_: nemo_automodel.components.loss.masked_ce.MaskedCrossEntropy
+
+# -- Optimizer -------------------------------------------------------------
+optimizer:
+  _target_: torch.optim.AdamW
+  betas: [0.9, 0.95]
+  lr: 0.0003
+  weight_decay: 0.077
+
+lr_scheduler:
+  lr_decay_style: cosine
+  lr_warmup_steps: 100
+  min_lr: 0.000003
+
+# -- RNG -------------------------------------------------------------------
+rng:
+  _target_: nemo_automodel.components.training.rng.StatefulRNG
+  seed: 42
+  ranked: true
+
+# -- Checkpointing ---------------------------------------------------------
+checkpoint:
+  enabled: true
+  checkpoint_dir: outputs/solana-tx-foundation/checkpoints/
+  model_save_format: safetensors
+  save_consolidated: true
+  model_repo_id: solanaclawd/solana-tx-foundation-decoder

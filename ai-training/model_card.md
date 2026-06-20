@@ -35,7 +35,7 @@ A LoRA fine-tune of Qwen2.5-1.5B-Instruct for Solana development, DeFi reasoning
 **Companion realtime dataset**: [solanaclawd/solana-clawd-realtime-research-instruct](https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct) — 29,058 submitted PDF/notebook/parquet/ZK examples  
 **Training config**: `ai-training/configs/core_ai_lora_config.yaml`  
 **Hub model ID**: `solanaclawd/solana-clawd-core-ai-1.5b-lora`  
-**Release status**: adapter files are pending until the recovery Hugging Face job `ordlibrary/6a35a6833093dba73ce2a86b` finishes and pushes `adapter_config.json` plus `adapter_model.safetensors`.
+**Release status**: Live — `adapter_config.json` + `adapter_model.safetensors` pushed to Hub on 2026-06-19T23:44Z by recovery job [`ordlibrary/6a35a6833093dba73ce2a86b`](https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b) (A100-large, 3h 14m, train\_loss=0.9008, token\_accuracy=82.9%, 24.5M tokens).
 
 > **Tool-use / function calling?** Use the 8B Hermes-3 base with
 > `configs/hermes3_lora_config.yaml` and the `perps/` function-calling suite
@@ -137,16 +137,20 @@ Check every domain your training data covers:
 | LoRA dropout | 0.05 |
 | Target modules | q/k/v/o + gate/up/down projections (all linear) |
 | Trainable params | ~9M (0.6% of base) |
-| Epochs | 3 |
+| Epochs | 1 (recovery run) |
 | Learning rate | 2.0e-4 (cosine scheduler, 3% warmup) |
 | Effective batch size | 16 (2 × 8 gradient accumulation) |
 | Max sequence length | 4096 tokens |
-| Quantization | 4-bit NF4 double-quant at training (CUDA only) |
+| Quantization | none (`--no-quant` recovery run) |
 | Loss | Assistant-only (system + user tokens masked) |
 | Training hardware | NVIDIA A100 80GB (HF Jobs `a100-large`) |
-| Training time | ~1–2 hrs on A100 for the 36K × 3-epoch run |
-| Dataset size | 36,109 conversations → 32,498 / 1,805 / 1,806 train/eval/test |
+| Training time | 3h 14m (11,603s) — job [`ordlibrary/6a35a6833093dba73ce2a86b`](https://huggingface.co/jobs/ordlibrary/6a35a6833093dba73ce2a86b) |
+| Dataset size | 35,173 conversations (core-ai-instruct) |
 | Dataset seed | 42 (deterministic splits) |
+| **train_loss** | **0.9008** |
+| **mean_token_accuracy** | **82.9%** |
+| **tokens_trained** | **24.54M** |
+| **samples/sec** | **2.73** |
 
 ### Fireworks managed SFT run
 
