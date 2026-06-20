@@ -39,10 +39,10 @@ DATASET_SPECS = {
     },
     "tx_foundation_cpt": {
         "repo_id": "solanaclawd/solana-tx-foundation-cpt",
-        "card": ROOT / "nvidia" / "blueprints" / "transaction-foundation-model" / "README.md",
+        "card": ROOT / "data" / "tx_foundation_cpt_dataset_card.md",
         "manifest": ROOT / "data" / "nvidia_trading_factory_manifest.json",  # reuse until dedicated manifest exists
         "jsonl": ROOT / "data" / "tx_foundation_cpt.jsonl",
-        "processed": ROOT / "data" / "nvidia_trading_factory_processed",      # parquet placeholder
+        "processed": ROOT / "data" / "tx_foundation_cpt_processed",
     },
     "core_ai": {
         "repo_id": "solanaclawd/solana-clawd-core-ai-instruct",
