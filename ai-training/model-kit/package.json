@@ -1,0 +1,11 @@
+{
+  "name": "@solanaclawd/model-kit-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static Vercel frontend and Render API handoff for the Solana AI Model Kit.",
+  "scripts": {
+    "build": "node scripts/verify-static-site.mjs",
+    "dev": "python3 -m http.server 8765 --bind 127.0.0.1 --directory frontend",
+    "preview": "python3 -m http.server 8765 --bind 127.0.0.1 --directory frontend"
+  }
+}

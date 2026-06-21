@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: x402-model-kit-api
+    runtime: python
+    rootDir: ai-training/model-kit/backend
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: ONCHAIN_REGISTRY_HOME
+        value: https://onchain.x402.wtf
+      - key: ONCHAIN_REGISTRY_URL
+        value: https://onchain.x402.wtf/api/register
+      - key: X402_HOME
+        value: https://x402.wtf
+      - key: MODELS_HOME
+        value: https://models.x402.wtf
+      - key: REGISTER_HOME
+        value: https://register.x402.wtf
+      - key: MODEL_KIT_CORS_ORIGINS
+        value: https://models.x402.wtf,https://register.x402.wtf

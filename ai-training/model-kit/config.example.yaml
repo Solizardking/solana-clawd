@@ -1,0 +1,87 @@
+# Solana AI Model Kit example config.
+# This file is documentation-first. The CLI accepts flags directly and uses
+# these same values as defaults for one-shot workflows.
+
+project:
+  name: solana-clawd-custom
+  repo_root: /Users/8bit/Downloads/solana-clawd
+  model_kit_dir: ai-training/model-kit
+  registry_url: https://onchain.x402.wtf
+  github_repo: https://github.com/solizardking/solana-clawd-ai-training
+  hugging_face_org: solanaclawd
+
+inputs:
+  dropbox: ai-training/data/incoming
+  supported:
+    - pdf
+    - json
+    - jsonl
+    - csv
+    - parquet
+    - ipynb
+    - md
+    - txt
+    - yaml
+    - png
+    - jpg
+    - webp
+    - gif
+
+dataset:
+  name: Solana Clawd Model Kit Instruct
+  repo_id: solanaclawd/solana-clawd-realtime-research-instruct
+  output_prefix: data/model_kit/model_kit
+  train_ratio: 0.9
+  eval_ratio: 0.05
+  chunk_chars: 4800
+  chunk_overlap: 350
+  public_safe: true
+
+training:
+  default_lane: custom
+  base_model: Qwen/Qwen2.5-1.5B-Instruct
+  local_config: configs/core_ai_lora_config.yaml
+  hub_model_id: solanaclawd/solana-clawd-custom-lora
+  hf_job_flavor: a100-large
+  hf_job_timeout: 4h
+  push_to_hub: false
+  wandb: false
+
+perps:
+  enabled: true
+  source_dir: ai-training/perps
+  manifest: ai-training/data/model_kit/perps_tool_manifest.json
+  handoff: ai-training/data/perps/nvidia_perps_handoff.json
+  default_market: SOL
+  default_mode: observer
+  threshold: 0.35
+  model: NousResearch/Hermes-3-Llama-3.1-8B
+  adapter: solanaclawd/solana-nvidia-trading-factory-8b-lora
+  tools:
+    - get_sol_price
+    - get_token_price
+    - get_perp_markets
+    - get_funding_rate
+    - get_orderbook
+    - check_positions
+    - check_sol_balance
+    - get_jupiter_quote
+    - paper_trade
+    - get_market_overview
+    - get_trader_history
+    - send_sol
+    - assess_position_risk
+
+publishing:
+  ollama_namespace: 8bit
+  default_endpoint: https://clawd-box-router.fly.dev/v1
+  caap_protocol: CAAP/1.0
+  cluster: devnet
+  live_register: false
+
+safety:
+  require_yes_for_side_effects: true
+  never_write_env_tokens: true
+  secret_scan_before_upload: true
+  live_trading: disabled
+  perps_live_env_requires_yes: true

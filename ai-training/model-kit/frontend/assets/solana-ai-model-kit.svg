@@ -1,0 +1,81 @@
+<svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Solana AI Model Kit</title>
+  <desc id="desc">Animated pipeline from data to Hugging Face training to CAAP registry and onchain serving.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#070A12"/>
+      <stop offset="0.46" stop-color="#111827"/>
+      <stop offset="1" stop-color="#061A24"/>
+    </linearGradient>
+    <linearGradient id="flow" x1="140" y1="0" x2="1080" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#14F195"/>
+      <stop offset="0.5" stop-color="#80ECFF"/>
+      <stop offset="1" stop-color="#9945FF"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <style>
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+      .sans { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .pulse { animation: pulse 2.8s ease-in-out infinite; transform-origin: center; }
+      .dash { stroke-dasharray: 18 16; animation: dash 2.2s linear infinite; }
+      .scan { animation: scan 3.8s ease-in-out infinite; }
+      .node2 { animation-delay: .35s; }
+      .node3 { animation-delay: .7s; }
+      .node4 { animation-delay: 1.05s; }
+      @keyframes dash { to { stroke-dashoffset: -68; } }
+      @keyframes pulse {
+        0%, 100% { opacity: .78; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.035); }
+      }
+      @keyframes scan {
+        0% { transform: translateX(-210px); opacity: 0; }
+        14% { opacity: .9; }
+        86% { opacity: .9; }
+        100% { transform: translateX(1010px); opacity: 0; }
+      }
+    </style>
+  </defs>
+  <rect width="1200" height="360" rx="28" fill="url(#bg)"/>
+  <path d="M42 282H1158" stroke="#1F2937" stroke-width="1"/>
+  <path d="M42 74H1158" stroke="#1F2937" stroke-width="1"/>
+  <g opacity=".42">
+    <path d="M84 0V360M184 0V360M284 0V360M384 0V360M484 0V360M584 0V360M684 0V360M784 0V360M884 0V360M984 0V360M1084 0V360" stroke="#132033"/>
+    <path d="M0 118H1200M0 176H1200M0 236H1200" stroke="#132033"/>
+  </g>
+  <rect class="scan" x="0" y="74" width="180" height="208" fill="url(#flow)" opacity=".16"/>
+  <text x="64" y="64" class="sans" fill="#E5E7EB" font-size="32" font-weight="800">Solana AI Model Kit</text>
+  <text x="64" y="96" class="mono" fill="#93C5FD" font-size="14">datasets -> LoRA -> registry -> x402 inference</text>
+  <g filter="url(#glow)">
+    <path class="dash" d="M190 180H1010" stroke="url(#flow)" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g class="pulse">
+    <circle cx="190" cy="180" r="44" fill="#08111F" stroke="#14F195" stroke-width="3"/>
+    <text x="190" y="174" text-anchor="middle" class="sans" fill="#F9FAFB" font-size="14" font-weight="800">DATA</text>
+    <text x="190" y="194" text-anchor="middle" class="mono" fill="#A7F3D0" font-size="11">35K+29K+142</text>
+  </g>
+  <g class="pulse node2">
+    <circle cx="445" cy="180" r="44" fill="#08111F" stroke="#80ECFF" stroke-width="3"/>
+    <text x="445" y="174" text-anchor="middle" class="sans" fill="#F9FAFB" font-size="14" font-weight="800">TRAIN</text>
+    <text x="445" y="194" text-anchor="middle" class="mono" fill="#BAE6FD" font-size="11">HF Jobs</text>
+  </g>
+  <g class="pulse node3">
+    <circle cx="700" cy="180" r="44" fill="#08111F" stroke="#9945FF" stroke-width="3"/>
+    <text x="700" y="174" text-anchor="middle" class="sans" fill="#F9FAFB" font-size="14" font-weight="800">CAAP</text>
+    <text x="700" y="194" text-anchor="middle" class="mono" fill="#DDD6FE" font-size="11">register</text>
+  </g>
+  <g class="pulse node4">
+    <circle cx="955" cy="180" r="44" fill="#08111F" stroke="#14F195" stroke-width="3"/>
+    <text x="955" y="174" text-anchor="middle" class="sans" fill="#F9FAFB" font-size="14" font-weight="800">SERVE</text>
+    <text x="955" y="194" text-anchor="middle" class="mono" fill="#A7F3D0" font-size="11">x402</text>
+  </g>
+  <g class="mono" font-size="13">
+    <text x="70" y="305" fill="#9CA3AF">curl -fsSL raw.githubusercontent.com/Solizardking/solana-clawd/main/ai-training/scripts/solana_ai_model_kit.sh | bash</text>
+    <text x="70" y="329" fill="#67E8F9">onchain.x402.wtf/.well-known/clawd-registry.json</text>
+  </g>
+</svg>

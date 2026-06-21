@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>register.x402.wtf | CAAP Model Registration</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./config.js"></script>
+  </head>
+  <body data-page="register">
+    <header class="topbar">
+      <a class="brand" href="./register.html" aria-label="register.x402.wtf home">
+        <span class="brand-mark">CAAP</span>
+        <span>
+          <strong>register.x402.wtf</strong>
+          <small>Onchain model registration</small>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="./index.html">Models</a>
+        <a data-config-link="modelsHome" href="https://models.x402.wtf">models.x402.wtf</a>
+        <a data-config-link="onchainHome" href="https://onchain.x402.wtf">Onchain</a>
+        <a data-config-link="githubRepo" href="https://github.com/solizardking/solana-clawd-ai-training">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="site-shell">
+      <section class="register-layout">
+        <section class="register-panel" aria-label="CAAP registration form">
+          <div class="panel-head">
+            <p class="eyebrow">CAAP/1.0</p>
+            <h1>Register a trained model.</h1>
+            <p class="muted">Use the manifest and artifact hash produced by the model kit after a one-shot run.</p>
+          </div>
+
+          <form id="registerForm">
+            <label class="field">
+              <span>API base</span>
+              <input id="apiBase" autocomplete="off" />
+            </label>
+
+            <label class="field">
+              <span>Hugging Face model</span>
+              <input id="hfModelId" required value="solanaclawd/solana-clawd-custom-lora" />
+            </label>
+
+            <label class="field">
+              <span>Model hash</span>
+              <input id="modelHash" placeholder="sha256:&lt;adapter-or-merged-model-hash&gt;" />
+            </label>
+
+            <div class="grid-2">
+              <label class="field">
+                <span>Model type</span>
+                <select id="modelType">
+                  <option>TextGeneration</option>
+                  <option>SentimentAnalysis</option>
+                  <option>ImageClassification</option>
+                  <option>PricePrediction</option>
+                  <option>DocumentUnderstanding</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Cluster</span>
+                <select id="cluster">
+                  <option>devnet</option>
+                  <option>mainnet-beta</option>
+                  <option>testnet</option>
+                  <option>localnet</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Inference endpoint</span>
+              <input id="apiEndpoint" value="https://clawd-box-router.fly.dev/v1" />
+            </label>
+
+            <div class="grid-2">
+              <label class="field">
+                <span>Dataset size</span>
+                <input id="datasetSize" type="number" min="0" step="1" value="0" />
+              </label>
+              <label class="field">
+                <span>Eval accuracy</span>
+                <input id="evalAccuracy" type="number" min="0" max="1" step="0.0001" value="0.60" />
+              </label>
+            </div>
+
+            <div class="grid-2">
+              <label class="field">
+                <span>W&B run</span>
+                <input id="wandbRun" placeholder="optional" />
+              </label>
+              <label class="field">
+                <span>Request token</span>
+                <input id="requestToken" type="password" autocomplete="off" placeholder="optional bearer token" />
+              </label>
+            </div>
+
+            <div class="switches compact-switches" aria-label="Registration options">
+              <label><input id="live" type="checkbox" /> <span>Live registry POST</span></label>
+              <label><input id="allowGeneratedHash" type="checkbox" /> <span>Allow generated hash</span></label>
+            </div>
+
+            <div class="actions">
+              <button id="previewRegistration" type="button">Preview</button>
+              <button id="submitRegistration" type="submit" class="danger">Register</button>
+              <button id="copyRegistrationCurl" type="button" class="secondary">Copy curl</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="main-stage">
+          <section class="hero-band compact-hero" aria-label="Registry handoff">
+            <div>
+              <p class="eyebrow">onchain.x402.wtf</p>
+              <h2>Off-chain index first, onchain PDA when the wallet is ready.</h2>
+              <p class="lede">The page writes the same CAAP payload as `ai-training/dao/register_model.sh`. Live writes require the explicit live toggle and a real model hash unless provisional hashes are enabled.</p>
+            </div>
+            <img src="./assets/solana-ai-model-kit.svg" alt="Solana AI Model Kit pipeline" />
+          </section>
+
+          <section class="terminal" aria-label="Registration payload preview">
+            <div class="terminal-bar">
+              <span></span>
+              <span></span>
+              <span></span>
+              <p>caap-registration</p>
+            </div>
+            <pre id="registrationOutput"></pre>
+          </section>
+
+          <section class="content-grid">
+            <article class="surface">
+              <p class="eyebrow">Registry contract</p>
+              <h2>Required fields</h2>
+              <div class="key-list">
+                <span>hf_model_id</span>
+                <span>model_hash</span>
+                <span>api_endpoint</span>
+                <span>dataset_size</span>
+                <span>eval_accuracy</span>
+                <span>protocol</span>
+              </div>
+            </article>
+
+            <article class="surface">
+              <p class="eyebrow">Backend</p>
+              <h2>Connection</h2>
+              <div class="endpoint-list">
+                <code id="healthEndpoint">/api/health</code>
+                <code id="previewEndpoint">/api/register/preview</code>
+                <code id="registerEndpoint">/api/register</code>
+              </div>
+              <p class="muted" id="apiStatus">API status pending.</p>
+            </article>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

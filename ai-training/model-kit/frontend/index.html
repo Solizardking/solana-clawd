@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>models.x402.wtf | Solana AI Model Kit</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./config.js"></script>
+  </head>
+  <body data-page="models">
+    <header class="topbar">
+      <a class="brand" href="./index.html" aria-label="models.x402.wtf home">
+        <span class="brand-mark">CAAP</span>
+        <span>
+          <strong>models.x402.wtf</strong>
+          <small>Solana AI Model Kit</small>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="./register.html">Register</a>
+        <a href="https://github.com/solizardking/solana-clawd-ai-training/tree/main/ai-training/model-kit/docs">Docs</a>
+        <a data-config-link="onchainHome" href="https://onchain.x402.wtf">Onchain</a>
+        <a data-config-link="githubRepo" href="https://github.com/solizardking/solana-clawd-ai-training">GitHub</a>
+      </nav>
+    </header>
+
+    <main class="site-shell">
+      <section class="workspace">
+        <aside class="builder-panel" aria-label="One-shot command builder">
+          <div class="panel-head">
+            <p class="eyebrow">One-shot run</p>
+            <h1>Build, train, publish, register.</h1>
+          </div>
+
+          <label class="field">
+            <span>API base</span>
+            <input id="apiBase" autocomplete="off" />
+          </label>
+
+          <label class="field">
+            <span>Lane</span>
+            <select id="lane">
+              <option value="custom">Custom dataset</option>
+              <option value="core-ai">Core AI</option>
+              <option value="trading-factory">NVIDIA trading factory</option>
+              <option value="perps">Perps tools</option>
+              <option value="tx-foundation">Transaction foundation</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Input paths</span>
+            <textarea id="inputs" rows="4">ai-training/data/incoming</textarea>
+          </label>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Dataset repo</span>
+              <input id="datasetRepo" value="solanaclawd/solana-clawd-realtime-research-instruct" />
+            </label>
+            <label class="field">
+              <span>Model repo</span>
+              <input id="modelRepo" value="solanaclawd/solana-clawd-custom-lora" />
+            </label>
+          </div>
+
+          <div class="grid-2">
+            <label class="field">
+              <span>Output prefix</span>
+              <input id="outputPrefix" value="data/model_kit/model_kit" />
+            </label>
+            <label class="field">
+              <span>Inference endpoint</span>
+              <input id="endpoint" value="https://clawd-box-router.fly.dev/v1" />
+            </label>
+          </div>
+
+          <div class="switches" aria-label="Pipeline options">
+            <label><input id="pushDataset" type="checkbox" /> <span>Push dataset</span></label>
+            <label><input id="train" type="checkbox" /> <span>Train adapter</span></label>
+            <label><input id="remoteTrain" type="checkbox" /> <span>HF Job</span></label>
+            <label><input id="pushModel" type="checkbox" /> <span>Push model</span></label>
+            <label><input id="register" type="checkbox" checked /> <span>Register dry-run</span></label>
+            <label><input id="liveRegister" type="checkbox" /> <span>Live register</span></label>
+            <label><input id="yes" type="checkbox" /> <span>Allow side effects</span></label>
+            <label><input id="trainDryRun" type="checkbox" checked /> <span>Train dry-run</span></label>
+          </div>
+
+          <div class="actions">
+            <button id="generate" type="button">Generate</button>
+            <button id="copy" type="button" class="secondary">Copy</button>
+          </div>
+        </aside>
+
+        <section class="main-stage">
+          <section class="hero-band" aria-label="Solana AI model kit overview">
+            <div>
+              <p class="eyebrow">x402 model launch surface</p>
+              <h2>Train from local files, publish to Hugging Face, and hand the model to CAAP/1.0.</h2>
+              <p class="lede">The kit turns PDFs, JSONL, CSV, notebooks, markdown, YAML, parquet, and image sidecars into a reviewed SFT dataset, optional LoRA adapter, and registry-ready payload.</p>
+              <div class="hero-actions">
+                <a class="button-link" href="./register.html">Open register.x402.wtf</a>
+                <a class="button-link secondary" data-config-link="x402Home" href="https://x402.wtf">x402.wtf</a>
+              </div>
+            </div>
+            <img src="./assets/solana-ai-model-kit.svg" alt="Solana AI Model Kit pipeline" />
+          </section>
+
+          <section class="status-grid" aria-label="Connected resources">
+            <article class="metric accent-green">
+              <span>Registry</span>
+              <strong data-status-field="protocol">CAAP/1.0</strong>
+              <a data-config-link="onchainHome" href="https://onchain.x402.wtf">onchain.x402.wtf</a>
+            </article>
+            <article class="metric accent-cyan">
+              <span>Datasets</span>
+              <strong data-status-field="datasetCount">4</strong>
+              <a href="#datasets">published lanes</a>
+            </article>
+            <article class="metric accent-violet">
+              <span>Models</span>
+              <strong data-status-field="modelCount">3</strong>
+              <a href="#models">adapter lanes</a>
+            </article>
+            <article class="metric accent-gold">
+              <span>HF Jobs</span>
+              <strong data-status-field="jobCount">2</strong>
+              <a href="#jobs">training status</a>
+            </article>
+          </section>
+
+          <section class="terminal" aria-label="Generated terminal command">
+            <div class="terminal-bar">
+              <span></span>
+              <span></span>
+              <span></span>
+              <p>clawd-model-kit</p>
+            </div>
+            <pre id="commandOutput"></pre>
+          </section>
+
+          <section class="content-grid">
+            <article class="surface">
+              <p class="eyebrow">Flow</p>
+              <h2>One-shot path</h2>
+              <ol class="flow-list">
+                <li><strong>Collect</strong><span>Drop source files into `ai-training/data/incoming`.</span></li>
+                <li><strong>Build</strong><span>Create SFT JSONL, splits, manifest, and dataset card.</span></li>
+                <li><strong>Train</strong><span>Run a local LoRA dry-run or launch a guarded HF Job.</span></li>
+                <li><strong>Register</strong><span>Send CAAP/1.0 metadata to `onchain.x402.wtf`.</span></li>
+              </ol>
+            </article>
+
+            <article class="surface">
+              <p class="eyebrow">Deploy</p>
+              <h2>Vercel plus Render</h2>
+              <div class="command-list">
+                <code>cd ai-training/model-kit</code>
+                <code>npm run build</code>
+                <code>vercel deploy --prod</code>
+                <code>render blueprint launch ai-training/model-kit/render.yaml</code>
+              </div>
+            </article>
+          </section>
+
+          <section class="resource-section" id="datasets">
+            <header>
+              <p class="eyebrow">Published datasets</p>
+              <h2>Training lanes</h2>
+            </header>
+            <div class="resource-list" id="datasetList" aria-live="polite"></div>
+          </section>
+
+          <section class="resource-section" id="models">
+            <header>
+              <p class="eyebrow">Models</p>
+              <h2>Adapters and foundation lanes</h2>
+            </header>
+            <div class="resource-list" id="modelList" aria-live="polite"></div>
+          </section>
+
+          <section class="resource-section" id="jobs">
+            <header>
+              <p class="eyebrow">Jobs</p>
+              <h2>Training status</h2>
+            </header>
+            <div class="resource-list compact" id="jobList" aria-live="polite"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
