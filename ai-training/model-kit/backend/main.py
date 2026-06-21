@@ -1106,6 +1106,7 @@ def root() -> dict[str, Any]:
         "models_home": MODELS_HOME,
         "register_home": REGISTER_HOME,
         "registry": DEFAULT_REGISTRY_HOME,
+        "constitution": constitution_commitment(),
     }
 
 
@@ -1116,6 +1117,7 @@ def health() -> dict[str, Any]:
         "time": utc_now(),
         "registry_api": DEFAULT_REGISTRY_API,
         "protocol": PROTOCOL,
+        "constitution": constitution_commitment(),
     }
 
 
@@ -1133,6 +1135,7 @@ def model_kit_status() -> dict[str, Any]:
         "registry_url": DEFAULT_REGISTRY_MANIFEST,
         "register_api": DEFAULT_REGISTRY_API,
         "github_repo": GITHUB_REPO,
+        "constitution": constitution_status(),
         "programs": {
             "solana_ai_inference": PROGRAM_ID,
             "sas": SAS_PROGRAM_ID,
@@ -1170,10 +1173,16 @@ def well_known() -> dict[str, Any]:
             "schema": "/api/register/schema",
             "preview": "/api/register/preview",
             "register": "/api/register",
+            "constitution": "/api/constitution",
             "arena_providers": "/api/arena/providers",
             "arena_runs": "/api/arena/runs",
         },
     }
+
+
+@app.get("/api/constitution")
+def constitution() -> dict[str, Any]:
+    return {"ok": True, "constitution": constitution_status()}
 
 
 @app.get("/api/arena/providers")
@@ -1291,6 +1300,7 @@ def register_schema() -> dict[str, Any]:
             "cluster": "devnet",
             "model_type": "TextGeneration",
             "eval_accuracy": 0.60,
+            "constitution": constitution_commitment(),
         },
         "required_for_live": ["hf_model_id", "model_hash", "api_endpoint", "dataset_size", "eval_accuracy"],
     }
