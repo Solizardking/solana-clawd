@@ -6,22 +6,35 @@ Aggregates transaction-domain text from:
   2. Phoenix perps via RPC (funding rates, market stats)
   3. Existing SFT JSONL   (messages → CPT text conversion)
   4. DeepSolana corpus    (if data/deep_solana_corpus.jsonl present)
+  5. BigQuery mainnet     (bigquery-public-data.crypto_solana_mainnet_us DEX swaps)
 
 All sources emit {"text": "<tx_context>...</tx_context>"} records.
 
 Usage:
     python3 collect.py --output ../../../../data/tx_foundation_cpt.jsonl --count 2000
-    python3 collect.py --sources jupiter rpc sft --count 500 --dry-run
+    python3 collect.py --sources jupiter rpc sft bigquery --count 10000 --dry-run
+    python3 collect.py --sources bigquery --count 50000   # BQ-only bulk pull
 """
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import sys
 import time
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+
+# BigQuery source (optional — falls back to mock if google-cloud-bigquery not installed)
+try:
+    from bigquery_collector import collect_bigquery as _bq_collect  # type: ignore
+    _BQ_AVAILABLE = True
+except Exception:
+    _BQ_AVAILABLE = False
+    def _bq_collect(count: int, out: list[str]) -> int:  # type: ignore[misc]
+        print("  [bigquery] google-cloud-bigquery not installed — skipping", file=sys.stderr)
+        return 0
 
 # ── Shared ─────────────────────────────────────────────────────────────────────
 
@@ -260,11 +273,16 @@ def collect_deepsol(count: int, out: list[str]) -> int:
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
+def collect_bigquery(count: int, out: list[str]) -> int:
+    return _bq_collect(count, out)
+
+
 SOURCES = {
-    "jupiter":  collect_jupiter,
-    "rpc":      collect_rpc,
-    "sft":      collect_sft,
-    "deepsol":  collect_deepsol,
+    "jupiter":   collect_jupiter,
+    "rpc":       collect_rpc,
+    "sft":       collect_sft,
+    "deepsol":   collect_deepsol,
+    "bigquery":  collect_bigquery,
 }
 
 
@@ -302,7 +320,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", default=str(DATA / "tx_foundation_cpt.jsonl"))
     parser.add_argument("--count", type=int, default=2000)
     parser.add_argument("--sources", nargs="+",
-                        default=["jupiter", "sft", "deepsol"],
+                        default=["jupiter", "sft", "deepsol", "bigquery"],
                         choices=list(SOURCES.keys()))
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()

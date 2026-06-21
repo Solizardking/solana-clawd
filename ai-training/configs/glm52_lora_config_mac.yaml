@@ -1,0 +1,83 @@
+# LoRA SFT config optimized for local Apple Silicon (MPS) training
+# 48 GB unified memory — runs 7B in bfloat16 without quantization
+#
+# Usage:
+#   cd ai-training
+#   pip install -r requirements.txt
+#   python3 scripts/train_lora.py --config configs/glm52_lora_config_mac.yaml
+
+base_model: "Qwen/Qwen2.5-7B-Instruct"
+model_revision: "main"
+torch_dtype: "bfloat16"
+device_map: "mps"            # Apple Silicon GPU; falls back to cpu automatically
+
+dataset_repo: "solanaclawd/solana-clawd-instruct"
+dataset_revision: "main"
+max_seq_length: 2048         # halved from 4096 — saves MPS memory, enough for all examples
+train_split: "train"
+eval_split: "test"
+dataset_path: "data/processed"
+
+output_dir: "outputs/clawd-glm52-lora-mac"
+push_to_hub: false           # local run; push manually with huggingface-cli
+
+hub_model_id: "ordlibrary/Clawd-GLM-5.2"
+hub_private: false
+
+lora:
+  r: 16                      # lower than cloud config (r=32) — faster on MPS
+  alpha: 32
+  dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  target_modules: "all-linear"
+
+training:
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16
+  per_device_eval_batch_size: 1
+  num_train_epochs: 3
+  max_steps: -1
+  learning_rate: 1.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  optim: "adamw_torch"
+  bf16: false                # MPS uses float32 internally; set fp16/bf16 false
+  fp16: false
+  tf32: false
+  gradient_checkpointing: true
+  logging_steps: 5
+  save_steps: 100
+  save_total_limit: 2
+  eval_steps: 100
+  eval_strategy: "steps"
+  report_to: ["none"]        # disable wandb for local run (set WANDB_API_KEY to re-enable)
+  seed: 42
+  dataloader_num_workers: 0  # MPS: must be 0 (no forked processes)
+  remove_unused_columns: false
+
+# Quantization disabled — MPS does not support bitsandbytes CUDA kernels
+# 7B in bfloat16 = ~14.5 GB; fits on 48 GB unified memory with room for gradients
+quantization:
+  enabled: false
+
+sft:
+  packing: false
+  assistant_only_loss: true
+
+eval:
+  base_model: "Qwen/Qwen2.5-7B-Instruct"
+  adapter_repo: "ordlibrary/Clawd-GLM-5.2"
+  eval_dataset_repo: "solanaclawd/solana-clawd-eval"
+  eval_split: "test"
+  max_eval_samples: 20
+  max_new_tokens: 256
+  temperature: 0.2
+  top_p: 0.9
+  do_sample: true
+  output_dir: "outputs/eval-clawd-glm52-mac"
+  report_to: "json"
+
+zk_examples_script: "scripts/add_zk_examples.py"
+zk_examples_source: "../zk-primitives"

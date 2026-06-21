@@ -4,8 +4,55 @@ description: >
   End-to-end NVIDIA AI Blueprint integration for Solana Clawd.
   Six blueprints (TFM, portfolio-opt, distillation, signal-discovery,
   enterprise-rag, AIQ) unified under a single factory config.
+  Nemo Clawd adds the Core AI runtime as a NemoClaw-style sandboxed agent
+  blueprint with routed inference, network policy, lifecycle commands, and
+  training hooks.
   All execution is paper-mode by default; live requires explicit gate.
 default_mode: paper
+
+# ── Nemo Clawd / Core AI Integration ─────────────────────────────────────────
+nemo_clawd:
+  name: Nemo Clawd
+  upstream: https://github.com/NVIDIA/NemoClaw
+  upstream_docs: https://docs.nvidia.com/nemoclaw/latest/
+  local_builder: nvidia/integration/nemo_clawd.py
+  core_ai_root: ../core-ai
+  source_mount_mode: read-only
+  outputs:
+    inventory: data/strategies/nemo_clawd_core_inventory.json
+    blueprint: data/strategies/nemo_clawd_blueprint.json
+  required_paths:
+    - ../core-ai
+    - ../core-ai/.agents
+    - ../core-ai/.clawd-plugin
+    - ../core-ai/.github
+    - ../core-ai/clawd-agents
+    - ../core-ai/clawd-code
+    - ../core-ai/clawd-grok
+    - ../core-ai/docs
+    - ../core-ai/helius-cli
+    - ../core-ai/helius-cursor
+    - ../core-ai/helius-mcp
+    - ../core-ai/helius-plugin
+    - ../core-ai/helius-skills
+    - ../core-ai/knowledge
+    - ../core-ai/mcp-server
+    - ../core-ai/scripts
+    - ../core-ai/v3
+  network_policy:
+    default: deny
+    allowed_egress:
+      - https://integrate.api.nvidia.com
+      - https://api-inference.huggingface.co
+      - https://huggingface.co
+      - https://onchain.x402.wtf
+      - https://api.mainnet-beta.solana.com
+      - https://*.helius.dev
+      - http://localhost:11434
+  lifecycle:
+    generate: python3 nvidia/integration/nemo_clawd.py --write
+    plan: python3 nvidia/integration/nemo_clawd_agent.py --mode paper
+    verify: python3 nvidia/scripts/verify_nvidia.py --strict
 
 # ── Models ────────────────────────────────────────────────────────────────────
 models:
@@ -69,6 +116,7 @@ inputs:
 
 # ── Integration entrypoints ───────────────────────────────────────────────────
 integration:
+  nemo_clawd_core: nvidia/integration/nemo_clawd.py
   nim_bridge: nvidia/integration/clawd_nim_bridge.py
   nemo_agent: nvidia/integration/nemo_clawd_agent.py
   trading_factory_bridge: nvidia/integration/trading_factory_nvidia.py
@@ -83,11 +131,16 @@ workflows:
     config: nvidia/configs/solana_tx_foundation.yaml
     nemo_config: nvidia/configs/pretrain_solana_decoder.yaml
     pipeline: nvidia/blueprints/transaction-foundation-model/pipeline.py
-    cpt_data: data/tx_foundation_cpt.jsonl           # 19,542 Solana tx CPT records
+    cpt_data: data/tx_foundation_cpt.jsonl           # CPT records (Jupiter+SFT+BQ)
     sft_data: data/solana_clawd_merged.jsonl          # 30K instruction pairs
     output_model: solanaclawd/solana-tx-foundation-1.5b
     hf_dataset: solanaclawd/solana-tx-foundation-cpt
     status: training                                   # pipeline.py --stages cpt sft evaluate
+    bq_collector: nvidia/blueprints/transaction-foundation-model/bigquery_collector.py
+    bq_dataset: bigquery-public-data.crypto_solana_mainnet_us
+    bq_bulk_cmd: >-
+      python3 nvidia/blueprints/transaction-foundation-model/bigquery_collector.py
+      --limit 100000 --days 90 --append --output data/tx_foundation_cpt.jsonl
 
   # Blueprint 2 — Quantitative Portfolio Optimization
   portfolio_optimization:

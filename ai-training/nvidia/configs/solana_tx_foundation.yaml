@@ -11,8 +11,27 @@ base_model: "Qwen/Qwen2.5-1.5B-Instruct"
 output_name: "solana-tx-foundation-1.5b"
 
 # ── Data paths (relative to ai-training/) ─────────────────────────────────────
-cpt_data: "data/tx_foundation_cpt.jsonl"     # 19,542 Jupiter+SFT CPT records
+cpt_data: "data/tx_foundation_cpt.jsonl"     # CPT records (Jupiter+SFT+BQ)
 sft_data: "data/solana_clawd_merged.jsonl"   # 30K instruction pairs
+
+# ── BigQuery data source ──────────────────────────────────────────────────────
+# Queries bigquery-public-data.crypto_solana_mainnet_us for DEX swap txs.
+# Auth: gcloud auth application-default login  (ADC — never commit credentials)
+# GCP billing project: $GOOGLE_CLOUD_PROJECT (default x402-477302)
+#
+# Run before CPT to bulk-pull and append BQ records to cpt_data:
+#   python3 nvidia/blueprints/transaction-foundation-model/bigquery_collector.py \
+#       --limit 100000 --days 90 --append --output data/tx_foundation_cpt.jsonl
+#
+# Or include bigquery as a collect.py source (falls back to mock if BQ unavailable):
+#   python3 nvidia/blueprints/transaction-foundation-model/collect.py \
+#       --sources jupiter sft deepsol bigquery --count 50000
+#
+bq_dataset: "bigquery-public-data.crypto_solana_mainnet_us"
+bq_gcp_project_var: "GOOGLE_CLOUD_PROJECT"   # env var — never hardcode
+bq_default_limit: 100000
+bq_days: 90
+bq_collector: "nvidia/blueprints/transaction-foundation-model/bigquery_collector.py"
 
 # ── CPT hyperparameters ───────────────────────────────────────────────────────
 # Lower LR for domain injection to avoid catastrophic forgetting of base model
