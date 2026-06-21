@@ -5,7 +5,7 @@ services:
     rootDir: ai-training/model-kit/backend
     plan: starter
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    startCommand: python render_start.py
     healthCheckPath: /api/health
     envVars:
       - key: ONCHAIN_REGISTRY_HOME
