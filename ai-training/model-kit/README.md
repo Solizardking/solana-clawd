@@ -356,6 +356,7 @@ Never put these in files that can be committed or uploaded:
 Before public release:
 
 ```bash
+ai-training/model-kit/bin/clawd-model-kit constitution --strict
 ai-training/model-kit/bin/clawd-model-kit verify
 python3 ai-training/scripts/verify_core_ai_release.py
 python3 ai-training/scripts/verify_trading_factory_release.py --local-only --strict
@@ -370,6 +371,12 @@ ai-training/model-kit/bin/clawd-model-kit verify --full-release
 Model outputs must never be accepted as transactions. Execution code must parse,
 validate, simulate, and risk-check every action first. Live trading remains
 outside this model-kit automation.
+
+The model kit treats `CONSTITUTION.md` as the interpretive authority and
+`three-laws.md` as the immutable on-chain execution law set. Ingest, prepare,
+train, upload, register, and one-shot workflows fail before side effects if the
+required Constitution files are missing or if `CLAWD_THREE_LAWS_SHA256` is set
+and does not match the local `three-laws.md` hash.
 
 ## References
 

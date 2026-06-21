@@ -521,7 +521,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         for name, ok in checks.items():
             print(f"{name:24} {'OK' if ok else 'missing'}")
         print(f"{'three_laws_hash':24} {constitution['three_laws_hash'] or 'missing'}")
-    if args.strict and not all(checks[k] for k in ["repo_root", "ai_training", "python", "git"]):
+    if args.strict and not all(checks[k] for k in ["repo_root", "ai_training", "python", "git", "constitution_gate"]):
         return 1
     return 0
 

@@ -27,10 +27,15 @@ card, frontend bundle, and Hub upload may become public.
 ## Before Publishing
 
 ```bash
+ai-training/model-kit/bin/clawd-model-kit constitution --strict
 ai-training/model-kit/bin/clawd-model-kit verify
 python3 ai-training/scripts/verify_core_ai_release.py
 python3 ai-training/scripts/verify_trading_factory_release.py --local-only --strict
 ```
+
+The Constitution gate checks `CONSTITUTION.md`, `three-laws.md`, and `CLAWD.md`.
+Set `CLAWD_THREE_LAWS_SHA256=sha256:<expected>` in CI when you want byte-for-byte
+enforcement against a known on-chain law hash.
 
 If a secret-like pattern is found:
 
@@ -46,6 +51,7 @@ If a secret-like pattern is found:
 - Do not store raw image bytes in JSONL rows.
 - Keep user-provided HF tokens request-scoped when using OnChain-AI.
 - Preserve source category and generation process in dataset/model cards.
+- Preserve the Constitution hash commitment in CAAP/1.0 registration metadata.
 
 ## Model Rules
 
