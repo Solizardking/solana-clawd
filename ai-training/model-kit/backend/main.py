@@ -18,6 +18,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+from pathlib import Path
 from typing import Any, Optional
 
 from fastapi import FastAPI, Header, HTTPException
@@ -44,6 +45,8 @@ ARENA_EVENT_SLEEP = float(os.environ.get("MODEL_ARENA_EVENT_SLEEP", "0.75"))
 ARENA_LOG_PATH = os.environ.get("MODEL_ARENA_LOG_PATH", "/tmp/model-arena-runs.jsonl")
 ARENA_CODE_EXECUTION = os.environ.get("MODEL_ARENA_ENABLE_CODE_EXECUTION", "1").lower() not in {"0", "false", "no"}
 ARENA_CODE_TIMEOUT = float(os.environ.get("MODEL_ARENA_CODE_TIMEOUT", "5"))
+BACKEND_DIR = Path(__file__).resolve().parent
+CONSTITUTION_MANIFEST_PATH = BACKEND_DIR / "constitution_manifest.json"
 
 MODEL_TYPES = [
     "TextGeneration",
@@ -57,6 +60,77 @@ CLUSTERS = ["devnet", "mainnet-beta", "testnet", "localnet"]
 
 def split_env_list(name: str, fallback: str) -> list[str]:
     return [item.strip() for item in os.environ.get(name, fallback).split(",") if item.strip()]
+
+
+def normalize_sha256(raw: str) -> str:
+    value = raw.strip()
+    if not value:
+        return ""
+    return value if value.startswith("sha256:") else f"sha256:{value}"
+
+
+def load_constitution_manifest() -> dict[str, Any]:
+    try:
+        return json.loads(CONSTITUTION_MANIFEST_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {
+            "id": "clawd-six-law-harness",
+            "authority": [],
+            "six_law_harness": {"off_chain": [], "on_chain": []},
+            "files": [],
+            "public_sources": {},
+        }
+
+
+def constitution_status() -> dict[str, Any]:
+    manifest = load_constitution_manifest()
+    expected_three_laws = normalize_sha256(os.environ.get("CLAWD_THREE_LAWS_SHA256", ""))
+    files: list[dict[str, Any]] = []
+    missing_required: list[str] = []
+    mismatches: list[str] = []
+
+    for raw in manifest.get("files", []):
+        item = dict(raw)
+        item["present"] = bool(item.get("sha256"))
+        if item.get("required") and not item["present"]:
+            missing_required.append(str(item.get("id") or item.get("path") or "unknown"))
+        if item.get("id") == "three_laws" and expected_three_laws:
+            item["expected_sha256"] = expected_three_laws
+            item["hash_matches_expected"] = item.get("sha256") == expected_three_laws
+            if not item["hash_matches_expected"]:
+                mismatches.append("three_laws")
+        files.append(item)
+
+    hashes = {
+        item["id"]: item.get("sha256")
+        for item in files
+        if item.get("id") and item.get("sha256")
+    }
+    return {
+        "ok": bool(files) and not missing_required and not mismatches,
+        "id": manifest.get("id", "clawd-six-law-harness"),
+        "version": manifest.get("version"),
+        "authority": manifest.get("authority", []),
+        "six_law_harness": manifest.get("six_law_harness", {}),
+        "files": files,
+        "hashes": hashes,
+        "three_laws_hash": hashes.get("three_laws"),
+        "missing_required": missing_required,
+        "mismatches": mismatches,
+        "public_sources": manifest.get("public_sources", {}),
+        "manifest_path": "constitution_manifest.json",
+    }
+
+
+def constitution_commitment() -> dict[str, Any]:
+    status = constitution_status()
+    return {
+        "gate": "ok" if status["ok"] else "unavailable",
+        "harness": status["id"],
+        "three_laws_hash": status["three_laws_hash"],
+        "hashes": status["hashes"],
+        "sources": status["public_sources"],
+    }
 
 
 app = FastAPI(
@@ -424,18 +498,16 @@ def build_payload(req: RegistrationRequest, *, require_real_hash: bool) -> tuple
     }
     if req.wandb_run:
         payload["wandb_run"] = req.wandb_run
-    if req.metadata:
-        payload["metadata"] = {
-            **req.metadata,
-            "models_home": MODELS_HOME,
-            "register_home": REGISTER_HOME,
-            "source": "solana-ai-model-kit",
-        }
-    elif hash_was_generated:
-        payload["metadata"] = {
-            "hash_source": "generated_from_registration_fields",
-            "source": "solana-ai-model-kit",
-        }
+    metadata = {
+        **(req.metadata or {}),
+        "models_home": MODELS_HOME,
+        "register_home": REGISTER_HOME,
+        "source": "solana-ai-model-kit",
+        "constitution": constitution_commitment(),
+    }
+    if hash_was_generated:
+        metadata["hash_source"] = "generated_from_registration_fields"
+    payload["metadata"] = metadata
     return payload, hash_was_generated
 
 
