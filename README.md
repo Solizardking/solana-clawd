@@ -640,21 +640,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`1fe73b95`](../../commit/1fe73b95) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
-| 🥈 | [`c572c83a`](../../commit/c572c83a) | sfdsfdsfd | solizardking | Jun 21 |
-| 🥉 | [`c5904ba1`](../../commit/c5904ba1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| 4️⃣ | [`ffdab305`](../../commit/ffdab305) | Add CLAWD coin links to model kit frontend | solizardking | Jun 21 |
-| 5️⃣ | [`b1be27d6`](../../commit/b1be27d6) | Ignore local Vercel link metadata | solizardking | Jun 21 |
-| 6️⃣ | [`d0208452`](../../commit/d0208452) | Redirect register host to register page | solizardking | Jun 21 |
-| 7️⃣ | [`2469a8f9`](../../commit/2469a8f9) | Point model kit frontend at Render API | solizardking | Jun 21 |
-| 8️⃣ | [`a0f3c3b4`](../../commit/a0f3c3b4) | Use Docker for model kit Render API | solizardking | Jun 21 |
-| 9️⃣ | [`d40722d2`](../../commit/d40722d2) | Fix Render model kit launcher | solizardking | Jun 21 |
-| 🔟 | [`b5f688e8`](../../commit/b5f688e8) | Deploy model kit web surfaces | solizardking | Jun 21 |
-| · | [`63c50874`](../../commit/63c50874) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| · | [`1251fc32`](../../commit/1251fc32) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
-| · | [`1210d937`](../../commit/1210d937) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| · | [`d498774c`](../../commit/d498774c) | docs: add SESSIONS.md — historic first MPS 7B training + BQ  | solizardking | Jun 21 |
-| · | [`0f7a49bf`](../../commit/0f7a49bf) | chore: tune mac training config for 100-step smoke test | solizardking | Jun 21 |
+| 🥇 | [`8cfde3ae`](../../commit/8cfde3ae) | ll | solizardking | Jun 21 |
+| 🥈 | [`fa5e5c03`](../../commit/fa5e5c03) | lll | solizardking | Jun 21 |
+| 🥉 | [`c6a74609`](../../commit/c6a74609) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
+| 4️⃣ | [`7cff5959`](../../commit/7cff5959) | ljlj | solizardking | Jun 21 |
+| 5️⃣ | [`c20b9a45`](../../commit/c20b9a45) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
+| 6️⃣ | [`1fe73b95`](../../commit/1fe73b95) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
+| 7️⃣ | [`c572c83a`](../../commit/c572c83a) | sfdsfdsfd | solizardking | Jun 21 |
+| 8️⃣ | [`c5904ba1`](../../commit/c5904ba1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
+| 9️⃣ | [`ffdab305`](../../commit/ffdab305) | Add CLAWD coin links to model kit frontend | solizardking | Jun 21 |
+| 🔟 | [`b1be27d6`](../../commit/b1be27d6) | Ignore local Vercel link metadata | solizardking | Jun 21 |
+| · | [`d0208452`](../../commit/d0208452) | Redirect register host to register page | solizardking | Jun 21 |
+| · | [`2469a8f9`](../../commit/2469a8f9) | Point model kit frontend at Render API | solizardking | Jun 21 |
+| · | [`a0f3c3b4`](../../commit/a0f3c3b4) | Use Docker for model kit Render API | solizardking | Jun 21 |
+| · | [`d40722d2`](../../commit/d40722d2) | Fix Render model kit launcher | solizardking | Jun 21 |
+| · | [`b5f688e8`](../../commit/b5f688e8) | Deploy model kit web surfaces | solizardking | Jun 21 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
