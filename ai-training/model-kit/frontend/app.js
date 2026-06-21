@@ -38,6 +38,16 @@ const lanes = {
 
 const fallbackStatus = {
   protocol: "CAAP/1.0",
+  constitution: {
+    ok: true,
+    id: "clawd-six-law-harness",
+    three_laws_hash: "sha256:fa1c36ab5605df2880bedc495ddd4a3096c89ab8a749acf043ea53b2ab31c2bc",
+    files: [
+      { id: "constitution", path: "CONSTITUTION.md", sha256: "sha256:321a2e6ccb812464291ba3059a5f76633fc2194e4bb18a97f4b8b9f8289d9020" },
+      { id: "three_laws", path: "three-laws.md", sha256: "sha256:fa1c36ab5605df2880bedc495ddd4a3096c89ab8a749acf043ea53b2ab31c2bc" },
+      { id: "clawd_context", path: "CLAWD.md", sha256: "sha256:1d412ae61552a791b5392a94a7675ff258af61e568f427507c67f363bf6f820c" },
+    ],
+  },
   datasets: [
     { repo_id: "solanaclawd/solana-clawd-core-ai-instruct", rows: 35173, status: "published", lane: "core-ai", url: "https://huggingface.co/datasets/solanaclawd/solana-clawd-core-ai-instruct" },
     { repo_id: "solanaclawd/solana-clawd-realtime-research-instruct", rows: 29058, status: "published", lane: "custom", url: "https://huggingface.co/datasets/solanaclawd/solana-clawd-realtime-research-instruct" },
@@ -235,6 +245,7 @@ function buildCommand() {
     parts.join(" \\\n  "),
     "",
     "# Verify local artifacts",
+    "ai-training/model-kit/bin/clawd-model-kit constitution --strict",
     "ai-training/model-kit/bin/clawd-model-kit doctor --strict",
     `ai-training/model-kit/bin/clawd-model-kit verify --path ${shellQuote(manifest)}`,
     "",
@@ -296,15 +307,23 @@ function resourceItem(item, type) {
   `;
 }
 
+function shortHash(value) {
+  const raw = String(value || "").replace(/^sha256:/, "");
+  return raw ? `${raw.slice(0, 8)}...${raw.slice(-6)}` : "-";
+}
+
 function renderStatus(status) {
   const datasets = status.datasets || fallbackStatus.datasets;
   const models = status.models || fallbackStatus.models;
   const jobs = status.jobs || fallbackStatus.jobs;
+  const constitution = status.constitution || fallbackStatus.constitution;
   const fields = {
     protocol: status.protocol || "CAAP/1.0",
     datasetCount: datasets.length,
     modelCount: models.length,
     jobCount: jobs.length,
+    constitutionGate: constitution.ok ? "OK" : "check",
+    threeLawsHash: shortHash(constitution.three_laws_hash),
   };
 
   Object.entries(fields).forEach(([key, value]) => {
@@ -320,6 +339,15 @@ function renderStatus(status) {
 
   const jobList = $("#jobList");
   if (jobList) jobList.innerHTML = jobs.map((item) => resourceItem(item, "job")).join("");
+
+  const constitutionList = $("#constitutionFiles");
+  if (constitutionList) {
+    const files = constitution.files || [];
+    constitutionList.innerHTML = files.map((item) => {
+      const label = item.id || item.path || "file";
+      return `<code>${escapeHtml(label)} ${escapeHtml(shortHash(item.sha256))}</code>`;
+    }).join("");
+  }
 }
 
 async function loadStatus() {

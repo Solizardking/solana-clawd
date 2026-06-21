@@ -361,6 +361,11 @@
               <strong data-status-field="jobCount">2</strong>
               <a href="#jobs">training status</a>
             </article>
+            <article class="metric accent-cyan">
+              <span>Constitution</span>
+              <strong data-status-field="constitutionGate">OK</strong>
+              <a href="#constitution">three-laws gate</a>
+            </article>
             <article class="metric accent-red">
               <span>$CLAWD coin</span>
               <strong>Phantom</strong>
@@ -386,8 +391,18 @@
                 <li><strong>Collect</strong><span>Drop source files into `ai-training/data/incoming`.</span></li>
                 <li><strong>Build</strong><span>Create SFT JSONL, splits, manifest, and dataset card.</span></li>
                 <li><strong>Train</strong><span>Run a local LoRA dry-run or launch a guarded HF Job.</span></li>
-                <li><strong>Register</strong><span>Send CAAP/1.0 metadata to `onchain.x402.wtf`.</span></li>
+                <li><strong>Register</strong><span>Send CAAP/1.0 metadata with the Constitution hash commitment.</span></li>
               </ol>
+            </article>
+
+            <article class="surface" id="constitution">
+              <p class="eyebrow">Harness</p>
+              <h2>Constitution gate</h2>
+              <p class="muted">Model-kit commands verify the root Constitution and hash-attested on-chain laws before ingest, train, upload, or register workflows.</p>
+              <div class="command-list" id="constitutionFiles">
+                <code>three_laws fa1c36ab...31c2bc</code>
+              </div>
+              <p class="muted">Current three-laws hash: <span data-status-field="threeLawsHash">fa1c36ab...31c2bc</span></p>
             </article>
 
             <article class="surface">
