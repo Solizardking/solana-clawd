@@ -143,7 +143,8 @@ Side effects are gated:
 | `clawd_model_kit.py` | Python CLI wrapper around existing `ai-training/scripts/*`. |
 | `config.example.yaml` | Example project/lane defaults. |
 | `frontend/` | Static `models.x402.wtf` and `register.x402.wtf` pages. |
-| `backend/` | Render-ready FastAPI status, arena, and registration proxy. |
+| `backend/` | Render-ready FastAPI status, arena, Constitution metadata, and registration proxy. |
+| `backend/constitution_manifest.json` | Public hash commitment for `CONSTITUTION.md`, `three-laws.md`, and `CLAWD.md`. |
 | `render.yaml` | Render blueprint for the backend API. |
 | `vercel.json` | Vercel static frontend and host rewrite config. |
 | `package.json` | Static-site build/dev scripts. |
@@ -160,11 +161,13 @@ Side effects are gated:
 
 ```bash
 ai-training/model-kit/bin/clawd-model-kit --help
+ai-training/model-kit/bin/clawd-model-kit constitution --strict
 ```
 
 | Command | Use |
 | --- | --- |
 | `doctor` | Check Python, git, HF CLI/auth, Ollama, env-key presence, frontend files. |
+| `constitution` | Print the Constitution, three-laws, and Clawd context hash gate. |
 | `init` | Create `data/incoming`, `data/model_kit`, and `outputs/model_kit`. |
 | `ingest` | Parse files into SFT JSONL, dataset splits, manifest, and dataset card. |
 | `prepare` | Prepare an existing messages JSONL into HF Dataset splits. |
