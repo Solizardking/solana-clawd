@@ -103,6 +103,38 @@ Read-only visualization feeds:
 | `GET` | `/mesh/visualization` | Combined node, model, mesh, job, and flow state |
 | `GET` | `/flow` | Recent chat/inference/warmup events for live animation |
 
+### Sol GPT
+
+Open the free chat app:
+
+```text
+https://clawd-inference-mesh.fly.dev/sol-gpt
+```
+
+Sol GPT is local-first: requests go to the mesh's Ollama models before any
+external fallback. The default local chain is configured by
+`SOL_GPT_LOCAL_MODELS`, starting with `qwen2.5:1.5b` for low-latency answers.
+
+OpenRouter fallback is server-side and only activates when the Fly secret
+`OPENROUTER_API_KEY` exists. By default Sol GPT only uses model IDs ending in
+`:free`, even if paid OpenRouter model env vars are present. Set
+`OPENROUTER_ALLOW_PAID_FALLBACKS=true` only if you intentionally want paid
+fallbacks.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/api/sol-gpt/status` | Local models, selected default, and fallback readiness |
+| `POST` | `/api/sol-gpt/chat` | Sol GPT chat with mesh-first routing and free OpenRouter fallback |
+| `POST` | `/sol-gpt/v1/chat/completions` | OpenAI-shaped alias for Sol GPT chat |
+
+Example:
+
+```bash
+curl https://clawd-inference-mesh.fly.dev/api/sol-gpt/chat \
+  -H "Content-Type: application/json" \
+  -d '{"model":"sol-gpt/auto","messages":[{"role":"user","content":"Explain Solana PDAs simply."}]}'
+```
+
 ### `POST /inference`
 
 ```json
@@ -225,6 +257,11 @@ curl -X POST https://clawd-inference-mesh.fly.dev/admin/api/traffic \
 | `INFERENCE_MODELS` | No | Comma-separated Ollama models to preload at boot |
 | `MESH_ADMIN_KEY` | Yes for admin | Admin API/dashboard bearer key — set via `fly secrets set` only |
 | `PUBLIC_INFERENCE_ENABLED` | No | Initial public inference switch, defaults to `true` |
+| `SOL_GPT_DEFAULT_MODEL` | No | Fast default local model for `/sol-gpt` |
+| `SOL_GPT_LOCAL_MODELS` | No | Comma-separated local model preference chain |
+| `OPENROUTER_API_KEY` | No | Server-side fallback key for Sol GPT/OpenRouter |
+| `OPENROUTER_FALLBACK_MODELS` | No | Comma-separated free OpenRouter fallback model chain |
+| `OPENROUTER_ALLOW_PAID_FALLBACKS` | No | Defaults to false; keep false for free-only fallback |
 | `LIGHT_STATE_TREE` | No | Light Protocol state tree pubkey |
 
 **Never put keypairs, tokens, or secrets in fly.toml or config files.**

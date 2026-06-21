@@ -260,6 +260,9 @@ test-output
 # extracted archives
 clawd-ai-agents 2/
 
+# AI training data — kept local only, not for public GitHub
+ai-training/
+
 # macOS
 .DS_Store
 __MACOSX
