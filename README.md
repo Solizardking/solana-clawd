@@ -640,21 +640,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`63c50874`](../../commit/63c50874) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| 🥈 | [`1251fc32`](../../commit/1251fc32) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
-| 🥉 | [`1210d937`](../../commit/1210d937) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| 4️⃣ | [`d498774c`](../../commit/d498774c) | docs: add SESSIONS.md — historic first MPS 7B training + BQ  | solizardking | Jun 21 |
-| 5️⃣ | [`0f7a49bf`](../../commit/0f7a49bf) | chore: tune mac training config for 100-step smoke test | solizardking | Jun 21 |
-| 6️⃣ | [`8d8c5f5f`](../../commit/8d8c5f5f) | fix: resolve MPS meta-device training crash on Apple Silicon | solizardking | Jun 21 |
-| 7️⃣ | [`9201b37d`](../../commit/9201b37d) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
-| 8️⃣ | [`d6180bdb`](../../commit/d6180bdb) | feat: integrate BigQuery crypto_solana_mainnet_us into TFM p | solizardking | Jun 21 |
-| 9️⃣ | [`25bf434c`](../../commit/25bf434c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| 🔟 | [`228179f5`](../../commit/228179f5) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| · | [`705e43b0`](../../commit/705e43b0) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| · | [`43cbf949`](../../commit/43cbf949) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| · | [`eb4d9ada`](../../commit/eb4d9ada) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| · | [`6fd384e4`](../../commit/6fd384e4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
-| · | [`22040389`](../../commit/22040389) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 20 |
+| 🥇 | [`1fe73b95`](../../commit/1fe73b95) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
+| 🥈 | [`c572c83a`](../../commit/c572c83a) | sfdsfdsfd | solizardking | Jun 21 |
+| 🥉 | [`c5904ba1`](../../commit/c5904ba1) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
+| 4️⃣ | [`ffdab305`](../../commit/ffdab305) | Add CLAWD coin links to model kit frontend | solizardking | Jun 21 |
+| 5️⃣ | [`b1be27d6`](../../commit/b1be27d6) | Ignore local Vercel link metadata | solizardking | Jun 21 |
+| 6️⃣ | [`d0208452`](../../commit/d0208452) | Redirect register host to register page | solizardking | Jun 21 |
+| 7️⃣ | [`2469a8f9`](../../commit/2469a8f9) | Point model kit frontend at Render API | solizardking | Jun 21 |
+| 8️⃣ | [`a0f3c3b4`](../../commit/a0f3c3b4) | Use Docker for model kit Render API | solizardking | Jun 21 |
+| 9️⃣ | [`d40722d2`](../../commit/d40722d2) | Fix Render model kit launcher | solizardking | Jun 21 |
+| 🔟 | [`b5f688e8`](../../commit/b5f688e8) | Deploy model kit web surfaces | solizardking | Jun 21 |
+| · | [`63c50874`](../../commit/63c50874) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
+| · | [`1251fc32`](../../commit/1251fc32) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jun 21 |
+| · | [`1210d937`](../../commit/1210d937) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jun 21 |
+| · | [`d498774c`](../../commit/d498774c) | docs: add SESSIONS.md — historic first MPS 7B training + BQ  | solizardking | Jun 21 |
+| · | [`0f7a49bf`](../../commit/0f7a49bf) | chore: tune mac training config for 100-step smoke test | solizardking | Jun 21 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
