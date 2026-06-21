@@ -4,7 +4,7 @@ This folder ships two deployable surfaces:
 
 - `models.x402.wtf` - static Vercel frontend from `frontend/index.html`.
 - `register.x402.wtf` - host-routed Vercel page from `frontend/register.html`.
-- Render API - FastAPI service from `backend/main.py`.
+- Render API - Dockerized FastAPI service from `backend/main.py`.
 
 The frontend is static. It never stores registry tokens. Live registration is
 proxied through the Render API only when the page sends an explicit live request.
@@ -50,9 +50,9 @@ Optional secret env:
 Smoke checks:
 
 ```bash
-curl -sS https://YOUR_RENDER_SERVICE.onrender.com/api/health
-curl -sS https://YOUR_RENDER_SERVICE.onrender.com/api/model-kit/status
-curl -sS https://YOUR_RENDER_SERVICE.onrender.com/.well-known/clawd-model-kit.json
+curl -sS https://x402-model-kit-docker-api.onrender.com/api/health
+curl -sS https://x402-model-kit-docker-api.onrender.com/api/model-kit/status
+curl -sS https://x402-model-kit-docker-api.onrender.com/.well-known/clawd-model-kit.json
 ```
 
 ## Vercel Frontend
@@ -75,7 +75,7 @@ Before deploy, set `frontend/config.js` to the Render URL:
 
 ```js
 window.MODEL_KIT_CONFIG = {
-  apiBaseUrl: "https://YOUR_RENDER_SERVICE.onrender.com",
+  apiBaseUrl: "https://x402-model-kit-docker-api.onrender.com",
   x402Home: "https://x402.wtf",
   modelsHome: "https://models.x402.wtf",
   registerHome: "https://register.x402.wtf",

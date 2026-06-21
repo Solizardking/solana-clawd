@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: x402-model-kit-api
+    name: x402-model-kit-docker-api
     runtime: docker
     rootDir: ai-training/model-kit/backend
     plan: starter
