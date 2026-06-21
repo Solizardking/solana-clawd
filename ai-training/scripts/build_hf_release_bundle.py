@@ -11,12 +11,14 @@ import datetime as dt
 import json
 import re
 import shutil
+import sys
 from pathlib import Path
 from typing import Iterable
 
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUT = ROOT / "outputs" / "hf_release_bundle"
+TX_BLUEPRINT = ROOT / "nvidia" / "blueprints" / "transaction-foundation-model"
 
 SECRET_PATTERNS = {
     "google_client_secret_path": re.compile(r"client_secret_\d+[-\w]+\.apps\.googleusercontent\.com\.json"),
@@ -40,7 +42,7 @@ DATASET_SPECS = {
     "tx_foundation_cpt": {
         "repo_id": "solanaclawd/solana-tx-foundation-cpt",
         "card": ROOT / "data" / "tx_foundation_cpt_dataset_card.md",
-        "manifest": ROOT / "data" / "nvidia_trading_factory_manifest.json",  # reuse until dedicated manifest exists
+        "manifest": ROOT / "data" / "tx_foundation_cpt_manifest.json",
         "jsonl": ROOT / "data" / "tx_foundation_cpt.jsonl",
         "processed": ROOT / "data" / "tx_foundation_cpt_processed",
     },
@@ -96,6 +98,15 @@ def copy_file(src: Path, dst: Path) -> None:
     shutil.copy2(src, dst)
 
 
+def ensure_tx_foundation_manifest(path: Path) -> None:
+    if path.exists():
+        return
+    sys.path.insert(0, str(TX_BLUEPRINT))
+    from tx_foundation_common import write_dataset_manifest  # type: ignore
+
+    write_dataset_manifest(path)
+
+
 def build_dataset_bundle(name: str, spec: dict[str, object], out_dir: Path) -> dict[str, object]:
     dataset_dir = out_dir / "datasets" / name
     data_dir = dataset_dir / "data"
@@ -111,6 +122,9 @@ def build_dataset_bundle(name: str, spec: dict[str, object], out_dir: Path) -> d
     assert isinstance(manifest, Path)
     assert isinstance(jsonl, Path)
     assert isinstance(processed, Path)
+
+    if name == "tx_foundation_cpt":
+        ensure_tx_foundation_manifest(manifest)
 
     findings = scan_paths([card, manifest, jsonl])
     if findings:

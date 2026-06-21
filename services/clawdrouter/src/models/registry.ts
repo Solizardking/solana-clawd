@@ -6,6 +6,88 @@
 
 import type { ModelEntry, TierMapping, RequestTier } from '../types.js';
 
+// ── Local Ollama Models ─────────────────────────────────────────────
+
+export const OLLAMA_MODELS: ModelEntry[] = [
+  {
+    id: '8bit/solana-trading-factory:8b-lora-20260620',
+    provider: 'ollama', name: 'Solana Trading Factory 8B LoRA',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 32_768, features: ['solana', 'reasoning', 'agentic'],
+    tier: 'budget', qualityScore: 76, speedMs: 700, enabled: true, free: true,
+  },
+  {
+    id: '8bit/solana-trading-factory:latest',
+    provider: 'ollama', name: 'Solana Trading Factory',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 32_768, features: ['solana', 'reasoning', 'agentic'],
+    tier: 'budget', qualityScore: 76, speedMs: 700, enabled: true, free: true,
+  },
+  {
+    id: '8bit/solana-trading-factory:preview',
+    provider: 'ollama', name: 'Solana Trading Factory Preview',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 32_768, features: ['solana', 'reasoning', 'agentic'],
+    tier: 'budget', qualityScore: 72, speedMs: 650, enabled: true, free: true,
+  },
+  {
+    id: '8bit/solana-clawd-core-ai:1.5b-merged-20260620',
+    provider: 'ollama', name: 'Solana Clawd Core AI 1.5B Merged',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 16_384, features: ['solana', 'agentic'],
+    tier: 'budget', qualityScore: 68, speedMs: 300, enabled: true, free: true,
+  },
+  {
+    id: '8bit/solana-clawd-core-ai:latest',
+    provider: 'ollama', name: 'Solana Clawd Core AI',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 16_384, features: ['solana', 'agentic'],
+    tier: 'budget', qualityScore: 68, speedMs: 300, enabled: true, free: true,
+  },
+  {
+    id: '8bit/solana-clawd-core-ai:preview',
+    provider: 'ollama', name: 'Solana Clawd Core AI Preview',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 16_384, features: ['solana', 'agentic'],
+    tier: 'budget', qualityScore: 64, speedMs: 300, enabled: true, free: true,
+  },
+  {
+    id: '8bit/solana-clawd:preview',
+    provider: 'ollama', name: 'Solana Clawd Preview',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 16_384, features: ['solana', 'agentic'],
+    tier: 'budget', qualityScore: 62, speedMs: 300, enabled: true, free: true,
+  },
+  {
+    id: '8bit/DeepSolana:latest',
+    provider: 'ollama', name: 'DeepSolana',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 32_768, features: ['solana', 'reasoning', 'privacy'],
+    tier: 'budget', qualityScore: 70, speedMs: 450, enabled: true, free: true,
+  },
+  {
+    id: 'hermes3:8b',
+    provider: 'ollama', name: 'Hermes 3 8B',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 32_768, features: ['reasoning'],
+    tier: 'budget', qualityScore: 66, speedMs: 650, enabled: true, free: true,
+  },
+  {
+    id: 'qwen2.5:1.5b',
+    provider: 'ollama', name: 'Qwen 2.5 1.5B',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 32_768, features: ['code'],
+    tier: 'budget', qualityScore: 54, speedMs: 250, enabled: true, free: true,
+  },
+  {
+    id: 'nemotron3:33b',
+    provider: 'ollama', name: 'Nemotron 3 33B',
+    inputPricePerM: 0, outputPricePerM: 0,
+    contextWindow: 131_000, features: ['reasoning'],
+    tier: 'budget', qualityScore: 74, speedMs: 1600, enabled: true, free: true,
+  },
+];
+
 // ── Budget Models (under $0.001/request) ────────────────────────────
 
 const BUDGET_MODELS: ModelEntry[] = [
@@ -654,6 +736,7 @@ const PRIVACY_MODELS: ModelEntry[] = [
 // ── Full Registry ───────────────────────────────────────────────────
 
 export const MODEL_REGISTRY: ModelEntry[] = [
+  ...OLLAMA_MODELS,
   ...BUDGET_MODELS,
   ...MID_MODELS,
   ...PREMIUM_MODELS,
@@ -748,6 +831,20 @@ export function resolveModelAlias(alias: string): string | null {
     'openrouter/nemo-ultra': 'nvidia/nemotron-3-ultra-550b-a55b:free',
     'openrouter/qwen': 'qwen/qwen3.7-plus',
     'openrouter/mini': 'minimax/minimax-m3',
+    'clawd-core': '8bit/solana-clawd-core-ai:latest',
+    'core-ai': '8bit/solana-clawd-core-ai:latest',
+    'clawd-local': '8bit/solana-clawd-core-ai:latest',
+    'clawd-trading': '8bit/solana-trading-factory:latest',
+    'trading-factory': '8bit/solana-trading-factory:latest',
+    'deep-solana': '8bit/DeepSolana:latest',
+    'deepsolana': '8bit/DeepSolana:latest',
+    'ollama/deepsolana': '8bit/DeepSolana:latest',
+    'ollama/hermes': 'hermes3:8b',
+    'ollama/qwen': 'qwen2.5:1.5b',
+    'ollama/nemotron': 'nemotron3:33b',
+    'local-hermes': 'hermes3:8b',
+    'local-qwen': 'qwen2.5:1.5b',
+    'local-nemotron': 'nemotron3:33b',
     'fable': '~anthropic/claude-fable-latest',
     'riverflow': 'sourceful/riverflow-v2.5-pro',
     'br-sonnet': 'anthropic/claude-sonnet-4.6',
@@ -764,10 +861,12 @@ export function formatModelTable(): string {
   lines.push('');
 
   const sections = [
-    { title: '🆓 Free Models', models: MODEL_REGISTRY.filter(m => m.free) },
+    { title: '🖥 Local Ollama Models', models: OLLAMA_MODELS },
+    { title: '🆓 Free Hosted Models', models: MODEL_REGISTRY.filter(m => m.free && m.provider !== 'ollama') },
     { title: '💰 Budget Models', models: BUDGET_MODELS.filter(m => !m.free) },
     { title: '⚡ Mid-Range Models', models: MID_MODELS },
     { title: '👑 Premium Models', models: PREMIUM_MODELS },
+    { title: '🔐 Privacy / TEE Models', models: PRIVACY_MODELS },
   ];
 
   for (const { title, models } of sections) {

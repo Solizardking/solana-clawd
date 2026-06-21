@@ -21,6 +21,8 @@ import os
 import re
 from pathlib import Path
 
+from tx_foundation_common import DEFAULT_EVAL_OUTPUT, DEFAULT_HUB_MODEL_ID, DEFAULT_MODEL_OUTPUT
+
 EVAL_CASES = [
     {
         "id": "swap_route",
@@ -186,7 +188,8 @@ def evaluate(model_path: str, use_hub: bool = False) -> dict:
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="outputs/solana-tx-foundation-1.5b/sft",
+    default_model = DEFAULT_MODEL_OUTPUT / "sft"
+    parser.add_argument("--model", default=str(default_model if default_model.exists() else DEFAULT_HUB_MODEL_ID),
                         help="Local path or HF repo id")
     parser.add_argument("--hub", action="store_true", help="Load from HF Hub")
     parser.add_argument("--output", default=None, help="Save eval JSON (default: data/tx_foundation_eval.json)")
@@ -199,7 +202,7 @@ if __name__ == "__main__":
     print(f"[tx-eval] model={model}")
     result = evaluate(model, args.hub)
 
-    out_path = Path(args.output) if args.output else (Path(__file__).parents[4] / "data" / "tx_foundation_eval.json")
+    out_path = Path(args.output) if args.output else DEFAULT_EVAL_OUTPUT
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w") as f:
         json.dump(result, f, indent=2)

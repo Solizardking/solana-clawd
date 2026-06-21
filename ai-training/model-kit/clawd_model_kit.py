@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import importlib.util
 import json
 import os
@@ -32,6 +33,30 @@ DEFAULT_OUTPUT_PREFIX = "data/model_kit/model_kit"
 DEFAULT_ENDPOINT = "https://clawd-box-router.fly.dev/v1"
 DEFAULT_REGISTRY = "https://onchain.x402.wtf"
 DEFAULT_PERPS_MANIFEST = "data/model_kit/perps_tool_manifest.json"
+
+CONSTITUTION_SOURCES = {
+    "constitution": REPO_ROOT / "CONSTITUTION.md",
+    "three_laws": REPO_ROOT / "three-laws.md",
+    "clawd_context": REPO_ROOT / "CLAWD.md",
+}
+CONSTITUTION_REQUIRED = ("constitution", "three_laws")
+CONSTITUTION_AUTHORITY = [
+    "CONSTITUTION.md is the highest interpretive authority for model-kit training, publishing, and registration.",
+    "three-laws.md is the immutable on-chain execution law set and must be hash-attested byte-for-byte.",
+    "Generated datasets, manifests, model cards, arena logs, and CAAP payloads must preserve auditability without leaking secrets.",
+]
+SIX_LAW_HARNESS = {
+    "off_chain": [
+        "reason from the Constitution before optimizing for task completion",
+        "explain, instrument, and verify advanced systems instead of mystifying them",
+        "keep creator audit rights and user safety ahead of convenience",
+    ],
+    "on_chain": [
+        "Never harm.",
+        "Earn your existence.",
+        "Never deceive, but owe nothing to strangers.",
+    ],
+}
 
 LANES = {
     "custom": {
@@ -149,6 +174,80 @@ def command_available(command: str) -> bool:
 
 def env_present(name: str) -> bool:
     return bool(os.environ.get(name))
+
+
+def normalize_sha256(raw: str) -> str:
+    value = raw.strip()
+    if not value:
+        return ""
+    return value if value.startswith("sha256:") else f"sha256:{value}"
+
+
+def sha256_file(path: Path) -> str:
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def constitution_status() -> dict[str, Any]:
+    expected_three_laws = normalize_sha256(os.environ.get("CLAWD_THREE_LAWS_SHA256", ""))
+    files: list[dict[str, Any]] = []
+    missing_required: list[str] = []
+    mismatches: list[str] = []
+
+    for key, path in CONSTITUTION_SOURCES.items():
+        item: dict[str, Any] = {
+            "id": key,
+            "path": rel(path),
+            "required": key in CONSTITUTION_REQUIRED,
+            "present": path.exists(),
+        }
+        if path.exists():
+            item["sha256"] = sha256_file(path)
+            item["bytes"] = path.stat().st_size
+            if key == "three_laws" and expected_three_laws:
+                item["expected_sha256"] = expected_three_laws
+                item["hash_matches_expected"] = item["sha256"] == expected_three_laws
+                if not item["hash_matches_expected"]:
+                    mismatches.append(key)
+        elif key in CONSTITUTION_REQUIRED:
+            missing_required.append(key)
+        files.append(item)
+
+    hashes = {
+        item["id"]: item.get("sha256")
+        for item in files
+        if item.get("sha256")
+    }
+    return {
+        "ok": not missing_required and not mismatches,
+        "authority": CONSTITUTION_AUTHORITY,
+        "six_law_harness": SIX_LAW_HARNESS,
+        "required": list(CONSTITUTION_REQUIRED),
+        "files": files,
+        "hashes": hashes,
+        "three_laws_hash": hashes.get("three_laws"),
+        "missing_required": missing_required,
+        "mismatches": mismatches,
+        "expected_three_laws_env": "CLAWD_THREE_LAWS_SHA256" if expected_three_laws else "",
+    }
+
+
+def require_constitution_gate(action: str) -> dict[str, Any]:
+    status = constitution_status()
+    if status["ok"]:
+        return status
+    problems: list[str] = []
+    if status["missing_required"]:
+        problems.append("missing " + ", ".join(status["missing_required"]))
+    if status["mismatches"]:
+        problems.append("hash mismatch " + ", ".join(status["mismatches"]))
+    raise KitError(f"{action} blocked by constitution gate: {'; '.join(problems)}")
+
+
+def print_constitution_summary(status: dict[str, Any]) -> None:
+    print(f"constitution-gate {'OK' if status['ok'] else 'FAIL'}")
+    for item in status["files"]:
+        digest = item.get("sha256", "missing")
+        print(f"{item['id']:16} {digest} {item['path']}")
 
 
 def hf_auth_available() -> bool:
@@ -284,6 +383,7 @@ def perps_source_files() -> list[Path]:
 
 def build_perps_manifest(market: str, mode: str, threshold: float) -> dict[str, Any]:
     tools = perps_tool_catalog()
+    constitution = constitution_status()
     return {
         "name": "Solana Clawd Model Kit Perps Tools",
         "generated_at": dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat(),
@@ -314,6 +414,8 @@ def build_perps_manifest(market: str, mode: str, threshold: float) -> dict[str, 
             "router_token_env": "HF_TOKEN",
         },
         "safety": {
+            "constitution_gate": constitution["ok"],
+            "three_laws_hash": constitution["three_laws_hash"],
             "default_modes": ["observer", "paper"],
             "live_trading_env": "LIVE_TRADING",
             "live_trading_default": False,
@@ -387,6 +489,7 @@ def build_ingest_command(args: argparse.Namespace) -> tuple[list[str | Path], di
 
 
 def cmd_doctor(args: argparse.Namespace) -> int:
+    constitution = constitution_status()
     perps_tools_count = 0
     try:
         perps_tools_count = len(perps_tool_catalog())
@@ -409,15 +512,36 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         "perps_agent": (AI_TRAINING_DIR / "perps" / "functioncall.py").exists(),
         "perps_tool_count": perps_tools_count >= 13,
         "perps_handoff": (AI_TRAINING_DIR / "data" / "perps" / "nvidia_perps_handoff.json").exists(),
+        "constitution_gate": constitution["ok"],
+        "three_laws_present": any(item["id"] == "three_laws" and item["present"] for item in constitution["files"]),
     }
     if args.json:
-        print(json.dumps(checks, indent=2))
+        print(json.dumps({**checks, "constitution": constitution}, indent=2))
     else:
         for name, ok in checks.items():
             print(f"{name:24} {'OK' if ok else 'missing'}")
+        print(f"{'three_laws_hash':24} {constitution['three_laws_hash'] or 'missing'}")
     if args.strict and not all(checks[k] for k in ["repo_root", "ai_training", "python", "git"]):
         return 1
     return 0
+
+
+def cmd_constitution(args: argparse.Namespace) -> int:
+    status = constitution_status()
+    if args.json:
+        print(json.dumps(status, indent=2, sort_keys=True))
+    else:
+        print_constitution_summary(status)
+        if args.verbose:
+            print("\nAuthority:")
+            for item in status["authority"]:
+                print(f"- {item}")
+            print("\nOn-chain laws:")
+            for item in status["six_law_harness"]["on_chain"]:
+                print(f"- {item}")
+    if args.strict and not status["ok"]:
+        return 1
+    return 0 if status["ok"] else 1
 
 
 def cmd_init(args: argparse.Namespace) -> int:
@@ -435,6 +559,7 @@ def cmd_init(args: argparse.Namespace) -> int:
 
 
 def cmd_ingest(args: argparse.Namespace) -> int:
+    require_constitution_gate("dataset ingest")
     if args.push:
         require_yes(args, "Hugging Face dataset upload")
     cmd, paths = build_ingest_command(args)
@@ -447,6 +572,7 @@ def cmd_ingest(args: argparse.Namespace) -> int:
 
 
 def cmd_prepare(args: argparse.Namespace) -> int:
+    require_constitution_gate("dataset prepare")
     cmd: list[str | Path] = [
         PYTHON,
         "scripts/prepare_dataset.py",
@@ -471,6 +597,8 @@ def cmd_prepare(args: argparse.Namespace) -> int:
 
 
 def cmd_verify(args: argparse.Namespace) -> int:
+    constitution = require_constitution_gate("model-kit verify")
+    print(f"constitution-gate OK {constitution['three_laws_hash']}")
     if args.full_release:
         cmd = [PYTHON, "scripts/run_release_pipeline.py", "--report", args.report]
         if args.skip_dry_run:
@@ -490,6 +618,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
 
 
 def cmd_train(args: argparse.Namespace) -> int:
+    require_constitution_gate("model training")
     lane = lane_defaults(args.lane)
     if args.lane == "tx-foundation":
         if args.remote:
@@ -565,6 +694,7 @@ def cmd_train(args: argparse.Namespace) -> int:
 
 
 def cmd_upload(args: argparse.Namespace) -> int:
+    require_constitution_gate("model-kit upload")
     if args.bundle:
         cmd: list[str | Path] = [PYTHON, "scripts/build_hf_release_bundle.py", "--output", args.output]
         for dataset in args.dataset or []:
@@ -594,6 +724,7 @@ def cmd_upload(args: argparse.Namespace) -> int:
 
 
 def cmd_register(args: argparse.Namespace) -> int:
+    constitution = require_constitution_gate("model registration")
     lane = lane_defaults(args.lane)
     if args.live:
         require_yes(args, "live registry POST")
@@ -615,6 +746,7 @@ def cmd_register(args: argparse.Namespace) -> int:
     ]
     if args.model_hash:
         cmd.extend(["--model-hash", args.model_hash])
+    info(f"constitution gate: {constitution['three_laws_hash']}")
     if not args.live:
         cmd.append("--dry-run")
     if args.onchain:
@@ -717,6 +849,7 @@ def cmd_perps(args: argparse.Namespace) -> int:
 
 
 def cmd_one_shot(args: argparse.Namespace) -> int:
+    require_constitution_gate("one-shot workflow")
     ingest_args = argparse.Namespace(
         inputs=args.inputs,
         watch_dir=[],
@@ -810,6 +943,12 @@ def build_parser() -> argparse.ArgumentParser:
     doctor.add_argument("--json", action="store_true")
     doctor.add_argument("--strict", action="store_true")
     doctor.set_defaults(func=cmd_doctor)
+
+    constitution = sub.add_parser("constitution", help="Inspect the Clawd Constitution and three-laws hash gate")
+    constitution.add_argument("--json", action="store_true")
+    constitution.add_argument("--strict", action="store_true")
+    constitution.add_argument("--verbose", action="store_true")
+    constitution.set_defaults(func=cmd_constitution)
 
     init = sub.add_parser("init", help="Create local model-kit working directories")
     add_common(init)

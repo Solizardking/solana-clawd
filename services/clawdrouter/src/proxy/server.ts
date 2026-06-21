@@ -23,6 +23,7 @@ import { routeRequest } from "../router/profiles.js";
 import { getModel, resolveModelAlias, estimateCostPerRequest, MODEL_REGISTRY } from "../models/registry.js";
 import { PaymentTracker } from "../x402/payment.js";
 import { proxyToOpenRouter } from "../upstream/openrouter.js";
+import { proxyToOllama, listOllamaModels, isOllamaReady, toOllamaModelId } from "../upstream/ollama.js";
 import { proxyToRedpill, toRedpillModelId, getRedpillAttestation } from "../upstream/redpill.js";
 import { proxyToSolrouter, getSolrouterTEEPublicKey, getSolrouterAttestation } from "../upstream/solrouter.js";
 import {
@@ -166,8 +167,12 @@ export class ClawdRouterProxy {
 
   // ── Health Check ──────────────────────────────────────────────────
 
-  private handleHealth(res: ServerResponse): void {
+  private async handleHealth(res: ServerResponse): Promise<void> {
     const tier = this.holderStatus?.tier ?? "FREE";
+    const ollamaReady = this.config.ollamaEnabled
+      ? await isOllamaReady(this.config.ollamaHost)
+      : false;
+
     sendJSON(res, 200, {
       status: "ok",
       service: "clawdrouter",
@@ -188,6 +193,11 @@ export class ClawdRouterProxy {
         configured: !!this.config.openRouterApiKey,
         models: this.config.openRouterModelAliases,
       },
+      ollama: {
+        enabled: this.config.ollamaEnabled,
+        ready: ollamaReady,
+        host: this.config.ollamaHost,
+      },
       controlPlane: {
         authMode: this.config.authMode,
         validationUrl: this.config.validationUrl || null,
@@ -197,6 +207,7 @@ export class ClawdRouterProxy {
       features: {
         caching: this.config.cacheEnabled,
         guardrails: this.config.guardrailsEnabled,
+        localOllama: this.config.ollamaEnabled,
         variants: true,
         plugins: true,
         serverTools: true,
@@ -206,15 +217,27 @@ export class ClawdRouterProxy {
 
   // ── Model Listing ─────────────────────────────────────────────────
 
-  private handleModels(_req: IncomingMessage, res: ServerResponse): void {
+  private async handleModels(_req: IncomingMessage, res: ServerResponse): Promise<void> {
     const holderTier = this.holderStatus?.tier ?? "FREE";
+    const created = Math.floor(Date.now() / 1000);
 
-    const models = MODEL_REGISTRY
+    type ModelListItem = {
+      id: string;
+      object: "model";
+      created: number;
+      owned_by: string;
+      permission: unknown[];
+      root: string;
+      parent: null;
+      x_clawd: Record<string, unknown>;
+    };
+
+    const models: ModelListItem[] = MODEL_REGISTRY
       .filter((m) => m.enabled)
       .map((m) => ({
         id: m.id,
         object: "model",
-        created: Math.floor(Date.now() / 1000),
+        created,
         owned_by: m.provider,
         permission: [],
         root: m.id,
@@ -224,13 +247,53 @@ export class ClawdRouterProxy {
           accessible: canAccessModelTier(holderTier, m.tier),
           free: m.free,
           openRouterId: m.id,
+          local: m.provider === "ollama",
         },
       }));
+
+    const seen = new Set(models.map((model) => model.id));
+    let dynamicOllamaModels = 0;
+
+    if (this.config.ollamaEnabled) {
+      try {
+        const tags = await listOllamaModels(this.config.ollamaHost);
+        for (const tag of tags) {
+          const id = tag.name || tag.model;
+          if (!id || seen.has(id)) continue;
+
+          seen.add(id);
+          dynamicOllamaModels++;
+          models.push({
+            id,
+            object: "model",
+            created,
+            owned_by: "ollama",
+            permission: [],
+            root: id,
+            parent: null,
+            x_clawd: {
+              tier: "budget",
+              accessible: true,
+              free: true,
+              openRouterId: id,
+              local: true,
+              ollama: {
+                size: tag.size ?? null,
+                digest: tag.digest ?? null,
+                modifiedAt: tag.modified_at ?? null,
+              },
+            },
+          });
+        }
+      } catch {
+        // Keep the static registry available even when the local Ollama daemon is down.
+      }
+    }
 
     models.unshift({
       id: "clawdrouter/auto",
       object: "model",
-      created: Math.floor(Date.now() / 1000),
+      created,
       owned_by: "clawdrouter",
       permission: [],
       root: "clawdrouter/auto",
@@ -240,6 +303,7 @@ export class ClawdRouterProxy {
         accessible: true,
         free: false,
         openRouterId: "clawdrouter/auto",
+        local: false,
       },
     });
 
@@ -251,6 +315,11 @@ export class ClawdRouterProxy {
         balance: this.holderStatus?.balance ?? 0,
         totalAccessible: models.filter((m) => m.x_clawd.accessible).length,
         totalModels: models.length,
+      },
+      x_ollama: {
+        enabled: this.config.ollamaEnabled,
+        host: this.config.ollamaHost,
+        dynamicModels: dynamicOllamaModels,
       },
     });
   }
@@ -387,6 +456,10 @@ export class ClawdRouterProxy {
       }
     }
 
+    if (this.isOllamaRoute(routedModel)) {
+      return this.forwardToOllama(request, routedModel, routingMeta, auth.context, res);
+    }
+
     if (this.config.openRouterEnabled && this.config.openRouterApiKey && !this.canUseOpenRouter(auth.context)) {
       sendJSON(res, 403, {
         error: {
@@ -505,6 +578,93 @@ export class ClawdRouterProxy {
   }
 
   // ── OpenRouter Forwarding (v2 — uses new proxyToOpenRouter) ───────
+
+  private async forwardToOllama(
+    request: ChatCompletionRequest,
+    routedModel: string,
+    routingMeta: RoutingMeta,
+    auth: ChatAuthContext,
+    res: ServerResponse,
+  ): Promise<void> {
+    if (!this.config.ollamaEnabled) {
+      sendJSON(res, 503, {
+        error: { message: "Ollama routing is disabled. Set CLAWDROUTER_OLLAMA_ENABLED=true.", type: "not_configured" },
+        x_clawdrouter: routingMeta,
+      });
+      return;
+    }
+
+    const upstreamModel = toOllamaModelId(routedModel);
+    if (this.config.debug) {
+      console.log(`  🖥 Ollama: ${routedModel} → ${upstreamModel}`);
+    }
+
+    try {
+      const upstreamResponse = await proxyToOllama(
+        { ...request, model: upstreamModel },
+        { host: this.config.ollamaHost },
+      );
+
+      if (request.stream) {
+        res.writeHead(upstreamResponse.status, {
+          "Content-Type": upstreamResponse.headers.get("content-type") ?? "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+          "X-ClawdRouter-Model": routedModel,
+          "X-ClawdRouter-Upstream": "ollama",
+          "X-ClawdRouter-Tier": routingMeta.tier,
+          "X-ClawdRouter-Holder": auth.holderTier,
+        });
+
+        const reader = upstreamResponse.body?.getReader();
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            res.write(value);
+          }
+        }
+        res.end();
+        return;
+      }
+
+      const responseBody = await upstreamResponse.text();
+      let parsed: Record<string, unknown>;
+      try {
+        parsed = JSON.parse(responseBody);
+      } catch {
+        parsed = { error: { message: "Invalid Ollama response", raw: responseBody } };
+      }
+
+      parsed.x_clawdrouter = {
+        ...routingMeta,
+        upstream: "ollama",
+        upstreamModel,
+        authMode: auth.mode,
+        holderTier: auth.holderTier,
+        clawdBalance: auth.clawdBalance,
+      };
+
+      if (upstreamResponse.ok) {
+        const usage = parsed.usage as { prompt_tokens?: number; completion_tokens?: number } | undefined;
+        this.updateStats(routingMeta, usage);
+        await this.updateApiKeyUsage(auth, routingMeta, usage);
+      }
+
+      res.setHeader("X-ClawdRouter-Model", routedModel);
+      res.setHeader("X-ClawdRouter-Upstream", "ollama");
+      res.setHeader("X-ClawdRouter-Tier", routingMeta.tier);
+      res.setHeader("X-ClawdRouter-Holder", auth.holderTier);
+      sendJSON(res, upstreamResponse.status, parsed);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`  ✗ Ollama error: ${message}`);
+      sendJSON(res, 502, {
+        error: { message: `Ollama request failed: ${message}`, type: "upstream_error" },
+        x_clawdrouter: routingMeta,
+      });
+    }
+  }
 
   private async forwardToOpenRouter(
     request: ChatCompletionRequest,
@@ -894,6 +1054,10 @@ export class ClawdRouterProxy {
       "minimax/minimax-m",
     ];
     return privacyPrefixes.some((prefix) => modelId.startsWith(prefix));
+  }
+
+  private isOllamaRoute(modelId: string): boolean {
+    return modelId.startsWith("ollama/") || getModel(modelId)?.provider === "ollama";
   }
 
   private resolveConfiguredOpenRouterModel(model: string): string {

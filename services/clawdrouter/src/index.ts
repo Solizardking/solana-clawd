@@ -24,6 +24,7 @@ import { formatProfileTable } from './router/profiles.js';
 import { getTierCostBreakdown } from './router/tiers.js';
 import { scoreRequest } from './router/scorer.js';
 import { CLAWD_TOKEN_MINT } from './token/clawd-gate.js';
+import { isOllamaReady, listOllamaModels } from './upstream/ollama.js';
 
 // ── ASCII Banner ────────────────────────────────────────────────────
 
@@ -49,6 +50,7 @@ function getDefaultConfig(): ClawdRouterConfig {
   const validationUrl = process.env['CLAWDROUTER_VALIDATION_URL'] ?? process.env['CLAWDROUTER_PLATFORM_URL'] ?? '';
   const requestedAuthMode = process.env['CLAWDROUTER_AUTH_MODE'] ?? (validationUrl ? 'platform' : 'local');
   const authMode = requestedAuthMode === 'platform' ? 'platform' : 'local';
+  const ollamaHost = process.env['CLAWDROUTER_OLLAMA_HOST'] ?? process.env['OLLAMA_HOST'] ?? 'http://127.0.0.1:11434';
 
   return {
     port: parseInt(process.env['PORT'] ?? process.env['CLAWDROUTER_PORT'] ?? '8402', 10),
@@ -83,6 +85,16 @@ function getDefaultConfig(): ClawdRouterConfig {
       nemo_ultra: process.env['OPENROUTER_NEMO_ULTRA'] ?? 'nvidia/nemotron-3-ultra-550b-a55b:free',
       qwen: process.env['OPENROUTER_QWEN'] ?? 'qwen/qwen3.7-plus',
       mini: process.env['OPENROUTER_MINI'] ?? 'minimax/minimax-m3',
+    },
+    ollamaEnabled: process.env['CLAWDROUTER_OLLAMA_ENABLED'] !== 'false',
+    ollamaHost,
+    ollamaModelAliases: {
+      clawd_core: process.env['OLLAMA_CLAWD_CORE'] ?? '8bit/solana-clawd-core-ai:latest',
+      clawd_trading: process.env['OLLAMA_CLAWD_TRADING'] ?? '8bit/solana-trading-factory:latest',
+      deepsolana: process.env['OLLAMA_DEEPSOLANA'] ?? '8bit/DeepSolana:latest',
+      hermes: process.env['OLLAMA_HERMES'] ?? 'hermes3:8b',
+      qwen: process.env['OLLAMA_QWEN'] ?? 'qwen2.5:1.5b',
+      nemotron: process.env['OLLAMA_NEMOTRON'] ?? 'nemotron3:33b',
     },
     x402PayTo: process.env['CLAWDROUTER_X402_PAY_TO'] ?? '',
     x402Price: process.env['CLAWDROUTER_X402_PRICE'] ?? '10000',
@@ -228,6 +240,7 @@ async function startServer(): Promise<void> {
   console.log(`  ⚡ Profile: ${config.profile.toUpperCase()}`);
   console.log(`  📡 Network: ${config.network}`);
   console.log(`  🧠 Models:  ${MODEL_REGISTRY.filter(m => m.enabled).length} enabled`);
+  console.log(`  🖥 Ollama:  ${config.ollamaEnabled ? config.ollamaHost : 'disabled'}`);
   console.log(`  🔐 Auth:    ${config.authMode === 'platform' ? 'x402.wtf API keys' : 'local wallet/x402'}`);
 
   if (config.excludedModels.length > 0) {
@@ -313,6 +326,22 @@ async function runDoctor(args: string[]): Promise<void> {
     console.log(`    ✗ Local proxy: not running on :${config.port}`);
   }
 
+  if (config.ollamaEnabled) {
+    try {
+      const ready = await isOllamaReady(config.ollamaHost);
+      if (ready) {
+        const models = await listOllamaModels(config.ollamaHost);
+        console.log(`    ✓ Ollama: reachable (${models.length} models)`);
+      } else {
+        console.log(`    ✗ Ollama: not ready at ${config.ollamaHost}`);
+      }
+    } catch {
+      console.log(`    ✗ Ollama: unreachable at ${config.ollamaHost}`);
+    }
+  } else {
+    console.log('    - Ollama: disabled');
+  }
+
   // RPC
   try {
     const resp = await fetch(config.solanaRpcUrl, {
@@ -370,6 +399,8 @@ function printHelp(): void {
     CLAWDROUTER_MAX_PER_SESSION Max USDC per session (default: 5.00)
     CLAWDROUTER_DEBUG           Enable debug logging (true/false)
     CLAWDROUTER_UPSTREAM        Upstream API URL
+    CLAWDROUTER_OLLAMA_ENABLED  Enable local Ollama routes (default: true)
+    CLAWDROUTER_OLLAMA_HOST     Ollama URL (default: http://127.0.0.1:11434)
 
   EXAMPLES:
     # Start with default settings

@@ -179,7 +179,9 @@ class HuggingFaceDecoderInference:
         n_samples = len(padded_ids)
         embed_dim = self.embedding_dim
 
-        input_tensor = torch.from_numpy(padded_ids).pin_memory()
+        input_tensor = torch.from_numpy(padded_ids)
+        if self.device.type == "cuda":
+            input_tensor = input_tensor.pin_memory()
 
         gpu_embeddings = torch.empty(
             (n_samples, embed_dim),
@@ -199,17 +201,19 @@ class HuggingFaceDecoderInference:
 
         for i in iterator:
             batch_end = min(i + batch_size, n_samples)
-            batch_ids = input_tensor[i:batch_end].to(self.device, non_blocking=True)
+            batch_ids = input_tensor[i:batch_end].to(self.device, non_blocking=self.device.type == "cuda")
 
             hidden_states, attention_mask = self._get_hidden_states(batch_ids)
             batch_embeddings = self._pool_embeddings(hidden_states, attention_mask)
 
             gpu_embeddings[i:batch_end] = batch_embeddings.float()
 
-        torch.cuda.synchronize()
+        if self.device.type == "cuda":
+            torch.cuda.synchronize()
         embeddings = gpu_embeddings.cpu().numpy()
 
         del gpu_embeddings
-        torch.cuda.empty_cache()
+        if self.device.type == "cuda":
+            torch.cuda.empty_cache()
 
         return embeddings

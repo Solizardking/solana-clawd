@@ -4,7 +4,9 @@ The Solana AI Model Kit is the terminal-first training surface for Clawd AI:
 drop in PDFs, JSON/JSONL, CSV/parquet, notebooks, markdown, YAML, or image
 context; build a public-safe SFT dataset; optionally train LoRA adapters; stage
 Hugging Face and Ollama releases; and register the model with CAAP/1.0 at
-`onchain.x402.wtf`.
+`onchain.x402.wtf`. The site also includes a live model arena for running chat
+or code-generation benchmarks across OpenAI-compatible providers, Anthropic,
+Gemini, and custom endpoints, with realtime results and X share links.
 
 ![Solana AI Model Kit](../../assets/solana-ai-model-kit.svg)
 
@@ -58,6 +60,58 @@ ai-training/model-kit/frontend/register.html
 
 Render/Vercel deployment is documented in `docs/DEPLOYMENT.md`.
 
+## Model Arena
+
+The homepage at `models.x402.wtf` starts with a model arena. It can compare any
+provider with an OpenAI-compatible `/chat/completions` endpoint, plus built-in
+adapters for Anthropic and Gemini. Provider keys can be supplied per run in the
+browser form or via backend environment variables such as `OPENROUTER_API_KEY`,
+`OPENAI_API_KEY`, `XAI_API_KEY`, `ANTHROPIC_API_KEY`, and `GEMINI_API_KEY`.
+Keys are not written into run records.
+
+OpenRouter is the primary multi-model lane. Set `OPENROUTER_API_KEY` on the API
+server, then choose one of the `OPENROUTER_*` presets from the arena model-id
+field. `/api/arena/providers` exposes each preset as `{ env, label, model }`,
+and `render.yaml` carries the deployment defaults. Repeated shell variable names
+follow normal environment semantics: the final value is canonical, with older
+meanings kept under explicit aliases such as `OPENROUTER_CHATGPT_LATEST`,
+`OPENROUTER_MODEL6`, `OPENROUTER_RIVER_FLOW`, and `OPENROUTER_FREE_MODEL1`.
+
+Primary OpenRouter defaults:
+
+| Env | Default model |
+| --- | --- |
+| `OPENROUTER_DEFAULT_FREE_MODEL` | `nvidia/llama-nemotron-rerank-vl-1b-v2:free` |
+| `OPENROUTER_FUSION` | `openrouter/fusion` |
+| `OPENROUTER_KIMI_MODEL` | `moonshotai/kimi-k2.7-code` |
+| `OPENROUTER_CLAWD_DEFAULT_MODEL` | `anthropic/claude-opus-4.8-fast` |
+| `OPENROUTER_GPT` | `openai/gpt-5.2` |
+| `OPENROUTER_GROK43` | `x-ai/grok-4.3` |
+| `OPENROUTER_CODEX` | `openai/gpt-5.1-codex-max` |
+| `OPENROUTER_NVIDIA_MODEL` | `nvidia/nemotron-3-ultra-550b-a55b` |
+| `OPENROUTER_QWEN_MODEL` | `qwen/qwen3.7-plus` |
+| `OPENROUTER_DEEP` | `deepseek/deepseek-v3.2` |
+
+Arena API:
+
+| Endpoint | Use |
+| --- | --- |
+| `GET /api/arena/providers` | Provider templates, adapter metadata, and code execution policy. |
+| `POST /api/arena/runs` | Start a chat or code arena run. |
+| `GET /api/arena/runs/{id}/events` | Server-sent realtime run events. |
+| `GET /api/arena/runs/{id}` | Fetch recorded outputs and benchmarks. |
+| `GET /api/arena/runs/{id}/share` | Build a shareable X intent URL. |
+
+Code mode asks each model for Python, extracts the fenced code block, and runs it
+with a timeout, temporary working directory, isolated Python flags, basic
+resource limits, and a denylist for filesystem/network/process imports. Set
+`MODEL_ARENA_ENABLE_CODE_EXECUTION=0` to disable server-side execution.
+
+Completed runs are held in memory for realtime reads and appended to
+`MODEL_ARENA_LOG_PATH` as JSONL, defaulting to `/tmp/model-arena-runs.jsonl`.
+The API rehydrates completed runs from that log for `/api/arena/runs/{id}` and
+shared `?arenaRun=` links; use a mounted path for long-lived production records.
+
 ## What It Builds
 
 ```text
@@ -89,7 +143,7 @@ Side effects are gated:
 | `clawd_model_kit.py` | Python CLI wrapper around existing `ai-training/scripts/*`. |
 | `config.example.yaml` | Example project/lane defaults. |
 | `frontend/` | Static `models.x402.wtf` and `register.x402.wtf` pages. |
-| `backend/` | Render-ready FastAPI status and registration proxy. |
+| `backend/` | Render-ready FastAPI status, arena, and registration proxy. |
 | `render.yaml` | Render blueprint for the backend API. |
 | `vercel.json` | Vercel static frontend and host rewrite config. |
 | `package.json` | Static-site build/dev scripts. |

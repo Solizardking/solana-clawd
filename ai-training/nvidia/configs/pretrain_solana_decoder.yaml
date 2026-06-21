@@ -4,14 +4,21 @@
 # Tokenizer: SolanaTokenizerPipeline (src/tokenizer/solana_tokenizer.py)
 #
 # Launch (single GPU):
-#   python blueprints/transaction-foundation-model/train_decoder_model.py \
-#       -c configs/pretrain_solana_decoder.yaml \
+#   python3 nvidia/blueprints/transaction-foundation-model/train_decoder_model.py \
+#       -c nvidia/configs/pretrain_solana_decoder.yaml \
 #       --dataset.data_path data/tx_foundation_cpt.jsonl
 #
 # Launch (multi-GPU):
-#   torchrun --nproc-per-node=4 blueprints/transaction-foundation-model/train_decoder_model.py \
-#       -c configs/pretrain_solana_decoder.yaml \
+#   torchrun --nproc-per-node=4 nvidia/blueprints/transaction-foundation-model/train_decoder_model.py \
+#       -c nvidia/configs/pretrain_solana_decoder.yaml \
 #       --dataset.data_path data/tx_foundation_cpt.jsonl
+#
+# Config profile notes:
+#   - Active values are release-oriented for the current 19,542-row CPT corpus.
+#   - Use train_decoder_model.py CLI overrides for smoke runs:
+#       --step_scheduler.max_steps 30
+#       --step_scheduler.ckpt_every_steps 15
+#       --step_scheduler.val_every_steps 15
 
 # -- Model ----------------------------------------------------------------
 # ~29M parameter decoder. vocab_size must match SolanaTokenizerPipeline.vocab_size.
@@ -87,7 +94,7 @@ step_scheduler:
 # -- Distribution ----------------------------------------------------------
 dist_env:
   backend: nccl
-  timeout_minutes: 10
+  timeout_minutes: 15
 
 distributed:
   _target_: nemo_automodel.components.distributed.fsdp2.FSDP2Manager
@@ -122,7 +129,7 @@ rng:
 # -- Checkpointing ---------------------------------------------------------
 checkpoint:
   enabled: true
-  checkpoint_dir: outputs/solana-tx-foundation/checkpoints/
+  checkpoint_dir: outputs/solana-tx-foundation-decoder-29m/checkpoints/
   model_save_format: safetensors
   save_consolidated: true
   # Hub model ID for the NeMo decoder variant (distinct from the Qwen2.5 TRL path)

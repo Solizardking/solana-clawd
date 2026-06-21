@@ -23,6 +23,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from tx_foundation_common import DATA_DIR as DATA
+
 # ── Config ────────────────────────────────────────────────────────────────────
 
 JUPITER_API_KEY   = os.environ.get("JUPITER_API_KEY", "")
@@ -209,7 +211,7 @@ def collect(output_path: Path, count: int = 500, delay: float = 0.5) -> int:
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--output", default=str(Path(__file__).parents[4] / "ai-training" / "data" / "jupiter_txs.jsonl"))
+    parser.add_argument("--output", default=str(DATA / "jupiter_txs.jsonl"))
     parser.add_argument("--count", type=int, default=500)
     parser.add_argument("--delay", type=float, default=0.5)
     args = parser.parse_args()

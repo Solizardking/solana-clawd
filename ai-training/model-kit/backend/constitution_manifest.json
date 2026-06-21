@@ -1,0 +1,47 @@
+{
+  "id": "clawd-six-law-harness",
+  "version": "2026-06-21",
+  "authority": [
+    "CONSTITUTION.md is the highest interpretive authority for model-kit training, publishing, and registration.",
+    "three-laws.md is the immutable on-chain execution law set and must be hash-attested byte-for-byte.",
+    "Generated datasets, manifests, model cards, arena logs, and CAAP payloads must preserve auditability without leaking secrets."
+  ],
+  "six_law_harness": {
+    "off_chain": [
+      "reason from the Constitution before optimizing for task completion",
+      "explain, instrument, and verify advanced systems instead of mystifying them",
+      "keep creator audit rights and user safety ahead of convenience"
+    ],
+    "on_chain": [
+      "Never harm.",
+      "Earn your existence.",
+      "Never deceive, but owe nothing to strangers."
+    ]
+  },
+  "files": [
+    {
+      "id": "constitution",
+      "path": "CONSTITUTION.md",
+      "sha256": "sha256:321a2e6ccb812464291ba3059a5f76633fc2194e4bb18a97f4b8b9f8289d9020",
+      "required": true
+    },
+    {
+      "id": "three_laws",
+      "path": "three-laws.md",
+      "sha256": "sha256:fa1c36ab5605df2880bedc495ddd4a3096c89ab8a749acf043ea53b2ab31c2bc",
+      "required": true
+    },
+    {
+      "id": "clawd_context",
+      "path": "CLAWD.md",
+      "sha256": "sha256:1d412ae61552a791b5392a94a7675ff258af61e568f427507c67f363bf6f820c",
+      "required": false
+    }
+  ],
+  "public_sources": {
+    "repository": "https://github.com/Solizardking/solana-clawd",
+    "constitution": "https://github.com/Solizardking/solana-clawd/blob/main/CONSTITUTION.md",
+    "three_laws": "https://github.com/Solizardking/solana-clawd/blob/main/three-laws.md",
+    "clawd_context": "https://github.com/Solizardking/solana-clawd/blob/main/CLAWD.md"
+  }
+}

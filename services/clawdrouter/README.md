@@ -14,6 +14,7 @@ Legacy static-agent domains are not part of the production router path. Use `x40
 
 - Routes `clawdrouter/auto` requests through the local 15-dimension scorer.
 - Forwards model calls to OpenRouter with `x402.wtf/router` attribution.
+- Routes local Ollama model IDs directly to `OLLAMA_HOST`, including DeepSolana and the Clawd LoRA models.
 - Requires `clawd_sk_...` platform API keys for hosted `/v1/chat/completions`.
 - Validates those keys against `https://x402.wtf/api/auth/validate-key`.
 - Keeps public service metadata open: health, models, local stats, CLAWD status, and relay snapshots.
@@ -41,7 +42,8 @@ clawdrouter/
 │   ├── relay/
 │   │   └── aggregator.ts       # External API health checks (Solana/perps/x402)
 │   ├── upstream/
-│   │   └── openrouter.ts       # OpenRouter streaming proxy client
+│   │   ├── openrouter.ts       # OpenRouter proxy client
+│   │   └── ollama.ts           # Local Ollama OpenAI-compatible proxy
 │   ├── proxy/
 │   │   └── server.ts           # Express middleware: auth → score → upstream
 │   ├── commands/
@@ -63,7 +65,8 @@ client
        ├─ auth/platform.ts      validates key → x402.wtf/api/auth/validate-key
        ├─ token/clawd-gate.ts   checks CLAWD holder tier (Helius / RPC)
        ├─ router/scorer.ts      picks best OpenRouter model (15-dim score)
-       └─ upstream/openrouter.ts  streams response back
+       ├─ upstream/ollama.ts      handles local 8bit/*, hermes3, qwen, nemotron IDs
+       └─ upstream/openrouter.ts  handles hosted model IDs
 ```
 
 ### What runs publicly (no auth)
@@ -145,6 +148,22 @@ OPENROUTER_API_KEY=... \
 npm run dev
 ```
 
+Local Ollama mode:
+
+```bash
+ollama serve
+CLAWDROUTER_AUTH_MODE=local \
+CLAWDROUTER_OLLAMA_HOST=http://127.0.0.1:11434 \
+npm run dev
+
+curl http://localhost:8402/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "8bit/DeepSolana:latest",
+    "messages": [{ "role": "user", "content": "Explain Light Protocol compression." }]
+  }'
+```
+
 ## Fly.io Deployment
 
 The Fly app is `clawdrouter` in `ewr`.
@@ -184,6 +203,8 @@ The validation endpoint accepts the router secret via `X-ClawdRouter-Internal-Se
 | `CLAWDROUTER_X402_API_URL` | No | `https://x402.wtf` | Base URL used by relay checks |
 | `CLAWDROUTER_PUBLIC_URL` | No | `https://clawdrouter.fly.dev` | Router's public service URL |
 | `OPENROUTER_API_KEY` | Yes | none | Upstream OpenRouter key |
+| `CLAWDROUTER_OLLAMA_ENABLED` | No | `true` | Enables direct routing to Ollama-compatible models |
+| `CLAWDROUTER_OLLAMA_HOST` | No | `https://clawd-inference-mesh.fly.dev` on Fly, `http://127.0.0.1:11434` locally | Ollama-compatible API URL used for local model IDs |
 | `CLAWDROUTER_OPENROUTER_SITE_URL` | No | `https://x402.wtf/router` in Fly | OpenRouter attribution URL |
 | `HELIUS_API_KEY` | Recommended | none | Faster CLAWD SPL holder checks |
 | `HELIUS_RPC_URL` | Recommended | Solana public RPC | Dedicated Solana RPC endpoint |

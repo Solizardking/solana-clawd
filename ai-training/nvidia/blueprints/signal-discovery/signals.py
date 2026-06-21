@@ -334,6 +334,25 @@ def orderbook_imbalance_signal(market: str, depth: int = 10,
                         f"bid/ask={ratio:.2f} balanced", d)
 
 
+def ema_divergence_signal(market: str, timeframe: str = "1h",
+                          threshold: float = 0.05) -> SignalResult:
+    """Compatibility alias for older perps handoff imports.
+
+    The current signal stack uses the batched TA report plus MACD/ADX trend
+    filters instead of a standalone EMA divergence call. Keep this neutral
+    signal available so older adapters can import it without changing composite
+    scoring.
+    """
+    return SignalResult(
+        "ema_divergence",
+        market,
+        "neutral",
+        0.0,
+        f"standalone EMA divergence disabled for {timeframe}; use MACD/ADX trend filters",
+        {"threshold": threshold, "timeframe": timeframe},
+    )
+
+
 # ── Composite scan ────────────────────────────────────────────────────────────
 
 def scan_all(market: str, timeframe: str = "1h") -> list[SignalResult]:

@@ -2,8 +2,12 @@
 """
 Prepare the Solana Clawd instruction dataset for SFT training.
 
-Reads JSONL files from data/ (each line is {"messages": [...]}) and
-emits a Hugging Face Datasets-compatible directory with train/eval/test splits.
+Reads JSONL files from data/ and emits a Hugging Face Datasets-compatible
+directory with train/eval/test splits.
+
+Supported row formats:
+  - {"messages": [...]} for instruction tuning
+  - {"text": "..."} for CPT / continued-pretraining corpora
 
 Outputs:
   - data/processed/train.parquet
@@ -24,6 +28,7 @@ Push to Hub:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import random
@@ -36,7 +41,7 @@ from datasets import Dataset, DatasetDict
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--input", nargs="+", default=["data/solana_clawd_seed.jsonl"],
-                   help="Input JSONL file(s). Each line: {\"messages\": [...]}")
+                   help="Input JSONL file(s). Rows may be {\"messages\": [...]} or {\"text\": \"...\"}")
     p.add_argument("--output", default="data/processed",
                    help="Output directory for processed parquet + dataset_info")
     p.add_argument("--train-ratio", type=float, default=0.9)
@@ -44,6 +49,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--min-messages", type=int, default=2,
                    help="Filter out examples with fewer than N messages")
+    p.add_argument("--format", choices=["auto", "messages", "text"], default="auto",
+                   help="Expected row format. auto accepts messages and text records.")
+    p.add_argument("--dedupe", action=argparse.BooleanOptionalAction, default=True,
+                   help="Remove duplicate examples by normalized content fingerprint")
+    p.add_argument("--quality-report", default=None,
+                   help="Optional JSON quality report path")
     p.add_argument("--push", action="store_true", help="Push to Hugging Face Hub after processing")
     p.add_argument("--repo-id", default="solanaclawd/solana-clawd-instruct",
                    help="Hub repo id when --push is set")
@@ -51,7 +62,17 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def load_jsonl(paths: list[str]) -> list[dict[str, Any]]:
+def _row_matches_format(obj: dict[str, Any], data_format: str) -> bool:
+    has_messages = isinstance(obj.get("messages"), list)
+    has_text = isinstance(obj.get("text"), str)
+    if data_format == "messages":
+        return has_messages
+    if data_format == "text":
+        return has_text
+    return has_messages or has_text
+
+
+def load_jsonl(paths: list[str], data_format: str) -> list[dict[str, Any]]:
     examples: list[dict[str, Any]] = []
     for path in paths:
         p = Path(path)
@@ -68,14 +89,17 @@ def load_jsonl(paths: list[str]) -> list[dict[str, Any]]:
                 except json.JSONDecodeError as e:
                     print(f"  WARNING: {p}:{lineno} invalid JSON: {e}")
                     continue
-                if "messages" not in obj or not isinstance(obj["messages"], list):
-                    print(f"  WARNING: {p}:{lineno} missing 'messages' list")
+                if not _row_matches_format(obj, data_format):
+                    print(f"  WARNING: {p}:{lineno} missing requested row format ({data_format})")
                     continue
                 examples.append(obj)
     return examples
 
 
 def validate_example(ex: dict[str, Any], min_messages: int) -> bool:
+    if "text" in ex:
+        return isinstance(ex["text"], str) and bool(ex["text"].strip())
+
     msgs = ex.get("messages", [])
     if not isinstance(msgs, list) or len(msgs) < min_messages:
         return False
@@ -92,6 +116,37 @@ def validate_example(ex: dict[str, Any], min_messages: int) -> bool:
         if not isinstance(m["content"], str) or not m["content"].strip():
             return False
     return True
+
+
+def example_fingerprint(ex: dict[str, Any]) -> str:
+    if "text" in ex and isinstance(ex["text"], str):
+        material = {"text": " ".join(ex["text"].split())}
+    else:
+        material = {
+            "messages": [
+                {
+                    "role": str(msg.get("role", "")).strip().lower(),
+                    "content": " ".join(str(msg.get("content", "")).split()),
+                }
+                for msg in ex.get("messages", [])
+                if isinstance(msg, dict)
+            ]
+        }
+    return hashlib.sha256(json.dumps(material, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
+def dedupe_examples(examples: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
+    seen: set[str] = set()
+    out: list[dict[str, Any]] = []
+    duplicates = 0
+    for ex in examples:
+        fp = example_fingerprint(ex)
+        if fp in seen:
+            duplicates += 1
+            continue
+        seen.add(fp)
+        out.append(ex)
+    return out, duplicates
 
 
 def _metadata_value(value: Any) -> str:
@@ -125,6 +180,19 @@ def normalize_metadata(examples: list[dict[str, Any]]) -> None:
             ex["id"] = str(ex["id"])
 
 
+def normalize_schema(examples: list[dict[str, Any]]) -> None:
+    has_messages = any("messages" in ex for ex in examples)
+    has_text = any("text" in ex for ex in examples)
+    has_metadata = any("metadata" in ex for ex in examples)
+    for ex in examples:
+        if has_messages and "messages" not in ex:
+            ex["messages"] = []
+        if has_text and "text" not in ex:
+            ex["text"] = ""
+        if has_metadata and "metadata" not in ex:
+            ex["metadata"] = {}
+
+
 def main() -> None:
     args = parse_args()
     rng = random.Random(args.seed)
@@ -132,13 +200,17 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"[1/4] Loading from: {args.input}")
-    raw = load_jsonl(args.input)
+    raw = load_jsonl(args.input, args.format)
     print(f"      loaded {len(raw)} raw examples")
 
-    print(f"[2/4] Validating (min_messages={args.min_messages})")
+    print(f"[2/4] Validating (format={args.format}, min_messages={args.min_messages})")
     valid = [ex for ex in raw if validate_example(ex, args.min_messages)]
+    duplicates_removed = 0
+    if args.dedupe:
+        valid, duplicates_removed = dedupe_examples(valid)
     normalize_metadata(valid)
-    print(f"      {len(valid)} valid / {len(raw)} total")
+    normalize_schema(valid)
+    print(f"      {len(valid)} valid / {len(raw)} total  duplicates_removed={duplicates_removed}")
 
     rng.shuffle(valid)
     n = len(valid)
@@ -171,18 +243,29 @@ def main() -> None:
             Dataset.from_list(data).to_parquet(str(out_dir / f"{split}.parquet"))
 
     # Dataset card (README) — written separately as dataset_card.md
+    schema: dict[str, str] = {}
+    if any("messages" in ex for ex in valid):
+        schema["messages"] = "list[{role: str, content: str}]"
+    if any("text" in ex for ex in valid):
+        schema["text"] = "str continued-pretraining text"
+    if any("metadata" in ex for ex in valid):
+        schema["metadata"] = "optional dict[str, str] normalized across splits"
+
     info = {
         "num_examples": n,
         "splits": {"train": len(train), "eval": len(eval_), "test": len(test)},
-        "schema": {
-            "messages": "list[{role: str, content: str}]",
-            "metadata": "optional dict[str, str] normalized across splits",
-        },
+        "schema": schema,
         "source_files": args.input,
+        "duplicates_removed": duplicates_removed,
     }
     with (out_dir / "dataset_info.json").open("w") as f:
         json.dump(info, f, indent=2)
     print(json.dumps(info, indent=2))
+    if args.quality_report:
+        report_path = Path(args.quality_report)
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
+        print(f"  quality_report: {report_path}")
 
     if args.push:
         print(f"Pushing to Hub: {args.repo_id}")

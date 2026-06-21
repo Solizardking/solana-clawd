@@ -1,0 +1,35 @@
+{
+  "name": "Solana Transaction Foundation CPT",
+  "repo_id": "solanaclawd/solana-tx-foundation-cpt",
+  "generated_at": "2026-06-21T18:10:26+00:00",
+  "source_jsonl": "/Users/8bit/Downloads/solana-clawd/ai-training/data/tx_foundation_cpt.jsonl",
+  "source_sha256": "11bbf408781a9ae877605b7eedeb2a08376209d2576a507a60ea384246b68e9d",
+  "num_examples": 19542,
+  "splits": {
+    "train": 17587,
+    "eval": 977,
+    "test": 978
+  },
+  "processed_dir": "/Users/8bit/Downloads/solana-clawd/ai-training/data/tx_foundation_cpt_processed",
+  "processed_files": {
+    "train": "/Users/8bit/Downloads/solana-clawd/ai-training/data/tx_foundation_cpt_processed/train.parquet",
+    "eval": "/Users/8bit/Downloads/solana-clawd/ai-training/data/tx_foundation_cpt_processed/eval.parquet",
+    "test": "/Users/8bit/Downloads/solana-clawd/ai-training/data/tx_foundation_cpt_processed/test.parquet"
+  },
+  "schema": {
+    "text": "NeMo CPT record, one Solana transaction context per row"
+  },
+  "config": "/Users/8bit/Downloads/solana-clawd/ai-training/nvidia/configs/solana_tx_foundation.yaml",
+  "training_model": "solanaclawd/solana-tx-foundation-1.5b",
+  "local_model_path": "/Users/8bit/Downloads/solana-clawd/ai-training/outputs/solana-tx-foundation-1.5b/sft",
+  "local_model_present": false,
+  "eval_output": "/Users/8bit/Downloads/solana-clawd/ai-training/data/tx_foundation_eval.json",
+  "eval_present": false,
+  "safety": {
+    "secrets_required": [
+      "HF_TOKEN only for Hub upload",
+      "NVIDIA_API_KEY only for NIM/NVCF calls"
+    ],
+    "private_key_policy": "Never store wallet keys, API tokens, or Google ADC files in dataset artifacts."
+  }
+}

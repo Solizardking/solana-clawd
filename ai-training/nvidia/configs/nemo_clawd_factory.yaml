@@ -1,5 +1,7 @@
 name: solana-nemoclawd-nvidia-trading-factory
-version: "2026-06-20"
+version: "2026-06-21"
+schema_version: "2026-06-21"
+release_channel: production
 description: >
   End-to-end NVIDIA AI Blueprint integration for Solana Clawd.
   Six blueprints (TFM, portfolio-opt, distillation, signal-discovery,
@@ -9,6 +11,32 @@ description: >
   training hooks.
   All execution is paper-mode by default; live requires explicit gate.
 default_mode: paper
+artifact_root: data/strategies
+
+trust:
+  default: observer
+  allowed_default_modes: [observer, paper]
+  live_mode_generated: false
+  live_requires:
+    - vulcan_preflight_ready
+    - explicit_operator_approval
+    - wallet_limits_loaded_from_secret_manager
+    - dry_run_rehearsal_passed
+
+release_contract:
+  required_artifacts:
+    - data/strategies/nemo_clawd_core_inventory.json
+    - data/strategies/nemo_clawd_blueprint.json
+    - data/strategies/nvidia_clawd_agent_plan.json
+    - data/strategies/strategy_manifest.json
+  verification:
+    layout: python3 scripts/organize_ai_training.py --check
+    nvidia: python3 nvidia/scripts/verify_nvidia.py --strict
+    configs: python3 nvidia/scripts/validate_configs.py --strict
+  publish_targets:
+    hugging_face_org: solanaclawd
+    onchain_registry: https://onchain.x402.wtf
+    github: https://github.com/solizardking/solana-clawd-ai-training
 
 # ── Nemo Clawd / Core AI Integration ─────────────────────────────────────────
 nemo_clawd:
@@ -41,6 +69,8 @@ nemo_clawd:
     - ../core-ai/v3
   network_policy:
     default: deny
+    dns_policy: allowlisted
+    outbound_requires_tls: true
     allowed_egress:
       - https://integrate.api.nvidia.com
       - https://api-inference.huggingface.co
@@ -49,10 +79,19 @@ nemo_clawd:
       - https://api.mainnet-beta.solana.com
       - https://*.helius.dev
       - http://localhost:11434
+    blocked_egress:
+      - file://*
+      - ssh://*
+      - ftp://*
   lifecycle:
     generate: python3 nvidia/integration/nemo_clawd.py --write
     plan: python3 nvidia/integration/nemo_clawd_agent.py --mode paper
     verify: python3 nvidia/scripts/verify_nvidia.py --strict
+    validate_configs: python3 nvidia/scripts/validate_configs.py --strict
+  observability:
+    inventory_hashes: true
+    emit_manifest: true
+    output_summary: outputs/nemo_clawd_release_summary.json
 
 # ── Models ────────────────────────────────────────────────────────────────────
 models:
@@ -97,6 +136,14 @@ nim_routing:
   clawd_router_key_var: CLAWD_ROUTER_KEY
   model_override_var: NVIDIA_MODEL
   pipeline_override_var: NVIDIA_USE_PIPELINE
+  timeout_s: 120
+  retries: 2
+  fallback_order:
+    - nim_api
+    - hf_inference
+    - clawd_inference_url
+    - clawd_router
+    - ollama
 
 # ── Inputs ────────────────────────────────────────────────────────────────────
 inputs:
@@ -136,6 +183,8 @@ workflows:
     output_model: solanaclawd/solana-tx-foundation-1.5b
     hf_dataset: solanaclawd/solana-tx-foundation-cpt
     status: training                                   # pipeline.py --stages cpt sft evaluate
+    preflight: python3 nvidia/blueprints/transaction-foundation-model/preflight.py
+    post_train: python3 nvidia/blueprints/transaction-foundation-model/post_train.py
     bq_collector: nvidia/blueprints/transaction-foundation-model/bigquery_collector.py
     bq_dataset: bigquery-public-data.crypto_solana_mainnet_us
     bq_bulk_cmd: >-
@@ -246,9 +295,21 @@ safety:
   secrets:
     source: environment
     persist_to_files: false
+    forbidden_in_artifacts:
+      - private keys
+      - OAuth client secrets
+      - Google ADC files
+      - Hugging Face tokens
+      - NVIDIA API keys
   execution_gates:
     - vulcan_preflight_ready
     - margin_review
     - position_review
     - orderbook_review
     - explicit_operator_approval
+
+observability:
+  logs_dir: outputs/job-launches
+  release_audit: outputs/release_audit.json
+  aiq_summary: outputs/nvidia_aiq_release_summary.json
+  tx_preflight: outputs/tx_foundation_preflight.json

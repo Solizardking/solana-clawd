@@ -130,6 +130,68 @@ local_sources:
   - path: "data/realtime_research_dataset_manifest.json"
     source_type: "research_dataset_manifest"
 
+  # ── NVIDIA Blueprint 4: Quantitative Signal Discovery ─────────────────────
+  - path: "nvidia/blueprints/signal-discovery/signals.py"
+    source_type: "nvidia_signal_detectors"
+  - path: "nvidia/blueprints/signal-discovery/perps_signal_agent.py"
+    source_type: "nvidia_perps_signal_agent"
+  - path: "nvidia/blueprints/signal-discovery/quantitative_signal_agent.py"
+    source_type: "nvidia_quantitative_signal_agent"
+  - path: "nvidia/blueprints/signal-discovery/server.py"
+    source_type: "nvidia_signal_server"
+  - path: "nvidia/blueprints/signal-discovery/agent.py"
+    source_type: "nvidia_signal_agent"
+  - path: "nvidia/blueprints/signal-discovery/README.md"
+    source_type: "nvidia_signal_discovery_readme"
+
+  # ── NVIDIA Blueprint 2: Portfolio Optimization ────────────────────────────
+  - path: "nvidia/blueprints/portfolio-optimization/mean_cvar.py"
+    source_type: "nvidia_mean_cvar_optimizer"
+  - path: "nvidia/blueprints/portfolio-optimization/scenarios.py"
+    source_type: "nvidia_scenario_generator"
+  - path: "nvidia/blueprints/portfolio-optimization/cufolio_clawd.py"
+    source_type: "nvidia_cufolio_clawd"
+  - path: "nvidia/blueprints/portfolio-optimization/phoenix_prices.py"
+    source_type: "nvidia_phoenix_prices"
+  - path: "nvidia/blueprints/portfolio-optimization/README.md"
+    source_type: "nvidia_portfolio_optimization_readme"
+
+  # ── NVIDIA Blueprint 1: Transaction Foundation Model ─────────────────────
+  - path: "nvidia/blueprints/transaction-foundation-model/collect.py"
+    source_type: "nvidia_tx_cpt_collector"
+  - path: "nvidia/blueprints/transaction-foundation-model/pipeline.py"
+    source_type: "nvidia_tx_foundation_pipeline"
+  - path: "nvidia/blueprints/transaction-foundation-model/config.yaml"
+    source_type: "nvidia_tx_foundation_config"
+  - path: "nvidia/blueprints/transaction-foundation-model/dataset_builder.py"
+    source_type: "nvidia_tx_dataset_builder"
+  - path: "nvidia/blueprints/transaction-foundation-model/finetune.py"
+    source_type: "nvidia_tx_finetune"
+  - path: "nvidia/blueprints/transaction-foundation-model/train.py"
+    source_type: "nvidia_tx_train"
+  - path: "nvidia/blueprints/transaction-foundation-model/evaluate.py"
+    source_type: "nvidia_tx_evaluate"
+  - path: "nvidia/blueprints/transaction-foundation-model/README.md"
+    source_type: "nvidia_tx_foundation_readme"
+
+  # ── NVIDIA Configs ────────────────────────────────────────────────────────
+  - path: "nvidia/configs/nemo_clawd_factory.yaml"
+    source_type: "nvidia_nemo_factory_config"
+  - path: "nvidia/configs/solana_tx_foundation.yaml"
+    source_type: "nvidia_tx_foundation_pipeline_config"
+  - path: "nvidia/configs/aiq_config.yaml"
+    source_type: "nvidia_aiq_config"
+  - path: "nvidia/configs/nim_config.yaml"
+    source_type: "nvidia_nim_config"
+  - path: "nvidia/configs/pretrain_solana_decoder.yaml"
+    source_type: "nvidia_pretrain_solana_decoder"
+
+  # ── Nemotron Ultra Agent ──────────────────────────────────────────────────
+  - path: "nvidia/nemotron_ultra_agent.py"
+    source_type: "nvidia_nemotron_ultra_agent"
+  - path: "nvidia/NEMOTRON_ULTRA_AGENT.md"
+    source_type: "nvidia_nemotron_ultra_agent_docs"
+
 external_references:
   - title: "NVIDIA AI Algorithmic Trading Factories"
     url: "https://www.nvidia.com/en-us/use-cases/ai-algorithmic-trading-factories/"

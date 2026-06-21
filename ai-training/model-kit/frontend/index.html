@@ -23,6 +23,8 @@
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#arena">Arena</a>
+        <a href="#builder">Builder</a>
         <a href="./register.html">Register</a>
         <a href="https://github.com/solizardking/solana-clawd-ai-training/tree/main/ai-training/model-kit/docs">Docs</a>
         <a href="https://phantom.com/tokens/solana/8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump" target="_blank" rel="noreferrer">$CLAWD</a>
@@ -32,7 +34,231 @@
     </header>
 
     <main class="site-shell">
-      <section class="workspace">
+      <section class="arena-shell" id="arena">
+        <aside class="arena-panel" aria-label="Model arena controls">
+          <form id="arenaForm">
+            <div class="panel-head">
+              <p class="eyebrow">Live model arena</p>
+              <h1>Run models head to head.</h1>
+            </div>
+
+            <div class="grid-2">
+              <label class="field">
+                <span>Mode</span>
+                <select id="arenaMode">
+                  <option value="chat">Chat</option>
+                  <option value="code">Code</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>API base</span>
+                <input id="arenaApiBase" data-api-base autocomplete="off" />
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Prompt</span>
+              <textarea id="arenaPrompt" rows="5" required>Design a Solana agent benchmark that catches hallucinated wallet risk analysis.</textarea>
+            </label>
+
+            <label class="field">
+              <span>System prompt</span>
+              <textarea id="arenaSystemPrompt" rows="3">You are precise, concise, and benchmark-friendly. Return the answer directly.</textarea>
+            </label>
+
+            <div class="code-fields" id="arenaCodeFields">
+              <div class="grid-2">
+                <label class="field">
+                  <span>stdin</span>
+                  <textarea id="arenaStdin" rows="3">clawd</textarea>
+                </label>
+                <label class="field">
+                  <span>Expected stdout</span>
+                  <textarea id="arenaExpectedStdout" rows="3">dwalc</textarea>
+                </label>
+              </div>
+            </div>
+
+            <div class="arena-model-grid" aria-label="Arena models">
+              <fieldset class="arena-model-card" data-model-slot="a">
+                <legend>Model A</legend>
+                <label class="model-enabled"><input type="checkbox" data-model-field="enabled" checked /> <span>Enabled</span></label>
+                <label class="field">
+                  <span>Label</span>
+                  <input data-model-field="label" value="Mock Fast" />
+                </label>
+                <label class="field">
+                  <span>Provider</span>
+                  <select data-model-field="provider" data-default-provider="mock"></select>
+                </label>
+                <label class="field">
+                  <span>Model id</span>
+                  <input data-model-field="model" list="arenaModelPresets" value="mock-fast" />
+                </label>
+                <label class="field">
+                  <span>Base URL</span>
+                  <input data-model-field="base_url" placeholder="provider default" />
+                </label>
+                <div class="grid-2">
+                  <label class="field">
+                    <span>API key</span>
+                    <input data-model-field="api_key" type="password" autocomplete="off" placeholder="not recorded" />
+                  </label>
+                  <label class="field">
+                    <span>Env key</span>
+                    <input data-model-field="api_key_env" placeholder="optional" />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="arena-model-card" data-model-slot="b">
+                <legend>Model B</legend>
+                <label class="model-enabled"><input type="checkbox" data-model-field="enabled" checked /> <span>Enabled</span></label>
+                <label class="field">
+                  <span>Label</span>
+                  <input data-model-field="label" value="Mock Careful" />
+                </label>
+                <label class="field">
+                  <span>Provider</span>
+                  <select data-model-field="provider" data-default-provider="mock"></select>
+                </label>
+                <label class="field">
+                  <span>Model id</span>
+                  <input data-model-field="model" list="arenaModelPresets" value="mock-careful" />
+                </label>
+                <label class="field">
+                  <span>Base URL</span>
+                  <input data-model-field="base_url" placeholder="provider default" />
+                </label>
+                <div class="grid-2">
+                  <label class="field">
+                    <span>API key</span>
+                    <input data-model-field="api_key" type="password" autocomplete="off" placeholder="not recorded" />
+                  </label>
+                  <label class="field">
+                    <span>Env key</span>
+                    <input data-model-field="api_key_env" placeholder="optional" />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="arena-model-card" data-model-slot="c">
+                <legend>Model C</legend>
+                <label class="model-enabled"><input type="checkbox" data-model-field="enabled" /> <span>Enabled</span></label>
+                <label class="field">
+                  <span>Label</span>
+                  <input data-model-field="label" value="OpenRouter" />
+                </label>
+                <label class="field">
+                  <span>Provider</span>
+                  <select data-model-field="provider" data-default-provider="openrouter"></select>
+                </label>
+                <label class="field">
+                  <span>Model id</span>
+                  <input data-model-field="model" list="arenaModelPresets" value="openai/gpt-4.1-mini" />
+                </label>
+                <label class="field">
+                  <span>Base URL</span>
+                  <input data-model-field="base_url" placeholder="provider default" />
+                </label>
+                <div class="grid-2">
+                  <label class="field">
+                    <span>API key</span>
+                    <input data-model-field="api_key" type="password" autocomplete="off" placeholder="not recorded" />
+                  </label>
+                  <label class="field">
+                    <span>Env key</span>
+                    <input data-model-field="api_key_env" placeholder="OPENROUTER_API_KEY" />
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+            <datalist id="arenaModelPresets"></datalist>
+
+            <div class="actions arena-actions">
+              <button id="runArena" type="submit">Run arena</button>
+              <button id="copyArenaJson" type="button" class="secondary">Copy JSON</button>
+              <a id="shareArenaX" class="button-link secondary disabled-link" href="https://twitter.com/intent/tweet" target="_blank" rel="noreferrer" aria-disabled="true">Share to X</a>
+            </div>
+          </form>
+        </aside>
+
+        <section class="main-stage">
+          <section class="hero-band compact-hero arena-hero" aria-label="Model arena overview">
+            <div>
+              <p class="eyebrow">Chat and code benchmarks</p>
+              <h2>Compare any OpenAI-compatible model, Anthropic, Gemini, or local mock runs.</h2>
+              <p class="lede">Each run records model outputs, latency, token counts, code execution results, and a shareable X payload without storing provider keys.</p>
+              <div class="hero-actions">
+                <a class="button-link secondary" href="#arenaResults">Results</a>
+                <a class="button-link secondary" href="#builder">Training builder</a>
+              </div>
+            </div>
+            <img src="./assets/solana-ai-model-kit.svg" alt="Solana AI Model Kit pipeline" />
+          </section>
+
+          <section class="status-grid arena-status" aria-label="Arena benchmarks">
+            <article class="metric accent-green">
+              <span>Status</span>
+              <strong data-arena-field="status">idle</strong>
+              <a href="#arenaEvents">event stream</a>
+            </article>
+            <article class="metric accent-cyan">
+              <span>Winner</span>
+              <strong data-arena-field="winner">-</strong>
+              <a href="#arenaResults">benchmark leader</a>
+            </article>
+            <article class="metric accent-violet">
+              <span>Completed</span>
+              <strong data-arena-field="completed">0</strong>
+              <a href="#arenaResults">model runs</a>
+            </article>
+            <article class="metric accent-gold">
+              <span>Code passes</span>
+              <strong data-arena-field="codePasses">0</strong>
+              <a href="#arenaResults">execution checks</a>
+            </article>
+            <article class="metric accent-red">
+              <span>Tokens</span>
+              <strong data-arena-field="tokens">0</strong>
+              <a href="#arenaResults">reported/estimated</a>
+            </article>
+          </section>
+
+          <section class="arena-results-section" id="arenaResults" aria-label="Arena results">
+            <header>
+              <p class="eyebrow">Realtime results</p>
+              <h2>Benchmarks</h2>
+            </header>
+            <div class="arena-results" id="arenaResultList">
+              <article class="arena-empty">
+                <strong>No active run</strong>
+                <span>Run a chat or code arena to populate the benchmark table.</span>
+              </article>
+            </div>
+          </section>
+
+          <section class="terminal" aria-label="Arena event stream">
+            <div class="terminal-bar">
+              <span></span>
+              <span></span>
+              <span></span>
+              <p>model-arena-events</p>
+            </div>
+            <pre id="arenaEvents">Waiting for a run...</pre>
+          </section>
+
+          <section class="resource-section">
+            <header>
+              <p class="eyebrow">Recent runs</p>
+              <h2>Local session</h2>
+            </header>
+            <div class="resource-list compact" id="arenaRecentRuns"></div>
+          </section>
+        </section>
+      </section>
+
+      <section class="workspace kit-workspace" id="builder">
         <aside class="builder-panel" aria-label="One-shot command builder">
           <div class="panel-head">
             <p class="eyebrow">One-shot run</p>

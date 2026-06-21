@@ -34,14 +34,14 @@
 # Launch methods:
 #
 #   1. Multi-GPU (recommended):
-#      torchrun --nproc-per-node=8 scripts/train_decoder_model.py \
-#          -c configs/pretrain_financial_decoder.yaml \
+#      torchrun --nproc-per-node=8 nvidia/blueprints/transaction-foundation-model/train_decoder_model.py \
+#          -c nvidia/configs/pretrain_financial_decoder.yaml \
 #          --dataset.data_path data/decoder_corpus/train_corpus.txt \
 #          --validation_dataset.data_path data/decoder_corpus/val_corpus.txt
 #
 #   2. Single GPU (testing):
-#      python scripts/train_decoder_model.py \
-#          -c configs/pretrain_financial_decoder.yaml \
+#      python3 nvidia/blueprints/transaction-foundation-model/train_decoder_model.py \
+#          -c nvidia/configs/pretrain_financial_decoder.yaml \
 #          --dataset.data_path data/decoder_corpus/train_corpus.txt
 #
 # NOTE: Use torchrun directly (not automodel CLI) for multi-GPU.
@@ -53,6 +53,12 @@
 #   - 4096-token context window (~315 transactions per sequence)
 #   - Vocab size ~6,251 (domain-specific financial tokenizer)
 #   - Next-token prediction (every token is a training signal)
+#
+# Config profile notes:
+#   - Active values below are smoke-safe unless called out otherwise.
+#   - For production, raise step_scheduler.max_steps to 50000 and keep
+#     checkpoints under outputs/ so bundles can reference manifests instead of
+#     raw weights.
 
 # -- Model ----------------------------------------------------------------
 # Randomly initialized decoder model with custom dimensions to match our data regime.
@@ -105,7 +111,7 @@ validation_dataloader:
 #
 # Full training (8× A100 80GB):
 #   max_steps: 50000  —  ~500K financial tx records × 20 epochs / 16 global batch
-#   Estimated wall time: ~4h on 8×A100 with nproc-per-node=8
+#   Estimated wall time: ~4h on 8xA100 with nproc-per-node=8
 step_scheduler:
   global_batch_size: 16
   local_batch_size: 16
@@ -117,7 +123,7 @@ step_scheduler:
 # -- Distribution ----------------------------------------------------------
 dist_env:
   backend: nccl
-  timeout_minutes: 5
+  timeout_minutes: 15
 
 distributed:
   _target_: nemo_automodel.components.distributed.fsdp2.FSDP2Manager
@@ -155,7 +161,7 @@ rng:
 # we provide a dummy name that triggers the single-file consolidation fallback.
 checkpoint:
   enabled: true
-  checkpoint_dir: models/decoder-demo/checkpoints/
+  checkpoint_dir: outputs/financial-decoder-29m/checkpoints/
   model_save_format: safetensors
   save_consolidated: true
   model_repo_id: custom-financial-decoder

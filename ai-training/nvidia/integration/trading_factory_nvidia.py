@@ -43,11 +43,38 @@ TRADING_FACTORY_STAGE_MAP = {
 }
 
 
+def load_nemo_clawd_policy(strategies_dir: Path | None = None) -> dict:
+    """Load the generated Nemo Clawd sandbox/network policy summary if present."""
+    if strategies_dir is None:
+        strategies_dir = Path(__file__).parents[2] / "data" / "strategies"
+    path = strategies_dir / "nemo_clawd_blueprint.json"
+    if not path.exists():
+        return {
+            "name": "Nemo Clawd",
+            "available": False,
+            "default": "paper",
+            "policy": "default-deny network and no live execution until blueprint is generated",
+        }
+    try:
+        blueprint = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"name": "Nemo Clawd", "available": False, "error": "blueprint unreadable"}
+    return {
+        "name": blueprint.get("name", "Nemo Clawd"),
+        "available": True,
+        "sandbox_profile": blueprint.get("sandbox_profile", {}),
+        "network_policy": blueprint.get("network_policy", {}),
+        "safety_gates": blueprint.get("safety_gates", {}),
+        "inference_routing": blueprint.get("inference_routing", {}),
+    }
+
+
 def signal_to_ta_config(
     market: str,
     direction: str,
     strength: float,
     notional: float,
+    nemo_policy: dict | None = None,
 ) -> dict:
     """Convert a composite signal into a Vulcan TA strategy config."""
     rsi_threshold = 35 if direction == "long" else 65
@@ -77,6 +104,7 @@ def signal_to_ta_config(
         "metadata": {
             "source": "nvidia-signal-discovery",
             "composite_strength": strength,
+            "nemo_clawd": nemo_policy or {"available": False},
         },
     }
 
@@ -121,7 +149,8 @@ def pipeline(
     if strategies_dir is None:
         strategies_dir = Path(__file__).parents[2] / "data" / "strategies"
 
-    config = signal_to_ta_config(market, composite.direction, composite.composite_strength, notional)
+    nemo_policy = load_nemo_clawd_policy(strategies_dir)
+    config = signal_to_ta_config(market, composite.direction, composite.composite_strength, notional, nemo_policy)
     cmd = composite.recommended_action
     order = TradingFactoryOrder(
         market=market,

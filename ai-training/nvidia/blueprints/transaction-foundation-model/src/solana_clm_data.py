@@ -17,13 +17,21 @@ NeMo AutoModel integration via _target_::
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Dict, List, Union
 
 import torch
 from torch.utils.data import Dataset
 
-from .tokenizer.solana_tokenizer import SolanaTokenizerPipeline, tx_to_text
+_src_dir = str(Path(__file__).resolve().parent)
+if _src_dir not in sys.path:
+    sys.path.insert(0, _src_dir)
+
+try:
+    from .tokenizer.solana_tokenizer import SolanaTokenizerPipeline
+except ImportError:
+    from tokenizer.solana_tokenizer import SolanaTokenizerPipeline  # type: ignore
 
 
 class SolanaTransactionDataset(Dataset):

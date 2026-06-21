@@ -1,0 +1,83 @@
+# LoRA SFT config for Trading Factory 8B — Apple Silicon (MPS) local training.
+#
+# M4 Max 48 GB: 8B in float32 ≈ 32 GB weights + ~4 GB activations = ~36 GB peak.
+# LoRA keeps optimizer states tiny (adapter only, not full model).
+#
+# Smoke test (fast, ~20 min):
+#   python3 scripts/train_lora.py --config configs/nvidia_trading_factory_lora_config_mac.yaml
+#
+# Full 3-epoch run (175 examples, ~4-6 hrs):
+#   python3 scripts/train_lora.py --config configs/nvidia_trading_factory_lora_config_mac.yaml \
+#     --max-steps -1
+#
+# Push result to Hub when done:
+#   huggingface-cli upload solanaclawd/solana-nvidia-trading-factory-8b-lora \
+#     outputs/solana-nvidia-trading-factory-8b-lora-mac/
+
+base_model: "NousResearch/Hermes-3-Llama-3.1-8B"
+model_revision: "main"
+torch_dtype: "float32"       # MPS requires float32; bfloat16 causes meta-device errors
+device_map: "mps"            # {"": "mps"} is applied automatically by train_lora.py
+
+dataset_repo: "solanaclawd/solana-clawd-nvidia-trading-factory-instruct"
+dataset_revision: "main"
+dataset_path: "data/nvidia_trading_factory_processed"
+max_seq_length: 1024         # 32 GB model + 4 GB activations at 1024 ≈ 36 GB peak
+train_split: "train"
+eval_split: "eval"
+
+output_dir: "outputs/solana-nvidia-trading-factory-8b-lora-mac"
+push_to_hub: false           # push manually with huggingface-cli after verifying
+hub_model_id: "solanaclawd/solana-nvidia-trading-factory-8b-lora"
+hub_private: false
+
+lora:
+  r: 16                      # halved from cloud r=32 — less memory, still effective
+  alpha: 32
+  dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  target_modules:            # explicit list — "all-linear" probe can OOM on MPS at 8B
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+training:
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16   # effective batch = 16 (175 examples → ~11 steps/epoch)
+  per_device_eval_batch_size: 1
+  num_train_epochs: 3
+  max_steps: 50              # smoke test: ~20 min on M4 Max; set -1 for full 3-epoch run
+  learning_rate: 1.5e-4
+  lr_scheduler_type: "cosine"
+  warmup_steps: 5
+  weight_decay: 0.0
+  optim: "adamw_torch"
+  bf16: false                # MPS uses float32 internally
+  fp16: false
+  tf32: false
+  gradient_checkpointing: false   # incompatible with {"": "mps"} device_map on MPS
+  logging_steps: 5
+  save_steps: 50
+  save_total_limit: 2
+  eval_steps: 50
+  eval_strategy: "steps"
+  report_to: ["none"]        # set WANDB_API_KEY and change to ["wandb"] to track
+  seed: 42
+  dataloader_num_workers: 0  # MPS: forked processes crash on macOS
+  remove_unused_columns: false
+  dataloader_pin_memory: false    # not supported on MPS
+
+# bitsandbytes 4-bit quantization requires CUDA — disabled for MPS.
+# 8B in float32 fits in 48 GB without it.
+quantization:
+  enabled: false
+
+sft:
+  packing: false
+  assistant_only_loss: true
+  chat_template_kwargs: {}

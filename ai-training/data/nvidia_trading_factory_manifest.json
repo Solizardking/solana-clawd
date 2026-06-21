@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-06-20T00:49:09+00:00",
+  "generated_at": "2026-06-21T17:09:08+00:00",
   "dataset_name": "Solana Clawd NVIDIA Trading Factory Instruct",
   "repo_id": "solanaclawd/solana-clawd-nvidia-trading-factory-instruct",
   "builder": "scripts/build_nvidia_trading_factory_dataset.py",
   "counts": {
-    "examples": 142,
-    "sources": 29,
+    "examples": 195,
+    "sources": 55,
     "missing_inputs": 0,
     "duplicates_removed": 0,
     "by_source_type": {
@@ -31,6 +31,32 @@
       "generated_vulcan_command_plans": 1,
       "labeling_policy": 1,
       "market_scenario": 30,
+      "nvidia_aiq_config": 1,
+      "nvidia_cufolio_clawd": 2,
+      "nvidia_mean_cvar_optimizer": 2,
+      "nvidia_nemo_factory_config": 3,
+      "nvidia_nemotron_ultra_agent": 3,
+      "nvidia_nemotron_ultra_agent_docs": 2,
+      "nvidia_nim_config": 1,
+      "nvidia_perps_signal_agent": 3,
+      "nvidia_phoenix_prices": 3,
+      "nvidia_portfolio_optimization_readme": 1,
+      "nvidia_pretrain_solana_decoder": 2,
+      "nvidia_quantitative_signal_agent": 3,
+      "nvidia_scenario_generator": 1,
+      "nvidia_signal_agent": 1,
+      "nvidia_signal_detectors": 3,
+      "nvidia_signal_discovery_readme": 1,
+      "nvidia_signal_server": 3,
+      "nvidia_tx_cpt_collector": 3,
+      "nvidia_tx_dataset_builder": 2,
+      "nvidia_tx_evaluate": 3,
+      "nvidia_tx_finetune": 2,
+      "nvidia_tx_foundation_config": 1,
+      "nvidia_tx_foundation_pipeline": 2,
+      "nvidia_tx_foundation_pipeline_config": 1,
+      "nvidia_tx_foundation_readme": 1,
+      "nvidia_tx_train": 3,
       "onchain_ai_reference": 3,
       "optimization_spec": 1,
       "perps_tool": 13,
@@ -52,7 +78,7 @@
     },
     "by_factory_stage": {
       "alpha_research": 1,
-      "architecture": 66,
+      "architecture": 119,
       "backtesting": 11,
       "data_ingestion": 1,
       "execution_policy": 25,
@@ -65,9 +91,9 @@
     }
   },
   "splits": {
-    "train": 127,
-    "eval": 7,
-    "test": 8
+    "train": 175,
+    "eval": 9,
+    "test": 11
   },
   "settings": {
     "train_ratio": 0.9,
@@ -374,8 +400,8 @@
     {
       "path": "ai-training/README.md",
       "source_type": "training_pipeline_reference",
-      "sha256": "808a3f90c72330ed5b2bfbdb7b407adb876602e1b1d12b9ef4a436137957fdfc",
-      "size_bytes": 55516,
+      "sha256": "282b972677dc0ce0d2b21d3a829de75b9da4d61260b23f0a34e43246ace24ce5",
+      "size_bytes": 85281,
       "chunks": 3
     },
     {
@@ -391,6 +417,188 @@
       "sha256": "0d7000860c234e52ea0db1e6a473381cdabb4ef438db562a3ef35dc35d7e75c4",
       "size_bytes": 15438,
       "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/signal-discovery/signals.py",
+      "source_type": "nvidia_signal_detectors",
+      "sha256": "6a7dfa68a6e711e220335a2c8b1ae8311117a357a52898cb9555c2e4ded1efcd",
+      "size_bytes": 17424,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/signal-discovery/perps_signal_agent.py",
+      "source_type": "nvidia_perps_signal_agent",
+      "sha256": "d6845272b613f9b081b7da1e2cca97d09b73e1b082d3f0f816115fcd68b07668",
+      "size_bytes": 11168,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/signal-discovery/quantitative_signal_agent.py",
+      "source_type": "nvidia_quantitative_signal_agent",
+      "sha256": "62ec86e3986b7344fcfd0f29bb4f55f40828430ba198a22341fccf3f32c1491e",
+      "size_bytes": 44280,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/signal-discovery/server.py",
+      "source_type": "nvidia_signal_server",
+      "sha256": "7bc5ab32818ce16c2c7a80eea600467616d195b22fb3fda24e9c0a20b2698677",
+      "size_bytes": 10456,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/signal-discovery/agent.py",
+      "source_type": "nvidia_signal_agent",
+      "sha256": "2198c1befe906607e053eac7066441c4b754013c76f7eb65bd5f34186252c662",
+      "size_bytes": 2126,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/signal-discovery/README.md",
+      "source_type": "nvidia_signal_discovery_readme",
+      "sha256": "c70d7625770bbb3143964e2753158749874bc93aaff5cb9fae6b9467234cb0a9",
+      "size_bytes": 1912,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/portfolio-optimization/mean_cvar.py",
+      "source_type": "nvidia_mean_cvar_optimizer",
+      "sha256": "ea2e05003810c9e999f7baebe0ed11fce5f4a77317fcd312d7e703edb5686697",
+      "size_bytes": 5614,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/portfolio-optimization/scenarios.py",
+      "source_type": "nvidia_scenario_generator",
+      "sha256": "b57c9913d1a569cdcbe1c96fa8046e99b47739679684bdeda21a4f6d5aefba1a",
+      "size_bytes": 3283,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/portfolio-optimization/cufolio_clawd.py",
+      "source_type": "nvidia_cufolio_clawd",
+      "sha256": "ce186a98dd9925ffebd39f4da7aaf78d326f06fd8864ebb827b23ddee09999e2",
+      "size_bytes": 5399,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/portfolio-optimization/phoenix_prices.py",
+      "source_type": "nvidia_phoenix_prices",
+      "sha256": "b4aeb87f04bb22408bb3b1c4cdf1f1c7b0a705af516836327880d05bfbf5b04d",
+      "size_bytes": 7391,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/portfolio-optimization/README.md",
+      "source_type": "nvidia_portfolio_optimization_readme",
+      "sha256": "d452c1a55fd5ad0f5b141c8bcdf1ac30a1e5c2a30cb5eba339702d1659d16da3",
+      "size_bytes": 1301,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/collect.py",
+      "source_type": "nvidia_tx_cpt_collector",
+      "sha256": "cb26e32c930b435219bd9cf8b77e812d620f8b67a5a98a9a8bc5e34a50b2cca0",
+      "size_bytes": 12537,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/pipeline.py",
+      "source_type": "nvidia_tx_foundation_pipeline",
+      "sha256": "1f252e6d7a7b032709b56912ebc733ee2d854f2d2717a5dba533391d4b5e05d2",
+      "size_bytes": 6241,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/config.yaml",
+      "source_type": "nvidia_tx_foundation_config",
+      "sha256": "e33efd0f2a079f14c0bf0ba157aa1459be2cfc57ade2ccdffafd57b66b3df1ad",
+      "size_bytes": 903,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/dataset_builder.py",
+      "source_type": "nvidia_tx_dataset_builder",
+      "sha256": "2c352e4ab8f8708f2187a7197951b7409824f0aceb01f645091d59f12f7b2974",
+      "size_bytes": 4178,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/finetune.py",
+      "source_type": "nvidia_tx_finetune",
+      "sha256": "6db0c66a5b82c4fabf7757f00266ed28861189b2f9c6a58189e5488a4bfb7c02",
+      "size_bytes": 4105,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/train.py",
+      "source_type": "nvidia_tx_train",
+      "sha256": "e16fcceaa363c5d52f56be9f08e348f71813e4f9fce72fcaa81516feb4192fc1",
+      "size_bytes": 9281,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/evaluate.py",
+      "source_type": "nvidia_tx_evaluate",
+      "sha256": "888d609cb7336300dbf4cedb49885075a462771143c9941e36a465e0974e4543",
+      "size_bytes": 7791,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/blueprints/transaction-foundation-model/README.md",
+      "source_type": "nvidia_tx_foundation_readme",
+      "sha256": "1676088c341cc8723d31f12c57148e3e350bb3a4c87b802bdd177ac400ef4801",
+      "size_bytes": 1317,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/configs/nemo_clawd_factory.yaml",
+      "source_type": "nvidia_nemo_factory_config",
+      "sha256": "980d2aec80032ed741dcafb49a068c6291019a42911198e5ce2f69019bb21e30",
+      "size_bytes": 10457,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/configs/solana_tx_foundation.yaml",
+      "source_type": "nvidia_tx_foundation_pipeline_config",
+      "sha256": "4ccfd7afad061fde9499a20e0c24210dc89b03f1b0d9282d56329e9c6d9ed1d8",
+      "size_bytes": 4254,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/configs/aiq_config.yaml",
+      "source_type": "nvidia_aiq_config",
+      "sha256": "1c462e39a2da98b0e7b7f075a4a5ba4b6aa46fcf54e62723527698ebce836b5d",
+      "size_bytes": 3348,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/configs/nim_config.yaml",
+      "source_type": "nvidia_nim_config",
+      "sha256": "4b85f8c1aaa4bd8cb9c2663b80ca5be8867e43dda4dccbe7860fff5fae765cfb",
+      "size_bytes": 3351,
+      "chunks": 1
+    },
+    {
+      "path": "ai-training/nvidia/configs/pretrain_solana_decoder.yaml",
+      "source_type": "nvidia_pretrain_solana_decoder",
+      "sha256": "473dff016fb96870db8903f6589097178689bfd9367c8642937b35de226f6d51",
+      "size_bytes": 4844,
+      "chunks": 2
+    },
+    {
+      "path": "ai-training/nvidia/nemotron_ultra_agent.py",
+      "source_type": "nvidia_nemotron_ultra_agent",
+      "sha256": "224b2e38c28ae24cb8f039f4b85d1bacdb51e5d383eac892d9daf8b16c7d516b",
+      "size_bytes": 22826,
+      "chunks": 3
+    },
+    {
+      "path": "ai-training/nvidia/NEMOTRON_ULTRA_AGENT.md",
+      "source_type": "nvidia_nemotron_ultra_agent_docs",
+      "sha256": "2c2b95c5dc0999891969b8e14ce9dd24dc318512f7e223dc7f186fc0c481ef6c",
+      "size_bytes": 7875,
+      "chunks": 2
     }
   ],
   "missing_inputs": []

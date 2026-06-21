@@ -18,3 +18,141 @@ services:
         value: https://register.x402.wtf
       - key: MODEL_KIT_CORS_ORIGINS
         value: https://models.x402.wtf,https://register.x402.wtf
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_DEFAULT_FREE_MODEL
+        value: nvidia/llama-nemotron-rerank-vl-1b-v2:free
+      - key: OPENROUTER_FUSION
+        value: openrouter/fusion
+      - key: OPENROUTER_KIMI_MODEL
+        value: moonshotai/kimi-k2.7-code
+      - key: OPENROUTER_FABLE
+        value: anthropic/claude-fable-5
+      - key: OPENROUTER_FREE_MODEL2
+        value: nex-agi/nex-n2-pro:free
+      - key: OPENROUTER_SOURCEFUL
+        value: sourceful/riverflow-v2.5-pro
+      - key: OPENROUTER_SOURCEFUL_FAST
+        value: sourceful/riverflow-v2.5-fast
+      - key: OPENROUTER_NVIDIA_FREE_MODEL
+        value: nvidia/nemotron-3.5-content-safety:free
+      - key: OPENROUTER_NVIDIA_FREE_MODEL2
+        value: nvidia/nemotron-3-ultra-550b-a55b:free
+      - key: OPENROUTER_NVIDIA_MODEL
+        value: nvidia/nemotron-3-ultra-550b-a55b
+      - key: OPENROUTER_QWEN_MODEL
+        value: qwen/qwen3.7-plus
+      - key: OPENROUTER_MINIMAX
+        value: minimax/minimax-m2
+      - key: OPENROUTER_CLAWD_DEFAULT_MODEL
+        value: anthropic/claude-opus-4.8-fast
+      - key: OPENROUTER_GROK_BUILD
+        value: x-ai/grok-build-0.1
+      - key: OPENROUTER_GOOGLE_GEM
+        value: google/gemini-embedding-2
+      - key: OPENROUTER_GOOGLE_GEM_FLASH
+        value: google/gemini-3.5-flash
+      - key: OPENROUTER_GROKI_MAGINE_IMAGE
+        value: x-ai/grok-imagine-image-quality
+      - key: OPENROUTER_GROK_IMAGINE_VIDEO
+        value: x-ai/grok-imagine-video
+      - key: OPENROUTER_GROK_VOICE
+        value: x-ai/grok-voice-tts-1.0
+      - key: OPENROUTER_OPUS47
+        value: anthropic/claude-opus-4.7-fast
+      - key: OPENROUTER_GPT
+        value: openai/gpt-5.2
+      - key: OPENROUTER_GROK43
+        value: x-ai/grok-4.3
+      - key: OPENROUTER_MISTRAL
+        value: mistralai/mistral-medium-3-5
+      - key: OPENROUTER_NVIDIA_FREEMODEL3
+        value: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+      - key: OPENROUTER_HERMES
+        value: nousresearch/hermes-3-llama-3.1-405b:free
+      - key: OPENROUTER_KIMILATEST
+        value: "~moonshotai/kimi-latest"
+      - key: OPENROUTER_GEMINILATEST
+        value: "~google/gemini-pro-latest"
+      - key: OPENROUTER_GPTLATEST
+        value: "~openai/gpt-mini-latest"
+      - key: OPENROUTER_HAIKU_LATEST
+        value: "~anthropic/claude-haiku-latest"
+      - key: OPENROUTER_GOOGLEFLASH_LATEST
+        value: "~google/gemini-flash-latest"
+      - key: OPENROUTER_MODEL1
+        value: minimax/minimax-m2.1
+      - key: OPENROUTER_MODEL2
+        value: google/gemini-3-flash-preview
+      - key: OPENROUTER_MODEL3
+        value: mistralai/mistral-small-creative
+      - key: OPENROUTER_MODEL4
+        value: black-forest-labs/flux.2-max
+      - key: OPENROUTER_MODEL5
+        value: nvidia/nemotron-3-nano-30b-a3b
+      - key: OPENROUTER_MODEL6
+        value: openai/gpt-5.2-chat
+      - key: OPENROUTER_DEVSTRAL
+        value: mistralai/devstral-2512
+      - key: OPENROUTER_CODEX
+        value: openai/gpt-5.1-codex-max
+      - key: OPENROUTER_OPUS
+        value: anthropic/claude-opus-4.8-fast
+      - key: OPENROUTER_CLAUDE
+        value: anthropic/claude-sonnet-4.5
+      - key: OPENROUTER_GROK_CODE
+        value: x-ai/grok-code-fast-1
+      - key: OPENROUTER_DEEP
+        value: deepseek/deepseek-v3.2
+      - key: OPENROUTER_GROK
+        value: x-ai/grok-4.1-fast
+      - key: OPENROUTER_DEEPSEEK
+        value: deepseek/deepseek-chat-v3.1
+      - key: OPENROUTER_GLM
+        value: z-ai/glm-5.2
+      - key: OPENROUTER_MOONSHOT
+        value: moonshotai/kimi-k2.7-code
+      - key: OPENROUTER_FREE_MODEL1
+        value: nvidia/llama-nemotron-rerank-vl-1b-v2:free
+      - key: OPENROUTER_FABLE_LATEST
+        value: "~anthropic/claude-fable-latest"
+      - key: OPENROUTER_RIVER_FLOW
+        value: sourceful/riverflow-v2.5-pro
+      - key: OPENROUTER_RIVER_FAST
+        value: sourceful/riverflow-v2.5-fast
+      - key: OPENROUTER_NVIDIA_FREE_SAFE
+        value: nvidia/nemotron-3.5-content-safety:free
+      - key: OPENROUTER_NEMO_ULTRA
+        value: nvidia/nemotron-3-ultra-550b-a55b:free
+      - key: OPENROUTER_MICROSOFT_IMAGE
+        value: microsoft/mai-image-2.5
+      - key: OPENROUTER_STEPFUN
+        value: stepfun/step-3.7-flash
+      - key: OPENROUTER_PARA
+        value: nvidia/parakeet-tdt-0.6b-v3
+      - key: OPENROUTER_QWEN_MAX
+        value: qwen/qwen3.7-max
+      - key: OPENROUTER_GEMINI_EMBEDDING
+        value: google/gemini-embedding-2
+      - key: OPENROUTER_GROK_IMAGINE_IMAGE
+        value: x-ai/grok-imagine-image-quality
+      - key: OPENROUTER_MISTRAL_VOX
+        value: mistralai/voxtral-mini-transcribe
+      - key: OPENROUTER_QWEN_FLASH
+        value: qwen/qwen3-asr-flash-2026-02-10
+      - key: OPENROUTER_CHATGPT_LATEST
+        value: openai/gpt-chat-latest
+      - key: OPENROUTER_OPENAI_TRANSCRIBE
+        value: openai/gpt-4o-mini-transcribe
+      - key: OPENROUTER_GOOGLE_CHIRP
+        value: google/chirp-3
+      - key: OPENROUTER_VOICE_TURBO
+        value: openai/whisper-large-v3-turbo
+      - key: OPENROUTER_WHISPER_LARGE
+        value: openai/whisper-large-v3-turbo
+      - key: OPENROUTER_IBM
+        value: ibm-granite/granite-4.1-8b
+      - key: OPENROUTER_KLING
+        value: kwaivgi/kling-v3.0-pro
+      - key: OPENROUTER_KLING_STANDARD
+        value: kwaivgi/kling-v3.0-std

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://solanaclawd.ai/schemas/ai_training_layout.schema.json",
+  "title": "Solana Clawd AI Training Layout Inventory",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "root",
+    "summary",
+    "entries",
+    "missing_required"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "root": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total",
+        "present",
+        "missing",
+        "required",
+        "missing_required"
+      ],
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "present": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "required": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_required": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/layoutEntry"
+      }
+    },
+    "missing_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policy": {
+      "type": "object",
+      "properties": {
+        "source_lanes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "generated_lanes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cache_lanes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "layoutEntry": {
+      "type": "object",
+      "required": [
+        "path",
+        "area",
+        "classification",
+        "required",
+        "description",
+        "expected_kind",
+        "exists",
+        "actual_kind"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "area": {
+          "type": "string"
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "source",
+            "config",
+            "docs",
+            "data",
+            "generated",
+            "cache",
+            "build"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "expected_kind": {
+          "type": "string",
+          "enum": [
+            "file",
+            "directory"
+          ]
+        },
+        "exists": {
+          "type": "boolean"
+        },
+        "actual_kind": {
+          "type": "string",
+          "enum": [
+            "file",
+            "directory",
+            "missing",
+            "other"
+          ]
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "child_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sample_children": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -8,6 +8,12 @@ transformers>=4.48.0
 datasets>=3.0.0
 accelerate>=0.34.0
 peft>=0.12.0
+trl>=0.11.0
+huggingface_hub>=0.24.0
+
+# Optional accelerated backend for train_unsloth.py.
+# Install in the GPU environment:
+#   uv pip install unsloth --torch-backend=auto
 
 # NeMo AutoModel (for pretrain_financial_decoder.yaml path)
 # Install separately: pip install nemo-automodel
@@ -28,6 +34,8 @@ ipywidgets>=8.0.0
 # Solana data collection (collect.py / jupiter_tx_collector.py)
 httpx>=0.27.0
 aiohttp>=3.9.0
+google-cloud-bigquery>=3.25.0
+db-dtypes>=1.2.0
 
 # Experiment tracking
 wandb>=0.17.0

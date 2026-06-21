@@ -444,6 +444,15 @@ def load_local_dataset(dataset_path: str, dataset_format: str | None) -> Dataset
     path = Path(dataset_path)
     inferred_format = (dataset_format or "").strip().lower()
     if path.is_dir():
+        parquet_files = {
+            split: str(path / f"{split}.parquet")
+            for split in ("train", "eval", "test")
+            if (path / f"{split}.parquet").exists()
+        }
+        if parquet_files:
+            loaded = load_dataset("parquet", data_files=parquet_files)
+            if isinstance(loaded, DatasetDict):
+                return loaded
         try:
             loaded = load_from_disk(str(path))
         except Exception:
@@ -573,7 +582,12 @@ def main() -> None:
         if bnb_config:
             model_kwargs["quantization_config"] = bnb_config
     elif device == "mps":
-        model_kwargs["torch_dtype"] = torch.float32  # bfloat16 causes MmBackward meta-device errors
+        # With device_map={"": "mps"} (no meta-device splitting), bfloat16 is safe.
+        # Use float32 as default only when bf16 is not explicitly enabled — saves 15GB on 7B.
+        if cfg["training"].get("bf16"):
+            model_kwargs["torch_dtype"] = torch.bfloat16
+        else:
+            model_kwargs["torch_dtype"] = torch.float32
     else:
         model_kwargs["torch_dtype"] = torch.float32
 
@@ -605,6 +619,21 @@ def main() -> None:
     train_ds = ds[cfg.get("train_split", "train")]
     eval_split = cfg.get("eval_split", "eval")
     eval_ds = ds.get(eval_split, None) if eval_split else None
+
+    max_train_samples = cfg.get("max_train_samples")
+    if max_train_samples:
+        max_train_samples = int(max_train_samples)
+        if max_train_samples > 0 and len(train_ds) > max_train_samples:
+            print(f"  train capped={max_train_samples} of {len(train_ds)}")
+            train_ds = train_ds.select(range(max_train_samples))
+
+    max_eval_samples = cfg.get("max_eval_samples")
+    if eval_ds is not None and max_eval_samples:
+        max_eval_samples = int(max_eval_samples)
+        if max_eval_samples > 0 and len(eval_ds) > max_eval_samples:
+            print(f"  eval capped={max_eval_samples} of {len(eval_ds)}")
+            eval_ds = eval_ds.select(range(max_eval_samples))
+
     print(f"  train={len(train_ds)}  eval={len(eval_ds) if eval_ds else 0}")
 
     # ---- SFTConfig ----

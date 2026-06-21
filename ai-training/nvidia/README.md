@@ -3,6 +3,11 @@
 This folder integrates six NVIDIA AI Blueprints and the cuFOLIO portfolio
 optimization library into the Solana Clawd AI training pipeline.
 
+## Organization
+
+The bridge modules are mapped in [`integration/README.md`](integration/README.md).
+The full training workspace map is in [`../STRUCTURE.md`](../STRUCTURE.md).
+
 ## Blueprints
 
 | Folder | What it does |
@@ -14,7 +19,8 @@ optimization library into the Solana Clawd AI training pipeline.
 | [`blueprints/enterprise-rag/`](https://build.nvidia.com/nvidia/build-an-enterprise-rag-pipeline) | NeMo Retriever RAG contract: nv-ingest PDFs/docs to local FAISS, rerank, then NIM/Clawd generation. |
 | [`blueprints/aiq/`](https://build.nvidia.com/nvidia/aiq) | Local AIQ evaluator that scores safety, artifact completeness, and 9-role coverage. |
 | [`cufolio/`](https://github.com/NVIDIA-AI-Blueprints/cuFOLIO) | GPU portfolio optimizer with Clawd CVaR, leverage, and turnover constraints; emits Vulcan paper commands. |
-| `integration/` | NIM bridge routes NVIDIA to ClawdRouter to Ollama, signal-to-trading-factory bridge, and NVIDIA SFT dataset builder. |
+| [`integration/nemo_clawd.py`](https://github.com/NVIDIA/NemoClaw) | Nemo Clawd: adapts the local `core-ai/` tree into a NemoClaw-style sandbox, network policy, lifecycle, and routed inference blueprint. |
+| `integration/` | NIM bridge routes NVIDIA to ClawdRouter to Ollama, signal-to-trading-factory bridge, Nemo Clawd Core AI inventory, and NVIDIA SFT dataset builder. |
 | `../perps/` | Model-facing perps tools, schemas, function-calling harness, and NVIDIA perps handoff generator. |
 
 ## Models
@@ -88,6 +94,8 @@ Output:
 - `data/strategies/rise_market_data_plan.json`
 - `data/strategies/vulcan_command_plans.json`
 - `data/strategies/nvidia_clawd_agent_plan.json`
+- `data/strategies/nemo_clawd_core_inventory.json`
+- `data/strategies/nemo_clawd_blueprint.json`
 
 You can regenerate only the NemoClawd/NVIDIA agent plan with:
 
@@ -97,21 +105,45 @@ python3 nvidia/integration/nemo_clawd_agent.py \
   --mode paper
 ```
 
+You can regenerate only the Core AI -> Nemo Clawd inventory and blueprint with:
+
+```bash
+python3 nvidia/integration/nemo_clawd.py --write --check
+```
+
 The generated agent plan adapts two upstream projects without vendoring their
 entire trees:
 
 | Source | What is adapted |
 |---|---|
+| `NVIDIA/NemoClaw` | Guided onboarding, hardened sandbox blueprint, routed inference, network policy, and lifecycle management for always-on agents. |
 | `Solizardking/quantitative-signal-discovery-agent` | NeMo Agent Toolkit loop: signal agent, code agent, evaluator, retry feedback |
 | `x402agent/NemoClawd` | Blueprint lifecycle, sandbox posture, MCP tool catalog, and permission gates |
 
 The plan remains observer/paper-only by default. It does not write wallet
 passwords, private keys, OAuth files, or API tokens into generated artifacts.
 
+### Nemo Clawd Core AI inventory
+
+`nemo_clawd.py` checks the explicit Core AI surface that powers Clawd:
+
+- `.agents`, `.clawd-plugin`, `.github`
+- `clawd-agents`, `clawd-code`, `clawd-grok`, `v3`
+- `helius-cli`, `helius-cursor`, `helius-mcp`, `helius-plugin`, `helius-skills`
+- `knowledge`, `docs`, `mcp-server`, `scripts`
+- root governance files: `AGENTS.md`, `CLAUDE.md`, `CLAWD.md`,
+  `CONTRIBUTING.md`, `README.md`, `LICENSE`, `versions.json`, `glama.json`
+
+The inventory records path existence, counts, package summaries, SKILL.md files,
+MCP tool files, and content hashes. It is a reference mount contract, not a
+source copy. Secret-like filenames and generated dependency folders are excluded
+from inventory traversal.
+
 ## Blueprint Contracts
 
 | Contract | Local producer | Local consumer |
 |---|---|---|
+| Nemo Clawd Core AI inventory | `nvidia/integration/nemo_clawd.py` | `nvidia/integration/nemo_clawd_agent.py`, `nvidia/integration/dataset_nvidia_sft.py`, AIQ |
 | Strategy and command specs | `trading_factory/solana_factory/factory.py` | `scripts/build_solana_trading_factory_strategies.py` |
 | NemoClawd agent plan | `trading_factory/solana_factory/nvidia_agent.py` | `nvidia/integration/nemo_clawd_agent.py` |
 | Signal SFT log | `nvidia/blueprints/signal-discovery/agent.py` | `scripts/build_nvidia_trading_factory_dataset.py` |
@@ -143,6 +175,10 @@ Solana on-chain data
 Solana docs + PDFs
 └─► blueprints/enterprise-rag/               ─── NeMo Retriever RAG index
         └─► blueprints/aiq/                   ─── AIQ eval of full pipeline
+
+Core AI runtime
+└─► integration/nemo_clawd.py                ─── Core inventory + sandbox/network blueprint
+        └─► integration/nemo_clawd_agent.py   ─── Nemo Clawd plan + training hooks
 ```
 
 ## Verification
@@ -151,13 +187,15 @@ Run the local NVIDIA verifier from `ai-training/`:
 
 ```bash
 python3 nvidia/scripts/verify_nvidia.py --strict
+python3 nvidia/scripts/validate_configs.py --strict
 python3 nvidia/blueprints/aiq/agent.py --strict
 ```
 
 `verify_nvidia.py` checks that all six blueprint folders exist, builds the
 Solana strategy bundle in a temporary directory, confirms the NemoClawd agent
-plan is emitted, and scans the NVIDIA integration files for credential-like
-patterns.
+plan is emitted, confirms the Nemo Clawd Core AI inventory and blueprint can be
+generated, validates the NVIDIA YAML config contracts, and scans the NVIDIA
+integration files for credential-like patterns.
 
 ## Folder layout
 
@@ -175,6 +213,11 @@ nvidia/
 ├── configs/                             ← NIM / NeMo / AIQ YAML configs
 ├── scripts/                             ← Setup, run, verify
 └── integration/                         ← Bridges to trading_factory + Clawd
+    ├── nemo_clawd.py                    ← Core AI → NVIDIA/NemoClaw-style blueprint
+    ├── nemo_clawd_agent.py              ← Agent-plan writer
+    ├── clawd_nim_bridge.py              ← Routed NIM/HF/Clawd/Ollama inference
+    ├── trading_factory_nvidia.py        ← Signal → Vulcan paper bridge
+    └── dataset_nvidia_sft.py            ← NVIDIA + Nemo Clawd SFT builder
 
 ../perps/
 ├── README.md                            ← Perps quickstart and safety contract

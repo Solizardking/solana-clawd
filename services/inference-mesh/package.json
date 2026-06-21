@@ -1,0 +1,36 @@
+{
+  "name": "@solana-clawd/inference-mesh",
+  "version": "0.1.0",
+  "description": "ZK-verifiable distributed inference mesh for on-chain Clawd AI — Fly.io USA nodes + Light Protocol compression",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "npm run build:server && npm run build:web",
+    "build:server": "tsc",
+    "build:web": "vite build",
+    "dev": "tsx src/server.ts",
+    "dev:web": "vite --host 0.0.0.0",
+    "start": "node dist/server.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0",
+    "bs58": "^6.0.0"
+  },
+  "devDependencies": {
+    "@react-three/fiber": "^8.18.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.170.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vite": "^5.4.21"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

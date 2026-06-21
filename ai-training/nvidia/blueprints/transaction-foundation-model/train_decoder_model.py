@@ -40,8 +40,9 @@ Single GPU (testing):
 import sys
 from pathlib import Path
 
-BLUEPRINT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BLUEPRINT_ROOT))
+BLUEPRINT_ROOT = Path(__file__).resolve().parent
+if str(BLUEPRINT_ROOT) not in sys.path:
+    sys.path.insert(0, str(BLUEPRINT_ROOT))
 
 
 def main():

@@ -4,6 +4,14 @@
 nim:
   base_url: https://integrate.api.nvidia.com/v1
   # Override with CLAWD_NIM_URL env var to point at a self-hosted NIM endpoint
+  base_url_var: CLAWD_NIM_URL
+  api_key_var: NVIDIA_API_KEY
+  timeout_s: 120
+  connect_timeout_s: 10
+  retries: 2
+  retry_backoff_s: 2.0
+  request_id_header: x-clawd-run-id
+  stream_default: true
 
 # ── Model IDs ─────────────────────────────────────────────────────────────────
 models:
@@ -29,11 +37,25 @@ models:
   # Transaction foundation model (after Blueprint 1 CPT + SFT)
   tx_foundation: solanaclawd/solana-tx-foundation-1.5b
 
+  # Local/offline fallback for development.
+  ollama: solana-clawd-1.5b
+
+model_roles:
+  signal_reasoning: foundation
+  distillation_teacher: ultra
+  sft_labeling: reasoning_teacher
+  rag_embedding: embedding
+  rag_reranking: reranker
+  local_student: student
+  transaction_foundation: tx_foundation
+
 # ── HuggingFace Inference API fallback ────────────────────────────────────────
 # Used when NVIDIA_API_KEY is absent but HF_TOKEN is set.
 # Set NVIDIA_USE_PIPELINE=1 to load weights locally instead of the HF API.
 hf_inference:
   base_url: https://api-inference.huggingface.co/v1
+  token_var: HF_TOKEN
+  timeout_s: 120
   models:
     nano:  nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16
     ultra: nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16
@@ -50,6 +72,20 @@ hf_inference:
 #
 # Override active model:  NVIDIA_MODEL=nvidia/nemotron-3-ultra-550b-a55b
 # Force local pipeline:   NVIDIA_USE_PIPELINE=1
+routing:
+  model_override_var: NVIDIA_MODEL
+  local_pipeline_var: NVIDIA_USE_PIPELINE
+  clawd_inference_url_var: CLAWD_INFERENCE_URL
+  clawd_api_key_var: CLAWD_API_KEY
+  clawd_router_key_var: CLAWD_ROUTER_KEY
+  ollama_base_url: http://localhost:11434/v1
+  priority:
+    - nim_api
+    - hf_inference
+    - clawd_inference_url
+    - clawd_router
+    - ollama
+  fail_closed_for_live_trading: true
 
 defaults:
   max_tokens: 512
@@ -57,10 +93,28 @@ defaults:
   top_p: 0.9
   seed: 42
   stream: true
+  response_format: text
+  redact_prompts_in_logs: true
+  log_endpoint_name: true
+  log_latency: true
 
 # NIM endpoint after Blueprint 1 CPT fine-tuning completes.
 # Set CLAWD_TX_NIM_URL to override.
 tx_foundation_url: ${CLAWD_TX_NIM_URL:-https://integrate.api.nvidia.com/v1}
+
+security:
+  secrets_source: environment
+  persist_request_bodies: false
+  persist_response_bodies: false
+  private_key_policy: never_load
+  allowed_default_modes: [observer, paper]
+  live_execution_requires_external_gate: true
+
+healthcheck:
+  enabled: true
+  prompt: "Return the single word ok."
+  max_tokens: 4
+  expected_substring: ok
 
 # ── HuggingFace artifact registry ────────────────────────────────────────────
 hf:

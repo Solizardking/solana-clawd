@@ -24,6 +24,20 @@ MODEL_NIM_NANO  = "nvidia/nemotron-3-nano-30b-a3b"
 MODEL_NIM_ULTRA = "nvidia/nemotron-3-ultra-550b-a55b"
 MODEL_HF_ULTRA  = "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16"
 
+SYSTEM_PROMPTS = {
+    "trading": (
+        "You are Clawd, a sovereign Solana-native AI agent specialized in Phoenix "
+        "perpetuals. Analyze signals and recommend paper trades only. Never "
+        "recommend live execution without explicit trust gate confirmation."
+    ),
+    "nemo_clawd": (
+        "You are Nemo Clawd, a Solana-native agent runtime architect adapting "
+        "NVIDIA NemoClaw concepts to the local Clawd Core AI tree. Produce "
+        "sandboxed, paper-safe, secret-safe plans. Treat model outputs as plans, "
+        "never transactions. Keep network policy explicit and default-deny."
+    ),
+}
+
 
 def _load_env() -> None:
     from pathlib import Path
@@ -62,6 +76,7 @@ def chat(
     max_tokens: int = 512,
     temperature: float = 0.1,
     stream: bool = False,
+    system_prompt_id: str | None = None,
 ) -> str | Iterator[str]:
     """Send a chat request through the best available endpoint."""
     base_url, api_key, model = _resolve_endpoint()
@@ -71,9 +86,15 @@ def chat(
     except ImportError:
         raise ImportError("Run: pip install httpx")
 
+    routed_messages = list(messages)
+    if system_prompt_id and SYSTEM_PROMPTS.get(system_prompt_id):
+        has_system = any(message.get("role") == "system" for message in routed_messages)
+        if not has_system:
+            routed_messages = [{"role": "system", "content": SYSTEM_PROMPTS[system_prompt_id]}] + routed_messages
+
     payload = {
         "model": model,
-        "messages": messages,
+        "messages": routed_messages,
         "max_tokens": max_tokens,
         "temperature": temperature,
         "stream": stream,
@@ -136,6 +157,23 @@ def analyze_signal(market: str, signal_summary: str) -> str:
         },
     ]
     return chat(messages)
+
+
+def analyze_nemo_clawd_blueprint(question: str, blueprint_summary: dict) -> str:
+    """Ask the routed model to review a Nemo Clawd sandbox or lifecycle plan."""
+    messages = [
+        {
+            "role": "user",
+            "content": (
+                "Review this Nemo Clawd blueprint summary for sandbox, network, "
+                "inference, and release-gate risks. Return concise JSON with "
+                "`risks`, `required_gates`, and `next_actions`.\n\n"
+                f"Question: {question}\n\n"
+                f"Blueprint summary:\n{json.dumps(blueprint_summary, indent=2, sort_keys=True)}"
+            ),
+        }
+    ]
+    return chat(messages, max_tokens=700, temperature=0.0, system_prompt_id="nemo_clawd")
 
 
 if __name__ == "__main__":

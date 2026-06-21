@@ -32,6 +32,12 @@ describe('Model Registry', () => {
     assert.ok(providers.size >= 8, `Got ${providers.size} providers, expected 8+`);
   });
 
+  it('should include local Ollama Solana models', () => {
+    assert.equal(getModel('8bit/solana-clawd-core-ai:latest')?.provider, 'ollama');
+    assert.equal(getModel('8bit/solana-trading-factory:latest')?.provider, 'ollama');
+    assert.equal(getModel('8bit/DeepSolana:latest')?.provider, 'ollama');
+  });
+
   it('should have 11+ free models', () => {
     const free = getFreeModels();
     assert.ok(free.length >= 11, `Got ${free.length} free models, expected 11+`);
@@ -77,6 +83,12 @@ describe('Model Aliases', () => {
 
   it('should resolve "free" to nemotron-ultra-253b', () => {
     assert.equal(resolveModelAlias('free'), 'nvidia/nemotron-ultra-253b');
+  });
+
+  it('should resolve local Ollama aliases', () => {
+    assert.equal(resolveModelAlias('clawd-core'), '8bit/solana-clawd-core-ai:latest');
+    assert.equal(resolveModelAlias('clawd-trading'), '8bit/solana-trading-factory:latest');
+    assert.equal(resolveModelAlias('deepsolana'), '8bit/DeepSolana:latest');
   });
 
   it('should return null for unknown aliases', () => {

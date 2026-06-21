@@ -25,6 +25,31 @@
 
 ---
 
+## Repository Map
+
+The repo layout is documented in [STRUCTURE.md](STRUCTURE.md), including source
+lanes, generated output lanes, NVIDIA integration ownership, and safety rules.
+
+```bash
+python3 scripts/organize_ai_training.py --check
+python3 nvidia/scripts/verify_nvidia.py --strict
+```
+
+## Fast Data Rerun
+
+Use the generated model-kit lane to rebuild cleaner reasoning/tooling datasets
+without mutating source JSONL files:
+
+```bash
+python3 scripts/optimize_training_data.py
+python3 scripts/rerun_training_stack.py --dry-run
+```
+
+Generated outputs live under `data/model_kit/` and are intentionally ignored by
+git. The optimizer dedupes examples, filters malformed/secret-like rows, adds
+safe reasoning/tooling guidance, and emits processed train/eval/test splits via
+`scripts/prepare_dataset.py`.
+
 ## Models
 
 | Model | Size | Status | Links |

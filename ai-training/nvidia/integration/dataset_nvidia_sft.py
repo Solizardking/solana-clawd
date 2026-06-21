@@ -8,6 +8,8 @@ Sources:
   - data/nvidia_signal_log.jsonl       ← Blueprint 4 signal agent
   - data/nvidia_aiq_results.json       ← Blueprint 6 AIQ results
   - data/nvidia_trading_factory_sft.jsonl  ← existing trading factory dataset
+  - data/strategies/nemo_clawd_blueprint.json ← Core AI + NemoClaw integration
+  - data/strategies/nemo_clawd_core_inventory.json ← Core AI source inventory
 """
 
 from __future__ import annotations
@@ -24,6 +26,8 @@ SYSTEM_PROMPT = (
     "You are Clawd, a sovereign Solana-native AI agent. "
     "You have access to Phoenix perpetuals markets via Vulcan CLI, "
     "NVIDIA NIM inference endpoints, and GPU-accelerated portfolio optimization. "
+    "You also understand Nemo Clawd: the Core AI runtime wrapped in a "
+    "NemoClaw-style sandbox, network policy, lifecycle, and routed inference plan. "
     "Always operate within your trust gates. Default to paper mode."
 )
 
@@ -94,6 +98,88 @@ def load_trading_factory(path: Path) -> list[dict]:
     return records
 
 
+def load_nemo_clawd_assets(blueprint_path: Path, inventory_path: Path) -> list[dict]:
+    """Convert Nemo Clawd integration artifacts into SFT examples."""
+    records: list[dict] = []
+    if blueprint_path.exists():
+        try:
+            blueprint = json.loads(blueprint_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            blueprint = {}
+        if blueprint:
+            summary = {
+                "name": blueprint.get("name"),
+                "slug": blueprint.get("slug"),
+                "upstream": blueprint.get("upstream"),
+                "agent_profile": blueprint.get("agent_profile"),
+                "sandbox_profile": blueprint.get("sandbox_profile"),
+                "network_policy": blueprint.get("network_policy"),
+                "inference_routing": blueprint.get("inference_routing"),
+                "lifecycle": blueprint.get("lifecycle"),
+                "safety_gates": blueprint.get("safety_gates"),
+            }
+            records.append(
+                {
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {
+                            "role": "user",
+                            "content": "Describe the Nemo Clawd runtime contract for Core AI inside NVIDIA integration.",
+                        },
+                        {
+                            "role": "assistant",
+                            "content": json.dumps(summary, indent=2, sort_keys=True),
+                        },
+                    ]
+                }
+            )
+
+    if inventory_path.exists():
+        try:
+            inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            inventory = {}
+        if inventory:
+            compact = {
+                "core_ai_root": inventory.get("core_ai_root"),
+                "missing_required_paths": inventory.get("missing_required_paths", []),
+                "packages": [
+                    {
+                        "path": pkg.get("path"),
+                        "name": pkg.get("name"),
+                        "scripts": pkg.get("scripts", []),
+                    }
+                    for pkg in inventory.get("packages", [])[:20]
+                ],
+                "skill_count": len(inventory.get("skills", [])),
+                "mcp_tool_count": len(inventory.get("mcp_tools", [])),
+                "required_paths": [
+                    {
+                        "path": item.get("path"),
+                        "exists": item.get("exists"),
+                        "kind": item.get("kind"),
+                    }
+                    for item in inventory.get("required_paths", [])
+                ],
+            }
+            records.append(
+                {
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {
+                            "role": "user",
+                            "content": "What Core AI assets are mounted into Nemo Clawd?",
+                        },
+                        {
+                            "role": "assistant",
+                            "content": json.dumps(compact, indent=2, sort_keys=True),
+                        },
+                    ]
+                }
+            )
+    return records
+
+
 def build(output_path: Path) -> int:
     all_records = []
 
@@ -105,6 +191,13 @@ def build(output_path: Path) -> int:
         batch = loader(src)
         print(f"  {src.name}: {len(batch)} examples")
         all_records.extend(batch)
+
+    nemo_batch = load_nemo_clawd_assets(
+        DATA_DIR / "strategies" / "nemo_clawd_blueprint.json",
+        DATA_DIR / "strategies" / "nemo_clawd_core_inventory.json",
+    )
+    print(f"  nemo_clawd_assets: {len(nemo_batch)} examples")
+    all_records.extend(nemo_batch)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as f:

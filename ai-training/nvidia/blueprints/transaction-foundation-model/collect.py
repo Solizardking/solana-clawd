@@ -26,6 +26,8 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tx_foundation_common import DATA_DIR as DATA
+
 # BigQuery source (optional — falls back to mock if google-cloud-bigquery not installed)
 try:
     from bigquery_collector import collect_bigquery as _bq_collect  # type: ignore
@@ -39,8 +41,6 @@ except Exception:
 # ── Shared ─────────────────────────────────────────────────────────────────────
 
 WRAP = "<tx_context>\n{}\n</tx_context>"
-ROOT = Path(__file__).parents[4]          # ai-training/
-DATA = ROOT / "data"
 JUPITER_API_KEY = os.environ.get("JUPITER_API_KEY", "")
 RPC_URL = os.environ.get("RPC_URL", "https://api.mainnet-beta.solana.com")
 PHOENIX_BASE = os.environ.get("PHOENIX_API_URL", "https://prod.phoenix-api.ellipsis.markets")
@@ -295,6 +295,14 @@ def collect_all(
     per_source = max(1, count // len(sources))
     buf: list[str] = []
 
+    if dry_run:
+        print(f"  [DRY RUN] output: {output_path}")
+        print(f"  [DRY RUN] target records: {count}")
+        print(f"  [DRY RUN] approx per source: {per_source}")
+        for src_name in sources:
+            print(f"  [DRY RUN] would collect from: {src_name}")
+        return 0
+
     for src_name in sources:
         fn = SOURCES[src_name]
         n = fn(min(per_source + 50, count - len(buf)), buf)
@@ -304,10 +312,6 @@ def collect_all(
     buf = buf[:count]
 
     print(f"  total: {len(buf)} records")
-    if dry_run:
-        print("  [DRY RUN] not writing")
-        return len(buf)
-
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as f:
         f.write("\n".join(buf) + "\n")

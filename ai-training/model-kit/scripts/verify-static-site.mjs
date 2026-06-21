@@ -17,7 +17,7 @@ for (const file of required) {
 }
 
 const app = await readFile(path.join(root, "frontend/app.js"), "utf8");
-for (const token of ["api/model-kit/status", "api/register/preview", "api/register"]) {
+for (const token of ["api/model-kit/status", "api/register/preview", "api/register", "api/arena/providers", "api/arena/runs"]) {
   if (!app.includes(token)) {
     throw new Error(`frontend/app.js is missing ${token}`);
   }

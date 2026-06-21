@@ -79,6 +79,22 @@ publishing:
   cluster: devnet
   live_register: false
 
+arena:
+  default_provider: openrouter
+  openrouter:
+    api_key_env: OPENROUTER_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    default_model_env: OPENROUTER_DEFAULT_FREE_MODEL
+    preset_envs:
+      - OPENROUTER_DEFAULT_FREE_MODEL
+      - OPENROUTER_FUSION
+      - OPENROUTER_KIMI_MODEL
+      - OPENROUTER_CLAWD_DEFAULT_MODEL
+      - OPENROUTER_GPT
+      - OPENROUTER_GROK43
+      - OPENROUTER_CODEX
+      - OPENROUTER_NVIDIA_MODEL
+
 safety:
   require_yes_for_side_effects: true
   never_write_env_tokens: true

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Convert PDFs, JSON/JSONL, notebooks, parquet files, and text documents into a
-messages-schema SFT dataset.
+Convert PDFs, JSON/JSONL, CSV, notebooks, parquet files, images, and text
+documents into a messages-schema SFT dataset.
 
 The script is intentionally useful in two modes:
 
@@ -55,16 +55,65 @@ SYSTEM_PROMPT = (
     "sanctions evasion, or offensive exploitation."
 )
 
+IMAGE_SUFFIXES = {
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".webp",
+    ".gif",
+    ".bmp",
+    ".tif",
+    ".tiff",
+}
+
+CODE_SUFFIXES = {
+    ".py",
+    ".ts",
+    ".tsx",
+    ".js",
+    ".jsx",
+    ".mjs",
+    ".cjs",
+    ".sql",
+    ".toml",
+}
+
 SUPPORTED_SUFFIXES = {
     ".pdf",
     ".json",
     ".jsonl",
+    ".csv",
     ".ipynb",
     ".parquet",
     ".md",
     ".txt",
     ".yaml",
     ".yml",
+} | IMAGE_SUFFIXES | CODE_SUFFIXES
+
+SKIP_DIR_NAMES = {
+    ".git",
+    ".hg",
+    ".svn",
+    ".venv",
+    "__pycache__",
+    "node_modules",
+    ".next",
+    "dist",
+    "build",
+    "target",
+    ".clawvault",
+}
+
+IMAGE_MIME_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+    ".bmp": "image/bmp",
+    ".tif": "image/tiff",
+    ".tiff": "image/tiff",
 }
 
 SECRET_PATTERNS: list[re.Pattern[str]] = [
@@ -290,6 +339,12 @@ def secret_like(text: str) -> bool:
     return any(pattern.search(text) for pattern in SECRET_PATTERNS)
 
 
+def redact_secret_like(text: str) -> str:
+    for pattern in SECRET_PATTERNS:
+        text = pattern.sub("[REDACTED_SECRET]", text)
+    return text
+
+
 def file_sha256(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:
@@ -305,12 +360,18 @@ def example_sha(messages: list[dict[str, str]]) -> str:
 
 def source_type_for(path: Path) -> str:
     suffix = path.suffix.lower()
+    if suffix in CODE_SUFFIXES:
+        return "code"
     if suffix == ".pdf":
         return "pdf"
     if suffix == ".ipynb":
         return "notebook"
     if suffix == ".parquet":
         return "parquet"
+    if suffix == ".csv":
+        return "csv"
+    if suffix in IMAGE_SUFFIXES:
+        return "image"
     if suffix in {".json", ".jsonl"}:
         return "json"
     if suffix in {".md", ".txt", ".yaml", ".yml"}:
@@ -336,6 +397,8 @@ def discover_files(inputs: list[str], watch_dirs: list[str]) -> tuple[list[Path]
             continue
         if path.is_dir():
             for child in sorted(path.rglob("*")):
+                if any(part in SKIP_DIR_NAMES for part in child.parts):
+                    continue
                 if child.is_file() and child.suffix.lower() in SUPPORTED_SUFFIXES:
                     files.append(child)
         elif path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES:
@@ -1282,6 +1345,19 @@ def process_parquet(path: Path, source: SourceStats, settings: dict[str, Any]) -
     return examples
 
 
+def process_csv(path: Path, source: SourceStats, settings: dict[str, Any]) -> list[dict[str, Any]]:
+    df = pd.read_csv(path)
+    source.metadata = {"rows": int(len(df)), "columns": [str(c) for c in df.columns]}
+    examples: list[dict[str, Any]] = []
+    for index, row in df.iterrows():
+        clean_row = {str(k): none_to_empty(v) for k, v in row.to_dict().items()}
+        ex = record_to_example(clean_row, source, record_id=f"row-{index}", settings=settings)
+        if ex:
+            examples.append(ex)
+    source.records += len(examples)
+    return examples
+
+
 def none_to_empty(value: Any) -> Any:
     try:
         if pd.isna(value):
@@ -1335,7 +1411,10 @@ def process_json(path: Path, source: SourceStats, settings: dict[str, Any]) -> l
 
 def process_text(path: Path, source: SourceStats, settings: dict[str, Any]) -> list[dict[str, Any]]:
     text = path.read_text(encoding="utf-8", errors="ignore")
-    source.metadata = {"chars": len(text)}
+    original_chars = len(text)
+    if source.source_type == "code":
+        text = redact_secret_like(text)
+    source.metadata = {"chars": original_chars, "redacted": source.source_type == "code"}
     examples: list[dict[str, Any]] = []
     for chunk_index, chunk in enumerate(chunk_text(text, settings["chunk_chars"], settings["chunk_overlap"]), 1):
         if len(chunk) < settings["min_text_chars"]:
@@ -1359,6 +1438,137 @@ def process_text(path: Path, source: SourceStats, settings: dict[str, Any]) -> l
     return examples
 
 
+def read_image_dimensions(path: Path) -> tuple[int | None, int | None]:
+    """Read common image dimensions without importing heavyweight image libs."""
+    try:
+        data = path.read_bytes()[:256]
+    except OSError:
+        return None, None
+
+    if data.startswith(b"\x89PNG\r\n\x1a\n") and len(data) >= 24:
+        return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+
+    if data.startswith((b"GIF87a", b"GIF89a")) and len(data) >= 10:
+        return int.from_bytes(data[6:8], "little"), int.from_bytes(data[8:10], "little")
+
+    if data.startswith(b"BM") and len(data) >= 26:
+        width = int.from_bytes(data[18:22], "little", signed=True)
+        height = int.from_bytes(data[22:26], "little", signed=True)
+        return abs(width), abs(height)
+
+    if data.startswith(b"RIFF") and data[8:12] == b"WEBP":
+        if data[12:16] == b"VP8X" and len(data) >= 30:
+            width = int.from_bytes(data[24:27], "little") + 1
+            height = int.from_bytes(data[27:30], "little") + 1
+            return width, height
+        if data[12:16] == b"VP8 " and len(data) >= 30:
+            return int.from_bytes(data[26:28], "little") & 0x3FFF, int.from_bytes(data[28:30], "little") & 0x3FFF
+        if data[12:16] == b"VP8L" and len(data) >= 25:
+            bits = int.from_bytes(data[21:25], "little")
+            return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+
+    if data.startswith(b"\xff\xd8"):
+        try:
+            with path.open("rb") as f:
+                f.read(2)
+                while True:
+                    marker_start = f.read(1)
+                    if not marker_start:
+                        break
+                    if marker_start != b"\xff":
+                        continue
+                    marker = f.read(1)
+                    while marker == b"\xff":
+                        marker = f.read(1)
+                    if marker in {b"\xc0", b"\xc1", b"\xc2", b"\xc3", b"\xc5", b"\xc6", b"\xc7", b"\xc9", b"\xca", b"\xcb", b"\xcd", b"\xce", b"\xcf"}:
+                        f.read(3)
+                        height = int.from_bytes(f.read(2), "big")
+                        width = int.from_bytes(f.read(2), "big")
+                        return width, height
+                    if marker in {b"\xd8", b"\xd9"}:
+                        continue
+                    segment_len = int.from_bytes(f.read(2), "big")
+                    if segment_len < 2:
+                        break
+                    f.seek(segment_len - 2, 1)
+        except OSError:
+            return None, None
+
+    return None, None
+
+
+def image_caption_sidecar(path: Path) -> tuple[Path | None, str]:
+    candidates = [
+        path.with_suffix(path.suffix + ".caption.txt"),
+        path.with_suffix(path.suffix + ".caption.md"),
+        path.with_suffix(path.suffix + ".alt.txt"),
+        path.with_suffix(path.suffix + ".alt.md"),
+        path.with_suffix(".caption.txt"),
+        path.with_suffix(".caption.md"),
+        path.with_suffix(".alt.txt"),
+        path.with_suffix(".alt.md"),
+    ]
+    for candidate in candidates:
+        if not candidate.exists() or not candidate.is_file():
+            continue
+        text = normalize_text(candidate.read_text(encoding="utf-8", errors="ignore"))
+        if text and not secret_like(text):
+            return candidate, text
+    return None, ""
+
+
+def process_image(path: Path, source: SourceStats, settings: dict[str, Any]) -> list[dict[str, Any]]:
+    width, height = read_image_dimensions(path)
+    caption_path, caption = image_caption_sidecar(path)
+    source.metadata = {
+        "mime_type": IMAGE_MIME_TYPES.get(path.suffix.lower(), "image/unknown"),
+        "width": width,
+        "height": height,
+        "caption_sidecar": caption_path.name if caption_path else None,
+        "semantic_extraction": "sidecar-caption" if caption else "metadata-only",
+    }
+    manifest = json.dumps({k: v for k, v in source.metadata.items() if v is not None}, ensure_ascii=False, indent=2)
+    examples: list[dict[str, Any]] = []
+    metadata_example = make_example(
+        user=f"Create a public-safe source record for image `{source.source_id}`.",
+        assistant=(
+            f"Source: {source.source_id}\n"
+            f"SHA256: {source.sha256}\n"
+            f"Size bytes: {source.size_bytes}\n"
+            f"Image metadata:\n{manifest}\n\n"
+            "Raw image bytes are intentionally excluded from the SFT row."
+        ),
+        source=source,
+        record_id="metadata",
+        tags=["image", "metadata", "multimodal-source"],
+        metadata=source.metadata,
+    )
+    if metadata_example:
+        examples.append(metadata_example)
+
+    if caption:
+        for chunk_index, chunk in enumerate(chunk_text(caption, settings["chunk_chars"], settings["chunk_overlap"]), 1):
+            if len(chunk) < settings["min_text_chars"]:
+                source.skipped += 1
+                continue
+            ex = make_example(
+                user=(
+                    f"Convert the caption/context sidecar for image `{source.source_id}` "
+                    f"chunk {chunk_index} into reusable Solana model-training context."
+                ),
+                assistant=f"Source: {source.source_id}\nCaption sidecar: {caption_path.name if caption_path else '-'}\n\n{chunk}",
+                source=source,
+                record_id=f"caption-{chunk_index:03d}",
+                tags=["image", "caption", "multimodal-source"],
+                metadata={**source.metadata, "chunk": chunk_index},
+            )
+            if ex:
+                examples.append(ex)
+
+    source.records += len(examples)
+    return examples
+
+
 def process_file(path: Path, settings: dict[str, Any]) -> tuple[SourceStats, list[dict[str, Any]]]:
     sha = file_sha256(path)
     st = path.stat()
@@ -1375,9 +1585,13 @@ def process_file(path: Path, settings: dict[str, Any]) -> tuple[SourceStats, lis
         examples = process_notebook(path, source, settings)
     elif suffix == ".parquet":
         examples = process_parquet(path, source, settings)
+    elif suffix == ".csv":
+        examples = process_csv(path, source, settings)
     elif suffix in {".json", ".jsonl"}:
         examples = process_json(path, source, settings)
-    elif suffix in {".md", ".txt", ".yaml", ".yml"}:
+    elif suffix in IMAGE_SUFFIXES:
+        examples = process_image(path, source, settings)
+    elif suffix in {".md", ".txt", ".yaml", ".yml"} or suffix in CODE_SUFFIXES:
         examples = process_text(path, source, settings)
     else:
         source.skipped += 1
@@ -1446,6 +1660,8 @@ def source_tables(manifest: dict[str, Any]) -> str:
     pdf_rows: list[str] = []
     notebook_rows: list[str] = []
     parquet_rows: list[str] = []
+    csv_rows: list[str] = []
+    image_rows: list[str] = []
     text_rows: list[str] = []
 
     for source in manifest["sources"]:
@@ -1482,6 +1698,31 @@ def source_tables(manifest: dict[str, Any]) -> str:
                     examples=md_cell(source.get("records")),
                 )
             )
+        elif source_type == "csv":
+            columns = ", ".join(metadata.get("columns") or [])
+            csv_rows.append(
+                "| {file} | {rows} | {columns} | {examples} |".format(
+                    file=md_cell(source.get("source_id")),
+                    rows=md_cell(metadata.get("rows")),
+                    columns=md_cell(columns),
+                    examples=md_cell(source.get("records")),
+                )
+            )
+        elif source_type == "image":
+            dimensions = (
+                f"{metadata.get('width')}x{metadata.get('height')}"
+                if metadata.get("width") and metadata.get("height")
+                else "-"
+            )
+            image_rows.append(
+                "| {file} | {mime} | {dimensions} | {mode} | {examples} |".format(
+                    file=md_cell(source.get("source_id")),
+                    mime=md_cell(metadata.get("mime_type")),
+                    dimensions=md_cell(dimensions),
+                    mode=md_cell(metadata.get("semantic_extraction")),
+                    examples=md_cell(source.get("records")),
+                )
+            )
         else:
             text_rows.append(
                 "| {file} | {kind} | {details} | {examples} |".format(
@@ -1513,6 +1754,20 @@ def source_tables(manifest: dict[str, Any]) -> str:
             "| File | Rows | Columns | Examples |\n"
             "| --- | ---: | --- | ---: |\n"
             + "\n".join(parquet_rows)
+        )
+    if csv_rows:
+        sections.append(
+            "### CSV Sources\n\n"
+            "| File | Rows | Columns | Examples |\n"
+            "| --- | ---: | --- | ---: |\n"
+            + "\n".join(csv_rows)
+        )
+    if image_rows:
+        sections.append(
+            "### Image Sources\n\n"
+            "| File | MIME | Dimensions | Extraction | Examples |\n"
+            "| --- | --- | --- | --- | ---: |\n"
+            + "\n".join(image_rows)
         )
     if text_rows:
         sections.append(
@@ -1548,6 +1803,7 @@ tags:
   - research
   - pdf
   - notebooks
+  - images
   - datasets
   - realtime-ingestion
 pretty_name: {settings["dataset_name"]}
@@ -1556,8 +1812,8 @@ pretty_name: {settings["dataset_name"]}
 # {settings["dataset_name"]}
 
 Instruction-tuning dataset generated by `scripts/realtime_dataset_ingest.py`
-from submitted PDFs, notebooks, parquet QA rows, JSON/JSONL files, and local
-reference text.
+from submitted PDFs, notebooks, parquet/CSV QA rows, JSON/JSONL files, images,
+and local reference text.
 
 ## Contents
 
@@ -1603,6 +1859,11 @@ The ingestion script supports NVIDIA and Google-backed PDF extraction:
 - Google quota project: `{settings.get("google_quota_project") or ""}`
 - Gemini model: `{settings.get("gemini_model", "")}`
 
+Image files are represented as public-safe metadata rows. If a sidecar caption
+exists next to the image using `.caption.txt`, `.caption.md`, `.alt.txt`, or
+`.alt.md`, that text is chunked into normal SFT rows. Raw image bytes are never
+written to the dataset JSONL, manifest, card, or Hub upload.
+
 Document AI's `ProcessDocument` endpoint normally requires Google Cloud OAuth
 or Application Default Credentials. API keys are used by the Gemini extractor.
 Do not publish NVIDIA API keys, Google OAuth client-secret files, ADC JSON,
@@ -1616,7 +1877,7 @@ billing-enabled project.
 ```bash
 cd /path/to/solana-clawd/ai-training
 python3 scripts/realtime_dataset_ingest.py --config configs/realtime_dataset_config.yaml
-python3 scripts/realtime_dataset_ingest.py --input my.pdf my.json --push
+python3 scripts/realtime_dataset_ingest.py --input my.pdf my.json chart.png --push
 python3 scripts/realtime_dataset_ingest.py --pdf-extractor gemini --input my.pdf
 python3 scripts/realtime_dataset_ingest.py --pdf-extractor documentai --input my.pdf
 ```

@@ -9,10 +9,12 @@ the foundation model pre-trains on to learn Solana transaction semantics.
 """
 
 import argparse
+import hashlib
 import json
 import re
 import sys
 from pathlib import Path
+from typing import Iterable
 
 
 TX_KEYWORDS = re.compile(
@@ -38,57 +40,87 @@ def extract_text(messages: list[dict]) -> str | None:
     return None
 
 
-def build(input_path: Path, output_path: Path, limit: int | None) -> int:
-    written = 0
-    skipped = 0
-    with input_path.open() as fin, output_path.open("w") as fout:
+def _iter_records(input_path: Path) -> Iterable[tuple[str | None, str]]:
+    with input_path.open(encoding="utf-8") as fin:
         for line in fin:
-            if limit and written >= limit:
-                break
             line = line.strip()
             if not line:
                 continue
             try:
                 obj = json.loads(line)
             except json.JSONDecodeError:
-                skipped += 1
+                yield None, "invalid_json"
                 continue
-            # Accept pre-built CPT records (from jupiter_tx_collector or raw CPT)
             if "text" in obj:
-                if TX_KEYWORDS.search(obj["text"]):
-                    fout.write(json.dumps({"text": obj["text"]}) + "\n")
-                    written += 1
+                text = str(obj.get("text") or "").strip()
+                if TX_KEYWORDS.search(text):
+                    yield text, "text"
                 else:
-                    skipped += 1
+                    yield None, "non_tx_text"
                 continue
-            # Convert messages format
             messages = obj.get("messages", [])
-            text = extract_text(messages)
+            text = extract_text(messages) if isinstance(messages, list) else None
             if text:
-                fout.write(json.dumps({"text": text}) + "\n")
-                written += 1
+                yield text, "messages"
             else:
-                skipped += 1
-    return written
+                yield None, "non_tx_messages"
 
 
-def build_multi(input_paths: list[Path], output_path: Path, limit: int | None) -> int:
-    """Merge multiple input JSONL files (SFT + Jupiter CPT) into one CPT output."""
+def _fingerprint(text: str) -> str:
+    return hashlib.sha256(text.strip().encode("utf-8")).hexdigest()
+
+
+def build_multi(
+    input_paths: list[Path],
+    output_path: Path,
+    limit: int | None,
+    *,
+    dedupe: bool = True,
+) -> dict:
+    """Merge multiple input JSONL files into one NeMo CPT JSONL output."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     total = 0
-    with output_path.open("w") as fout:
+    seen: set[str] = set()
+    stats = {
+        "output": str(output_path),
+        "limit": limit,
+        "dedupe": dedupe,
+        "written": 0,
+        "skipped": 0,
+        "duplicates": 0,
+        "sources": {},
+    }
+    with output_path.open("w", encoding="utf-8") as fout:
         for src in input_paths:
+            src_stats = {"written": 0, "skipped": 0, "duplicates": 0, "by_type": {}}
+            stats["sources"][str(src)] = src_stats
             if not src.exists():
+                src_stats["skipped"] += 1
+                src_stats["by_type"]["missing"] = 1
                 print(f"  skip missing: {src}")
                 continue
-            tmp = output_path.parent / f"_tmp_{src.stem}.jsonl"
-            n = build(src, tmp, limit=(limit - total) if limit else None)
-            with tmp.open() as tf:
-                fout.write(tf.read())
-            tmp.unlink(missing_ok=True)
-            total += n
-            print(f"  [{n}] from {src.name}")
-    return total
+            for text, row_type in _iter_records(src):
+                src_stats["by_type"][row_type] = src_stats["by_type"].get(row_type, 0) + 1
+                if limit and total >= limit:
+                    break
+                if not text:
+                    stats["skipped"] += 1
+                    src_stats["skipped"] += 1
+                    continue
+                fp = _fingerprint(text)
+                if dedupe and fp in seen:
+                    stats["duplicates"] += 1
+                    src_stats["duplicates"] += 1
+                    continue
+                seen.add(fp)
+                fout.write(json.dumps({"text": text}, ensure_ascii=False) + "\n")
+                total += 1
+                stats["written"] = total
+                src_stats["written"] += 1
+            print(f"  [{src_stats['written']}] from {src.name}")
+            if limit and total >= limit:
+                break
+    return stats
 
 
 def main() -> None:
@@ -96,6 +128,8 @@ def main() -> None:
     parser.add_argument("--input", required=True, nargs="+", help="Source JSONL(s) (messages or CPT format)")
     parser.add_argument("--output", required=True, help="Output NeMo CPT JSONL")
     parser.add_argument("--limit", type=int, default=None, help="Max examples to emit")
+    parser.add_argument("--manifest", default=None, help="Optional JSON manifest path")
+    parser.add_argument("--no-dedupe", action="store_true", help="Keep duplicate CPT texts")
     parser.add_argument("--dry-run", action="store_true", help="Print stats, don't write")
     args = parser.parse_args()
 
@@ -106,15 +140,17 @@ def main() -> None:
         print(f"ERROR: inputs not found: {missing}", file=sys.stderr)
         sys.exit(1)
 
-    if args.dry_run:
-        output_path = Path("/dev/null")
-
-    if len(input_paths) == 1:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        written = build(input_paths[0], output_path, args.limit)
-    else:
-        written = build_multi(input_paths, output_path, args.limit)
-    print(f"[tx-foundation] written={written} to {output_path}")
+    stats = build_multi(
+        input_paths,
+        Path("/dev/null") if args.dry_run else output_path,
+        args.limit,
+        dedupe=not args.no_dedupe,
+    )
+    if args.manifest and not args.dry_run:
+        manifest_path = Path(args.manifest)
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8")
+    print(f"[tx-foundation] written={stats['written']} to {output_path}")
 
 
 if __name__ == "__main__":

@@ -43,9 +43,9 @@ Produced by `scripts/prepare_dataset.py` with seed `42`.
 
 | Split | Examples |
 | --- | ---: |
-| train | 127 |
-| eval | 7 |
-| test | 8 |
+| train | 175 |
+| eval | 9 |
+| test | 11 |
 
 ## What It Covers
 
@@ -91,6 +91,32 @@ Produced by `scripts/prepare_dataset.py` with seed `42`.
 | `ai-training/README.md` | training_pipeline_reference | 3 |
 | `AGENTS.md` | clawd_agent_catalog | 3 |
 | `ai-training/data/realtime_research_dataset_manifest.json` | research_dataset_manifest | 3 |
+| `ai-training/nvidia/blueprints/signal-discovery/signals.py` | nvidia_signal_detectors | 3 |
+| `ai-training/nvidia/blueprints/signal-discovery/perps_signal_agent.py` | nvidia_perps_signal_agent | 3 |
+| `ai-training/nvidia/blueprints/signal-discovery/quantitative_signal_agent.py` | nvidia_quantitative_signal_agent | 3 |
+| `ai-training/nvidia/blueprints/signal-discovery/server.py` | nvidia_signal_server | 3 |
+| `ai-training/nvidia/blueprints/signal-discovery/agent.py` | nvidia_signal_agent | 1 |
+| `ai-training/nvidia/blueprints/signal-discovery/README.md` | nvidia_signal_discovery_readme | 1 |
+| `ai-training/nvidia/blueprints/portfolio-optimization/mean_cvar.py` | nvidia_mean_cvar_optimizer | 2 |
+| `ai-training/nvidia/blueprints/portfolio-optimization/scenarios.py` | nvidia_scenario_generator | 1 |
+| `ai-training/nvidia/blueprints/portfolio-optimization/cufolio_clawd.py` | nvidia_cufolio_clawd | 2 |
+| `ai-training/nvidia/blueprints/portfolio-optimization/phoenix_prices.py` | nvidia_phoenix_prices | 3 |
+| `ai-training/nvidia/blueprints/portfolio-optimization/README.md` | nvidia_portfolio_optimization_readme | 1 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/collect.py` | nvidia_tx_cpt_collector | 3 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/pipeline.py` | nvidia_tx_foundation_pipeline | 2 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/config.yaml` | nvidia_tx_foundation_config | 1 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/dataset_builder.py` | nvidia_tx_dataset_builder | 2 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/finetune.py` | nvidia_tx_finetune | 2 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/train.py` | nvidia_tx_train | 3 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/evaluate.py` | nvidia_tx_evaluate | 3 |
+| `ai-training/nvidia/blueprints/transaction-foundation-model/README.md` | nvidia_tx_foundation_readme | 1 |
+| `ai-training/nvidia/configs/nemo_clawd_factory.yaml` | nvidia_nemo_factory_config | 3 |
+| `ai-training/nvidia/configs/solana_tx_foundation.yaml` | nvidia_tx_foundation_pipeline_config | 1 |
+| `ai-training/nvidia/configs/aiq_config.yaml` | nvidia_aiq_config | 1 |
+| `ai-training/nvidia/configs/nim_config.yaml` | nvidia_nim_config | 1 |
+| `ai-training/nvidia/configs/pretrain_solana_decoder.yaml` | nvidia_pretrain_solana_decoder | 2 |
+| `ai-training/nvidia/nemotron_ultra_agent.py` | nvidia_nemotron_ultra_agent | 3 |
+| `ai-training/nvidia/NEMOTRON_ULTRA_AGENT.md` | nvidia_nemotron_ultra_agent_docs | 2 |
 
 ## External References
 

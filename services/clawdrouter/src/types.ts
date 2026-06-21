@@ -194,6 +194,7 @@ export interface DimensionScores {
 export type ModelProvider =
   | "anthropic"
   | "clawdrouter"
+  | "ollama"
   | "openai"
   | "google"
   | "xai"
@@ -549,6 +550,11 @@ export interface ClawdRouterConfig {
   openRouterCategories: string[];
   openRouterEnabled: boolean;
   openRouterModelAliases: Record<string, string>;
+
+  // ── Local Ollama Integration
+  ollamaEnabled: boolean;
+  ollamaHost: string;
+  ollamaModelAliases: Record<string, string>;
 
   // ── x402 Payment Config
   x402PayTo: string;

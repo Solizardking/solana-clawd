@@ -47,6 +47,14 @@ NVIDIA_BLUEPRINTS: dict[str, dict[str, str]] = {
 
 
 UPSTREAM_ADAPTATIONS: dict[str, dict[str, str]] = {
+    "nvidia_nemoclaw": {
+        "repo": "https://github.com/NVIDIA/NemoClaw",
+        "license": "Apache-2.0; verify upstream notices before vendoring.",
+        "adapted_contract": (
+            "Guided onboarding, hardened sandbox blueprint, routed inference, "
+            "network policy, and lifecycle management mapped onto Core AI as Nemo Clawd."
+        ),
+    },
     "quantitative_signal_discovery_agent": {
         "repo": "https://github.com/Solizardking/quantitative-signal-discovery-agent.git",
         "license": "Apache-2.0 style upstream license files; verify before redistribution.",
@@ -130,6 +138,13 @@ def build_nvidia_clawd_agent_plan(
         "markets": markets,
         "factory_artifacts": artifacts,
         "roles": [
+            {
+                "name": "nemo_clawd_runtime",
+                "source": "nvidia_nemoclaw",
+                "job": "wrap Core AI assets in a NemoClaw-style sandbox, network policy, and lifecycle plan",
+                "inputs": ["core-ai inventory", "Clawd MCP tools", "NIM bridge routes", "sandbox policy"],
+                "outputs": ["nemo_clawd_blueprint", "core_ai_inventory", "network_policy"],
+            },
             {
                 "name": "rag_grounder",
                 "source": "enterprise_rag",
@@ -219,8 +234,14 @@ def build_nvidia_clawd_agent_plan(
                 "blocked_by_default": ["automatic rebalance execution"],
             },
             "nemo_clawd": {
-                "allowed": ["sandboxed plan/apply/status concepts", "MCP tool manifest generation"],
-                "blocked_by_default": ["host secret inspection", "live wallet policy mutation"],
+                "allowed": [
+                    "Core AI read-only source inventory",
+                    "sandboxed plan/apply/status concepts",
+                    "MCP tool manifest generation",
+                    "NIM/Clawd routed inference",
+                    "network policy review",
+                ],
+                "blocked_by_default": ["host secret inspection", "live wallet policy mutation", "unapproved egress"],
             },
         },
         "training_outputs": {
@@ -232,6 +253,7 @@ def build_nvidia_clawd_agent_plan(
         "commands": {
             "generate_factory_bundle": "python3 scripts/build_solana_trading_factory_strategies.py",
             "generate_agent_plan": "python3 nvidia/integration/nemo_clawd_agent.py",
+            "generate_nemo_clawd_blueprint": "python3 nvidia/integration/nemo_clawd.py --write",
             "run_signal_agent_paper": (
                 "python3 nvidia/blueprints/signal-discovery/agent.py "
                 "--markets SOL BTC ETH --mode paper"

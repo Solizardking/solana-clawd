@@ -1,5 +1,5 @@
 # LoRA SFT config optimized for local Apple Silicon (MPS) training
-# 48 GB unified memory — runs 7B in bfloat16 without quantization
+# 48 GB unified memory — runs 7B in bfloat16 (~15 GB weights) without quantization
 #
 # Usage:
 #   cd ai-training
@@ -43,7 +43,7 @@ training:
   warmup_steps: 50              # ~3% of 1713 steps (27405 / 16 grad_accum)
   weight_decay: 0.0
   optim: "adamw_torch"
-  bf16: false                # MPS uses float32 internally; set fp16/bf16 false
+  bf16: true                 # bfloat16 safe now that device_map={"":"mps"} (no meta-device split)
   fp16: false
   tf32: false
   gradient_checkpointing: false  # MPS: gradient checkpointing conflicts with {"": "mps"} device map

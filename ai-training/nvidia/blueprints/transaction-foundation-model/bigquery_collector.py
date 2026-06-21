@@ -25,8 +25,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).parents[4]
-DATA = ROOT / "data"
+from tx_foundation_common import DATA_DIR as DATA
+
 BQ_DATASET  = "bigquery-public-data.crypto_solana_mainnet_us"
 GCP_PROJECT = os.environ.get("GOOGLE_CLOUD_PROJECT", "x402-477302")
 WRAP = "<tx_context>\n{}\n</tx_context>"
@@ -127,21 +127,31 @@ def _sql_nested(days: int, limit: int) -> str:
 
 def _sql_separate(days: int, limit: int) -> str:
     parts = [
-        "SELECT t.id AS signature, t.block_slot AS slot, t.block_time,",
-        "  COALESCE(t.fee, 0) AS fee_lamports,",
+        "SELECT t.signature AS signature, t.block_slot AS slot, t.block_timestamp AS block_time,",
+        "  SAFE_CAST(COALESCE(t.fee, 0) AS INT64) AS fee_lamports,",
         "  COALESCE(t.status, \'unknown\') AS status,",
-        "  i.program_id, COALESCE(i.instruction_type, i.type, \'\') AS ix_type,",
+        "  i.program_id, COALESCE(i.instruction_type, \'\') AS ix_type,",
         "  tt.mint AS mint_pre, CAST(NULL AS STRING) AS mint_post,",
-        "  COALESCE(SAFE_CAST(tt.amount AS FLOAT64)",
-        "    / POWER(10, COALESCE(tt.decimals, 0)), 0.0) AS amount_pre,",
+        "  COALESCE(SAFE_CAST(tt.value AS FLOAT64)",
+        "    / POWER(10, COALESCE(SAFE_CAST(tt.decimals AS INT64), 0)), 0.0) AS amount_pre,",
         "  0.0 AS amount_post, 0.0 AS delta",
-        "FROM `" + BQ_DATASET + ".transactions` t",
-        "JOIN `" + BQ_DATASET + ".instructions` i ON i.tx_id = t.id",
-        "LEFT JOIN `" + BQ_DATASET + ".token_transfers` tt ON tt.tx_id = t.id",
-        "WHERE t.block_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL " + str(days) + " DAY)",
-        "  AND COALESCE(t.status, \'\') IN (\'Success\', \'success\', \'1\')",
+        "FROM (",
+        "  SELECT * FROM `" + BQ_DATASET + ".Transactions`",
+        "  WHERE block_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL " + str(days) + " DAY)",
+        ") t",
+        "JOIN (",
+        "  SELECT * FROM `" + BQ_DATASET + ".Instructions`",
+        "  WHERE block_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL " + str(days) + " DAY)",
+        ") i",
+        "  ON i.tx_signature = t.signature AND i.block_slot = t.block_slot",
+        "LEFT JOIN (",
+        "  SELECT * FROM `" + BQ_DATASET + ".Token Transfers`",
+        "  WHERE block_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL " + str(days) + " DAY)",
+        ") tt",
+        "  ON tt.tx_signature = t.signature AND tt.block_slot = t.block_slot",
+        "WHERE LOWER(COALESCE(t.status, \'\')) IN (\'success\', \'1\')",
         "  AND i.program_id IN (" + _DEX_SQL + ")",
-        "ORDER BY t.block_time DESC LIMIT " + str(limit),
+        "ORDER BY t.block_timestamp DESC LIMIT " + str(limit),
     ]
     return "\n".join(parts)
 

@@ -1,0 +1,81 @@
+# clawd-inference-mesh — Distributed ZK-verifiable inference nodes
+# Fly.io USA mesh: ord/iad/sjc/lax  (GPU-upgradeable via [[vm]] swap)
+#
+# Deploy:
+#   fly apps create clawd-inference-mesh
+#   fly secrets set SOLANA_KEYPAIR_B58=<base58 node keypair>
+#   fly secrets set SOLANA_AI_INFERENCE_PROGRAM=Bg96xPuC3Mt2xnEnQPQBJY8QBqD6J7hn3WgnqDK43pKT
+#   fly secrets set CLAWD_ZK_PROGRAM=<clawd-zk program id>
+#   fly secrets set MESH_ADMIN_KEY=<admin key for /admin>
+#   fly deploy --ha=false
+#
+# Scale to all US regions:
+#   fly scale count 4 --region ord,iad,sjc,lax
+
+app = "clawd-inference-mesh"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT                     = "8080"
+  OLLAMA_HOST              = "http://127.0.0.1:11434"
+  MESH_APP_NAME            = "clawd-inference-mesh"
+  MESH_INTERNAL_PORT       = "8081"
+  SOLANA_RPC_URL           = "https://api.mainnet-beta.solana.com"
+  SOLANA_WS_URL            = "wss://api.mainnet-beta.solana.com"
+  CLAWD_TOKEN_MINT         = "8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump"
+  DEFAULT_INFERENCE_MODEL  = "8bit/solana-clawd-core-ai"
+  TRADING_INFERENCE_MODEL  = "8bit/solana-trading-factory"
+  SOL_GPT_DEFAULT_MODEL    = "qwen2.5:1.5b"
+  SOL_GPT_LOCAL_MODELS     = "qwen2.5:1.5b,8bit/solana-clawd-core-ai:latest,8bit/DeepSolana:latest,hermes3:8b,8bit/solana-clawd-core-ai:preview"
+  OPENROUTER_SITE_URL      = "https://clawd-inference-mesh.fly.dev/sol-gpt"
+  OPENROUTER_SITE_TITLE    = "Sol GPT"
+  OPENROUTER_DEFAULT_FREE_MODEL = "nvidia/llama-nemotron-rerank-vl-1b-v2:free"
+  OPENROUTER_FREE_MODEL1   = "nvidia/llama-nemotron-rerank-vl-1b-v2:free"
+  OPENROUTER_FREE_MODEL2   = "nex-agi/nex-n2-pro:free"
+  OPENROUTER_NVIDIA_FREE_MODEL = "nvidia/nemotron-3.5-content-safety:free"
+  OPENROUTER_NVIDIA_FREE_MODEL2 = "nvidia/nemotron-3-ultra-550b-a55b:free"
+  OPENROUTER_NVIDIA_FREEMODEL3 = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+  OPENROUTER_HERMES        = "nousresearch/hermes-3-llama-3.1-405b:free"
+  OPENROUTER_FALLBACK_MODELS = "nvidia/llama-nemotron-rerank-vl-1b-v2:free,nex-agi/nex-n2-pro:free,nvidia/nemotron-3.5-content-safety:free,nvidia/nemotron-3-ultra-550b-a55b:free,nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free,nousresearch/hermes-3-llama-3.1-405b:free"
+  PROTOCOL_FEE_BPS         = "250"
+  MIN_VALIDATOR_STAKE_LAMPORTS = "1000000"
+  ZK_COMMITMENT_VERSION    = "1"
+  LIGHT_STATE_TREE         = "smt1NamzXwfEZSBW4nFHW5RH9rxC4oTkHHHGhCCMAfp"
+  PUBLIC_INFERENCE_ENABLED = "true"
+
+[mounts]
+  source = "inference_mesh_models"
+  destination = "/root/.ollama"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "10s"
+    grace_period = "60s"
+    method = "GET"
+    path = "/health"
+
+# Internal mesh port (6PN only — not exposed externally)
+[[services]]
+  internal_port = 8081
+  protocol = "tcp"
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 8081
+
+# CPU nodes for 1.5B model (upgrade to gpu for 8B)
+[[vm]]
+  memory = "8gb"
+  cpu_kind = "performance"
+  cpus = 4

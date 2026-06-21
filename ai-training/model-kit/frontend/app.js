@@ -55,6 +55,33 @@ const fallbackStatus = {
   ],
 };
 
+let arenaProviders = [
+  {
+    id: "openrouter",
+    label: "OpenRouter",
+    adapter: "openai-compatible",
+    base_url: "https://openrouter.ai/api/v1",
+    api_key_env: "OPENROUTER_API_KEY",
+    examples: ["nvidia/llama-nemotron-rerank-vl-1b-v2:free", "openrouter/fusion", "moonshotai/kimi-k2.7-code", "anthropic/claude-opus-4.8-fast"],
+    model_presets: [
+      { env: "OPENROUTER_DEFAULT_FREE_MODEL", label: "Default free", model: "nvidia/llama-nemotron-rerank-vl-1b-v2:free" },
+      { env: "OPENROUTER_FUSION", label: "Fusion", model: "openrouter/fusion" },
+      { env: "OPENROUTER_KIMI_MODEL", label: "Kimi code", model: "moonshotai/kimi-k2.7-code" },
+      { env: "OPENROUTER_CLAWD_DEFAULT_MODEL", label: "Clawd default", model: "anthropic/claude-opus-4.8-fast" },
+    ],
+  },
+  { id: "openai", label: "OpenAI", adapter: "openai-compatible", base_url: "https://api.openai.com/v1", api_key_env: "OPENAI_API_KEY", examples: ["gpt-4.1-mini"] },
+  { id: "xai", label: "xAI", adapter: "openai-compatible", base_url: "https://api.x.ai/v1", api_key_env: "XAI_API_KEY", examples: ["grok-4"] },
+  { id: "groq", label: "Groq", adapter: "openai-compatible", base_url: "https://api.groq.com/openai/v1", api_key_env: "GROQ_API_KEY", examples: ["llama-3.3-70b-versatile"] },
+  { id: "anthropic", label: "Anthropic", adapter: "anthropic", base_url: "https://api.anthropic.com/v1", api_key_env: "ANTHROPIC_API_KEY", examples: ["claude-3-5-sonnet-latest"] },
+  { id: "gemini", label: "Google Gemini", adapter: "gemini", base_url: "https://generativelanguage.googleapis.com/v1beta", api_key_env: "GEMINI_API_KEY", examples: ["gemini-1.5-flash"] },
+  { id: "custom-openai", label: "Custom OpenAI-compatible", adapter: "openai-compatible", base_url: "", api_key_env: "", examples: ["provider/model-id"] },
+  { id: "mock", label: "Local mock", adapter: "mock", base_url: "", api_key_env: "", examples: ["mock-fast"] },
+];
+
+let arenaEventSource;
+let activeArenaRun;
+
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
@@ -76,13 +103,19 @@ function apiUrl(path) {
 }
 
 function wireApiBaseInput() {
-  const input = $("#apiBase");
-  if (!input) return;
-  input.value = currentApiBase();
-  input.addEventListener("change", () => {
-    localStorage.setItem("modelKitApiBase", input.value.trim());
-    updateEndpointLabels();
-    loadStatus();
+  const inputs = $$("[data-api-base], #apiBase");
+  if (!inputs.length) return;
+  inputs.forEach((input) => {
+    input.value = currentApiBase();
+    input.addEventListener("change", () => {
+      localStorage.setItem("modelKitApiBase", input.value.trim());
+      inputs.forEach((peer) => {
+        if (peer !== input) peer.value = input.value.trim();
+      });
+      updateEndpointLabels();
+      loadStatus();
+      loadArenaProviders();
+    });
   });
 }
 
@@ -302,6 +335,366 @@ async function loadStatus() {
   }
 }
 
+function providerById(id) {
+  return arenaProviders.find((provider) => provider.id === id) || arenaProviders[0];
+}
+
+function providerModels(provider) {
+  if (Array.isArray(provider?.model_presets) && provider.model_presets.length) {
+    return provider.model_presets.map((preset) => preset.model).filter(Boolean);
+  }
+  return (provider?.examples || []).filter(Boolean);
+}
+
+function populateArenaModelDatalist() {
+  const datalist = $("#arenaModelPresets");
+  if (!datalist) return;
+  const seen = new Set();
+  const options = [];
+  arenaProviders.forEach((provider) => {
+    const presets = Array.isArray(provider.model_presets) && provider.model_presets.length
+      ? provider.model_presets
+      : (provider.examples || []).map((model) => ({ label: provider.label, model, env: "" }));
+    presets.forEach((preset) => {
+      if (!preset.model || seen.has(preset.model)) return;
+      seen.add(preset.model);
+      const label = [provider.label, preset.env || preset.label].filter(Boolean).join(" - ");
+      options.push(`<option value="${escapeHtml(preset.model)}" label="${escapeHtml(label)}"></option>`);
+    });
+  });
+  datalist.innerHTML = options.join("");
+}
+
+function populateArenaProviders() {
+  $$("[data-model-field='provider']").forEach((select) => {
+    const current = select.value || select.dataset.defaultProvider || "openrouter";
+    select.innerHTML = arenaProviders
+      .map((provider) => `<option value="${provider.id}">${provider.label}</option>`)
+      .join("");
+    select.value = arenaProviders.some((provider) => provider.id === current) ? current : arenaProviders[0].id;
+    applyProviderDefaults(select.closest(".arena-model-card"));
+  });
+  populateArenaModelDatalist();
+}
+
+async function loadArenaProviders() {
+  if (!$("#arenaForm")) return;
+  try {
+    const payload = await requestJson("/api/arena/providers");
+    if (Array.isArray(payload.providers) && payload.providers.length) {
+      arenaProviders = payload.providers;
+    }
+  } catch {
+    // Bundled providers keep the arena usable when the API is offline.
+  }
+  populateArenaProviders();
+}
+
+function modelField(card, field) {
+  return $(`[data-model-field="${field}"]`, card);
+}
+
+function applyProviderDefaults(card) {
+  if (!card) return;
+  const provider = providerById(modelField(card, "provider")?.value);
+  const base = modelField(card, "base_url");
+  const env = modelField(card, "api_key_env");
+  const model = modelField(card, "model");
+  if (base && !base.value.trim()) base.placeholder = provider.base_url || "provider default";
+  if (env && !env.value.trim()) env.placeholder = provider.api_key_env || "optional";
+  const examples = providerModels(provider);
+  if (model && !model.value.trim() && examples[0]) model.value = examples[0];
+}
+
+function setArenaMode() {
+  const mode = $("#arenaMode")?.value || "chat";
+  const codeFields = $("#arenaCodeFields");
+  if (codeFields) codeFields.hidden = mode !== "code";
+}
+
+function arenaModelsFromForm() {
+  return $$(".arena-model-card")
+    .filter((card) => modelField(card, "enabled")?.checked)
+    .map((card, index) => {
+      const provider = providerById(modelField(card, "provider").value);
+      const payload = {
+        label: modelField(card, "label").value.trim() || `Model ${index + 1}`,
+        provider: provider.id,
+        model: modelField(card, "model").value.trim() || providerModels(provider)[0] || "model",
+        temperature: 0.2,
+        max_tokens: 1024,
+      };
+      const baseUrl = modelField(card, "base_url").value.trim();
+      const apiKey = modelField(card, "api_key").value.trim();
+      const apiKeyEnv = modelField(card, "api_key_env").value.trim();
+      if (baseUrl) payload.base_url = baseUrl;
+      if (apiKey) payload.api_key = apiKey;
+      if (apiKeyEnv) payload.api_key_env = apiKeyEnv;
+      return payload;
+    });
+}
+
+function arenaPayload() {
+  const mode = $("#arenaMode")?.value || "chat";
+  return {
+    mode,
+    prompt: $("#arenaPrompt").value.trim(),
+    system_prompt: $("#arenaSystemPrompt").value.trim(),
+    models: arenaModelsFromForm(),
+    stdin: mode === "code" ? $("#arenaStdin").value : "",
+    expected_stdout: mode === "code" ? $("#arenaExpectedStdout").value : null,
+    share_base_url: `${window.location.origin}${window.location.pathname}`,
+  };
+}
+
+function setArenaStatus(run) {
+  const summary = run?.summary || {};
+  const values = {
+    status: run?.status || "idle",
+    winner: summary.winner || summary.fastest || "-",
+    completed: summary.models_completed || (run?.results || []).filter((item) => item.ok).length || 0,
+    codePasses: summary.code_passes || 0,
+    tokens: summary.total_tokens || (run?.results || []).reduce((sum, item) => sum + Number(item.total_tokens || 0), 0),
+  };
+  Object.entries(values).forEach(([key, value]) => {
+    const node = $(`[data-arena-field="${key}"]`);
+    if (node) node.textContent = String(value);
+  });
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function resultBadge(result) {
+  if (!result.ok) return `<em class="badge bad">failed</em>`;
+  const execution = result.execution;
+  if (execution) return `<em class="badge ${execution.passed ? "good" : "bad"}">${execution.passed ? "passed" : "failed"}</em>`;
+  return `<em class="badge good">complete</em>`;
+}
+
+function renderArenaResult(result) {
+  const execution = result.execution;
+  const output = result.ok ? result.content : result.error;
+  const codeBlock = result.code ? `<details><summary>Code</summary><pre>${escapeHtml(result.code)}</pre></details>` : "";
+  const execBlock = execution
+    ? `<div class="arena-exec">
+        <span>return ${execution.return_code ?? "-"}</span>
+        <span>${Number(execution.latency_ms || 0).toLocaleString()} ms exec</span>
+        <details>
+          <summary>stdout/stderr</summary>
+          <pre>${escapeHtml((execution.stdout || "").trim() || "(no stdout)")}</pre>
+          <pre>${escapeHtml((execution.stderr || "").trim() || "(no stderr)")}</pre>
+        </details>
+      </div>`
+    : "";
+  return `
+    <article class="arena-result-card">
+      <header>
+        <span>
+          <strong>${escapeHtml(result.label)}</strong>
+          <small>${escapeHtml(result.provider)} / ${escapeHtml(result.model)}</small>
+        </span>
+        ${resultBadge(result)}
+      </header>
+      <div class="arena-result-metrics">
+        <span>${Number(result.latency_ms || 0).toLocaleString()} ms</span>
+        <span>${Number(result.total_tokens || 0).toLocaleString()} tokens</span>
+        <span>${Number(result.chars_per_second || 0).toLocaleString()} cps</span>
+      </div>
+      <pre>${escapeHtml(output || "")}</pre>
+      ${codeBlock}
+      ${execBlock}
+    </article>
+  `;
+}
+
+function renderArenaRun(run) {
+  activeArenaRun = run;
+  setArenaStatus(run);
+  const list = $("#arenaResultList");
+  if (list) {
+    const results = run?.results || [];
+    list.innerHTML = results.length
+      ? results.map(renderArenaResult).join("")
+      : `<article class="arena-empty"><strong>${escapeHtml(run?.status || "queued")}</strong><span>Waiting for model results.</span></article>`;
+  }
+  if (run?.status === "completed") {
+    saveArenaRecent(run);
+    loadArenaShare(run.id);
+  }
+}
+
+function appendArenaEvent(event) {
+  const log = $("#arenaEvents");
+  if (!log) return;
+  const line = `[${event.time || new Date().toISOString()}] ${event.type || "event"}: ${event.message || ""}`;
+  log.textContent = log.textContent === "Waiting for a run..." ? line : `${log.textContent}\n${line}`;
+  log.scrollTop = log.scrollHeight;
+}
+
+async function refreshArenaRun(runId) {
+  const payload = await requestJson(`/api/arena/runs/${encodeURIComponent(runId)}`);
+  renderArenaRun(payload.run);
+  return payload.run;
+}
+
+function subscribeArenaRun(runId) {
+  if (arenaEventSource) arenaEventSource.close();
+  const source = new EventSource(apiUrl(`/api/arena/runs/${encodeURIComponent(runId)}/events`));
+  arenaEventSource = source;
+  const eventTypes = ["queued", "run_started", "model_started", "model_completed", "model_failed", "run_completed", "log_failed", "error"];
+  eventTypes.forEach((type) => {
+    source.addEventListener(type, (message) => {
+      const event = JSON.parse(message.data);
+      appendArenaEvent(event);
+      if (["model_completed", "model_failed", "run_completed"].includes(type)) {
+        refreshArenaRun(runId).catch((error) => appendArenaEvent({ type: "refresh_failed", message: error.message }));
+      }
+      if (type === "run_completed") source.close();
+    });
+  });
+  source.onerror = () => {
+    appendArenaEvent({ type: "stream_closed", message: "Arena event stream closed." });
+    source.close();
+  };
+}
+
+async function runArena(event) {
+  event.preventDefault();
+  const payload = arenaPayload();
+  if (!payload.prompt) throw new Error("Prompt is required.");
+  if (payload.models.length < 1) throw new Error("Enable at least one model.");
+  $("#arenaEvents").textContent = "Submitting arena run...";
+  $("#shareArenaX")?.classList.add("disabled-link");
+  const response = await requestJson("/api/arena/runs", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  renderArenaRun(response.run);
+  subscribeArenaRun(response.run.id);
+}
+
+async function loadArenaShare(runId) {
+  const link = $("#shareArenaX");
+  if (!link) return;
+  try {
+    const payload = await requestJson(`/api/arena/runs/${encodeURIComponent(runId)}/share`);
+    link.href = payload.x_intent_url;
+    link.classList.remove("disabled-link");
+    link.setAttribute("aria-disabled", "false");
+  } catch {
+    link.href = "https://twitter.com/intent/tweet";
+  }
+}
+
+function arenaRecent() {
+  try {
+    return JSON.parse(localStorage.getItem("modelArenaRecentRuns") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveArenaRecent(run) {
+  mergeArenaRecentRuns([run]);
+}
+
+function recentFromRun(run) {
+  return {
+    id: run.id,
+    status: run.status,
+    mode: run.request?.mode,
+    created_at: run.created_at,
+    winner: run.summary?.winner || run.summary?.fastest || "-",
+    completed: run.summary?.models_completed || 0,
+  };
+}
+
+function mergeArenaRecentRuns(runs) {
+  const recent = arenaRecent();
+  runs.forEach((run) => {
+    const item = recentFromRun(run);
+    const index = recent.findIndex((existing) => existing.id === item.id);
+    if (index >= 0) recent.splice(index, 1);
+    recent.unshift(item);
+  });
+  localStorage.setItem("modelArenaRecentRuns", JSON.stringify(recent.slice(0, 8)));
+  renderArenaRecent();
+}
+
+async function loadArenaRecentFromApi() {
+  if (!$("#arenaRecentRuns")) return;
+  try {
+    const payload = await requestJson("/api/arena/runs");
+    if (Array.isArray(payload.runs) && payload.runs.length) {
+      mergeArenaRecentRuns(payload.runs.slice(0, 8));
+    }
+  } catch {
+    renderArenaRecent();
+  }
+}
+
+function renderArenaRecent() {
+  const list = $("#arenaRecentRuns");
+  if (!list) return;
+  const recent = arenaRecent();
+  list.innerHTML = recent.length
+    ? recent
+        .map(
+          (run) => `
+            <button class="resource-item recent-run" type="button" data-run-id="${escapeHtml(run.id)}">
+              <span>
+                <strong>${escapeHtml(run.winner || "-")}</strong>
+                <small>${escapeHtml(run.mode || "chat")} - ${escapeHtml(run.id)}</small>
+              </span>
+              <em>${Number(run.completed || 0)} done</em>
+            </button>
+          `,
+        )
+        .join("")
+    : `<article class="arena-empty"><strong>No recent runs</strong><span>Completed arena runs appear here.</span></article>`;
+  $$(".recent-run", list).forEach((button) => {
+    button.addEventListener("click", () => refreshArenaRun(button.dataset.runId).catch((error) => appendArenaEvent({ type: "load_failed", message: error.message })));
+  });
+}
+
+function copyArenaJson() {
+  const payload = activeArenaRun || arenaPayload();
+  copyText(jsonBlock(payload));
+}
+
+function initArena() {
+  const form = $("#arenaForm");
+  if (!form) return;
+  populateArenaProviders();
+  loadArenaProviders();
+  setArenaMode();
+  $("#arenaMode")?.addEventListener("change", setArenaMode);
+  $$(".arena-model-card").forEach((card) => {
+    modelField(card, "provider")?.addEventListener("change", () => applyProviderDefaults(card));
+  });
+  form.addEventListener("submit", (event) => {
+    runArena(event).catch((error) => appendArenaEvent({ type: "run_failed", message: error.payload?.detail || error.message }));
+  });
+  $("#copyArenaJson")?.addEventListener("click", copyArenaJson);
+  renderArenaRecent();
+  loadArenaRecentFromApi();
+  setArenaStatus(null);
+  const sharedRunId = new URLSearchParams(window.location.search).get("arenaRun");
+  if (sharedRunId) {
+    refreshArenaRun(sharedRunId)
+      .then((run) => {
+        if (!["completed", "failed"].includes(run.status)) subscribeArenaRun(run.id);
+      })
+      .catch((error) => appendArenaEvent({ type: "shared_run_missing", message: error.message }));
+  }
+}
+
 function registrationPayload(live = false) {
   const hash = $("#modelHash").value.trim();
   const wandb = $("#wandbRun").value.trim();
@@ -386,5 +779,6 @@ function initRegister() {
 applyConfigLinks();
 wireApiBaseInput();
 initBuilder();
+initArena();
 initRegister();
 loadStatus();

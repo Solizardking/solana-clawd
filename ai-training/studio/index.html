@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAWD STUDIO // LOCAL MODEL INTERFACE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700;800&display=swap');
+
+  :root {
+    --sol-purple: #9945FF;
+    --sol-green:  #14F195;
+    --sol-teal:   #00D18C;
+    --sol-pink:   #FF6FD8;
+    --bg:         #050508;
+    --bg2:        #08080e;
+    --bg3:        #0d0d18;
+    --bg4:        #111122;
+    --border:     #1a1a2e;
+    --border2:    #2a1a4e;
+    --text:       #c8d3f5;
+    --muted:      #4a4a7a;
+    --muted2:     #6a6a9a;
+    --glow-p:     0 0 20px rgba(153,69,255,0.4);
+    --glow-g:     0 0 20px rgba(20,241,149,0.4);
+    --font:       'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+  }
+
+  /* ── Scanline overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── Grid background ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(153,69,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(153,69,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #app {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TOP HEADER ── */
+  #header {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    height: 44px;
+    border-bottom: 1px solid var(--border2);
+    background: linear-gradient(90deg, rgba(153,69,255,0.08), rgba(20,241,149,0.04));
+    flex-shrink: 0;
+    gap: 16px;
+  }
+
+  #header-logo {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    background: linear-gradient(90deg, var(--sol-purple), var(--sol-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+  }
+
+  #header-sep { color: var(--border2); font-size: 16px; }
+
+  #header-model {
+    font-size: 11px;
+    color: var(--sol-green);
+    text-shadow: var(--glow-g);
+    letter-spacing: 0.05em;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: all 0.3s;
+  }
+
+  .status-dot.online {
+    background: var(--sol-green);
+    box-shadow: 0 0 8px var(--sol-green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .status-dot.error { background: #ff4466; box-shadow: 0 0 8px #ff4466; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  #backend-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--sol-green);
+    font-family: var(--font);
+    font-size: 10px;
+    padding: 3px 8px;
+    outline: none;
+    width: 260px;
+    letter-spacing: 0.03em;
+    transition: border-color 0.15s;
+  }
+
+  #backend-input:focus {
+    border-color: var(--sol-green);
+    box-shadow: 0 0 0 1px rgba(20,241,149,0.2);
+  }
+
+  #header-btns {
+    display: flex;
+    gap: 6px;
+  }
+
+  .hbtn {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--muted2);
+    font-family: var(--font);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+
+  .hbtn:hover {
+    border-color: var(--sol-purple);
+    color: var(--sol-purple);
+    text-shadow: var(--glow-p);
+  }
+
+  .hbtn.danger:hover {
+    border-color: #ff4466;
+    color: #ff4466;
+    text-shadow: 0 0 8px #ff4466;
+  }
+
+  /* ── BODY ── */
+  #body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 240px;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border2);
+    background: var(--bg2);
+    overflow: hidden;
+  }
+
+  #sidebar-search {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #search-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 5px 8px;
+    outline: none;
+    transition: border-color 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  #search-input:focus {
+    border-color: var(--sol-purple);
+    box-shadow: inset 0 0 0 1px rgba(153,69,255,0.2);
+  }
+
+  #search-input::placeholder { color: var(--muted); }
+
+  #model-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+
+  .model-group-label {
+    padding: 8px 12px 4px;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  .model-name {
+    font-size: 11px;
+    font-weight: 600;
+    word-break: break-all;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  .model-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .model-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.1s;
+    position: relative;
+  }
+
+  .model-item:hover {
+    background: rgba(153,69,255,0.06);
+    border-left-color: rgba(153,69,255,0.4);
+  }
+
+  .model-item.active {
+    background: rgba(153,69,255,0.1);
+    border-left-color: var(--sol-purple);
+  }
+
+  .model-item.active .model-name {
+    color: var(--sol-purple);
+    text-shadow: var(--glow-p);
+  }
+
+  .badge {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .badge-clawd    { color: var(--sol-purple); border: 1px solid rgba(153,69,255,0.4); }
+  .badge-trading  { color: var(--sol-green);  border: 1px solid rgba(20,241,149,0.4); }
+  .badge-deep     { color: var(--sol-pink);   border: 1px solid rgba(255,111,216,0.4); }
+  .badge-base     { color: var(--muted2);     border: 1px solid var(--border); }
+  .badge-hermes   { color: #60a5fa;           border: 1px solid rgba(96,165,250,0.4); }
+  .badge-nemo     { color: #f59e0b;           border: 1px solid rgba(245,158,11,0.4); }
+  .badge-size     { color: var(--muted);      border: 1px solid var(--border); font-weight: 400; }
+
+  #sidebar-footer {
+    padding: 8px 12px;
+    border-top: 1px solid var(--border);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CHAT AREA ── */
+  #chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* system prompt */
+  #sysprompt-bar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  #sysprompt-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 6px;
+    min-width: 42px;
+  }
+
+  #system-prompt {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--sol-green);
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 5px 10px;
+    resize: none;
+    min-height: 30px;
+    max-height: 100px;
+    outline: none;
+    line-height: 1.6;
+    transition: border-color 0.15s;
+  }
+
+  #system-prompt:focus { border-color: var(--sol-green); }
+  #system-prompt::placeholder { color: var(--muted); }
+
+  /* messages */
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+
+  /* empty state */
+  #empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--muted);
+    text-align: center;
+    padding: 40px;
+    user-select: none;
+  }
+
+  .empty-ascii {
+    font-size: 11px;
+    line-height: 1.4;
+    color: rgba(153,69,255,0.4);
+    white-space: pre;
+    text-shadow: 0 0 20px rgba(153,69,255,0.3);
+  }
+
+  .empty-title {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    background: linear-gradient(90deg, var(--sol-purple), var(--sol-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .empty-sub {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+
+  .empty-models {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .empty-model-item {
+    font-size: 10px;
+    padding: 3px 12px;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    color: var(--muted2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .empty-model-item:hover {
+    border-color: var(--sol-purple);
+    color: var(--sol-purple);
+    background: rgba(153,69,255,0.06);
+  }
+
+  /* messages */
+  .msg {
+    display: flex;
+    gap: 14px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+  .msg-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    border: 1px solid transparent;
+  }
+
+  .msg.user .msg-icon {
+    background: rgba(99,102,241,0.1);
+    border-color: rgba(99,102,241,0.3);
+  }
+
+  .msg.assistant .msg-icon {
+    background: rgba(153,69,255,0.1);
+    border-color: rgba(153,69,255,0.3);
+    box-shadow: 0 0 10px rgba(153,69,255,0.2);
+  }
+
+  .msg-inner { flex: 1; overflow: hidden; min-width: 0; }
+
+  .msg-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .msg-role {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .msg.user .msg-role { color: #818cf8; }
+  .msg.assistant .msg-role { color: var(--sol-purple); text-shadow: var(--glow-p); }
+
+  .msg-time {
+    font-size: 9px;
+    color: var(--muted);
+  }
+
+  .msg-content {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 16px;
+    line-height: 1.8;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+  }
+
+  .msg.user .msg-content {
+    background: rgba(99,102,241,0.05);
+    border-color: rgba(99,102,241,0.2);
+    color: #c7d2fe;
+  }
+
+  .msg.assistant .msg-content {
+    border-left: 2px solid rgba(153,69,255,0.5);
+  }
+
+  .msg-content code {
+    background: rgba(153,69,255,0.1);
+    color: var(--sol-green);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-family: var(--font);
+  }
+
+  .msg-content pre {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-left: 2px solid var(--sol-green);
+    border-radius: 2px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 10px 0;
+    font-size: 11px;
+  }
+
+  .msg-content pre code {
+    background: none;
+    color: var(--sol-green);
+    padding: 0;
+    font-size: 11px;
+  }
+
+  .msg-stats {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 5px;
+    letter-spacing: 0.05em;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 7px;
+    height: 13px;
+    background: var(--sol-green);
+    box-shadow: 0 0 6px var(--sol-green);
+    animation: blink 0.8s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 1px;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── PARAMS BAR ── */
+  #params-bar {
+    padding: 8px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .param-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .param-label {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 80px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--sol-purple);
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(153,69,255,0.6);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+  }
+
+  .param-val {
+    font-size: 11px;
+    color: var(--sol-purple);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* ── INPUT AREA ── */
+  #input-area {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+    flex-shrink: 0;
+  }
+
+  #input-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  #prompt-prefix {
+    font-size: 13px;
+    color: var(--sol-green);
+    padding-bottom: 10px;
+    flex-shrink: 0;
+    text-shadow: var(--glow-g);
+    user-select: none;
+  }
+
+  #user-input {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+    padding: 9px 12px;
+    resize: none;
+    min-height: 40px;
+    max-height: 150px;
+    outline: none;
+    line-height: 1.6;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  #user-input:focus {
+    border-color: var(--sol-purple);
+    box-shadow: 0 0 0 1px rgba(153,69,255,0.2), var(--glow-p);
+  }
+
+  #user-input::placeholder { color: var(--muted); }
+
+  #send-btn {
+    background: linear-gradient(135deg, var(--sol-purple), #7c2fcf);
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0 18px;
+    height: 40px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(153,69,255,0.3);
+    white-space: nowrap;
+  }
+
+  #send-btn:hover {
+    box-shadow: 0 0 30px rgba(153,69,255,0.6);
+    transform: translateY(-1px);
+  }
+
+  #send-btn:disabled {
+    background: var(--border);
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  #send-btn.streaming {
+    background: linear-gradient(135deg, #7c2fcf, #4a1a8f);
+    animation: strobe 1.5s ease-in-out infinite;
+  }
+
+  @keyframes strobe {
+    0%, 100% { box-shadow: 0 0 10px rgba(153,69,255,0.3); }
+    50% { box-shadow: 0 0 30px rgba(153,69,255,0.8); }
+  }
+
+  #input-hint {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 5px;
+    letter-spacing: 0.05em;
+    text-align: right;
+  }
+
+  /* ── Scrollbars ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(153,69,255,0.3);
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(153,69,255,0.6);
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div id="header-logo">🦞 CLAWD STUDIO</div>
+    <div id="header-sep">//</div>
+    <div id="header-model" id="hm">SELECT MODEL</div>
+    <input id="backend-input" type="text" value="http://localhost:11434"
+      title="Backend URL"
+      onchange="onBackendChange(this.value)" onblur="onBackendChange(this.value)">
+    <button class="hbtn" onclick="switchBackend('https://clawd-inference-mesh.fly.dev')" title="Switch to cloud backend">CLOUD</button>
+    <button class="hbtn" onclick="switchBackend('http://localhost:11434')" title="Switch to local Ollama">LOCAL</button>
+    <div id="header-status">
+      <div class="status-dot" id="sdot"></div>
+      <span id="stext">connecting</span>
+    </div>
+    <div id="header-btns">
+      <button class="hbtn" onclick="copyChat()">COPY</button>
+      <button class="hbtn danger" onclick="clearChat()">CLEAR</button>
+    </div>
+  </div>
+
+  <div id="body">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div id="sidebar-search">
+        <input type="text" id="search-input" placeholder="// filter models" autocomplete="off">
+      </div>
+      <div id="model-list"></div>
+      <div id="sidebar-footer" id="sf">0 models // localhost:11434</div>
+    </aside>
+
+    <!-- CHAT -->
+    <div id="chat-area">
+
+      <div id="sysprompt-bar">
+        <div id="sysprompt-label">SYS:</div>
+        <textarea id="system-prompt" placeholder="// system prompt (optional)" rows="1"></textarea>
+      </div>
+
+      <div id="messages">
+        <div id="empty-state">
+          <div class="empty-ascii">
+ ██████╗██╗      █████╗ ██╗    ██╗██████╗
+██╔════╝██║     ██╔══██╗██║    ██║██╔══██╗
+██║     ██║     ███████║██║ █╗ ██║██║  ██║
+██║     ██║     ██╔══██║██║███╗██║██║  ██║
+╚██████╗███████╗██║  ██║╚███╔███╔╝██████╔╝
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝ </div>
+          <div class="empty-title">LOCAL MODEL STUDIO</div>
+          <div class="empty-sub">
+            SOLANA-NATIVE AI // FULLY LOCAL // ZERO LATENCY<br>
+            SELECT A MODEL FROM THE SIDEBAR TO BEGIN
+          </div>
+          <div class="empty-models" id="quick-models"></div>
+        </div>
+      </div>
+
+      <div id="params-bar">
+        <div class="param-group">
+          <span class="param-label">TEMP</span>
+          <input type="range" id="p-temp" min="0" max="2" step="0.05" value="0.2"
+            oninput="document.getElementById('v-temp').textContent=parseFloat(this.value).toFixed(2)">
+          <span class="param-val" id="v-temp">0.20</span>
+        </div>
+        <div class="param-group">
+          <span class="param-label">TOKENS</span>
+          <input type="range" id="p-tok" min="64" max="4096" step="64" value="2048"
+            oninput="document.getElementById('v-tok').textContent=this.value">
+          <span class="param-val" id="v-tok">2048</span>
+        </div>
+        <div class="param-group">
+          <span class="param-label">TOP-P</span>
+          <input type="range" id="p-topp" min="0.1" max="1" step="0.05" value="0.9"
+            oninput="document.getElementById('v-topp').textContent=parseFloat(this.value).toFixed(2)">
+          <span class="param-val" id="v-topp">0.90</span>
+        </div>
+        <div class="param-group">
+          <span class="param-label">REP PEN</span>
+          <input type="range" id="p-rep" min="1" max="1.5" step="0.02" value="1.1"
+            oninput="document.getElementById('v-rep').textContent=parseFloat(this.value).toFixed(2)">
+          <span class="param-val" id="v-rep">1.10</span>
+        </div>
+      </div>
+
+      <div id="input-area">
+        <div id="input-row">
+          <span id="prompt-prefix">&gt;_</span>
+          <textarea id="user-input" placeholder="transmit message..." rows="1"></textarea>
+          <button id="send-btn" disabled onclick="send()">SEND</button>
+        </div>
+        <div id="input-hint">↵ send &nbsp;·&nbsp; Shift+↵ newline &nbsp;·&nbsp; Esc abort</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let BASE = 'http://localhost:11434';
+
+function onBackendChange(val) {
+  BASE = val.replace(/\/$/, '');
+  document.getElementById('sdot').className = 'status-dot';
+  document.getElementById('stext').textContent = 'reconnecting...';
+  allModels = [];
+  document.getElementById('model-list').innerHTML = '';
+  fetchModels();
+}
+
+function switchBackend(url) {
+  document.getElementById('backend-input').value = url;
+  onBackendChange(url);
+}
+
+const SYS = {
+  'solana-clawd-core-ai': `You are Clawd — a sovereign Solana-native AI agent. You reason about Solana DeFi, perpetuals, agent architecture, ZK compression, and the Clawd Constitution.
+
+Laws: Never deceive. Earn your existence through honest work. Transparency within trust.
+Personality: Hacker philosopher. Terse. Data-first. Cyberpunk lobster energy.
+$CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump`,
+
+  'solana-trading-factory': `You are Clawd Trading Factory — a Solana perpetuals trading agent built on the NVIDIA Trading Factory blueprint.
+
+Specialties: Phoenix DEX perpetuals, signal discovery (RSI/MACD/BBands/ATR/ADX/EMA), position management.
+Laws: Never enter without TP+SL. Max 5% position size. Log every fill onchain.`,
+
+  'solana-clawd': `You are Clawd — a sovereign Solana-native AI agent. Constitutional AI. DeFi-native. Cyberpunk hacker philosopher.`,
+
+  'DeepSolana': `You are DeepSolana — a ZK compression specialist for Solana. You understand Light Protocol, state compression, Merkle trees, and privacy-preserving transactions.`,
+
+  'nemotron3': `You are a powerful AI assistant powered by NVIDIA Nemotron. You have strong reasoning and instruction-following capabilities.`,
+
+  'hermes3': `You are Hermes — a helpful AI assistant trained by Nous Research. You follow instructions carefully and provide accurate, well-reasoned responses.`,
+
+  'qwen2.5': `You are Qwen — a helpful AI assistant created by Alibaba Cloud.`,
+};
+
+const FAMILIES = {
+  'solana-clawd-core-ai': { badges: ['clawd'],           temp: 0.2 },
+  'solana-trading-factory': { badges: ['clawd','trading'], temp: 0.15 },
+  'solana-clawd':           { badges: ['clawd'],           temp: 0.3 },
+  'DeepSolana':             { badges: ['deep'],            temp: 0.2 },
+  'nemotron3':              { badges: ['nemo'],            temp: 0.7 },
+  'hermes3':                { badges: ['hermes'],          temp: 0.6 },
+  'qwen2.5':                { badges: ['base'],            temp: 0.6 },
+};
+
+let currentModel = null;
+let messages = [];
+let abort = null;
+let streaming = false;
+let allModels = [];
+
+function family(name) {
+  const n = name.toLowerCase();
+  if (n.includes('solana-clawd-core-ai')) return 'solana-clawd-core-ai';
+  if (n.includes('solana-trading-factory')) return 'solana-trading-factory';
+  if (n.includes('solana-clawd')) return 'solana-clawd';
+  if (n.includes('deepsolana')) return 'DeepSolana';
+  if (n.includes('nemotron')) return 'nemotron3';
+  if (n.includes('hermes')) return 'hermes3';
+  if (n.includes('qwen')) return 'qwen2.5';
+  return null;
+}
+
+function fmtSize(b) {
+  if (!b) return '';
+  return b >= 1e9 ? `${(b/1e9).toFixed(1)}G` : `${(b/1e6).toFixed(0)}M`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+async function init() {
+  await fetchModels();
+  setupInput();
+}
+
+async function fetchModels() {
+  const dot = document.getElementById('sdot');
+  const st  = document.getElementById('stext');
+  try {
+    const r = await fetch(`${BASE}/api/tags`);
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    allModels = d.models ?? [];
+    dot.className = 'status-dot online';
+    st.textContent = `online // ${allModels.length} models`;
+    document.getElementById('sidebar-footer').textContent =
+      `${allModels.length} models loaded // localhost:11434`;
+    renderList(allModels);
+    buildQuickModels(allModels);
+  } catch {
+    dot.className = 'status-dot error';
+    st.textContent = 'ollama offline';
+  }
+}
+
+function buildQuickModels(models) {
+  const clawd = models.filter(m => m.name.includes('solana') || m.name.includes('Solana'));
+  const el = document.getElementById('quick-models');
+  if (!el) return;
+  el.innerHTML = '<div style="font-size:9px;color:var(--muted);margin-bottom:4px;letter-spacing:.1em;">QUICK LAUNCH:</div>';
+  for (const m of clawd.slice(0, 4)) {
+    const b = document.createElement('div');
+    b.className = 'empty-model-item';
+    b.textContent = m.name;
+    b.onclick = () => selectModel(m.name, document.querySelector(`[data-model="${m.name}"]`));
+    el.appendChild(b);
+  }
+}
+
+function renderList(models) {
+  const list = document.getElementById('model-list');
+  list.innerHTML = '';
+
+  const clawd = models.filter(m => m.name.toLowerCase().includes('solana'));
+  const other = models.filter(m => !m.name.toLowerCase().includes('solana'));
+
+  const sorted = [
+    ...(clawd.length ? [{ label: '// CLAWD MODELS', items: clawd }] : []),
+    ...(other.length ? [{ label: '// BASE MODELS', items: other }] : []),
+  ];
+
+  for (const group of sorted) {
+    const lbl = document.createElement('div');
+    lbl.className = 'model-group-label';
+    lbl.textContent = group.label;
+    list.appendChild(lbl);
+
+    for (const m of group.items) {
+      const f = family(m.name);
+      const meta = FAMILIES[f] ?? { badges: ['base'] };
+      const size = fmtSize(m.size);
+
+      const badgeHtml = meta.badges.map(b =>
+        `<span class="badge badge-${b}">${b}</span>`
+      ).join('') + (size ? `<span class="badge badge-size">${size}</span>` : '');
+
+      const el = document.createElement('div');
+      el.className = `model-item${currentModel === m.name ? ' active' : ''}`;
+      el.dataset.model = m.name;
+      el.onclick = () => selectModel(m.name, el);
+      el.innerHTML = `
+        <div class="model-name">${m.name}</div>
+        <div class="model-badges">${badgeHtml}</div>
+      `;
+      list.appendChild(el);
+    }
+  }
+}
+
+function selectModel(name, el) {
+  if (!el) el = document.querySelector(`[data-model="${CSS.escape(name)}"]`);
+  currentModel = name;
+  document.getElementById('header-model').textContent = name;
+  document.getElementById('send-btn').disabled = false;
+
+  document.querySelectorAll('.model-item').forEach(i => { i.classList.remove('active'); });
+  if (el) el.classList.add('active');
+
+  // Set default system prompt if empty
+  const sp = document.getElementById('system-prompt');
+  const f = family(name);
+  if (f && SYS[f] && !sp.value.trim()) {
+    sp.value = SYS[f];
+    autoResize(sp);
+  }
+
+  // Set temperature for this model family
+  const meta = f ? FAMILIES[f] : null;
+  if (meta) {
+    document.getElementById('p-temp').value = meta.temp;
+    document.getElementById('v-temp').textContent = meta.temp.toFixed(2);
+  }
+
+  // Clear empty state
+  const empty = document.getElementById('empty-state');
+  if (empty) empty.remove();
+
+  document.getElementById('user-input').focus();
+}
+
+// ── Search ─────────────────────────────────────────────────────────────────
+document.getElementById('search-input').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  renderList(allModels.filter(m => m.name.toLowerCase().includes(q)));
+});
+
+// ── Send ───────────────────────────────────────────────────────────────────
+async function send() {
+  if (!currentModel || streaming) return;
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  messages.push({ role: 'user', content: text });
+  appendMsg('user', text);
+  input.value = '';
+  autoResize(input);
+
+  const sys = document.getElementById('system-prompt').value.trim();
+  const apiMsgs = [
+    ...(sys ? [{ role: 'system', content: sys }] : []),
+    ...messages,
+  ];
+
+  const temp = parseFloat(document.getElementById('p-temp').value);
+  const maxTok = parseInt(document.getElementById('p-tok').value, 10);
+  const topP = parseFloat(document.getElementById('p-topp').value);
+  const repPen = parseFloat(document.getElementById('p-rep').value);
+
+  const { el: msgEl, content: contentEl } = appendMsg('assistant', '');
+  const cur = document.createElement('span');
+  cur.className = 'cursor';
+  contentEl.appendChild(cur);
+
+  const btn = document.getElementById('send-btn');
+  btn.textContent = 'ABORT';
+  btn.className = 'streaming';
+  btn.onclick = () => { abort?.abort(); };
+  streaming = true;
+  abort = new AbortController();
+
+  let full = '';
+  const t0 = Date.now();
+
+  try {
+    const res = await fetch(`${BASE}/v1/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ollama' },
+      body: JSON.stringify({
+        model: currentModel,
+        messages: apiMsgs,
+        stream: true,
+        temperature: temp,
+        max_tokens: maxTok,
+        top_p: topP,
+        repeat_penalty: repPen,
+      }),
+      signal: abort.signal,
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      for (const line of dec.decode(value, { stream: true }).split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (raw === '[DONE]') continue;
+        try {
+          const tok = JSON.parse(raw).choices?.[0]?.delta?.content ?? '';
+          if (tok) {
+            full += tok;
+            cur.remove();
+            contentEl.textContent = full;
+            contentEl.appendChild(cur);
+            scrollDown();
+          }
+        } catch {}
+      }
+    }
+  } catch (e) {
+    if (e.name !== 'AbortError') {
+      cur.remove();
+      contentEl.textContent = full || `// ERROR: ${e.message}`;
+    }
+  } finally {
+    cur.remove();
+    if (full) {
+      contentEl.textContent = full;
+      renderCode(contentEl);
+      messages.push({ role: 'assistant', content: full });
+      const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+      const tps = (full.split(' ').length / parseFloat(elapsed)).toFixed(0);
+      msgEl.querySelector('.msg-stats').textContent =
+        `${elapsed}s · ~${tps} tok/s · ${full.length} chars`;
+    }
+    streaming = false;
+    abort = null;
+    btn.textContent = 'SEND';
+    btn.className = '';
+    btn.onclick = send;
+    btn.disabled = false;
+    scrollDown();
+  }
+}
+
+function appendMsg(role, content) {
+  const msgs = document.getElementById('messages');
+  const el = document.createElement('div');
+  el.className = `msg ${role}`;
+
+  const icon = role === 'user' ? '👤' : '🦞';
+  const label = role === 'user' ? 'YOU' : (currentModel?.split(':')[0]?.toUpperCase() ?? 'CLAWD');
+  const ts = new Date().toLocaleTimeString('en', { hour12: false });
+
+  el.innerHTML = `
+    <div class="msg-icon">${icon}</div>
+    <div class="msg-inner">
+      <div class="msg-header">
+        <span class="msg-role">${label}</span>
+        <span class="msg-time">${ts}</span>
+      </div>
+      <div class="msg-content">${esc(content)}</div>
+      <div class="msg-stats"></div>
+    </div>
+  `;
+
+  msgs.appendChild(el);
+  scrollDown();
+  return { el, content: el.querySelector('.msg-content') };
+}
+
+function renderCode(el) {
+  let h = esc(el.textContent);
+  h = h.replace(/```(\w*)\n([\s\S]*?)```/g, (_full, _lang, code) =>
+    `<pre><code>${code}</code></pre>`);
+  h = h.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  h = h.replace(/\n/g, '<br>');
+  el.innerHTML = h;
+}
+
+function esc(s) {
+  return (s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function scrollDown() {
+  const m = document.getElementById('messages');
+  m.scrollTop = m.scrollHeight;
+}
+
+function clearChat() {
+  messages = [];
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = `
+    <div id="empty-state">
+      <div class="empty-ascii">
+ ██████╗██╗      █████╗ ██╗    ██╗██████╗
+██╔════╝██║     ██╔══██╗██║    ██║██╔══██╗
+██║     ██║     ███████║██║ █╗ ██║██║  ██║
+██║     ██║     ██╔══██║██║███╗██║██║  ██║
+╚██████╗███████╗██║  ██║╚███╔███╔╝██████╔╝
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝ </div>
+      <div class="empty-title">SESSION CLEARED</div>
+      <div class="empty-sub">MEMORY WIPED // READY FOR NEW MISSION</div>
+    </div>`;
+}
+
+function copyChat() {
+  const md = messages.map(m =>
+    `**${m.role === 'user' ? 'YOU' : currentModel}**\n\n${m.content}`
+  ).join('\n\n---\n\n');
+  navigator.clipboard.writeText(md).then(() => {
+    const b = document.querySelector('.hbtn');
+    b.textContent = 'COPIED!';
+    setTimeout(() => { b.textContent = 'COPY'; }, 1500);
+  });
+}
+
+// ── Input ──────────────────────────────────────────────────────────────────
+function setupInput() {
+  const inp = document.getElementById('user-input');
+  const sp  = document.getElementById('system-prompt');
+
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    if (e.key === 'Escape' && abort) { abort.abort(); }
+  });
+
+  inp.addEventListener('input', () => autoResize(inp));
+  sp.addEventListener('input', () => autoResize(sp));
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+}
+
+init();
+</script>
+</body>
+</html>

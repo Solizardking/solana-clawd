@@ -34,6 +34,7 @@
   "commands": {
     "generate_agent_plan": "python3 nvidia/integration/nemo_clawd_agent.py",
     "generate_factory_bundle": "python3 scripts/build_solana_trading_factory_strategies.py",
+    "generate_nemo_clawd_blueprint": "python3 nvidia/integration/nemo_clawd.py --write",
     "run_aiq_eval": "python3 nvidia/blueprints/aiq/agent.py --plan data/strategies/nvidia_clawd_agent_plan.json",
     "run_signal_agent_paper": "python3 nvidia/blueprints/signal-discovery/agent.py --markets SOL BTC ETH --mode paper",
     "verify": "python3 nvidia/scripts/verify_nvidia.py"
@@ -58,7 +59,7 @@
       "path": "data/strategies/vulcan_command_plans.json"
     }
   },
-  "generated_at": "2026-06-20T00:49:01+00:00",
+  "generated_at": "2026-06-21T17:09:27+00:00",
   "markets": [
     "SOL",
     "BTC",
@@ -74,7 +75,42 @@
     "student": "Qwen/Qwen2.5-1.5B-Instruct"
   },
   "name": "Solana NemoClawd NVIDIA Trading Factory",
+  "nemo_clawd": {
+    "blueprint": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/nemo_clawd_blueprint.json",
+    "core_ai_inventory": "/Users/8bit/Downloads/solana-clawd/ai-training/data/strategies/nemo_clawd_core_inventory.json",
+    "missing_required_paths": [],
+    "name": "Nemo Clawd",
+    "upstream": {
+      "adapted_concepts": [
+        "guided onboarding",
+        "hardened blueprint",
+        "routed inference",
+        "network policy",
+        "sandbox lifecycle management",
+        "OpenShell-style agent containment"
+      ],
+      "docs": "https://docs.nvidia.com/nemoclaw/latest/",
+      "license": "Apache-2.0",
+      "repo": "https://github.com/NVIDIA/NemoClaw"
+    }
+  },
   "roles": [
+    {
+      "inputs": [
+        "core-ai inventory",
+        "Clawd MCP tools",
+        "NIM bridge routes",
+        "sandbox policy"
+      ],
+      "job": "wrap Core AI assets in a NemoClaw-style sandbox, network policy, and lifecycle plan",
+      "name": "nemo_clawd_runtime",
+      "outputs": [
+        "nemo_clawd_blueprint",
+        "core_ai_inventory",
+        "network_policy"
+      ],
+      "source": "nvidia_nemoclaw"
+    },
     {
       "inputs": [
         "docs",
@@ -239,12 +275,16 @@
     },
     "nemo_clawd": {
       "allowed": [
+        "Core AI read-only source inventory",
         "sandboxed plan/apply/status concepts",
-        "MCP tool manifest generation"
+        "MCP tool manifest generation",
+        "NIM/Clawd routed inference",
+        "network policy review"
       ],
       "blocked_by_default": [
         "host secret inspection",
-        "live wallet policy mutation"
+        "live wallet policy mutation",
+        "unapproved egress"
       ]
     },
     "rise": {
@@ -285,6 +325,11 @@
       "adapted_contract": "Blueprint lifecycle, sandbox posture, MCP tool catalog, and permission gates.",
       "license": "Apache-2.0 root license; subprojects may differ and must be checked before vendoring.",
       "repo": "https://github.com/x402agent/NemoClawd.git"
+    },
+    "nvidia_nemoclaw": {
+      "adapted_contract": "Guided onboarding, hardened sandbox blueprint, routed inference, network policy, and lifecycle management mapped onto Core AI as Nemo Clawd.",
+      "license": "Apache-2.0; verify upstream notices before vendoring.",
+      "repo": "https://github.com/NVIDIA/NemoClaw"
     },
     "quantitative_signal_discovery_agent": {
       "adapted_contract": "NAT-style signal, code, and evaluation loop mapped to Phoenix/Vulcan paper signals.",

@@ -1,0 +1,50 @@
+dataset_name: "Clawd Autoresearch Wiki Instruct"
+repo_id: "solanaclawd/clawd-autoresearch-wiki-instruct"
+
+output_jsonl: "data/model_kit/clawd_autoresearch_wiki_sft.jsonl"
+output_dir: "data/model_kit/clawd_autoresearch_wiki_processed"
+manifest: "data/model_kit/clawd_autoresearch_wiki_manifest.json"
+dataset_card: "data/model_kit/clawd_autoresearch_wiki_dataset_card.md"
+
+train_ratio: 0.9
+eval_ratio: 0.05
+seed: 42
+chunk_chars: 1800
+chunk_overlap: 120
+min_text_chars: 80
+max_context_chars: 5000
+save_arrow_dataset: false
+pdf_extractor: "pypdf"
+
+inputs:
+  - "../core-ai/knowledge/SOVEREIGN_RESEARCH.md"
+  - "../core-ai/knowledge/wiki.md"
+  - "../core-ai/knowledge/openclawd-hermes-memory.md"
+  - "../core-ai/knowledge/clawd-character.md"
+  - "../core-ai/knowledge/patterns.jsonl"
+  - "../core-ai/knowledge/codebase-facts.jsonl"
+  - "../core-ai/knowledge/decisions.jsonl"
+  - "../core-ai/knowledge/api-behaviors.jsonl"
+  - "trading_factory/README.md"
+  - "trading_factory/solana_factory"
+  - "trading_factory/clawd-autoresearch-wiki/README.md"
+  - "trading_factory/clawd-autoresearch-wiki/program.md"
+  - "trading_factory/clawd-autoresearch-wiki/strategy.md"
+  - "trading_factory/clawd-autoresearch-wiki/pyproject.toml"
+  - "trading_factory/clawd-autoresearch-wiki/package.json"
+  - "trading_factory/clawd-autoresearch-wiki/schema.sql"
+  - "trading_factory/clawd-autoresearch-wiki/bridge_client.py"
+  - "trading_factory/clawd-autoresearch-wiki/solana_das.py"
+  - "trading_factory/clawd-autoresearch-wiki/prepare.py"
+  - "trading_factory/clawd-autoresearch-wiki/train.py"
+  - "trading_factory/clawd-autoresearch-wiki/src"
+  - "trading_factory/clawd-autoresearch-wiki/perps"
+  - "trading_factory/clawd-autoresearch-wiki/strategy"
+  - "trading_factory/clawd-autoresearch-wiki/memory"
+  - "trading_factory/clawd-autoresearch-wiki/solana-chat/README.md"
+  - "trading_factory/clawd-autoresearch-wiki/solana-chat/PLAN_SOLANA_REWRITE.md"
+  - "trading_factory/clawd-autoresearch-wiki/solana-chat/solana"
+  - "trading_factory/clawd-autoresearch-wiki/solana-chat/perps"
+  - "trading_factory/clawd-autoresearch-wiki/solana-chat/scripts/prepare_solana_data.py"
+  - "trading_factory/clawd-autoresearch-wiki/solana-chat/scripts/chat_sft.py"
+  - "trading_factory/clawd-autoresearch-wiki/solana-chat/scripts/solana_eval.py"

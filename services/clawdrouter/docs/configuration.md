@@ -16,6 +16,8 @@ Production is hosted at `https://clawdrouter.fly.dev` and uses `https://x402.wtf
 | `CLAWDROUTER_SOLANA_RPC_URL` | `HELIUS_RPC_URL` or Solana public RPC | Solana RPC endpoint |
 | `CLAWDROUTER_NETWORK` | `solana-mainnet` | `solana-mainnet` or `solana-devnet` |
 | `OPENROUTER_API_KEY` | none | OpenRouter upstream API key |
+| `CLAWDROUTER_OLLAMA_ENABLED` | `true` | Enable direct Ollama-compatible model routing |
+| `CLAWDROUTER_OLLAMA_HOST` | `https://clawd-inference-mesh.fly.dev` on Fly, `http://127.0.0.1:11434` locally | Ollama-compatible API URL for local model IDs |
 | `CLAWDROUTER_OPENROUTER_SITE_TITLE` | `ClawdRouter` | OpenRouter attribution title |
 | `CLAWDROUTER_OPENROUTER_SITE_URL` | `https://x402.wtf/router` | OpenRouter attribution URL |
 | `CLAWDROUTER_OPENROUTER_CATEGORIES` | `cli-agent,cloud-agent` | OpenRouter app categories |
@@ -53,6 +55,29 @@ Local wallet/x402 mode:
 ```bash
 CLAWDROUTER_AUTH_MODE=local npm run dev
 ```
+
+Local Ollama-backed mode:
+
+```bash
+ollama serve
+CLAWDROUTER_AUTH_MODE=local \
+CLAWDROUTER_OLLAMA_HOST=http://127.0.0.1:11434 \
+npm run dev
+```
+
+The static router registry includes these local Ollama IDs:
+
+- `8bit/solana-trading-factory:8b-lora-20260620`
+- `8bit/solana-trading-factory:latest`
+- `8bit/solana-trading-factory:preview`
+- `8bit/solana-clawd-core-ai:1.5b-merged-20260620`
+- `8bit/solana-clawd-core-ai:latest`
+- `8bit/solana-clawd-core-ai:preview`
+- `8bit/solana-clawd:preview`
+- `8bit/DeepSolana:latest`
+- `hermes3:8b`
+- `qwen2.5:1.5b`
+- `nemotron3:33b`
 
 Hosted-compatible mode:
 
