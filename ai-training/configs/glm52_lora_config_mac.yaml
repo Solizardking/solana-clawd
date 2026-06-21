@@ -37,10 +37,10 @@ training:
   gradient_accumulation_steps: 16
   per_device_eval_batch_size: 1
   num_train_epochs: 3
-  max_steps: -1
+  max_steps: 100             # local smoke-test; set -1 for full 3-epoch run on cloud
   learning_rate: 1.0e-4
   lr_scheduler_type: "cosine"
-  warmup_ratio: 0.03
+  warmup_steps: 50              # ~3% of 1713 steps (27405 / 16 grad_accum)
   weight_decay: 0.0
   optim: "adamw_torch"
   bf16: false                # MPS uses float32 internally; set fp16/bf16 false
@@ -56,6 +56,7 @@ training:
   seed: 42
   dataloader_num_workers: 0  # MPS: must be 0 (no forked processes)
   remove_unused_columns: false
+  dataloader_pin_memory: false  # MPS: pin_memory not supported
 
 # Quantization disabled — MPS does not support bitsandbytes CUDA kernels
 # 7B in bfloat16 = ~14.5 GB; fits on 48 GB unified memory with room for gradients
