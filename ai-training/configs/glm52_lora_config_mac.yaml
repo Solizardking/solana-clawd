@@ -46,7 +46,7 @@ training:
   bf16: false                # MPS uses float32 internally; set fp16/bf16 false
   fp16: false
   tf32: false
-  gradient_checkpointing: true
+  gradient_checkpointing: false  # MPS: gradient checkpointing conflicts with {"": "mps"} device map
   logging_steps: 5
   save_steps: 100
   save_total_limit: 2

@@ -555,16 +555,25 @@ def main() -> None:
             bnb_4bit_use_double_quant=quant_cfg.get("bnb_4bit_use_double_quant", True),
         )
 
+    # MPS: force all layers onto MPS via {"": "mps"} — "auto" causes meta-device
+    # offloading which breaks backward() on Apple Silicon.
+    if device == "mps":
+        _device_map: str | dict = {"": "mps"}
+    elif device == "cpu":
+        _device_map = None
+    else:
+        _device_map = "auto"
+
     model_kwargs: dict[str, Any] = {
         "trust_remote_code": True,
-        "device_map": "auto" if device != "cpu" else None,
+        "device_map": _device_map,
     }
     if device == "cuda":
         model_kwargs["torch_dtype"] = torch.bfloat16 if cfg["training"].get("bf16") else torch.float16
         if bnb_config:
             model_kwargs["quantization_config"] = bnb_config
     elif device == "mps":
-        model_kwargs["torch_dtype"] = torch.bfloat16
+        model_kwargs["torch_dtype"] = torch.float32  # bfloat16 causes MmBackward meta-device errors
     else:
         model_kwargs["torch_dtype"] = torch.float32
 
