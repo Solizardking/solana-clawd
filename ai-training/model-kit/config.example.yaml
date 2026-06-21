@@ -79,6 +79,20 @@ publishing:
   cluster: devnet
   live_register: false
 
+constitution:
+  enabled: true
+  constitution_path: CONSTITUTION.md
+  three_laws_path: three-laws.md
+  clawd_context_path: CLAWD.md
+  expected_three_laws_env: CLAWD_THREE_LAWS_SHA256
+  require_before:
+    - ingest
+    - prepare
+    - train
+    - upload
+    - register
+    - one-shot
+
 arena:
   default_provider: openrouter
   openrouter:
