@@ -1,11 +1,9 @@
 services:
   - type: web
     name: x402-model-kit-api
-    runtime: python
+    runtime: docker
     rootDir: ai-training/model-kit/backend
     plan: starter
-    buildCommand: pip install -r requirements.txt
-    startCommand: python render_start.py
     healthCheckPath: /api/health
     envVars:
       - key: ONCHAIN_REGISTRY_HOME
