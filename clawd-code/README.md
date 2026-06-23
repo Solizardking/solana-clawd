@@ -55,7 +55,7 @@ Clawd Code is a TypeScript CLI and web workspace for shipping code with AI while
 | Grok-first model router | Defaults to xAI Grok for code, research, image, and voice while keeping Anthropic, OpenRouter, and DeepSeek available. |
 | Solana workspace | Creates local keypairs, checks balances/prices/funding, previews perps flows, and keeps live execution behind operator gates. |
 | Ink-compatible runtime | Carries the rewritten terminal UI pieces, session state, keybindings, permission flows, MCP hooks, and tool renderers. |
-| Web console | A Next.js App Router client with streaming chat, command palette, file viewer, settings, notifications, export, and share routes. |
+| Web console | A Next.js App Router client with streaming chat, command palette, file viewer, settings, notifications, export, share routes, and the Clawd pet companion. |
 
 ## Command Deck
 

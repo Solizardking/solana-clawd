@@ -396,8 +396,8 @@ export const useChatStore = create<ChatState>()(
         tags: state.tags,
       }),
       merge: (persisted, current) => {
-        const persistedSettings =
-          (persisted as { settings?: Partial<AppSettings> }).settings ?? {};
+        const persistedState = (persisted ?? {}) as Partial<ChatState>;
+        const persistedSettings = persistedState.settings ?? {};
         const settings = {
           ...DEFAULT_SETTINGS,
           ...persistedSettings,
@@ -409,7 +409,7 @@ export const useChatStore = create<ChatState>()(
 
         return {
           ...current,
-          ...(persisted as object),
+          ...persistedState,
           settings,
           // Never persist UI state
           settingsOpen: false,

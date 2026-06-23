@@ -1,7 +1,7 @@
 import type { ContentBlock } from "../types";
 
 // ---------------------------------------------------------------------------
-// SSE stream events (Anthropic message streaming protocol)
+// SSE stream events used by the local chat stream parser.
 // ---------------------------------------------------------------------------
 
 export type ContentDelta =

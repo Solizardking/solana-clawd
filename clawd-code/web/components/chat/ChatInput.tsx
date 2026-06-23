@@ -91,7 +91,18 @@ export function ChatInput({ conversationId }: ChatInputProps) {
       setIsStreaming(false);
       abortRef.current = null;
     }
-  }, [input, isStreaming, conversationId, conversation, settings.model, addMessage, updateMessage]);
+  }, [
+    input,
+    isStreaming,
+    conversationId,
+    conversation,
+    settings.model,
+    settings.maxTokens,
+    settings.temperature,
+    settings.systemPrompt,
+    addMessage,
+    updateMessage,
+  ]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {

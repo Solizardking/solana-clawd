@@ -51,6 +51,7 @@ The app includes:
 | Collaboration | Presence, typing indicators, cursor ghosts, annotations, and socket helpers. |
 | Notifications | Toasts, notification center, browser notifications, and live-region accessibility hooks. |
 | Export/share | Markdown, JSON, HTML, plain text export plus in-memory share links. |
+| Clawd pet | Animated companion widget loaded from `public/clawd-pet/pet.json` and `spritesheet.webp`. |
 
 ## Interface Map
 
@@ -70,7 +71,7 @@ web/
 │   └── ui/                    # Radix/Tailwind primitives
 ├── hooks/                     # Keyboard, viewport, reduced-motion, presence
 ├── lib/                       # Zustand store, API client, export/search/workers
-└── public/                    # Icons and README preview art
+└── public/                    # Icons, README preview art, and clawd-pet assets
 ```
 
 ## API Contract
