@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { useChatStore } from "@/lib/store";
 import { SettingRow, SectionHeader, Toggle } from "./SettingRow";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,6 @@ type ConnectionStatus = "idle" | "checking" | "ok" | "error";
 
 export function ApiSettings() {
   const { settings, updateSettings, resetSettings } = useChatStore();
-  const [showKey, setShowKey] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("idle");
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
 
@@ -19,10 +18,19 @@ export function ApiSettings() {
     setLatencyMs(null);
     const start = Date.now();
     try {
-      const res = await fetch(`${settings.apiUrl}/health`, { signal: AbortSignal.timeout(5000) });
+      const res = await fetch("/api/chat", {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      });
       const ms = Date.now() - start;
       setLatencyMs(ms);
-      setConnectionStatus(res.ok ? "ok" : "error");
+      if (!res.ok) {
+        setConnectionStatus("error");
+        return;
+      }
+
+      const body = (await res.json()) as { configured?: boolean };
+      setConnectionStatus(body.configured ? "ok" : "error");
     } catch {
       setConnectionStatus("error");
     }
@@ -44,47 +52,11 @@ export function ApiSettings() {
 
   return (
     <div>
-      <SectionHeader title="API & Authentication" onReset={() => resetSettings("api")} />
+      <SectionHeader title="API & OpenRouter" onReset={() => resetSettings("api")} />
 
       <SettingRow
-        label="API key"
-        description="Your Anthropic API key. Stored locally and never sent to third parties."
-        stack
-      >
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <input
-              type={showKey ? "text" : "password"}
-              value={settings.apiKey}
-              onChange={(e) => updateSettings({ apiKey: e.target.value })}
-              placeholder="sk-ant-..."
-              className={cn(
-                "w-full bg-surface-800 border border-surface-700 rounded-md px-3 py-1.5 pr-10 text-sm",
-                "text-surface-200 placeholder-surface-600 focus:outline-none focus:ring-1 focus:ring-brand-500 font-mono"
-              )}
-            />
-            <button
-              onClick={() => setShowKey((v) => !v)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-surface-500 hover:text-surface-300 transition-colors"
-              title={showKey ? "Hide key" : "Show key"}
-            >
-              {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-        </div>
-        {settings.apiKey && (
-          <p className="text-xs text-surface-500 mt-1">
-            Key ending in{" "}
-            <span className="font-mono text-surface-400">
-              ...{settings.apiKey.slice(-4)}
-            </span>
-          </p>
-        )}
-      </SettingRow>
-
-      <SettingRow
-        label="API base URL"
-        description="Custom endpoint for enterprise or proxy setups. Leave as default for direct Anthropic access."
+        label="Companion API base URL"
+        description="Used by local helper APIs. Chat runs through the server-side OpenRouter route."
         stack
       >
         <input
@@ -100,8 +72,8 @@ export function ApiSettings() {
       </SettingRow>
 
       <SettingRow
-        label="Connection status"
-        description="Verify that the API endpoint is reachable."
+        label="OpenRouter status"
+        description="Verify that the local chat route has server-side OpenRouter credentials."
       >
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">

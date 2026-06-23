@@ -2,7 +2,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { nanoid } from "nanoid";
 import type { Conversation, Message, AppSettings, ConversationTag } from "./types";
-import { DEFAULT_MODEL } from "./constants";
+import { DEFAULT_MODEL, MODELS } from "./constants";
+
+const VALID_MODEL_IDS = new Set<string>(MODELS.map((model) => model.id));
 
 const DEFAULT_SETTINGS: AppSettings = {
   // General
@@ -393,19 +395,29 @@ export const useChatStore = create<ChatState>()(
         recentSearches: state.recentSearches,
         tags: state.tags,
       }),
-      merge: (persisted, current) => ({
-        ...current,
-        ...(persisted as object),
-        settings: {
+      merge: (persisted, current) => {
+        const persistedSettings =
+          (persisted as { settings?: Partial<AppSettings> }).settings ?? {};
+        const settings = {
           ...DEFAULT_SETTINGS,
-          ...((persisted as { settings?: Partial<AppSettings> }).settings ?? {}),
-        },
-        // Never persist UI state
-        settingsOpen: false,
-        isSearchOpen: false,
-        sidebarTab: "chats",
-        selectedConversationIds: [],
-      }),
+          ...persistedSettings,
+        };
+
+        if (!VALID_MODEL_IDS.has(settings.model)) {
+          settings.model = DEFAULT_MODEL;
+        }
+
+        return {
+          ...current,
+          ...(persisted as object),
+          settings,
+          // Never persist UI state
+          settingsOpen: false,
+          isSearchOpen: false,
+          sidebarTab: "chats",
+          selectedConversationIds: [],
+        };
+      },
     }
   )
 );

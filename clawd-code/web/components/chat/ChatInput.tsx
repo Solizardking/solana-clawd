@@ -55,7 +55,11 @@ export function ChatInput({ conversationId }: ChatInputProps) {
     let fullText = "";
 
     try {
-      for await (const chunk of streamChat(messages, settings.model, controller.signal)) {
+      for await (const chunk of streamChat(messages, settings.model, controller.signal, {
+        maxTokens: settings.maxTokens,
+        temperature: settings.temperature,
+        systemPrompt: settings.systemPrompt,
+      })) {
         if (chunk.type === "text" && chunk.content) {
           fullText += chunk.content;
           updateMessage(conversationId, assistantId, {

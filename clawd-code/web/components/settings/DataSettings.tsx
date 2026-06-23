@@ -23,7 +23,7 @@ export function DataSettings() {
         .map((conv) => {
           const messages = conv.messages
             .map((m) => {
-              const role = m.role === "user" ? "**You**" : "**Claude**";
+              const role = m.role === "user" ? "**You**" : "**Assistant**";
               const text = typeof m.content === "string"
                 ? m.content
                 : m.content

@@ -6,6 +6,11 @@ const getApiUrl = () =>
 export interface StreamChunk {
   type: "text" | "tool_use" | "tool_result" | "done" | "error";
   content?: string;
+  usage?: {
+    reasoningTokens?: number;
+    reasoning_tokens?: number;
+    total_tokens?: number;
+  };
   tool?: {
     id: string;
     name: string;
@@ -16,15 +21,29 @@ export interface StreamChunk {
   error?: string;
 }
 
+export interface StreamChatOptions {
+  maxTokens?: number;
+  temperature?: number;
+  systemPrompt?: string;
+}
+
 export async function* streamChat(
   messages: Pick<Message, "role" | "content">[],
   model: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  options?: StreamChatOptions
 ): AsyncGenerator<StreamChunk> {
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages, model, stream: true }),
+    body: JSON.stringify({
+      messages,
+      model,
+      stream: true,
+      max_tokens: options?.maxTokens,
+      temperature: options?.temperature,
+      systemPrompt: options?.systemPrompt,
+    }),
     signal,
   });
 
