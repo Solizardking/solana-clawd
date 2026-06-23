@@ -37,6 +37,7 @@ export function useCollaboration({
   wsUrl,
 }: UseCollaborationOptions) {
   const socketRef = useRef<CollabSocket | null>(null);
+  const [socket, setSocket] = useState<CollabSocket | null>(null);
   const [state, setState] = useState<CollaborationState>({
     isConnected: false,
     myRole: null,
@@ -52,17 +53,18 @@ export function useCollaboration({
       : "ws://localhost:3001");
 
   useEffect(() => {
-    const socket = new CollabSocket(sessionId, currentUser.id);
-    socketRef.current = socket;
+    const collabSocket = new CollabSocket(sessionId, currentUser.id);
+    socketRef.current = collabSocket;
+    setSocket(collabSocket);
 
-    socket.onConnectionChange = (connected) => {
+    collabSocket.onConnectionChange = (connected) => {
       setState((s) => ({ ...s, isConnected: connected }));
     };
 
     const cleanup: Array<() => void> = [];
 
     cleanup.push(
-      socket.on("session_state", (e) => {
+      collabSocket.on("session_state", (e) => {
         const me = e.users.find((u) => u.id === currentUser.id);
         setState((s) => ({
           ...s,
@@ -73,7 +75,7 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("tool_use_pending", (e: ToolUsePendingEvent) => {
+      collabSocket.on("tool_use_pending", (e: ToolUsePendingEvent) => {
         const entry: PendingToolUse = {
           id: e.toolUseId,
           name: e.toolName,
@@ -89,7 +91,7 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("tool_use_approved", (e) => {
+      collabSocket.on("tool_use_approved", (e) => {
         setState((s) => ({
           ...s,
           pendingToolUses: s.pendingToolUses.filter((t) => t.id !== e.toolUseId),
@@ -98,7 +100,7 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("tool_use_denied", (e) => {
+      collabSocket.on("tool_use_denied", (e) => {
         setState((s) => ({
           ...s,
           pendingToolUses: s.pendingToolUses.filter((t) => t.id !== e.toolUseId),
@@ -107,7 +109,7 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("role_changed", (e) => {
+      collabSocket.on("role_changed", (e) => {
         if (e.targetUserId === currentUser.id) {
           setState((s) => ({ ...s, myRole: e.newRole }));
         }
@@ -115,16 +117,16 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("access_revoked", (e) => {
+      collabSocket.on("access_revoked", (e) => {
         if (e.targetUserId === currentUser.id) {
-          socket.disconnect();
+          collabSocket.disconnect();
           setState((s) => ({ ...s, isConnected: false, myRole: null }));
         }
       })
     );
 
     cleanup.push(
-      socket.on("ownership_transferred", (e) => {
+      collabSocket.on("ownership_transferred", (e) => {
         if (e.newOwnerId === currentUser.id) {
           setState((s) => ({ ...s, myRole: "owner" }));
         } else if (e.previousOwnerId === currentUser.id) {
@@ -134,7 +136,7 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("annotation_added", (e: AnnotationAddedEvent) => {
+      collabSocket.on("annotation_added", (e: AnnotationAddedEvent) => {
         const ann: CollabAnnotation = { ...e.annotation };
         setState((s) => ({
           ...s,
@@ -147,7 +149,7 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("annotation_resolved", (e) => {
+      collabSocket.on("annotation_resolved", (e) => {
         setState((s) => {
           const next: Record<string, CollabAnnotation[]> = {};
           for (const [msgId, anns] of Object.entries(s.annotations)) {
@@ -161,7 +163,7 @@ export function useCollaboration({
     );
 
     cleanup.push(
-      socket.on("annotation_reply", (e: AnnotationReplyEvent) => {
+      collabSocket.on("annotation_reply", (e: AnnotationReplyEvent) => {
         setState((s) => {
           const next: Record<string, CollabAnnotation[]> = {};
           for (const [msgId, anns] of Object.entries(s.annotations)) {
@@ -176,11 +178,13 @@ export function useCollaboration({
       })
     );
 
-    socket.connect(`${effectiveWsUrl}/collab`);
+    collabSocket.connect(`${effectiveWsUrl}/collab`);
 
     return () => {
       cleanup.forEach((off) => off());
-      socket.disconnect();
+      collabSocket.disconnect();
+      socketRef.current = null;
+      setSocket(null);
     };
   }, [sessionId, currentUser.id, effectiveWsUrl]);
 
@@ -336,7 +340,7 @@ export function useCollaboration({
 
   return {
     ...state,
-    socket: socketRef.current,
+    socket,
     approveTool,
     denyTool,
     addAnnotation,

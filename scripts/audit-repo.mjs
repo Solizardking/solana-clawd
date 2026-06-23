@@ -6,7 +6,7 @@ import { join } from "node:path";
 const ROOT = new URL("..", import.meta.url).pathname;
 
 const SECRET_FILENAME_RE =
-  /(^|\/)(\.env(\..*)?|.*\.pem|.*\.key|id_rsa(\..*)?|id_ed25519(\..*)?|id_ecdsa(\..*)?|.*keypair.*\.json|wallet\.json|credentials\.json|service-account.*\.json)$/i;
+  /(^|\/)(\.env(\..*)?|.*\.pem|.*\.key|.*\.p12|.*\.pfx|.*\.keystore|.*\.jks|.*\.asc|.*\.gpg|id_rsa(\..*)?|id_ed25519(\..*)?|id_ecdsa(\..*)?|.*keypair.*\.json|wallet\.json|.*-wallet\.json|agent-wallet\.json|id\.json|credentials\.json|service-account.*\.json|gcp-credentials.*\.json|google-credentials.*\.json|firebase-adminsdk.*\.json|aws-credentials|.*\.b58|.*\.b64\.key)$/i;
 const ALLOWED_TEMPLATE_RE = /(^|\/)\.env\.(example|sample|template)$/i;
 const SECRET_CONTENT_RE =
   /(BEGIN (RSA |EC |OPENSSH |DSA |PRIVATE )?KEY|PRIVATE KEY-----|sk_live_|ghp_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{20,})/i;
@@ -75,7 +75,11 @@ function trackedSecretContentHits() {
   return output
     .split("\n")
     .filter(Boolean)
-    .filter((line) => !IGNORED_SECRET_EXAMPLES.some((re) => re.test(line)));
+    .filter((line) => !IGNORED_SECRET_EXAMPLES.some((re) => re.test(line)))
+    .map((line) => {
+      const match = line.match(/^(.+?):(\d+):/);
+      return match ? `${match[1]}:${match[2]}:[redacted content match]` : "[redacted content match]";
+    });
 }
 
 function main() {

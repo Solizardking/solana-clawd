@@ -1,5 +1,9 @@
 # OpenClawd Solana
 
+<p align="center">
+  <img src="./docs/clawd-public-flow.svg" alt="Animated OpenClawd public release flow" width="100%" />
+</p>
+
 OpenClawd Solana is a public monorepo for Solana-native AI agents, tools, and
 runtime services. It combines the Leviathan agent runtime, the `clawd-code`
 coding CLI, an HTTP/Telegram gateway, a 95+ skill catalog, perps and x402
@@ -9,6 +13,8 @@ wallets, registries, research, and agent identity.
 The project is built for public development, but it assumes a strict secret
 boundary: real `.env` files, wallet keypairs, RPC credentials, API keys, local
 session state, and model checkpoints stay out of git.
+
+For the navigable codebase layout, see [docs/REPO_MAP.md](./docs/REPO_MAP.md).
 
 ## What Is Included
 
@@ -168,17 +174,54 @@ databases, local sessions, generated outputs, and model artifacts are ignored.
 This repo is intended for public GitHub publishing with clean history.
 
 - Publish from a sanitized fresh export, not the old local git history.
-- Do not publish `.env`, wallet JSON, keypairs, private keys, service-account
-  files, local sessions, `.clawd/`, `.claude/`, `node_modules/`, `dist/`,
-  `outputs/`, or model checkpoint files.
+- Do not publish `.env`, `.vercel/`, Fly secrets, wallet JSON, keypairs,
+  private keys, service-account files, local sessions, `.solana/`, `.clawd/`,
+  `.claude/`, `.grok/`, `node_modules/`, `dist/`, `outputs/`, `hf/`, or model
+  checkpoint files.
 - Do not publish local symlinks such as `openclawd-framework`.
 - Keep examples placeholder-shaped, not secret-shaped. For example, use
   `replace-with-clawd-api-key`, not a value that looks like a live key.
-- Run `npm run audit:repo` before every public push.
+- Run `npm run audit:repo` before every public push. The audit reports file and
+  line locations for secret-pattern hits without printing matched secret text.
+- Fly deploys must use `fly secrets set`; `fly.toml` is limited to non-secret
+  env values. Docker/Fly build contexts are filtered by `.dockerignore`.
+- Vercel deploys must use project environment settings; `.vercelignore` excludes
+  local Vercel state, env files, wallet material, and generated artifacts.
 
 The gateway currently has remaining moderate `uuid` advisories through
 `@solana/web3.js` / Metaplex dependency chains with no npm fix available. The
 high `form-data` advisory was removed during this pass.
+
+## June 23, 2026 Updates
+
+Recent history has one substantive local release-prep commit, `ee42617a`, plus
+six June 23 `origin/main` commits that only refreshed the commit leaderboard.
+
+Major updates from the release-prep work:
+
+- Public-share hardening: expanded ignore rules, kept real env files and wallet
+  material untracked, removed large model checkpoint artifacts from git, and
+  documented the fresh-export release rule.
+- Deployment safety: Fly uses non-secret `fly.toml` values with runtime secrets
+  expected from `fly secrets set`; Vercel and Docker contexts now explicitly
+  exclude local env, Vercel state, keypairs, session state, generated outputs,
+  and model artifacts.
+- Clawd Code web console: added the Next.js web surface, PWA manifest/icons,
+  chat history, file explorer, quick actions, annotation threads, collaboration
+  socket fixes, export fixes, and a dedicated web README.
+- Gateway and skill hub: updated the Docker build path, access policy, x402
+  route smoke checks, skill metadata enrichment, and package-local build/test
+  flow.
+- E2B sandbox runners: added dry-run capable Clawd Code and Clawd Grok sandbox
+  scripts with provider key forwarding disabled unless explicitly requested.
+- Trading/perps: moved the perps agent to the public
+  `@openclawdsolana/clawd-perps` package, refreshed Vulcan catalog/path helpers,
+  and tightened formal verification gate docs.
+- Hermes oracle: added the Python package, Solana client, MCP-style server,
+  quick tests, and public Solana RPC smoke test.
+- Visual assets and docs: moved public screenshots into `gfx2/`, added dashboard
+  and model-kit images, refreshed trading/gateway docs, and added this animated
+  public-release flow without changing the quick-start path.
 
 ## Verified Smoke Status
 

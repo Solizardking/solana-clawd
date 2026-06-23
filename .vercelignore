@@ -1,4 +1,56 @@
-# Exclude everything except packages/agent-hub and the agents catalog data needed for the prebuild
+# Exclude everything except packages/agent-hub and the agents catalog data needed for the prebuild.
+
+# Public deploy secret guard
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+!.env.template
+!**/.env.template
+!.env.sample
+!**/.env.sample
+.vercel/
+**/.vercel/
+.claude/
+.clawd/
+.codex/
+.cursor/
+.grok/
+.solana/
+agent-wallet.json
+wallet.json
+*-wallet.json
+keypair.json
+*-keypair.json
+*_keypair.json
+keypair*.json
+id.json
+credentials.json
+service-account*.json
+gcp-credentials*.json
+google-credentials*.json
+firebase-adminsdk*.json
+aws-credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+*.asc
+*.gpg
+*.b58
+*.b64.key
+*.sqlite
+*.sqlite3
+*.db
+*.db-wal
+*.db-shm
+outputs/
+hf/
+ai-training/
 
 # Large monorepo workspaces — not needed by agent-hub build
 clawd-pump/
