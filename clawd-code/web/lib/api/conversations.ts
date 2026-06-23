@@ -96,7 +96,7 @@ export const conversationAPI: ConversationAPI = {
         msg.role === "user"
           ? "**You**"
           : msg.role === "assistant"
-            ? "**Claude**"
+            ? "**Assistant**"
             : `**${msg.role}**`;
       lines.push(heading, "");
       lines.push(extractTextContent(msg.content), "");

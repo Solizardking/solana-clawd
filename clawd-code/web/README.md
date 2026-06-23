@@ -79,14 +79,17 @@ The browser calls local Next route handlers first, and those route handlers prox
 
 | Variable | Used by | Default |
 | --- | --- | --- |
-| `NEXT_PUBLIC_API_URL` | Chat/health/API proxy base | `http://localhost:3001` |
+| `OPENROUTER_API_KEY` | Server-side chat credentials | empty |
+| `OPENROUTER_GLM` | Default OpenRouter chat model | `z-ai/glm-5.2` |
+| `OPENROUTER_SITE_URL` | Optional OpenRouter ranking/referrer header | `http://localhost:3000` |
+| `OPENROUTER_APP_NAME` | Optional OpenRouter title header | `Clawd Code Web` |
+| `NEXT_PUBLIC_API_URL` | Companion helper API base | `http://localhost:3001` |
 | `NEXT_PUBLIC_WS_URL` | Realtime/collaboration sockets | `ws://localhost:3001` |
-| `ANTHROPIC_API_KEY` | Optional server-side bearer token for proxied chat requests | empty |
 
 Chat flow:
 
 ```text
-ChatInput -> /api/chat -> ${NEXT_PUBLIC_API_URL}/api/chat -> streamed SSE chunks
+ChatInput -> /api/chat -> OpenRouter chat completions -> normalized SSE chunks
 ```
 
 Expected stream chunks:
@@ -132,7 +135,7 @@ Then verify:
 | Sidebar toggle | Smooth resize/collapse with no layout overlap. |
 | Model selector | Shows configured model options. |
 | Command palette | Opens with the configured keyboard shortcut and search input focuses. |
-| Chat submit | Streams if the backend at `NEXT_PUBLIC_API_URL` is running; otherwise shows an error state. |
+| Chat submit | Streams through OpenRouter when `OPENROUTER_API_KEY` is configured; otherwise shows an error state. |
 | Export route | Returns a file for a valid conversation/export request. |
 
 ## Related

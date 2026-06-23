@@ -33,7 +33,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
       // Announce a short preview so screen reader users know a reply arrived
       const preview = lastMsg.content.slice(0, 100);
       setAnnouncement("");
-      setTimeout(() => setAnnouncement(`Claude replied: ${preview}`), 50);
+      setTimeout(() => setAnnouncement(`Assistant replied: ${preview}`), 50);
     }
     prevLengthRef.current = messages.length;
   }, [messages.length, messages]);
@@ -63,7 +63,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
       aria-busy={isStreaming}
       aria-label="Conversation"
     >
-      {/* Polite live region — announces when Claude finishes a reply */}
+      {/* Polite live region announces when the assistant finishes a reply. */}
       <div
         role="status"
         aria-live="polite"
