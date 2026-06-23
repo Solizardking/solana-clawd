@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Clawd Code">
+  <rect width="512" height="512" rx="96" fill="#09090b"/>
+  <path d="M116 303c0-89 64-158 151-158 54 0 98 25 124 65l-58 34c-14-22-36-36-66-36-48 0-82 40-82 95s34 95 82 95c31 0 53-14 67-37l58 34c-26 41-70 66-125 66-87 0-151-69-151-158z" fill="#8b5cf6"/>
+  <path d="M95 92h322v55H95zM95 365h322v55H95z" fill="#fafafa" opacity=".9"/>
+</svg>

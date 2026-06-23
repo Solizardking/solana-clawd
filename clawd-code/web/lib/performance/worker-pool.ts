@@ -105,11 +105,11 @@ export class WorkerPool<T = unknown> {
  * Avoids spawning duplicate workers when multiple components
  * import the same pool.
  */
-const pools = new Map<string, WorkerPool>();
+const pools = new Map<string, WorkerPool<unknown>>();
 
 export function getWorkerPool<T>(key: string, factory: () => Worker): WorkerPool<T> {
   if (!pools.has(key)) {
-    pools.set(key, new WorkerPool<T>(factory));
+    pools.set(key, new WorkerPool<T>(factory) as WorkerPool<unknown>);
   }
   return pools.get(key) as WorkerPool<T>;
 }

@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { resolveVulcanRoot } from "./paths.js";
 
 export interface VulcanCatalogCommand {
   name: string;
@@ -39,8 +40,9 @@ async function readJsonFile<T>(path: string): Promise<T> {
 }
 
 export async function loadVulcanToolCatalog(repoRoot: string): Promise<VulcanToolCatalog> {
+  const vulcanRoot = resolveVulcanRoot(repoRoot);
   return readJsonFile<VulcanToolCatalog>(
-    join(repoRoot, "vulcan-cli-master", "agents", "tool-catalog.json"),
+    join(vulcanRoot, "vulcan-cli-master", "agents", "tool-catalog.json"),
   );
 }
 

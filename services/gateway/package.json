@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Telegram bot + HTTP gateway with Solana/Helius/Birdeye integration — adapted from x402agent/solana-clawd gateway",
   "type": "module",
-  "main": "../dist/gateway/src/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node ../dist/gateway/src/index.js",
-    "dev": "tsc && node ../dist/gateway/src/index.js",
+    "start": "node dist/src/index.js",
+    "dev": "tsc && node dist/src/index.js",
     "smoke:x402": "node scripts/smoke-x402-routes.mjs",
     "test": "npm run build && npm run smoke:x402"
   },

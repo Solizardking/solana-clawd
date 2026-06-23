@@ -4,7 +4,6 @@ import type { Conversation } from "../types";
 
 // Lazy import to avoid circular deps at module init time
 function getStore() {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   return require("../store").useChatStore as import("../store").UseChatStore;
 }
 
@@ -90,7 +89,7 @@ export const conversationAPI: ConversationAPI = {
     // Markdown export
     const lines: string[] = [`# ${conv.title}`, ""];
     const created = new Date(conv.createdAt).toISOString();
-    lines.push(`> Exported from Claude Code · ${created}`, "");
+    lines.push(`> Exported from Clawd Code · ${created}`, "");
 
     for (const msg of conv.messages) {
       const heading =

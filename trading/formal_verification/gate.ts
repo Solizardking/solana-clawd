@@ -23,9 +23,10 @@
 
 import { execSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, statSync, readdirSync } from 'node:fs';
-import { join, resolve, basename, extname } from 'node:path';
+import { dirname, join, resolve, basename, extname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -105,7 +106,9 @@ export interface ProofManifest {
 // Registry — persists verification results locally
 // ---------------------------------------------------------------------------
 
-const REGISTRY_PATH = join(resolve('.'), 'formal_verification', 'verified-registry.json');
+const MODULE_DIR = dirname(fileURLToPath(import.meta.url));
+const FORMAL_VERIFICATION_DIR = MODULE_DIR;
+const REGISTRY_PATH = join(FORMAL_VERIFICATION_DIR, 'verified-registry.json');
 
 interface RegistryEntry {
   path: string;
@@ -132,7 +135,7 @@ function loadRegistry(): Record<string, RegistryEntry> {
 }
 
 function saveRegistry(reg: Record<string, RegistryEntry>): void {
-  mkdirSync(join(resolve('.'), 'formal_verification'), { recursive: true });
+  mkdirSync(FORMAL_VERIFICATION_DIR, { recursive: true });
   writeFileSync(REGISTRY_PATH, JSON.stringify(reg, null, 2));
 }
 
@@ -342,7 +345,8 @@ function createProofManifest(
     attestation_payload: buildAttestationPayload(kind, name, proofHash, sasAddress),
   };
 
-  const manifestPath = join(resolve('.'), 'formal_verification', `proof-manifest-${name}-${componentHash}.json`);
+  mkdirSync(FORMAL_VERIFICATION_DIR, { recursive: true });
+  const manifestPath = join(FORMAL_VERIFICATION_DIR, `proof-manifest-${name}-${componentHash}.json`);
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 
   return {
@@ -795,7 +799,8 @@ async function verify(componentPath: string): Promise<VerificationReport> {
   saveRegistry(reg);
 
   // Write JSON report
-  const reportPath = join(resolve('.'), 'formal_verification', `report-${name}-${hash}.json`);
+  mkdirSync(FORMAL_VERIFICATION_DIR, { recursive: true });
+  const reportPath = join(FORMAL_VERIFICATION_DIR, `report-${name}-${hash}.json`);
   writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
   // ── FINAL VERDICT ─────────────────────────────────────────────────────────
@@ -827,7 +832,7 @@ function status(componentPath: string): void {
 
   if (!entry) {
     console.log(`No verification record for: ${abs}`);
-    console.log(`Run: npx tsx formal_verification/gate.ts verify --path ${componentPath}`);
+    console.log(`Run: npx tsx trading/formal_verification/gate.ts verify --path ${componentPath}`);
     return;
   }
 

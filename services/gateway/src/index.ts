@@ -46,7 +46,7 @@ import skillHubRouter from './skillHub.js';
 import stakingRouter from './staking.js';
 import solanaExplorerRouter from './solanaExplorer.js';
 import neonRouter, { neonStatus } from './neon.js';
-import { accessPolicyStatus, requireLiveAccess } from './accessPolicy.js';
+import { accessPolicyStatus, requireLiveAccess, requirePaidFeatureAccess } from './accessPolicy.js';
 import { handleNLMessage } from './nlTrading.js';
 import {
   mainMenu, mainMenuText, portfolioMenu, tradeMenu,
@@ -73,6 +73,7 @@ function msgCtx(cb: TgCallbackQuery): { chatId: number; msgId: number } | null {
 const app = express();
 app.use(express.json({ limit: '30mb' }));
 app.use(requireLiveAccess);
+app.use(requirePaidFeatureAccess);
 const PORT = parseInt(process.env.GATEWAY_PORT ?? '8080', 10);
 const HOST = process.env.GATEWAY_HOST ?? '0.0.0.0';
 const WEBHOOK_URL = process.env.TELEGRAM_WEBHOOK_URL ?? '';
@@ -722,6 +723,15 @@ app.get('/health', (_req: Request, res: Response) => {
     access: accessPolicyStatus(),
     neon: neonStatus().neon,
     uptime: process.uptime(),
+  });
+});
+
+app.get('/api/gate/status', (_req: Request, res: Response) => {
+  res.json({
+    ok: true,
+    token: '$CLAWD',
+    mint: '8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump',
+    access: accessPolicyStatus(),
   });
 });
 

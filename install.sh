@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  Solana Clawd — one-shot installer                                      ║
-# ║  curl -fsSL https://raw.githubusercontent.com/openclawd/solana-clawd/main/install.sh | bash
+# ║  curl -fsSL https://raw.githubusercontent.com/solizardking/solana-clawd/main/install.sh | bash
 # ║  $CLAWD: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump                  ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 set -euo pipefail
@@ -10,6 +10,9 @@ set -euo pipefail
 RESET="\033[0m"; BOLD="\033[1m"
 GREEN="\033[32m"; YELLOW="\033[33m"; RED="\033[31m"
 CYAN="\033[36m"; MAGENTA="\033[35m"; DIM="\033[2m"
+
+CLAWD_REPO_URL="${CLAWD_REPO_URL:-https://github.com/solizardking/solana-clawd.git}"
+CLAWD_RAW_INSTALL_URL="${CLAWD_RAW_INSTALL_URL:-https://raw.githubusercontent.com/solizardking/solana-clawd/main/install.sh}"
 
 ok()   { printf "${GREEN}✓  %s${RESET}\n" "$*"; }
 info() { printf "${CYAN}·  %s${RESET}\n" "$*"; }
@@ -81,6 +84,48 @@ verify_six_law_harness() {
   fi
 }
 
+bootstrap_8bitlabs_site() {
+  step "Bootstrapping 8 Bit Labs site package"
+  track_install_event "site_install" "8bitlabs.ai"
+
+  SITE_PORT="${CLAWD_SITE_PORT:-${PORT:-8088}}"
+
+  if [ -d "ai-training/8bitlabs.ai" ] && [ -f "package.json" ]; then
+    CHECKOUT_DIR="$(pwd)"
+    ok "Using local checkout: ${CHECKOUT_DIR}"
+  else
+    command -v git &>/dev/null || die "git not found. Install git or run this from an existing solana-clawd checkout."
+    CHECKOUT_DIR="${CLAWD_SITE_CHECKOUT:-${HOME}/.clawd/solana-clawd}"
+    if [ -d "${CHECKOUT_DIR}/.git" ]; then
+      info "Updating ${CHECKOUT_DIR}"
+      git -C "${CHECKOUT_DIR}" pull --ff-only || warn "Could not fast-forward ${CHECKOUT_DIR}; using existing files"
+    elif [ -e "${CHECKOUT_DIR}" ]; then
+      die "${CHECKOUT_DIR} exists but is not a git checkout. Set CLAWD_SITE_CHECKOUT to another path."
+    else
+      info "Cloning ${CLAWD_REPO_URL}"
+      mkdir -p "$(dirname "${CHECKOUT_DIR}")"
+      git clone --depth 1 "${CLAWD_REPO_URL}" "${CHECKOUT_DIR}"
+    fi
+  fi
+
+  SITE_DIR="${CHECKOUT_DIR}/ai-training/8bitlabs.ai"
+  [ -f "${SITE_DIR}/package.json" ] || die "8 Bit Labs package not found at ${SITE_DIR}/package.json"
+
+  info "Validating site package"
+  npm --prefix "${SITE_DIR}" run check
+  ok "@8bitlabs/site package check passed"
+
+  printf "\n  ${BOLD}8 Bit Labs site:${RESET}\n"
+  printf "  ${CYAN}cd ${CHECKOUT_DIR}${RESET}\n"
+  printf "  ${CYAN}PORT=${SITE_PORT} npm run site:dev${RESET}\n"
+  printf "  ${CYAN}open http://127.0.0.1:${SITE_PORT}${RESET}\n"
+  printf "\n  ${BOLD}Deploy from the linked site package:${RESET}\n"
+  printf "  ${CYAN}npm run site:build${RESET}\n"
+  printf "  ${CYAN}npm run site:deploy${RESET}\n"
+  printf "\n  ${DIM}One-shot source: ${CLAWD_RAW_INSTALL_URL}${RESET}\n"
+  printf "  ${DIM}Package: ai-training/8bitlabs.ai/package.json (@8bitlabs/site)${RESET}\n\n"
+}
+
 # ── Parse flags ───────────────────────────────────────────────────────────────
 INSTALL_REGISTRY=true
 INSTALL_HUB=true
@@ -92,10 +137,12 @@ INSTALL_X402=false
 INSTALL_PUMP=false
 INSTALL_GATEWAY=false
 INSTALL_CORE_AI=false
+INSTALL_SITE=false
 
 for arg in "$@"; do
   case "$arg" in
     --minimal)    INSTALL_HUB=false; INSTALL_LEVIATHAN=false ;;
+    --site)       INSTALL_SITE=true; INSTALL_REGISTRY=false; INSTALL_HUB=false; INSTALL_TUI=false; INSTALL_LEVIATHAN=false; INSTALL_SDK=false; INSTALL_PERPS=false; INSTALL_X402=false; INSTALL_PUMP=false; INSTALL_GATEWAY=false; INSTALL_CORE_AI=false ;;
     --leviathan)  INSTALL_LEVIATHAN=true ;;
     --sdk)        INSTALL_SDK=true ;;
     --perps)      INSTALL_PERPS=true ;;
@@ -108,6 +155,7 @@ for arg in "$@"; do
     --help|-h)
       printf "Usage: install.sh [flags]\n\n"
       printf "  ${BOLD}--full${RESET}       Everything (TUI + registry + hub + leviathan + SDK + perps + x402 + pump + core-ai)\n"
+      printf "  ${BOLD}--site${RESET}       Clone/update the GitHub repo and validate the 8bitlabs.ai site package\n"
       printf "  ${BOLD}--core-ai${RESET}    Helius MCP + helius-cli + clawd-code CLI + MCP settings.json wiring\n"
       printf "  ${BOLD}--perps${RESET}      Solana perps via Phoenix/Vulcan CLI (Rise SDK)\n"
       printf "  ${BOLD}--x402${RESET}       x402.wtf CLI (gateway + terminal launcher)\n"
@@ -121,6 +169,7 @@ for arg in "$@"; do
       printf "  ${DIM}Set SOLANA_RPC_URL in env to skip the RPC prompt during --perps.${RESET}\n"
       printf "  ${DIM}Set VAULT_PASSPHRASE to encrypt the leviathan keypair at spawn.${RESET}\n"
       printf "  ${DIM}Set HELIUS_API_KEY in env to pre-fill the MCP server config during --core-ai.${RESET}\n"
+      printf "  ${DIM}Set CLAWD_SITE_CHECKOUT to choose the checkout path for --site.${RESET}\n"
       exit 0 ;;
   esac
 done
@@ -137,7 +186,7 @@ cat << 'BANNER'
    ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝
 
   🦞  Solana Clawd — The LM Studio of Solana Agents
-  github.com/openclawd/solana-clawd
+  github.com/solizardking/solana-clawd
 
 BANNER
 printf "${RESET}"
@@ -154,7 +203,16 @@ ok "Node.js $(node --version)"
 command -v npm &>/dev/null || die "npm not found"
 ok "npm $(npm --version)"
 
-verify_six_law_harness
+if [ "$INSTALL_SITE" = true ]; then
+  info "Site mode: skipping runtime harness verification"
+else
+  verify_six_law_harness
+fi
+
+if [ "$INSTALL_SITE" = true ]; then
+  bootstrap_8bitlabs_site
+  exit 0
+fi
 
 # ── Clawd npm packages ────────────────────────────────────────────────────────
 step "Installing Solana Clawd suite"
@@ -366,7 +424,7 @@ if [ "$INSTALL_PUMP" = true ]; then
       warn "Build failed — check Rust toolchain and retry: npm run pump:build"
   else
     warn "clawd-pump/ directory not found — clone the repo first"
-    warn "  git clone https://github.com/openclawd/solana-clawd"
+    warn "  git clone https://github.com/solizardking/solana-clawd"
     warn "  cd solana-clawd && bash install.sh --pump"
   fi
 fi
@@ -676,7 +734,7 @@ if [ "$INSTALL_GATEWAY" = true ]; then
   step "Building CLAWD Gateway"
   if [ -d "gateway" ]; then
     cd gateway && npm install --no-audit --no-fund 2>&1 | tail -3 && npm run build 2>&1 | tail -3 && npm run smoke:x402 && cd ..
-    ok "CLAWD Gateway built → dist/gateway/src/index.js"
+    ok "CLAWD Gateway built → services/gateway/dist/src/index.js"
     info "Start with: cd gateway && npm start"
     info "Or deploy to Fly.io: cd gateway && fly deploy"
   else
@@ -698,6 +756,6 @@ printf "  Telegram:     ${CYAN}https://x402.wtf/telegram${RESET}\n"
 printf "  x402:         ${CYAN}https://x402.wtf${RESET}\n"
 printf "  Phoenix docs: ${CYAN}https://docs.phoenix.trade${RESET}\n"
 printf "  Vulcan repo:  ${CYAN}https://github.com/Ellipsis-Labs/vulcan-cli${RESET}\n"
-printf "  GitHub:       ${CYAN}https://github.com/openclawd/solana-clawd${RESET}\n"
+printf "  GitHub:       ${CYAN}https://github.com/solizardking/solana-clawd${RESET}\n"
 printf "  \$CLAWD CA:   ${DIM}8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump${RESET}\n"
 printf "\n  ${YELLOW}The shell molts. The laws do not. 🦞${RESET}\n\n"

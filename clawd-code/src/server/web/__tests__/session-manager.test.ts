@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it, mock } from "node:test";
+import { afterEach, describe, it, mock } from "node:test";
 import { EventEmitter } from "node:events";
 import { SessionManager } from "../session-manager.js";
 import type { IPty } from "node-pty";
@@ -47,21 +47,37 @@ function createMockWs(): WebSocket & EventEmitter {
 }
 
 describe("SessionManager", () => {
+  const managers: SessionManager[] = [];
+
+  afterEach(() => {
+    for (const manager of managers.splice(0)) {
+      manager.destroyAll();
+    }
+  });
+
+  function createManager(...args: ConstructorParameters<typeof SessionManager>): SessionManager {
+    const manager = new SessionManager(...args);
+    managers.push(manager);
+    return manager;
+  }
+
   it("creates a session and tracks it", () => {
     const mockPty = createMockPty();
-    const manager = new SessionManager(5, () => mockPty);
+    const manager = createManager(5, () => mockPty);
     const ws = createMockWs();
 
-    const session = manager.create(ws);
+    const token = manager.create(ws);
+    assert.ok(token);
+    const session = manager.getSession(token);
     assert.ok(session);
     assert.equal(manager.activeCount, 1);
-    assert.ok(session.id);
+    assert.equal(session.token, token);
     assert.equal(session.ws, ws);
     assert.equal(session.pty, mockPty);
   });
 
   it("enforces max sessions limit", () => {
-    const manager = new SessionManager(1, () => createMockPty());
+    const manager = createManager(1, () => createMockPty());
 
     const session1 = manager.create(createMockWs());
     assert.ok(session1);
@@ -74,7 +90,7 @@ describe("SessionManager", () => {
 
   it("forwards PTY data to WebSocket", () => {
     const mockPty = createMockPty();
-    const manager = new SessionManager(5, () => mockPty);
+    const manager = createManager(5, () => mockPty);
     const ws = createMockWs();
 
     manager.create(ws);
@@ -86,7 +102,7 @@ describe("SessionManager", () => {
 
   it("forwards WebSocket input to PTY", () => {
     const mockPty = createMockPty();
-    const manager = new SessionManager(5, () => mockPty);
+    const manager = createManager(5, () => mockPty);
     const ws = createMockWs();
 
     manager.create(ws);
@@ -98,7 +114,7 @@ describe("SessionManager", () => {
 
   it("handles resize messages", () => {
     const mockPty = createMockPty();
-    const manager = new SessionManager(5, () => mockPty);
+    const manager = createManager(5, () => mockPty);
     const ws = createMockWs();
 
     manager.create(ws);
@@ -109,7 +125,7 @@ describe("SessionManager", () => {
 
   it("handles ping messages with pong response", () => {
     const mockPty = createMockPty();
-    const manager = new SessionManager(5, () => mockPty);
+    const manager = createManager(5, () => mockPty);
     const ws = createMockWs();
 
     manager.create(ws);
@@ -123,20 +139,25 @@ describe("SessionManager", () => {
     assert.equal(parsed.type, "pong");
   });
 
-  it("cleans up session on WebSocket close", () => {
+  it("detaches session on WebSocket close and waits for grace cleanup", () => {
     const mockPty = createMockPty();
-    const manager = new SessionManager(5, () => mockPty);
+    const manager = createManager(5, () => mockPty);
     const ws = createMockWs();
 
-    manager.create(ws);
+    const token = manager.create(ws);
+    assert.ok(token);
     assert.equal(manager.activeCount, 1);
 
     ws.emit("close");
+    assert.equal(manager.activeCount, 1);
+    assert.equal(manager.getSession(token)?.ws, null);
+
+    manager.destroySession(token);
     assert.equal(manager.activeCount, 0);
   });
 
   it("handles PTY spawn failure gracefully", () => {
-    const manager = new SessionManager(5, () => {
+    const manager = createManager(5, () => {
       throw new Error("no pty available");
     });
     const ws = createMockWs();
@@ -147,7 +168,7 @@ describe("SessionManager", () => {
   });
 
   it("destroyAll cleans up all sessions", () => {
-    const manager = new SessionManager(5, () => createMockPty());
+    const manager = createManager(5, () => createMockPty());
 
     manager.create(createMockWs());
     manager.create(createMockWs());

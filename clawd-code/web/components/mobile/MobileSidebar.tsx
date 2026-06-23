@@ -68,7 +68,7 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         aria-label="Navigation"
         {...swipeHandlers}
       >
-        <Sidebar onNavigate={onClose} />
+        <Sidebar onNavigate={onClose} variant="mobile" />
       </div>
     </>
   );

@@ -60,6 +60,20 @@ keypair.json
 *-keypair.json
 solana-keygen.json
 phantom-export.json
+id.json
+*_keypair.json
+keypair*.json
+agent-wallet.json
+*-secret.json
+*.secret.json
+auth-token*.json
+access-token*.json
+bearer-token*.json
+refresh-token*.json
+*-apikey.json
+*-api-key.json
+*-private-key.json
+*-privatekey.json
 
 # Service account / cloud credentials
 service-account*.json
@@ -108,7 +122,7 @@ pip-delete-this-directory.txt
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-clawd-code
+
 # ----------------------------------------------------------------------------
 # Build / dist artifacts
 # ----------------------------------------------------------------------------
@@ -130,6 +144,12 @@ out/
 *.tsbuildinfo
 coverage/
 .nyc_output/
+outputs/
+*.safetensors
+*.gguf
+*.ckpt
+*.pt
+*.pth
 
 # ----------------------------------------------------------------------------
 # Mobile / iOS / Android
@@ -217,12 +237,26 @@ temp/
 # Old/duplicate working folders — keep on disk but exclude from git
 extensions copy/
 agent-kit/
+openclawd-framework
 .env.local
 .env
 # Local sessions / user state
 .clawdbot/
 sessions/
 *.session
+*.session.json
+agent-memory*.json
+session-state*.json
+.vulcan/
+vulcan-runs/
+paper-state.json
+paper-balance.json
+.paper/
+imperial-session*.json
+.imperial/
+perps-session*.json
+.perps/
+.agent-sessions/
 
 # Sentry / sourcemaps
 .sentryclirc
@@ -258,6 +292,14 @@ test-output
 # add other ignore file below
 .env
 # extracted archives
+*.b58
+*.b64.key
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
 clawd-ai-agents 2/
 
 # AI training data — kept local only, not for public GitHub

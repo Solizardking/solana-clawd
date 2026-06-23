@@ -198,10 +198,38 @@ export type CollabEvent =
   | SessionStateEvent
   | ErrorEvent;
 
-// Outgoing-only events (client → server) that don't need timestamp/sessionId
-export type OutgoingEvent = Omit<CollabEvent, "timestamp">;
+export interface CollabEventMap {
+  message_added: MessageAddedEvent;
+  message_streaming: MessageStreamingEvent;
+  tool_use_pending: ToolUsePendingEvent;
+  tool_use_approved: ToolUseApprovedEvent;
+  tool_use_denied: ToolUseDeniedEvent;
+  user_joined: UserJoinedEvent;
+  user_left: UserLeftEvent;
+  cursor_update: CursorUpdateEvent;
+  typing_start: TypingStartEvent;
+  typing_stop: TypingStopEvent;
+  presence_sync: PresenceSyncEvent;
+  annotation_added: AnnotationAddedEvent;
+  annotation_resolved: AnnotationResolvedEvent;
+  annotation_reply: AnnotationReplyEvent;
+  role_changed: RoleChangedEvent;
+  access_revoked: AccessRevokedEvent;
+  ownership_transferred: OwnershipTransferredEvent;
+  session_state: SessionStateEvent;
+  error: ErrorEvent;
+}
 
-type EventHandler<T extends CollabEvent = CollabEvent> = (event: T) => void;
+// Outgoing-only events (client → server) that don't need timestamp.
+export type OutgoingEvent = CollabEvent extends infer Event
+  ? Event extends CollabEvent
+    ? Omit<Event, "timestamp">
+    : never
+  : never;
+
+type EventHandler<K extends CollabEventType = CollabEventType> = (
+  event: CollabEventMap[K]
+) => void;
 
 // ─── CollabSocket ─────────────────────────────────────────────────────────────
 
@@ -280,9 +308,9 @@ export class CollabSocket {
     this.ws.send(JSON.stringify({ ...event, timestamp: Date.now() }));
   }
 
-  on<T extends CollabEvent>(
-    type: T["type"],
-    handler: EventHandler<T>
+  on<K extends CollabEventType>(
+    type: K,
+    handler: EventHandler<K>
   ): () => void {
     if (!this.handlers.has(type)) {
       this.handlers.set(type, new Set());
@@ -291,7 +319,7 @@ export class CollabSocket {
     return () => this.off(type, handler);
   }
 
-  off<T extends CollabEvent>(type: T["type"], handler: EventHandler<T>): void {
+  off<K extends CollabEventType>(type: K, handler: EventHandler<K>): void {
     this.handlers.get(type)?.delete(handler as EventHandler);
   }
 

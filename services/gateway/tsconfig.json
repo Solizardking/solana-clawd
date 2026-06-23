@@ -3,13 +3,13 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "outDir": "../dist",
-    "rootDir": "..",
+    "outDir": "dist",
+    "rootDir": ".",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "../formal_verification/skill-hub.ts", "../formal_verification/stride.ts"]
+  "include": ["src"]
 }

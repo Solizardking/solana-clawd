@@ -74,16 +74,17 @@ If one of those jobs is blurry, the whole perp stack gets sloppy.
 Build it, then launch it directly or through the npm perps package:
 
 ```bash
-npm --prefix Perps/clawd-agents-perps run build
+npm install
+npm run build
 
-node Perps/clawd-agents-perps/dist/cli.js status
-node Perps/clawd-agents-perps/dist/cli.js frontend
-node Perps/clawd-agents-perps/dist/cli.js telegram "/perps"
-node Perps/clawd-agents-perps/dist/cli.js imperial-scan --symbols SOL,BTC,ETH --size 100
-node Perps/clawd-agents-perps/dist/cli.js onchain-mm status
-node Perps/clawd-agents-perps/dist/cli.js onchain-mm plan --market HhHRvLFvZid6FD7C96H93F2MkASjYfYAx8Y2P8KMAr6b --ticker SOL-USD --rpc-url local
-node Perps/clawd-agents-perps/dist/cli.js twamm status
-node Perps/clawd-agents-perps/dist/cli.js twamm crank-plan --token-a So11111111111111111111111111111111111111112 --token-b EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v --once
+node dist/cli.js status
+node dist/cli.js frontend
+node dist/cli.js telegram "/perps"
+node dist/cli.js imperial-scan --symbols SOL,BTC,ETH --size 100
+node dist/cli.js onchain-mm status
+node dist/cli.js onchain-mm plan --market HhHRvLFvZid6FD7C96H93F2MkASjYfYAx8Y2P8KMAr6b --ticker SOL-USD --rpc-url local
+node dist/cli.js twamm status
+node dist/cli.js twamm crank-plan --token-a So11111111111111111111111111111111111111112 --token-b EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v --once
 
 clawd-perps perps agent status
 clawd-perps perps agent telegram "/perps_vulcan"

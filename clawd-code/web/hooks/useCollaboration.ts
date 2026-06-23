@@ -336,6 +336,7 @@ export function useCollaboration({
 
   return {
     ...state,
+    socket: socketRef.current,
     approveTool,
     denyTool,
     addAnnotation,

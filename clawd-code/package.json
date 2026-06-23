@@ -8,7 +8,9 @@
     "clawd-code": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --target ES2022 --module NodeNext --moduleResolution NodeNext --lib ES2023 --outDir ./dist --rootDir ./src --strict --esModuleInterop --skipLibCheck --forceConsistentCasingInFileNames --resolveJsonModule --declaration --declarationMap --sourceMap src/cli.ts",
+    "build:full": "tsc",
+    "build:bundle": "tsx scripts/build-bundle.ts",
     "dev": "tsx src/cli.ts",
     "start": "node dist/cli.js",
     "test": "node --import tsx --test src/**/*.test.ts"

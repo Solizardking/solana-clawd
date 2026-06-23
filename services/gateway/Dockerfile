@@ -12,7 +12,6 @@ WORKDIR /build
 COPY services/gateway/package*.json ./
 RUN npm install --no-audit --no-fund
 COPY services/gateway/ ./services/gateway/
-COPY trading/formal_verification/ ./services/formal_verification/
 WORKDIR /build/services/gateway
 RUN npm run build
 
@@ -28,8 +27,10 @@ RUN addgroup -S clawd && adduser -S -G clawd clawd \
     && mkdir -p /data && chown clawd:clawd /data
 
 COPY --from=deps  --chown=clawd:clawd /build/node_modules ./node_modules
-COPY --from=build --chown=clawd:clawd /build/services/dist ./dist
+COPY --from=build --chown=clawd:clawd /build/services/gateway/dist ./dist
 COPY --chown=clawd:clawd services/gateway/package*.json ./
+COPY --chown=clawd:clawd trading/formal_verification/ ./trading/formal_verification/
+COPY --chown=clawd:clawd skills/ ./skills/
 
 # /data is the Fly persistent volume mount point for sessions.json
 VOLUME ["/data"]
@@ -39,4 +40,4 @@ EXPOSE 8080
 
 # dumb-init ensures SIGTERM propagates cleanly on Fly machine stop
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/gateway/src/index.js"]
+CMD ["node", "dist/src/index.js"]

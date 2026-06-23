@@ -117,6 +117,7 @@ export class SessionStore {
       this.destroy(token);
       onExpire();
     }, this.gracePeriodMs);
+    session.graceTimer.unref?.();
   }
 
   /**
@@ -146,13 +147,14 @@ export class SessionStore {
     } catch {
       // PTY may already be dead
     }
-    setTimeout(() => {
+    const forceKillTimer = setTimeout(() => {
       try {
         session.pty.kill("SIGKILL");
       } catch {
         // Already dead
       }
     }, 5000);
+    forceKillTimer.unref?.();
   }
 
   /** Returns summary info for all sessions (used by the REST API). */

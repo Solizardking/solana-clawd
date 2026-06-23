@@ -15,10 +15,11 @@ export interface RepoModule {
 const MODULES: Array<Omit<RepoModule, "entries" | "exists">> = [
   { id: "knowledge", name: "Knowledge", path: "knowledge", description: "Knowledge packs, source material, and indexed operator context.", kind: "knowledge" },
   { id: "library", name: "Library", path: "library", description: "OpenClawd library assets and runtime-facing packaged surfaces.", kind: "package" },
-  { id: "hedge", name: "Hedge", path: "hedge", description: "Hedge strategy manifests and portfolio system assets.", kind: "runtime" },
+  { id: "trading", name: "Trading", path: "trading", description: "Trading agents, formal verification, ORE, staking, and mining control surfaces.", kind: "runtime" },
+  { id: "hedge", name: "Hedge", path: "trading/hedge", description: "Hedge strategy manifests and portfolio system assets.", kind: "runtime" },
   { id: "goals", name: "Goals", path: "goals", description: "Goal tracking UX and runtime goal surfaces.", kind: "runtime" },
   { id: "gateway", name: "Gateway", path: "gateway", description: "HTTP and Telegram gateway services for the agent stack.", kind: "runtime" },
-  { id: "formal-verification", name: "Formal Verification", path: "formal_verification", description: "Formal methods and verification support for Solana agent safety.", kind: "protocol" },
+  { id: "formal-verification", name: "Formal Verification", path: "trading/formal_verification", description: "Formal methods and verification support for Solana agent safety.", kind: "protocol" },
   { id: "packages", name: "Packages", path: "packages", description: "Monorepo packages including hub, wallet, registry, SDK, and agent tooling.", kind: "package" },
   { id: "programs", name: "Programs", path: "programs", description: "On-chain Solana programs and clients.", kind: "protocol" },
   { id: "skills", name: "Skills", path: "skills", description: "Composable agent skills used across spawn templates and operator flows.", kind: "knowledge" },

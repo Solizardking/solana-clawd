@@ -6,7 +6,7 @@ The package now includes:
 
 - a spawn UI for templates, characters, runtimes, budgets, Helius DAS, and custom RPC
 - curated playbooks for buddies, x402, auto-research, wallet, orchestrator, lobster trader, and OODA
-- repo inventory for `knowledge`, `library`, `hedge`, `goals`, `gateway`, `formal_verification`, `packages`, `programs`, `skills`, `spinners`, `staking`, and `src`
+- repo inventory for `knowledge`, `library`, `trading`, `trading/hedge`, `goals`, `gateway`, `trading/formal_verification`, `packages`, `programs`, `skills`, `spinners`, `staking`, and `src`
 - a `/runtime` mount that preserves the existing `dist-web` assets
 
 ## Install

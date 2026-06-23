@@ -31,7 +31,10 @@ function findRepoRoot(): string {
   for (let i = 0; i < 8; i += 1) {
     if (
       fs.existsSync(path.join(current, 'skills', 'catalog.json')) &&
-      fs.existsSync(path.join(current, 'formal_verification'))
+      (
+        fs.existsSync(path.join(current, 'formal_verification')) ||
+        fs.existsSync(path.join(current, 'trading', 'formal_verification'))
+      )
     ) {
       return current;
     }
@@ -45,7 +48,10 @@ function findRepoRoot(): string {
 const REPO_ROOT = findRepoRoot();
 const SKILLS_ROOT = path.resolve(REPO_ROOT, 'skills');
 const CATALOG_PATH = path.join(REPO_ROOT, 'skills', 'catalog.json');
-const SKILL_HUB_REGISTRY = path.join(REPO_ROOT, 'formal_verification', 'skill-hub-registry.json');
+const FORMAL_VERIFICATION_ROOT = fs.existsSync(path.join(REPO_ROOT, 'formal_verification'))
+  ? path.join(REPO_ROOT, 'formal_verification')
+  : path.join(REPO_ROOT, 'trading', 'formal_verification');
+const SKILL_HUB_REGISTRY = path.join(FORMAL_VERIFICATION_ROOT, 'skill-hub-registry.json');
 
 function isPathWithinRoot(targetPath: string, rootPath: string): boolean {
   const resolvedRoot = path.resolve(rootPath);

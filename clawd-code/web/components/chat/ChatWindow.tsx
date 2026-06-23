@@ -50,7 +50,7 @@ export function ChatWindow({ conversationId }: ChatWindowProps) {
         <div>
           <h2 className="text-lg font-semibold text-surface-100">How can I help?</h2>
           <p className="text-sm text-surface-400 mt-1">
-            Start a conversation with Claude Code
+            Start a conversation with Clawd Code
           </p>
         </div>
       </div>

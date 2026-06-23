@@ -9,21 +9,9 @@ import { Router, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
-import {
-  listSkills,
-  getSkillById,
-  getSkillBySlug,
-  registerSkill,
-  revokeSkill,
-  loadCatalog,
-  catalogEntryToKind,
-  ComponentKind,
-  type CatalogEntry,
-  type SkillHubEntry,
-} from '../../formal_verification/skill-hub.js';
 
 const router = Router();
 
@@ -44,6 +32,71 @@ function findRepoRoot(): string {
 
 const REPO_ROOT = findRepoRoot();
 const SKILLS_ROOT = path.join(REPO_ROOT, 'skills');
+const PUBLIC_BASE_URL = process.env.GATEWAY_BASE_URL ?? 'https://x402.wtf';
+
+type ComponentKind = 'agent' | 'skill' | 'plugin' | 'mcp_server' | 'program';
+
+interface CatalogEntry {
+  slug: string;
+  name: string;
+  description: string;
+  category: string;
+  path?: string;
+  homepage?: string;
+  manifest?: string;
+}
+
+interface SkillHubEntry {
+  skill_id: string;
+  slug: string;
+  name: string;
+  kind: ComponentKind;
+  stride_score: number;
+  kani_verified: boolean;
+  spec_hash: string;
+  authority: string;
+  metadata_uri: string;
+  registered_at: string;
+  active: boolean;
+  on_chain?: boolean;
+  sas_attestation?: string;
+}
+
+interface SkillHubModule {
+  listSkills(filter?: { kind?: ComponentKind; active?: boolean }): SkillHubEntry[];
+  getSkillById(skillId: string): SkillHubEntry | undefined;
+  getSkillBySlug(slug: string): SkillHubEntry | undefined;
+  registerSkill(opts: {
+    slug: string;
+    name: string;
+    kind: ComponentKind;
+    authority: string;
+    metadata_uri?: string;
+    component_path?: string;
+    kani_verified?: boolean;
+  }): Promise<{
+    skill_id: string;
+    entry: SkillHubEntry;
+    verification: { stride_score: number };
+  }>;
+  revokeSkill(skillId: string, authority: string): void;
+  loadCatalog(): CatalogEntry[];
+  catalogEntryToKind(entry: CatalogEntry): ComponentKind;
+}
+
+const skillHubModule = await import(
+  pathToFileURL(path.join(REPO_ROOT, 'trading', 'formal_verification', 'skill-hub.js')).href
+) as SkillHubModule;
+
+const {
+  listSkills,
+  getSkillById,
+  getSkillBySlug,
+  registerSkill,
+  revokeSkill,
+  loadCatalog,
+  catalogEntryToKind,
+} = skillHubModule;
 
 const metadataRouteLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -79,6 +132,14 @@ function firstParam(value: string | string[] | undefined): string {
   return value ?? '';
 }
 
+function withPublicCatalogLinks(entry: CatalogEntry): CatalogEntry {
+  return {
+    ...entry,
+    homepage: entry.homepage ?? `${PUBLIC_BASE_URL}/skills/${entry.slug}`,
+    manifest: entry.manifest ?? `${PUBLIC_BASE_URL}/api/skills/slug/${entry.slug}/metadata.json`,
+  };
+}
+
 type PublicSkillEntry = SkillHubEntry | (CatalogEntry & {
   kind: ComponentKind;
   active: boolean;
@@ -87,7 +148,8 @@ type PublicSkillEntry = SkillHubEntry | (CatalogEntry & {
 });
 
 function getCatalogEntryBySlug(slug: string): CatalogEntry | undefined {
-  return loadCatalog().find((entry) => entry.slug === slug);
+  const entry = loadCatalog().find((candidate) => candidate.slug === slug);
+  return entry ? withPublicCatalogLinks(entry) : undefined;
 }
 
 function getPublicSkillBySlug(slug: string): PublicSkillEntry | undefined {
@@ -101,7 +163,7 @@ function getPublicSkillBySlug(slug: string): PublicSkillEntry | undefined {
     ...catalogEntry,
     kind: catalogEntryToKind(catalogEntry),
     active: true,
-    metadata_uri: `https://x402.wtf/api/skills/slug/${catalogEntry.slug}/metadata.json`,
+    metadata_uri: `${PUBLIC_BASE_URL}/api/skills/slug/${catalogEntry.slug}/metadata.json`,
     registryBacked: false as const,
   };
 }
@@ -110,12 +172,13 @@ function listPublicSkills(kindFilter?: ComponentKind, activeOnly = true): Public
   const registered = listSkills({ kind: kindFilter, active: activeOnly });
   const registeredSlugs = new Set(registered.map((entry) => entry.slug));
   const catalogFallbacks = loadCatalog()
+    .map(withPublicCatalogLinks)
     .filter((entry) => !registeredSlugs.has(entry.slug))
     .map((entry) => ({
       ...entry,
       kind: catalogEntryToKind(entry),
       active: true,
-      metadata_uri: `https://x402.wtf/api/skills/slug/${entry.slug}/metadata.json`,
+      metadata_uri: `${PUBLIC_BASE_URL}/api/skills/slug/${entry.slug}/metadata.json`,
       registryBacked: false as const,
     }))
     .filter((entry) => !kindFilter || entry.kind === kindFilter)
@@ -158,7 +221,7 @@ router.get('/api/skills', cacheHeaders(30), (req: Request, res: Response) => {
 
 router.get('/api/skills/catalog', cacheHeaders(120), (_req: Request, res: Response) => {
   try {
-    const catalog = loadCatalog();
+    const catalog = loadCatalog().map(withPublicCatalogLinks);
     res.json({ count: catalog.length, catalog });
   } catch (err: unknown) {
     const e = err as Error;
@@ -213,8 +276,8 @@ router.get('/api/skills/slug/:slug/metadata.json', cacheHeaders(300), metadataRo
   res.json({
     name: entry.name,
     description: description || ('description' in entry ? entry.description : '') || entry.slug,
-    image: `https://x402.wtf/api/skills/slug/${entry.slug}/card.svg`,
-    external_url: `https://x402.wtf/skills/${entry.slug}`,
+    image: `${PUBLIC_BASE_URL}/api/skills/slug/${entry.slug}/card.svg`,
+    external_url: `${PUBLIC_BASE_URL}/skills/${entry.slug}`,
     attributes: [
       { trait_type: 'Kind', value: entry.kind },
       { trait_type: 'STRIDE Score', value: 'stride_score' in entry ? entry.stride_score : 'catalog-only' },

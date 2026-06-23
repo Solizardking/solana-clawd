@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getShare, revokeShare, verifySharePassword } from "@/lib/share-store";
 
 interface RouteContext {
-  params: { shareId: string };
+  params: Promise<{ shareId: string }>;
 }
 
 export async function GET(req: NextRequest, { params }: RouteContext) {
-  const { shareId } = params;
+  const { shareId } = await params;
   const share = getShare(shareId);
 
   if (!share) {
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, { params }: RouteContext) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
-  const { shareId } = params;
+  const { shareId } = await params;
   const deleted = revokeShare(shareId);
 
   if (!deleted) {

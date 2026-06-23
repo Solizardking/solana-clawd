@@ -1,9 +1,8 @@
 "use client";
 
-import { createContext, useContext, useRef, useMemo } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useCollaboration } from "@/hooks/useCollaboration";
 import { usePresence } from "@/hooks/usePresence";
-import { CollabSocket } from "@/lib/collaboration/socket";
 import type { CollabUser, CollabRole } from "@/lib/collaboration/socket";
 import type { CollabAnnotation, PendingToolUse } from "@/lib/collaboration/types";
 import type { PresenceState } from "@/lib/collaboration/presence";
@@ -67,15 +66,10 @@ export function CollaborationProvider({
   wsUrl,
   children,
 }: CollaborationProviderProps) {
-  const socketRef = useRef<CollabSocket | null>(null);
-
   const collab = useCollaboration({ sessionId, currentUser, wsUrl });
 
-  // Access the socket from the ref (set by the hook internally)
-  // Since useCollaboration creates the socket internally, we expose a proxy
-  // via the presence hook's socket param by reaching into the hook return
   const presence = usePresence({
-    socket: socketRef.current,
+    socket: collab.socket,
     sessionId,
     currentUser,
   });

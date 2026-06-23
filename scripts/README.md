@@ -33,6 +33,8 @@
 | `setup-agent-kit.sh` | Sets up the agent kit environment |
 | `setup.sh` | One-shot source checkout setup: dependencies, six-law verification, README refresh, runtime build |
 | `install-agent-arena.sh` | Installs the Cheshire Terminal Agent Arena skill into `~/.openclawd/workspace/skills` |
+| `e2b-clawd-code-sandbox.mjs` | Creates an E2B sandbox, clones this repo, builds Clawd Code, and runs a safe CLI smoke command |
+| `e2b-clawd-grok-sandbox.mjs` | Creates an E2B sandbox computer, clones this repo, builds `core-ai/clawd-grok`, and runs a safe CLI smoke command |
 
 ## Usage
 
@@ -45,6 +47,8 @@ npm run mint:clawd         # mint an agent (dry-run: --dry-run)
 npm run readme             # update README counters
 npm run setup:verify       # verify six-law harness without installing dependencies
 npm run arena:install      # install Cheshire Terminal Agent Arena skill
+npm run e2b:clawd-code:dry # print the E2B sandbox plan without spending credits
+npm run e2b:clawd-grok:dry # print the Clawd Grok sandbox plan without spending credits
 ```
 
 ---

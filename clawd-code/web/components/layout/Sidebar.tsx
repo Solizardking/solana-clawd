@@ -21,7 +21,12 @@ const TABS: Array<{ id: SidebarTab; icon: React.ElementType; label: string }> = 
   { id: "settings", icon: Settings, label: "Settings" },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+  variant?: "desktop" | "mobile";
+}
+
+export function Sidebar({ onNavigate, variant = "desktop" }: SidebarProps) {
   const {
     sidebarOpen,
     sidebarWidth,
@@ -76,16 +81,19 @@ export function Sidebar() {
   const handleTabClick = (id: SidebarTab) => {
     if (id === "settings") {
       openSettings();
+      onNavigate?.();
       return;
     }
     if (!sidebarOpen) toggleSidebar();
     setSidebarTab(id);
+    onNavigate?.();
   };
 
   return (
     <motion.aside
       className={cn(
-        "hidden md:flex flex-col h-full bg-surface-900 border-r border-surface-800",
+        variant === "desktop" ? "hidden md:flex" : "flex",
+        "flex-col h-full bg-surface-900 border-r border-surface-800",
         "relative flex-shrink-0 z-20",
         isResizing && "select-none"
       )}
@@ -102,7 +110,7 @@ export function Sidebar() {
       >
         {sidebarOpen && (
           <span className="flex-1 text-sm font-semibold text-surface-100 px-4 py-3 truncate">
-            Claude Code
+            Clawd Code
           </span>
         )}
 
@@ -162,13 +170,15 @@ export function Sidebar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.1 }}
           >
-            {(sidebarTab === "chats" || sidebarTab === "history") && <ChatHistory />}
+            {(sidebarTab === "chats" || sidebarTab === "history") && (
+              <ChatHistory onNavigate={onNavigate} />
+            )}
             {sidebarTab === "files" && <FileExplorer />}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {sidebarOpen && <QuickActions />}
+      {sidebarOpen && <QuickActions onNavigate={onNavigate} />}
 
       {/* Drag-to-resize handle */}
       {sidebarOpen && (

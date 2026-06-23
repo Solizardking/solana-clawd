@@ -139,7 +139,7 @@ export function toHTML(conv: Conversation, options: ExportOptions): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${escapeHtml(conv.title)} — Claude Code</title>
+  <title>${escapeHtml(conv.title)} — Clawd Code</title>
   <style>${CSS}</style>
 </head>
 <body>
@@ -147,7 +147,7 @@ export function toHTML(conv: Conversation, options: ExportOptions): string {
   <div class="meta">${metaParts.join("")}</div>
   <div class="messages">${messagesHtml}</div>
   <div class="footer">
-    <a href="https://claude.ai/code">Powered by Claude Code</a>
+    <span>Powered by Clawd Code</span>
   </div>
 </body>
 </html>`;

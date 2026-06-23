@@ -19,6 +19,12 @@
 ## Smoke
 
 ```bash
-npx tsc --noEmit --allowJs false formal_verification/gate.ts formal_verification/skill-hub.ts formal_verification/stride.ts
-npm run perps:audit
+npx tsc --noEmit --allowJs false \
+  --target ES2022 \
+  --module NodeNext \
+  --moduleResolution NodeNext \
+  trading/formal_verification/gate.ts \
+  trading/formal_verification/skill-hub.ts \
+  trading/formal_verification/stride.ts
+npm run trading:perps:audit
 ```

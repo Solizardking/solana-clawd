@@ -719,7 +719,7 @@ Create `.env`:
 ```bash
 cat > .env << EOF
 CLAWD_TASK_ID=task_7f9k3p
-CLAWD_API_KEY=clwd_sk_live_replace_me
+CLAWD_API_KEY=replace-with-clawd-api-key
 SOLANA_RPC=https://api.mainnet-beta.solana.com
 HF_TOKEN=hf_replace_me
 ONCHAIN_API=https://api.onchain.x402.wtf
@@ -831,7 +831,7 @@ pip install -r requirements.txt
 ```bash
 CUDA_VISIBLE_DEVICES=0 python start.py \
   --task_id task_7f9k3p,task_8m4p2q \
-  --api_key clwd_sk_live_replace_me \
+  --api_key replace-with-clawd-api-key \
   --rpc https://api.mainnet-beta.solana.com \
   --auto_clean_cache False \
   --lora_only True
@@ -843,7 +843,7 @@ CUDA_VISIBLE_DEVICES=0 python start.py \
 
 ```powershell
 $env:CLAWD_TASK_ID = "task_7f9k3p"
-$env:CLAWD_API_KEY = "clwd_sk_live_replace_me"
+$env:CLAWD_API_KEY = "replace-with-clawd-api-key"
 $env:SOLANA_RPC = "https://api.mainnet-beta.solana.com"
 
 python start.py --validation_args_file validation_config.json
@@ -900,7 +900,7 @@ Developers can call a Clawd model with an API key and model ID.
 ## 15.1 Environment
 
 ```env
-CLAWD_API_KEY=clwd_sk_live_replace_me
+CLAWD_API_KEY=replace-with-clawd-api-key
 ONCHAIN_ENDPOINT=https://api.onchain.x402.wtf
 MODEL_ID=model_3k9p2x
 ```
@@ -954,7 +954,7 @@ clawdInference("Explain decentralized AI on Solana in one sentence.");
 
 ```bash
 curl -X POST https://api.onchain.x402.wtf/v1/nexus/chat \
-  -H "x-api-key: clwd_sk_live_replace_me" \
+  -H "x-api-key: replace-with-clawd-api-key" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "How do I stake $CLAWD?",

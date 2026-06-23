@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Animated Clawd Code terminal command deck</title>
+  <desc id="desc">A dark terminal-style panel with animated command lines, status lights, and a scanning beam.</desc>
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="0.52" stop-color="#101827"/>
+      <stop offset="1" stop-color="#141019"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#22c55e" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="420" rx="28" fill="#05070d"/>
+  <rect x="28" y="28" width="1144" height="364" rx="22" fill="url(#panel)" stroke="#263449" stroke-width="2"/>
+  <rect x="50" y="54" width="1100" height="44" rx="14" fill="#0a0e18" stroke="#29384f"/>
+  <circle cx="78" cy="76" r="6" fill="#ef4444"/>
+  <circle cx="100" cy="76" r="6" fill="#f59e0b"/>
+  <circle cx="122" cy="76" r="6" fill="#22c55e">
+    <animate attributeName="opacity" values="0.35;1;0.35" dur="1.8s" repeatCount="indefinite"/>
+  </circle>
+  <text x="150" y="82" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="18" fill="#c7d2fe">clawd-code command deck</text>
+  <text x="50" y="146" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="24" fill="#f8fafc">$ clawd-code inspect</text>
+  <text x="50" y="190" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="22" fill="#8bd5ff">provider: xai      model: grok-4.3      stream: ready</text>
+  <text x="50" y="232" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="22" fill="#a7f3d0">modes: code | trade | research | image | voice | repl</text>
+  <text x="50" y="274" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="22" fill="#fcd34d">safety: paper first | live gates locked | wallets local</text>
+  <text x="50" y="316" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="22" fill="#c4b5fd">web: Next.js console | command palette | file viewer</text>
+  <g filter="url(#glow)">
+    <rect x="-260" y="112" width="260" height="232" fill="url(#beam)" opacity="0.8">
+      <animate attributeName="x" values="-260;1200" dur="4.2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <g transform="translate(826 128)">
+    <rect width="284" height="198" rx="18" fill="#080c14" stroke="#334155"/>
+    <text x="24" y="42" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="17" fill="#e2e8f0">smoke status</text>
+    <g transform="translate(24 68)">
+      <rect width="236" height="12" rx="6" fill="#1e293b"/>
+      <rect width="168" height="12" rx="6" fill="#22c55e">
+        <animate attributeName="width" values="84;220;168;236;168" dur="3.6s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <g transform="translate(24 100)">
+      <rect width="236" height="12" rx="6" fill="#1e293b"/>
+      <rect width="204" height="12" rx="6" fill="#38bdf8">
+        <animate attributeName="width" values="204;132;224;204" dur="3.2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <g transform="translate(24 132)">
+      <rect width="236" height="12" rx="6" fill="#1e293b"/>
+      <rect width="188" height="12" rx="6" fill="#a78bfa">
+        <animate attributeName="width" values="188;236;120;188" dur="4s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <text x="24" y="176" font-family="JetBrains Mono, SFMono-Regular, Consolas, monospace" font-size="15" fill="#94a3b8">build | test | web</text>
+  </g>
+</svg>

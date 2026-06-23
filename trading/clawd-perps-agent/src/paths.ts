@@ -8,6 +8,24 @@ function hasVulcanCatalog(candidateRoot: string): boolean {
   return existsSync(join(candidateRoot, VULCAN_CATALOG_PATH));
 }
 
+export function resolveVulcanRoot(repoRoot: string): string {
+  let current = resolve(repoRoot);
+
+  while (true) {
+    const candidates = [current, join(current, "src")];
+    const root = candidates.find(hasVulcanCatalog);
+    if (root) {
+      return root;
+    }
+
+    const parent = dirname(current);
+    if (parent === current) {
+      return resolve(repoRoot);
+    }
+    current = parent;
+  }
+}
+
 function walkUpForRepoRoot(startPath: string): string | undefined {
   let current = resolve(startPath);
 

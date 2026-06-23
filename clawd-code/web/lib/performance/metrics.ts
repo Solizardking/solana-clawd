@@ -15,6 +15,11 @@ export interface PerformanceMetric {
 
 type MetricSink = (metric: PerformanceMetric) => void;
 
+interface LayoutShift extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+}
+
 let sink: MetricSink = () => {};
 
 /** Register a custom analytics sink (e.g. PostHog, Datadog, console). */

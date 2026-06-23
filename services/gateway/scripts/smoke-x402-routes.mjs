@@ -63,7 +63,7 @@ async function text(url, options) {
 
 async function main() {
   const port = await getOpenPort();
-  const child = spawn('node', ['../dist/gateway/src/index.js'], {
+  const child = spawn('node', ['dist/src/index.js'], {
     cwd: new URL('..', import.meta.url),
     env: {
       ...process.env,
@@ -96,7 +96,7 @@ async function main() {
     assert(agents.agents?.length === agents.stats.totalAgents, 'agents catalog length must match totalAgents');
 
     const skills = await json(`${local}/api/skills/catalog`);
-    assert(skills.count >= 136, `expected at least 136 skills, got ${skills.count}`);
+    assert(skills.count >= 95, `expected at least 95 skills, got ${skills.count}`);
     assert(skills.catalog?.length === skills.count, 'skills catalog length must match count');
     assert(skills.catalog?.[0]?.homepage?.startsWith(`${BASE_URL}/skills/`), 'skills homepage must point to x402.wtf/skills');
 

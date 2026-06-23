@@ -1,4 +1,5 @@
 import type { PreflightReport } from "../config.js";
+import { resolveVulcanRoot } from "../paths.js";
 
 export interface VulcanBridgeCommand {
   command: string;
@@ -31,11 +32,12 @@ export function mapToVulcanCommand(
   repoRoot: string,
   input: VulcanExecutionIntent,
 ): VulcanBridgeCommand {
+  const vulcanRoot = resolveVulcanRoot(repoRoot);
   const symbol = input.symbol?.trim().toUpperCase() ?? "SOL";
   const notional = String(input.notionalUsd ?? 100);
   const base = {
     command: "cargo",
-    cwd: `${repoRoot}/vulcan-cli-master`,
+    cwd: `${vulcanRoot}/vulcan-cli-master`,
     env: {
       NO_COLOR: "1",
     },
