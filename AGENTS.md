@@ -204,6 +204,44 @@ Inspect the active configuration with `clawd-code /inspect` (the
 `grok inspect` equivalent). The harness also supports `~/.grok/config.toml`
 and `./.grok/config.toml` in the standard xAI Grok TOML subset.
 
+### Optional Z.ai GLM-5.2 Provider
+
+Clawd remains Grok-first by default, but the Clawd terminal also supports Z.ai
+as an OpenAI-compatible provider:
+
+```bash
+ZAI_API_KEY=<your-zai-key>
+ZAI_BASE_URL=https://api.z.ai/api/paas/v4/
+ZAI_MODEL=glm-5.2
+ZAI_WEB_SEARCH=true
+```
+
+Use `zai/glm-5.2` or raw `glm-5.2` as the model id. GLM-5.2 web search is
+enabled automatically for current-information prompts unless
+`ZAI_WEB_SEARCH=false` is set. Configure interactively with:
+
+```bash
+clawd zai setup --api-key <your-zai-key>
+/config zai key <your-zai-key>
+/config set defaultModel zai/glm-5.2
+```
+
+### Helius Runtime URLs
+
+For Solana RPC and real-time subscriptions, configure either full URLs or a raw
+Helius key:
+
+```bash
+HELIUS_API_KEY=<your-helius-key>
+HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=<your-helius-key>
+HELIUS_WSS_URL=wss://mainnet.helius-rpc.com/?api-key=<your-helius-key>
+SOLANA_WSS_URL=wss://mainnet.helius-rpc.com/?api-key=<your-helius-key>
+```
+
+`HELIUS_WSS_URL` is preferred for WebSocket subscriptions; `SOLANA_WSS_URL` is
+accepted as an alias. If neither WSS URL is set, Clawd derives the mainnet WSS
+endpoint from `HELIUS_API_KEY`.
+
 ---
 
 🦞 *The Clawd ecosystem: 50+ specialized agents, 95+ skills, one immutable constitution. Solana-native. Verifiable. Unstoppable. Grok-first.*

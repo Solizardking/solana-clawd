@@ -211,8 +211,15 @@ CLAWD_AGENT_COUNT=4
 # xAI / Grok
 XAI_API_KEY=
 
+# Z.ai GLM-5.2 (OpenAI-compatible, optional alternative provider)
+ZAI_API_KEY=
+ZAI_BASE_URL=https://api.z.ai/api/paas/v4/
+ZAI_MODEL=glm-5.2
+ZAI_WEB_SEARCH=true
+
 # Solana
 HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=
+HELIUS_WSS_URL=wss://mainnet.helius-rpc.com/?api-key=
 HELIUS_API_KEY=
 PHOENIX_RISE_URL=https://api.phoenix.gg/enclave
 

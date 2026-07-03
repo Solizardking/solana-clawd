@@ -361,7 +361,7 @@ Available models: ${modelNames.join(", ")}`,
       if (parts.length === 1) {
         const providers = manager.getUserSetting("providers") || {};
         const lines = ["Clawd Code CLI — provider config", ""];
-        for (const p of ["grok", "openrouter", "openai", "ollama", "custom"]) {
+        for (const p of ["grok", "zai", "openrouter", "openai", "ollama", "custom"]) {
           const cfg = providers[p] || {};
           const keyMask = cfg.apiKey
             ? cfg.apiKey.slice(0, 6) + "…" + cfg.apiKey.slice(-4)
@@ -375,7 +375,7 @@ Available models: ${modelNames.join(", ")}`,
         lines.push("  /config add model <name>");
         lines.push("  /config set defaultModel <model>");
         lines.push("");
-        lines.push("Providers: grok | openrouter | openai | ollama | custom");
+        lines.push("Providers: grok | zai | openrouter | openai | ollama | custom");
         setChatHistory((prev) => [
           ...prev,
           { type: "assistant", content: lines.join("\n"), timestamp: new Date() },

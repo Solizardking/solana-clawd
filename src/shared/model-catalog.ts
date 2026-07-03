@@ -11,6 +11,15 @@ export interface ModelCatalogEntry {
 
 export const DEFAULT_MODEL_CATALOG: ModelCatalogEntry[] = [
   {
+    id: "zai/glm-5.2",
+    name: "GLM-5.2",
+    provider: "zai",
+    contextWindow: 1_000_000,
+    reasoning: true,
+    defaultThinking: "high",
+    recommended: true,
+  },
+  {
     id: "minimax/minimax-m2.7",
     name: "MiniMax M2.7",
     provider: "openrouter",
