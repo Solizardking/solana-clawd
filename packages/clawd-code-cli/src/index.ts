@@ -12,6 +12,7 @@ import { createExamplesCommand } from "./commands/examples.js";
 import { createAgentCommand } from "./commands/agent.js";
 import { createCharacterCommand } from "./commands/character.js";
 import { createOpenRouterCommand } from "./commands/openrouter.js";
+import { createZaiCommand } from "./commands/zai.js";
 import { createPreviewCommand } from "./commands/preview.js";
 import { createCloudCommand } from "./commands/cloud.js";
 import { createSkillsCommand } from "./commands/skills.js";
@@ -399,6 +400,9 @@ program.addCommand(createCharacterCommand());
 
 // OpenRouter convenience command
 program.addCommand(createOpenRouterCommand());
+
+// Z.ai GLM convenience command
+program.addCommand(createZaiCommand());
 
 // Repo / GitHub preview command
 program.addCommand(createPreviewCommand());

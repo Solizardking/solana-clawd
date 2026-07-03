@@ -320,17 +320,29 @@ export function createCloudCommand(): Command {
           },
         },
         {
-          name: "XAI_API_KEY",
+          name: "AI provider key",
           check: async () => {
-            const val = process.env.XAI_API_KEY;
-            return [Boolean(val), val ? "set" : "not set"];
+            const provider =
+              process.env.XAI_API_KEY ? "XAI_API_KEY" :
+              process.env.GROK_API_KEY ? "GROK_API_KEY" :
+              process.env.ZAI_API_KEY ? "ZAI_API_KEY" :
+              process.env.OPENROUTER_API_KEY ? "OPENROUTER_API_KEY" :
+              "";
+            return [Boolean(provider), provider || "not set"];
           },
         },
         {
           name: "HELIUS_API_KEY",
           check: async () => {
-            const val = process.env.HELIUS_API_KEY;
-            return [Boolean(val), val ? "set" : "not set (Helius RPC unavailable)"];
+            const val = process.env.HELIUS_API_KEY || process.env.HELIUS_RPC_URL || process.env.SOLANA_RPC_URL;
+            return [Boolean(val), process.env.HELIUS_API_KEY ? "set" : val ? "RPC URL set" : "not set (Helius RPC unavailable)"];
+          },
+        },
+        {
+          name: "HELIUS_WSS_URL",
+          check: async () => {
+            const val = process.env.HELIUS_WSS_URL || process.env.SOLANA_WSS_URL;
+            return [Boolean(val || process.env.HELIUS_API_KEY), val ? "set" : "derived from HELIUS_API_KEY if set"];
           },
         },
         {
@@ -445,7 +457,10 @@ export function createCloudCommand(): Command {
 
       const keys = [
         "XAI_API_KEY",
+        "ZAI_API_KEY",
+        "ZAI_BASE_URL",
         "HELIUS_API_KEY",
+        "HELIUS_WSS_URL",
         "OPENROUTER_API_KEY",
         "TELEGRAM_BOT_TOKEN",
         "SOLANA_PRIVATE_KEY",
