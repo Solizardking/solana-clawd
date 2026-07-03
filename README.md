@@ -188,21 +188,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`e77447c`](../../commit/e77447c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
-| 🥈 | [`30f80ad`](../../commit/30f80ad) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
-| 🥉 | [`933cc55`](../../commit/933cc55) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jul 03 |
-| 4️⃣ | [`d90c36a`](../../commit/d90c36a) | wer | solizardking | Jul 03 |
-| 5️⃣ | [`83a405c`](../../commit/83a405c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
-| 6️⃣ | [`4e37f24`](../../commit/4e37f24) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
-| 7️⃣ | [`0034737`](../../commit/0034737) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
-| 8️⃣ | [`daa76ec`](../../commit/daa76ec) | sdffd | solizardking | Jul 02 |
-| 9️⃣ | [`7be79f9`](../../commit/7be79f9) | DFASDSF | solizardking | Jul 02 |
-| 🔟 | [`de6dffd`](../../commit/de6dffd) | SFFDDFSasdfdfsa | solizardking | Jul 02 |
+| 🥇 | [`182b39b`](../../commit/182b39b) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jul 03 |
+| 🥈 | [`d98feb8`](../../commit/d98feb8) | rewrew | solizardking | Jul 03 |
+| 🥉 | [`3fb12a4`](../../commit/3fb12a4) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
+| 4️⃣ | [`e77447c`](../../commit/e77447c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
+| 5️⃣ | [`30f80ad`](../../commit/30f80ad) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
+| 6️⃣ | [`933cc55`](../../commit/933cc55) | Merge branch 'main' of https://github.com/Solizardking/solan | solizardking | Jul 03 |
+| 7️⃣ | [`d90c36a`](../../commit/d90c36a) | wer | solizardking | Jul 03 |
+| 8️⃣ | [`83a405c`](../../commit/83a405c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
+| 9️⃣ | [`4e37f24`](../../commit/4e37f24) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
+| 🔟 | [`0034737`](../../commit/0034737) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
+| · | [`daa76ec`](../../commit/daa76ec) | sdffd | solizardking | Jul 02 |
+| · | [`7be79f9`](../../commit/7be79f9) | DFASDSF | solizardking | Jul 02 |
+| · | [`de6dffd`](../../commit/de6dffd) | SFFDDFSasdfdfsa | solizardking | Jul 02 |
 | · | [`3b23767`](../../commit/3b23767) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 03 |
 | · | [`f65e2ed`](../../commit/f65e2ed) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 02 |
-| · | [`899a0bd`](../../commit/899a0bd) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 02 |
-| · | [`be07a53`](../../commit/be07a53) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 02 |
-| · | [`9640684`](../../commit/9640684) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Jul 02 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
