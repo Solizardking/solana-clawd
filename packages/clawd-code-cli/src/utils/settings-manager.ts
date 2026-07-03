@@ -6,7 +6,7 @@ import * as os from "os";
  * Current settings version - increment this when adding new models or changing settings structure
  * This triggers automatic migration for existing users
  */
-const SETTINGS_VERSION = 3;
+const SETTINGS_VERSION = 4;
 
 /**
  * User-level settings stored in ~/.clawd/user-settings.json
@@ -24,7 +24,7 @@ export interface UserSettings {
   models?: string[]; // Available models list
   settingsVersion?: number; // Version for migration tracking
   ollamaBaseURL?: string; // Ollama API base URL (default: http://localhost:11434/v1)
-  // Per-provider configuration. Keys are provider ids: grok | openrouter | openai | ollama | custom
+  // Per-provider configuration. Keys are provider ids: grok | zai | openrouter | openai | ollama | custom
   providers?: Record<string, ProviderConfig>;
 }
 
@@ -55,6 +55,10 @@ const DEFAULT_USER_SETTINGS: Partial<UserSettings> = {
     "grok-4-latest",
     // Grok Code (optimized for coding, 256K context)
     "grok-code-fast-1",
+    // Z.ai GLM models (OpenAI-compatible, use ZAI_API_KEY)
+    "zai/glm-5.2",
+    "zai/glm-5.1",
+    "zai/glm-5",
     // Grok 3 models (131K context)
     "grok-3",
     "grok-3-latest",
@@ -243,8 +247,16 @@ export class SettingsManager {
       migrated.models = [...newModels, ...(migrated.models || [])];
     }
 
+    // Migration from version 3 to 4: Add Z.ai GLM-5.x OpenAI-compatible models.
+    if (fromVersion < 4) {
+      const defaultModels = DEFAULT_USER_SETTINGS.models || [];
+      const existingModels = new Set(migrated.models || []);
+      const newModels = defaultModels.filter(model => !existingModels.has(model));
+      migrated.models = [...newModels, ...(migrated.models || [])];
+    }
+
     // Add future migrations here:
-    // if (fromVersion < 4) { ... }
+    // if (fromVersion < 5) { ... }
 
     migrated.settingsVersion = SETTINGS_VERSION;
     return migrated;
@@ -423,10 +435,11 @@ export class SettingsManager {
    */
   public getAvailableModels(): string[] {
     const models = this.getUserSetting("models") || DEFAULT_USER_SETTINGS.models || [];
-    // Merge in OPENROUTER_MODEL1, OPENROUTER_MODEL2, ... from env (auto-prefixed with "openrouter/")
+    // Merge in provider-specific model env vars (auto-prefixed).
     const envModels = this.getEnvOpenRouterModels();
-    if (envModels.length === 0) return models;
-    const set = new Set<string>([...envModels, ...models]);
+    const envZaiModels = this.getEnvZaiModels();
+    if (envModels.length === 0 && envZaiModels.length === 0) return models;
+    const set = new Set<string>([...envZaiModels, ...envModels, ...models]);
     return Array.from(set);
   }
 
@@ -444,6 +457,27 @@ export class SettingsManager {
       out.push(raw.startsWith("openrouter/") ? raw : `openrouter/${raw}`);
     }
     return out;
+  }
+
+  /**
+   * Read ZAI_MODEL / ZAI_MODEL1..N from env and return them prefixed for Z.ai.
+   * "glm-5.2" -> "zai/glm-5.2". Already-prefixed values are passed through.
+   */
+  public getEnvZaiModels(): string[] {
+    const out: string[] = [];
+    const append = (rawValue: string | undefined): void => {
+      const raw = (rawValue || "").trim();
+      if (!raw) return;
+      out.push(raw.startsWith("zai/") ? raw : `zai/${raw}`);
+    };
+
+    append(process.env.ZAI_MODEL);
+    for (const [k, v] of Object.entries(process.env)) {
+      if (!/^ZAI_MODEL\d+$/.test(k)) continue;
+      append(v);
+    }
+
+    return Array.from(new Set(out));
   }
 
   /**
@@ -513,11 +547,13 @@ export class SettingsManager {
 
   /**
    * Detect which provider a model belongs to based on prefix.
-   * Supported prefixes: "ollama/", "openrouter/", "openai/", "custom/"
+   * Supported prefixes: "ollama/", "zai/", "openrouter/", "openai/", "custom/"
    * Anything else falls back to "grok".
    */
   public getProviderForModel(model: string): string {
     if (model.startsWith("ollama/")) return "ollama";
+    if (model.startsWith("zai/")) return "zai";
+    if (/^glm-\d/i.test(model)) return "zai";
     if (model.startsWith("openrouter/")) return "openrouter";
     if (model.startsWith("openai/")) return "openai";
     if (model.startsWith("custom/")) return "custom";
@@ -528,11 +564,13 @@ export class SettingsManager {
    * Strip provider prefix so the API receives the raw model id.
    * e.g. "openrouter/anthropic/claude-3.5-sonnet" -> "anthropic/claude-3.5-sonnet"
    *      "ollama/gemma4:latest"                   -> "gemma4:latest"
+   *      "zai/glm-5.2"                             -> "glm-5.2"
    */
   public getModelIdForApi(model: string): string {
     const provider = this.getProviderForModel(model);
     if (provider === "grok") return model;
-    return model.substring(provider.length + 1); // +1 for the trailing "/"
+    const prefix = `${provider}/`;
+    return model.startsWith(prefix) ? model.substring(prefix.length) : model;
   }
 
   /**
@@ -569,6 +607,15 @@ export class SettingsManager {
             cfg.baseURL ||
             process.env.OPENROUTER_BASE_URL ||
             "https://openrouter.ai/api/v1",
+        };
+      case "zai":
+        return {
+          provider,
+          apiKey: cfg.apiKey || process.env.ZAI_API_KEY || "",
+          baseURL:
+            cfg.baseURL ||
+            process.env.ZAI_BASE_URL ||
+            "https://api.z.ai/api/paas/v4/",
         };
       case "openai":
         return {

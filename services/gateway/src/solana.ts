@@ -39,7 +39,9 @@ export const connection = new Connection(rpcUrl, {
   wsEndpoint:
     process.env.HELIUS_ATLAS_WSS_URL ||
     process.env.HELIUS_WSS_URL ||
-    (HELIUS_API_KEY ? `wss://atlas-mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` : undefined),
+    process.env.HELIUS_WS_URL ||
+    process.env.SOLANA_WSS_URL ||
+    (HELIUS_API_KEY ? `wss://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}` : undefined),
 });
 
 export function getRpcUrl(): string {

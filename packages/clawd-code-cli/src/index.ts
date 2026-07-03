@@ -59,6 +59,10 @@ function loadBaseURL(): string {
   return manager.getBaseURL();
 }
 
+function normalizeZaiModel(model = "glm-5.2"): string {
+  return model.startsWith("zai/") ? model : `zai/${model}`;
+}
+
 async function saveCommandLineSettings(
   apiKey?: string,
   baseURL?: string
@@ -82,7 +86,11 @@ async function saveCommandLineSettings(
 }
 
 function loadModel(): string | undefined {
-  let model = process.env.XAI_MODEL || process.env.GROK_MODEL;
+  let model =
+    process.env.CLAWD_MODEL ||
+    process.env.XAI_MODEL ||
+    process.env.GROK_MODEL ||
+    (process.env.ZAI_MODEL ? normalizeZaiModel(process.env.ZAI_MODEL) : undefined);
 
   if (!model) {
     try {
@@ -93,7 +101,14 @@ function loadModel(): string | undefined {
     }
   }
 
-  if (!model && !process.env.XAI_API_KEY && !process.env.GROK_API_KEY && process.env.OPENROUTER_API_KEY) {
+  const hasGrokKey = Boolean(process.env.XAI_API_KEY || process.env.GROK_API_KEY || loadApiKey());
+  const selectedGrokWithoutKey = Boolean(model?.startsWith("grok") && !hasGrokKey);
+
+  if ((!model || selectedGrokWithoutKey) && process.env.ZAI_API_KEY) {
+    return normalizeZaiModel(process.env.ZAI_MODEL || "glm-5.2");
+  }
+
+  if ((!model || selectedGrokWithoutKey) && process.env.OPENROUTER_API_KEY) {
     try {
       const envModels = getSettingsManager().getEnvOpenRouterModels();
       if (envModels.length > 0) model = envModels[0];
@@ -266,9 +281,9 @@ program
   .version("1.3.0")
   .argument("[message...]", "Initial message to send to Clawd")
   .option("-d, --directory <dir>", "set working directory", process.cwd())
-  .option("-k, --api-key <key>", "xAI API key (or set XAI_API_KEY / GROK_API_KEY env var)")
-  .option("-u, --base-url <url>", "xAI API base URL (or set XAI_BASE_URL / GROK_BASE_URL env var)")
-  .option("-m, --model <model>", "AI model to use (e.g., grok-code-fast-1, grok-4-latest)")
+  .option("-k, --api-key <key>", "default xAI API key (or set XAI_API_KEY / GROK_API_KEY; Z.ai uses ZAI_API_KEY)")
+  .option("-u, --base-url <url>", "default xAI API base URL (or set XAI_BASE_URL / GROK_BASE_URL; Z.ai uses ZAI_BASE_URL)")
+  .option("-m, --model <model>", "AI model to use (e.g., grok-code-fast-1, zai/glm-5.2)")
   .option("-p, --prompt <prompt>", "process a single prompt and exit (headless mode)")
   .option("-c, --character <name>", "load a character persona from characters/ (e.g. clawd, alice, warrenbuffet)")
   .option("--max-tool-rounds <rounds>", "maximum number of tool execution rounds (default: 400)", "400")
@@ -289,10 +304,11 @@ program
       const maxToolRounds = parseInt(options.maxToolRounds) || 400;
       const characterName: string | undefined = options.character;
 
-      const hasOpenRouter = Boolean(process.env.OPENROUTER_API_KEY);
-      if (!apiKey && !hasOpenRouter) {
+      const providerCfg = getSettingsManager().getProviderConfigForModel(model || "grok-code-fast-1");
+      const hasProviderAuth = Boolean(providerCfg.apiKey) || providerCfg.provider === "ollama";
+      if (!hasProviderAuth) {
         console.error(
-          '❌ Error: API key required. Set XAI_API_KEY (or GROK_API_KEY) or OPENROUTER_API_KEY, use --api-key, or set "apiKey" in ~/.clawd/user-settings.json'
+          '❌ Error: API key required. Set XAI_API_KEY/GROK_API_KEY, ZAI_API_KEY, OPENROUTER_API_KEY, use --api-key, or set provider credentials with "/config <provider> key <apiKey>"'
         );
         process.exit(1);
       }
@@ -303,12 +319,12 @@ program
 
       // Headless mode: process prompt and exit
       if (options.prompt) {
-        await processPromptHeadless(options.prompt, apiKey, baseURL, model, maxToolRounds, characterName);
+        await processPromptHeadless(options.prompt, apiKey || "", baseURL, model, maxToolRounds, characterName);
         return;
       }
 
       // Interactive mode: launch UI
-      const agent = new GrokAgent(apiKey, baseURL, model, maxToolRounds, characterName);
+      const agent = new GrokAgent(apiKey || "", baseURL, model, maxToolRounds, characterName);
       if (characterName) {
         console.log(`🎭 Character: ${characterName}\n`);
       }
@@ -331,8 +347,8 @@ gitCommand
   .command("commit-and-push")
   .description("Generate AI commit message and push to remote")
   .option("-d, --directory <dir>", "set working directory", process.cwd())
-  .option("-k, --api-key <key>", "xAI API key (or set XAI_API_KEY / GROK_API_KEY env var)")
-  .option("-u, --base-url <url>", "xAI API base URL")
+  .option("-k, --api-key <key>", "default xAI API key (Z.ai uses ZAI_API_KEY)")
+  .option("-u, --base-url <url>", "default xAI API base URL")
   .option("-m, --model <model>", "AI model to use")
   .option("--max-tool-rounds <rounds>", "maximum number of tool execution rounds (default: 400)", "400")
   .action(async (options) => {
@@ -351,8 +367,10 @@ gitCommand
       const model = options.model || loadModel();
       const maxToolRounds = parseInt(options.maxToolRounds) || 400;
 
-      if (!apiKey) {
-        console.error("❌ Error: API key required. Set XAI_API_KEY (or GROK_API_KEY), use --api-key, or save to ~/.clawd/user-settings.json");
+      const providerCfg = getSettingsManager().getProviderConfigForModel(model || "grok-code-fast-1");
+      const hasProviderAuth = Boolean(providerCfg.apiKey) || providerCfg.provider === "ollama";
+      if (!hasProviderAuth) {
+        console.error("❌ Error: API key required. Set XAI_API_KEY/GROK_API_KEY, ZAI_API_KEY, OPENROUTER_API_KEY, use --api-key, or save provider credentials to ~/.clawd/user-settings.json");
         process.exit(1);
       }
 
@@ -360,7 +378,7 @@ gitCommand
         await saveCommandLineSettings(options.apiKey, options.baseUrl);
       }
 
-      await handleCommitAndPushHeadless(apiKey, baseURL, model, maxToolRounds);
+      await handleCommitAndPushHeadless(apiKey || "", baseURL, model, maxToolRounds);
     } catch (error: any) {
       console.error("❌ Error during git commit-and-push:", error.message);
       process.exit(1);

@@ -63,7 +63,7 @@ export class GrokClient {
       baseURL: resolvedBaseURL,
       timeout: 360000,
     });
-    const envMax = Number(process.env.GROK_MAX_TOKENS);
+    const envMax = Number(process.env.CLAWD_MAX_TOKENS || process.env.GROK_MAX_TOKENS);
     this.defaultMaxTokens = Number.isFinite(envMax) && envMax > 0 ? envMax : 1536;
     if (model) {
       this.currentModel = model;
@@ -120,11 +120,11 @@ export class GrokClient {
   }
 
   /**
-   * Strip a provider prefix ("ollama/", "openrouter/", "openai/", "custom/")
+   * Strip a provider prefix ("ollama/", "zai/", "openrouter/", "openai/", "custom/")
    * from a model id before sending to the underlying API.
    */
   private resolveApiModel(model: string): string {
-    const prefixes = ["ollama/", "openrouter/", "openai/", "custom/"];
+    const prefixes = ["ollama/", "zai/", "openrouter/", "openai/", "custom/"];
     for (const p of prefixes) {
       if (model.startsWith(p)) return model.substring(p.length);
     }
@@ -133,6 +133,29 @@ export class GrokClient {
 
   private isOpenRouterModel(model: string): boolean {
     return model.startsWith("openrouter/");
+  }
+
+  private isZaiModel(model: string): boolean {
+    return model.startsWith("zai/") || model.startsWith("glm-");
+  }
+
+  private isGrokModel(model: string): boolean {
+    return model.startsWith("grok");
+  }
+
+  private buildZaiWebSearchTool(): Record<string, unknown> {
+    const count = Number.parseInt(process.env.ZAI_WEB_SEARCH_COUNT || "5", 10);
+    return {
+      type: "web_search",
+      web_search: {
+        enable: "True",
+        search_engine: process.env.ZAI_WEB_SEARCH_ENGINE || "search-prime",
+        search_result: "True",
+        count: String(Number.isFinite(count) && count > 0 ? count : 5),
+        search_recency_filter: process.env.ZAI_WEB_SEARCH_RECENCY || "noLimit",
+        content_size: process.env.ZAI_WEB_SEARCH_CONTENT_SIZE || "medium",
+      },
+    };
   }
 
   getCurrentModel(): string {
@@ -150,10 +173,12 @@ export class GrokClient {
       // Use Agent Tools API (web_search + x_search) for Grok models when search is enabled.
       // The old `search_parameters` is deprecated (returns 410).
       const useSearch = searchOptions?.searchMode !== "off";
-      const allTools = [...(tools || [])];
-      if (useSearch && !this.isOpenRouterModel(activeModel) && activeModel.startsWith("grok")) {
+      const allTools: any[] = [...(tools || [])];
+      if (useSearch && !this.isOpenRouterModel(activeModel) && this.isGrokModel(activeModel)) {
         allTools.push({ type: "web_search" } as any);
         allTools.push({ type: "x_search" } as any);
+      } else if (useSearch && this.isZaiModel(activeModel) && process.env.ZAI_WEB_SEARCH !== "false") {
+        allTools.push(this.buildZaiWebSearchTool());
       }
 
       const requestPayload: any = {
@@ -169,6 +194,14 @@ export class GrokClient {
       // Disable by setting OPENROUTER_REASONING=false.
       if (this.isOpenRouterModel(activeModel) && process.env.OPENROUTER_REASONING !== "false") {
         requestPayload.reasoning = { enabled: true };
+      }
+
+      if (this.isZaiModel(activeModel)) {
+        const reasoningEffort = process.env.ZAI_REASONING_EFFORT;
+        if (reasoningEffort) requestPayload.reasoning_effort = reasoningEffort;
+        if (process.env.ZAI_ENABLE_THINKING === "false") {
+          requestPayload.enable_thinking = false;
+        }
       }
 
       const response =
@@ -190,10 +223,12 @@ export class GrokClient {
       const activeModel = model || this.currentModel;
       // Use Agent Tools API (web_search + x_search) for Grok models when search is enabled.
       const useSearch = searchOptions?.searchMode !== "off";
-      const allTools = [...(tools || [])];
-      if (useSearch && !this.isOpenRouterModel(activeModel) && activeModel.startsWith("grok")) {
+      const allTools: any[] = [...(tools || [])];
+      if (useSearch && !this.isOpenRouterModel(activeModel) && this.isGrokModel(activeModel)) {
         allTools.push({ type: "web_search" } as any);
         allTools.push({ type: "x_search" } as any);
+      } else if (useSearch && this.isZaiModel(activeModel) && process.env.ZAI_WEB_SEARCH !== "false") {
+        allTools.push(this.buildZaiWebSearchTool());
       }
 
       const requestPayload: any = {
@@ -208,6 +243,14 @@ export class GrokClient {
 
       if (this.isOpenRouterModel(activeModel) && process.env.OPENROUTER_REASONING !== "false") {
         requestPayload.reasoning = { enabled: true };
+      }
+
+      if (this.isZaiModel(activeModel)) {
+        const reasoningEffort = process.env.ZAI_REASONING_EFFORT;
+        if (reasoningEffort) requestPayload.reasoning_effort = reasoningEffort;
+        if (process.env.ZAI_ENABLE_THINKING === "false") {
+          requestPayload.enable_thinking = false;
+        }
       }
 
       const stream = (await this.client.chat.completions.create(

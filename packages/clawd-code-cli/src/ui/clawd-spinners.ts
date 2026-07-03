@@ -95,6 +95,8 @@ export function spinnerForProvider(provider: string): ClawdSpinner {
       return blockFinality; // local / chunk-y vibe
     case "openrouter":
       return tokenOrbit; // routed through the swarm
+    case "zai":
+      return solanaPulse; // long-context pulse
     case "openai":
       return pumpLoader; // steady fill
     case "custom":

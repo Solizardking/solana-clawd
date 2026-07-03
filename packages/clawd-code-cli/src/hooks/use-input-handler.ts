@@ -425,7 +425,7 @@ Available models: ${modelNames.join(", ")}`,
       const provider = parts[1];
       const field = parts[2];
       const value = parts.slice(3).join(" ");
-      const validProviders = ["grok", "openrouter", "openai", "ollama", "custom"];
+      const validProviders = ["grok", "zai", "openrouter", "openai", "ollama", "custom"];
       if (!validProviders.includes(provider)) {
         setChatHistory((prev) => [
           ...prev,

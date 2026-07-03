@@ -17,6 +17,8 @@ import WebSocket from "ws";
 export interface HeliusClientOpts {
   apiKey: string;
   cluster?: "mainnet-beta" | "devnet";
+  rpcUrl?: string;
+  wssUrl?: string;
 }
 
 export interface TokenTransfer {
@@ -61,10 +63,13 @@ export class HeliusClient {
   constructor(opts: HeliusClientOpts) {
     this.apiKey = opts.apiKey;
     const cluster = opts.cluster ?? "mainnet-beta";
-    const subdomain = cluster === "devnet" ? "devnet" : "mainnet-beta";
-    this.rpcUrl = `https://rpc.helius.xyz/?api-key=${this.apiKey}`;
+    const rpcHost = cluster === "devnet" ? "https://devnet.helius-rpc.com" : "https://mainnet.helius-rpc.com";
+    this.rpcUrl =
+      opts.rpcUrl ||
+      process.env.HELIUS_RPC_URL ||
+      process.env.SOLANA_RPC_URL ||
+      `${rpcHost}/?api-key=${this.apiKey}`;
     this.apiBase = `https://api.helius.xyz`;
-    void subdomain;
   }
 
   private async rpc<T>(method: string, params: unknown[]): Promise<T> {
@@ -165,10 +170,13 @@ export class HeliusListener extends EventEmitter {
     super();
     this.apiKey = opts.apiKey;
     const cluster = opts.cluster ?? "mainnet-beta";
+    const wssHost = cluster === "devnet" ? "wss://devnet.helius-rpc.com" : "wss://mainnet.helius-rpc.com";
     this.wsUrl =
-      cluster === "devnet"
-        ? `wss://devnet.helius-rpc.com/?api-key=${this.apiKey}`
-        : `wss://atlas-mainnet.helius-rpc.com/?api-key=${this.apiKey}`;
+      opts.wssUrl ||
+      process.env.HELIUS_WSS_URL ||
+      process.env.HELIUS_WS_URL ||
+      process.env.SOLANA_WSS_URL ||
+      `${wssHost}/?api-key=${this.apiKey}`;
   }
 
   async connect(): Promise<void> {

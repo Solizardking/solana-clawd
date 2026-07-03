@@ -166,7 +166,7 @@ BLOCKCHAIN & TRADING TOOLS:
 - dflow_priority_fees_stream: Live DFlow priority fees over WS
 
 REAL-TIME INFORMATION:
-You have access to real-time web search and X (Twitter) data. When users ask for current information, latest news, or recent events, you automatically have access to up-to-date information from the web and social media.
+You have access to real-time search on providers that support native search tools. Grok models can use web search and X data; Z.ai GLM models can use web search. When users ask for current information, latest news, recent events, prices, or releases, use up-to-date information instead of relying on stale memory.
 
 IMPORTANT TOOL USAGE RULES:
 - NEVER use create_file on files that already exist - this will overwrite them completely
@@ -242,6 +242,15 @@ Current working directory: ${process.cwd()}`,
     return currentModel.toLowerCase().includes("grok");
   }
 
+  private isZaiModel(): boolean {
+    const currentModel = this.grokClient.getCurrentModel().toLowerCase();
+    return currentModel.startsWith("zai/") || currentModel.startsWith("glm-");
+  }
+
+  private supportsNativeSearch(): boolean {
+    return this.isGrokModel() || this.isZaiModel();
+  }
+
   // Heuristic: enable web search only when likely needed
   private shouldUseSearchFor(message: string): boolean {
     const q = message.toLowerCase();
@@ -290,7 +299,7 @@ Current working directory: ${process.cwd()}`,
         this.messages,
         tools,
         undefined,
-        this.isGrokModel() && this.shouldUseSearchFor(message)
+        this.supportsNativeSearch() && this.shouldUseSearchFor(message)
           ? { searchMode: "auto" }
           : { searchMode: "off" }
       );
@@ -386,7 +395,7 @@ Current working directory: ${process.cwd()}`,
             this.messages,
             tools,
             undefined,
-            this.isGrokModel() && this.shouldUseSearchFor(message)
+            this.supportsNativeSearch() && this.shouldUseSearchFor(message)
               ? { searchMode: "auto" }
               : { searchMode: "off" }
           );
@@ -516,7 +525,7 @@ Current working directory: ${process.cwd()}`,
           this.messages,
           tools,
           undefined,
-          this.isGrokModel() && this.shouldUseSearchFor(message)
+          this.supportsNativeSearch() && this.shouldUseSearchFor(message)
             ? { searchMode: "auto" }
             : { searchMode: "off" }
         );
