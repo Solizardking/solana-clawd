@@ -36,3 +36,58 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+
+  # ── Solana Clawd MCP Backend (Streamable HTTP + SSE) ──────────────────────
+  - type: web
+    name: solana-clawd-mcp
+    runtime: node
+    region: ohio
+    plan: free
+    buildCommand: git submodule update --init --recursive mcp/clawd-mcp && cd mcp/clawd-mcp && npm ci && npm run build
+    startCommand: cd mcp/clawd-mcp && npm run start:http
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: MCP_API_KEY
+        sync: false
+      - key: HELIUS_API_KEY
+        sync: false
+      - key: HELIUS_RPC_URL
+        sync: false
+      - key: HELIUS_WSS_URL
+        sync: false
+      - key: SOLANA_TRACKER_API_KEY
+        sync: false
+      - key: BIRDEYE_API_KEY
+        sync: false
+      - key: MASSIVE_API_KEY
+        sync: false
+      - key: MASSIVE_API_BASE_URL
+        value: https://api.massive.com
+      - key: MASSIVE_LLMS_TXT_URL
+        value: https://massive.com/docs/rest/llms.txt
+
+  # ── Solana Clawd MCP Studio (React static site) ───────────────────────────
+  - type: web
+    name: solana-clawd-mcp-studio
+    runtime: static
+    buildCommand: corepack enable && pnpm install --no-frozen-lockfile && pnpm exec vite build
+    staticPublishPath: dist-web
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_MCP_HTTP_URL
+        value: https://solana-clawd-mcp.onrender.com/mcp
+      - key: VITE_MCP_HEALTH_URL
+        value: https://solana-clawd-mcp.onrender.com/health
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

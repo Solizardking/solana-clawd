@@ -1,0 +1,608 @@
+.studioShell {
+  min-height: 100vh;
+  padding: 18px;
+  background:
+    linear-gradient(rgba(12, 16, 14, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(12, 16, 14, 0.05) 1px, transparent 1px),
+    linear-gradient(135deg, #f7f8f5 0%, #eef6f2 42%, #f6f0fb 100%);
+  background-size: 28px 28px, 28px 28px, auto;
+  color: #111713;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.studioShell button,
+.studioShell textarea {
+  font-family: inherit;
+}
+
+.studioTopbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1580px;
+  margin: 0 auto 14px;
+}
+
+.studioBrand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.studioBrand > span {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 36px;
+  border-radius: 8px;
+  background: #121712;
+  color: #14f195;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.studioBrand div {
+  min-width: 0;
+}
+
+.studioBrand strong {
+  display: block;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.studioBrand small,
+.panelTitle span,
+.chatHeader span,
+.deckHeader span,
+.laneCard span,
+.endpointRow p,
+.pulseStats span,
+.planMeta span,
+.studioBubbleHead span {
+  color: #5b655f;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.studioNav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.studioNav a,
+.quickPromptRow button,
+.followUps button,
+.entityStack button,
+.copyButton,
+.composerActions button {
+  min-height: 36px;
+  border: 1px solid rgba(17, 23, 19, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #111713;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.studioNav a:hover,
+.quickPromptRow button:hover,
+.followUps button:hover,
+.entityStack button:hover,
+.copyButton:hover,
+.composerActions button:hover {
+  border-color: rgba(20, 130, 88, 0.48);
+  background: #eefbf5;
+}
+
+.studioGrid {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 360px;
+  gap: 14px;
+  max-width: 1580px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.scopeRail,
+.inspectorRail {
+  display: grid;
+  gap: 12px;
+}
+
+.studioPanel,
+.chatSurface,
+.endpointDeck,
+.laneCard {
+  border: 1px solid rgba(17, 23, 19, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 18px 48px rgba(33, 42, 37, 0.1);
+}
+
+.studioPanel {
+  padding: 14px;
+}
+
+.panelTitle,
+.chatHeader,
+.deckHeader,
+.laneCard > div:first-child,
+.endpointRow > div:first-child,
+.studioBubbleHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panelTitle strong,
+.chatHeader strong,
+.deckHeader strong,
+.laneCard strong,
+.endpointRow strong {
+  font-size: 14px;
+}
+
+.chainList {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chainList button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  border: 1px solid rgba(17, 23, 19, 0.12);
+  border-radius: 8px;
+  background: #fbfcfa;
+  color: #111713;
+  padding: 10px;
+  text-align: left;
+}
+
+.chainList button.active {
+  border-color: rgba(20, 241, 149, 0.7);
+  background: #e9fff5;
+}
+
+.chainList button span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.chainList button small {
+  color: #65706a;
+  font-size: 11px;
+}
+
+.segmentedControl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+  padding: 4px;
+  border-radius: 8px;
+  background: #eef1ee;
+}
+
+.segmentedControl button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #334039;
+  font-weight: 800;
+}
+
+.segmentedControl button.active {
+  background: #121712;
+  color: #f7f8f5;
+}
+
+.guardrailList,
+.pulseStats,
+.planMeta {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.guardrailList span,
+.pulseStats span,
+.planMeta span {
+  min-height: 28px;
+  border: 1px solid rgba(17, 23, 19, 0.08);
+  border-radius: 8px;
+  background: #f7f8f5;
+  padding: 6px 8px;
+  color: #39443e;
+  font-size: 12px;
+}
+
+.entityStack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.chatSurface {
+  min-height: 720px;
+  display: grid;
+  grid-template-rows: auto auto minmax(360px, 1fr) auto;
+  overflow: hidden;
+}
+
+.chatHeader {
+  padding: 16px;
+  border-bottom: 1px solid rgba(17, 23, 19, 0.1);
+  background: linear-gradient(90deg, rgba(20, 241, 149, 0.12), rgba(147, 51, 234, 0.08), rgba(249, 115, 22, 0.08));
+}
+
+.chatHeader strong {
+  display: block;
+  margin-top: 2px;
+  font-size: clamp(17px, 2vw, 24px);
+}
+
+.statusPills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.statusPills span {
+  min-height: 28px;
+  border: 1px solid rgba(17, 23, 19, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.84);
+  padding: 5px 9px;
+  color: #19231d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.quickPromptRow {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(17, 23, 19, 0.08);
+}
+
+.quickPromptRow button {
+  flex: 0 0 auto;
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.messageBubble {
+  width: min(760px, 100%);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.messageBubble span {
+  color: #66716a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.messageBubble p {
+  margin: 7px 0 0;
+  color: #18221c;
+  line-height: 1.55;
+}
+
+.userBubble {
+  align-self: flex-end;
+  background: #111713;
+}
+
+.userBubble span,
+.userBubble p {
+  color: #f6faf6;
+}
+
+.studioBubble {
+  align-self: flex-start;
+  border: 1px solid rgba(20, 130, 88, 0.16);
+  background: #f7fffb;
+}
+
+.studioBubbleHead strong {
+  color: #18744f;
+  font-size: 12px;
+}
+
+.inlinePlan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.inlinePlan span {
+  border: 1px solid;
+  border-radius: 999px;
+  background: #fff;
+  color: #111713;
+  padding: 5px 8px;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(17, 23, 19, 0.1);
+  background: #fbfcfa;
+}
+
+.composer textarea {
+  width: 100%;
+  min-height: 88px;
+  max-height: 180px;
+  resize: vertical;
+  border: 1px solid rgba(17, 23, 19, 0.16);
+  border-radius: 8px;
+  background: #fff;
+  color: #111713;
+  padding: 12px;
+  line-height: 1.45;
+  outline: none;
+}
+
+.composer textarea:focus {
+  border-color: rgba(20, 130, 88, 0.62);
+  box-shadow: 0 0 0 3px rgba(20, 241, 149, 0.16);
+}
+
+.composerActions {
+  display: grid;
+  gap: 8px;
+  align-content: stretch;
+}
+
+.composerActions button {
+  width: 100%;
+}
+
+.composerActions button[type="submit"] {
+  background: #121712;
+  color: #f7f8f5;
+}
+
+.pulsePanel {
+  overflow: hidden;
+}
+
+.studioSpark {
+  width: 100%;
+  height: 86px;
+  margin-top: 12px;
+  border-radius: 8px;
+  background: #111713;
+}
+
+.studioSpark path {
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1;
+}
+
+.studioSpark polyline {
+  fill: none;
+  stroke: #14f195;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.planPreview {
+  max-height: 260px;
+  overflow: auto;
+  margin: 12px 0;
+  border-radius: 8px;
+  background: #111713;
+  color: #dff8e9;
+  padding: 12px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.copyButton {
+  width: 100%;
+}
+
+.endpointDeck,
+.laneDeck {
+  max-width: 1580px;
+  margin: 14px auto 0;
+}
+
+.endpointDeck {
+  padding: 16px;
+}
+
+.deckHeader {
+  margin-bottom: 14px;
+}
+
+.deckHeader strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 18px;
+}
+
+.followUps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.endpointGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.endpointRow {
+  min-height: 176px;
+  border: 1px solid rgba(17, 23, 19, 0.11);
+  border-left: 4px solid;
+  border-radius: 8px;
+  background: #fbfcfa;
+  padding: 12px;
+}
+
+.endpointRow > div:first-child span {
+  display: grid;
+  place-items: center;
+  min-width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: #111713;
+  color: #f7f8f5;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.endpointRow code,
+.laneCard code {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  border-radius: 6px;
+  background: #eef1ee;
+  color: #17211b;
+  padding: 5px 7px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+}
+
+.endpointRow > code {
+  margin-top: 10px;
+}
+
+.paramLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.paramLine span {
+  border-radius: 999px;
+  background: #fff;
+  color: #34403a;
+  padding: 4px 7px;
+  font-size: 11px;
+}
+
+.laneDeck {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  padding-bottom: 18px;
+}
+
+.laneCard {
+  min-height: 184px;
+  border-top: 4px solid;
+  padding: 14px;
+}
+
+.laneCard p {
+  min-height: 44px;
+  margin: 10px 0;
+  color: #445049;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.laneCard > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 1280px) {
+  .studioGrid {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+
+  .inspectorRail {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .endpointGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .laneDeck {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .studioShell {
+    padding: 10px;
+  }
+
+  .studioTopbar,
+  .deckHeader,
+  .chatHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .studioGrid,
+  .inspectorRail,
+  .endpointGrid,
+  .laneDeck {
+    grid-template-columns: 1fr;
+  }
+
+  .chatSurface {
+    min-height: 640px;
+  }
+
+  .composer {
+    grid-template-columns: 1fr;
+  }
+
+  .composerActions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statusPills,
+  .followUps,
+  .studioNav {
+    justify-content: flex-start;
+  }
+}
