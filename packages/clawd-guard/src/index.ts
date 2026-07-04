@@ -14,7 +14,7 @@ import { analyzeFullDiff, formatClaudeFindings } from "./claude.js";
 
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
 
-const app = express();
+const app: express.Express = express();
 app.use(express.json({ limit: "10mb" }));
 
 // ── Health check ─────────────────────────────────────────────────────────────

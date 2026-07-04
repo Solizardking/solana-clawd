@@ -7,7 +7,7 @@
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║          O P E N C L A W D   P A C K A G E S   —   v 2 . 0 . 0            ║
-║     11 packages · 6 npm live · 2 Anchor programs · x402.wtf          ║
+║     12 packages · 8 npm live · 1 Anchor program · x402.wtf           ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                              ║
 ║  🖥  clawd-code-cli     @openclawdsolana/clawd          TUI operator         ║
@@ -17,10 +17,11 @@
 ║  👛 clawd-wallet        @openclawd/wallet                Privy + Jupiter     ║
 ║  🔐 agentwallet         agentwallet-vault                keypair vault       ║
 ║  💸 agents-x402-solana  @openclawd/agents-x402           x402 monetisation  ║
+║  🛡  clawd-guard        @openclawdsolana/clawd-guard     PR secret scanner   ║
 ║  📦 cli-standalone      @openclawdsolana/clawd-standalone zero-compile CLI  ║
 ║  🌀 percolator          @openclawd/percolator            perps CLI           ║
+║  🔎 sovereign-research  @openclawd/sovereign-research    research router     ║
 ║  ⚓ clawd-protocol      Rust/Anchor                      bonding curves      ║
-║  ⚓ AI Inference         @clawd/solana-ai-inference-client on-chain AI       ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -90,31 +91,33 @@
 
 ---
 
-## One-Shot Test (all 10 packages)
+## One-Shot Test (all 12 packages)
 
 ```bash
 # Run from repo root — tests every package in order
 bash packages/test-all.sh
 ```
 
-### Expected output (10/10)
+### Expected output (12/12)
 
 ```
-✓ clawd-sdk          (@openclawdsolana/solana-sdk)
-✓ agent-registry     (@openclawdsolana/agent-registry)
-✓ agentwallet        (agentwallet-vault)
-✓ agent-hub          (@openclawdsolana/agent-hub)
-✓ clawd-wallet       (@openclawd/wallet)
-✓ agents-x402-solana (@openclawd/agents-x402, source-only)
-✓ percolator         (@openclawd/percolator)
-✓ cli-standalone     (@openclawdsolana/clawd-standalone)
-✓ AI Inference client (@clawd/solana-ai-inference-client)
-✓ Anchor .so         (solana_ai_inference.so)
+OK  agent-hub          (@openclawdsolana/agent-hub)
+OK  agent-registry     (@openclawdsolana/agent-registry)
+OK  agents-x402-solana (@openclawd/agents-x402, source-only)
+OK  agentwallet        (agentwallet-vault)
+OK  clawd-code-cli     (@openclawdsolana/clawd)
+OK  clawd-guard       (@openclawdsolana/clawd-guard)
+OK  clawd-protocol    (Rust/Anchor)
+OK  clawd-sdk          (@openclawdsolana/solana-sdk)
+OK  clawd-wallet       (@openclawd/wallet)
+OK  cli-standalone     (@openclawdsolana/clawd-standalone)
+OK  percolator         (@openclawd/percolator)
+OK  sovereign-research (@openclawd/sovereign-research)
 
-──────────────────────────────────────────
-  10 passed  |  0 failed
-──────────────────────────────────────────
-  ALL SYSTEMS GO 🦞
+------------------------------------------
+  12 passed  |  0 failed
+------------------------------------------
+  ALL SYSTEMS GO
 ```
 
 **Live curl tests against running services:**

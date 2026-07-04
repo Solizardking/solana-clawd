@@ -1,0 +1,7 @@
+.DS_Store
+.mypy_cache/
+
+clawd-mcp/.env.local
+clawd-mcp/dist/
+clawd-mcp/node_modules/
+clawd-mcp/src/.DS_Store
