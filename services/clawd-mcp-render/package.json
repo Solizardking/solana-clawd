@@ -1,0 +1,41 @@
+{
+  "name": "solana-clawd-mcp",
+  "version": "3.0.0",
+  "description": "solana-clawd MCP server v3 — Orchestrated Command & Control: Plugin Registry, Federation Bridge, Agent Task Router, Docs System, and PTokenStreamFacilitator for the entire Solana Clawd framework",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "bin": {
+    "solana-clawd-mcp": "dist/index.js",
+    "solana-clawd-mcp-http": "dist/http.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "start:http": "node dist/http.js",
+    "composio:setup": "node dist/composio/setup.js",
+    "clawd:agent": "node dist/composio/clawd-agent.js"
+  },
+  "dependencies": {
+    "@ai-sdk/mcp": "^1.0.51",
+    "@ai-sdk/openai-compatible": "^2.0.50",
+    "@composio/core": "^0.10.0",
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "ai": "^6.0.205",
+    "express": "^4.21.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20 <23"
+  }
+}

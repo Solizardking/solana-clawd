@@ -43,8 +43,8 @@ services:
     runtime: node
     region: ohio
     plan: free
-    buildCommand: git submodule update --init --recursive mcp/clawd-mcp && cd mcp/clawd-mcp && npm ci && npm run build
-    startCommand: cd mcp/clawd-mcp && npm run start:http
+    buildCommand: cd services/clawd-mcp-render && npm ci && npm run build
+    startCommand: cd services/clawd-mcp-render && npm run start:http
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
