@@ -154,10 +154,7 @@ export const unstakeAgent = async (
 export const lockCorenft = stakeAgent;
 export const unlockCorenft = unstakeAgent;
 
-export const claimRewards = async (
-  asset: string,
-  keypair: string,
-) => {
+export const claimRewards = async (asset: string, keypair: string) => {
   try {
     const tx = await createClaimRewardsTx(
       payer as anchor.Wallet,
@@ -173,22 +170,17 @@ export const claimRewards = async (
   }
 };
 
-export const printStakeStatus = async (
-  asset: string,
-  keypair: string,
-) => {
+export const printStakeStatus = async (asset: string, keypair: string) => {
   try {
-    const status = await getStakeStatus(
-      asset,
-      program,
-      solConnection,
-      keypair,
-    );
+    const status = await getStakeStatus(asset, program, solConnection, keypair);
 
     console.log("Asset:", status.assetAddress);
     console.log("Name:", status.assetName ?? "Unknown");
     console.log("Owner:", status.owner);
-    console.log("Collection:", status.collectionAddress ?? "Not collection-backed");
+    console.log(
+      "Collection:",
+      status.collectionAddress ?? "Not collection-backed",
+    );
     console.log("UserPool PDA:", status.userPool);
     console.log("FreezeDelegate Frozen:", status.freezeDelegateFrozen);
     console.log("Staked:", status.staked);

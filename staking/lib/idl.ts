@@ -74,16 +74,48 @@ export const OPENCLAWD_AGENT_STAKING_IDL: Idl = {
     },
   ],
   errors: [
-    { code: 6000, name: "InvalidAdmin", msg: "Caller is not the configured program admin" },
-    { code: 6001, name: "InvalidMetadata", msg: "Agent asset metadata is invalid" },
-    { code: 6002, name: "InvalidCollection", msg: "Collection does not match the asset's update authority" },
-    { code: 6003, name: "MetadataCreatorParseError", msg: "Could not parse creators in metadata" },
-    { code: 6004, name: "InvalidOwner", msg: "Caller is not the agent asset owner" },
-    { code: 6005, name: "InvalidAgentAsset", msg: "Asset address does not match a staked record" },
+    {
+      code: 6000,
+      name: "InvalidAdmin",
+      msg: "Caller is not the configured program admin",
+    },
+    {
+      code: 6001,
+      name: "InvalidMetadata",
+      msg: "Agent asset metadata is invalid",
+    },
+    {
+      code: 6002,
+      name: "InvalidCollection",
+      msg: "Collection does not match the asset's update authority",
+    },
+    {
+      code: 6003,
+      name: "MetadataCreatorParseError",
+      msg: "Could not parse creators in metadata",
+    },
+    {
+      code: 6004,
+      name: "InvalidOwner",
+      msg: "Caller is not the agent asset owner",
+    },
+    {
+      code: 6005,
+      name: "InvalidAgentAsset",
+      msg: "Asset address does not match a staked record",
+    },
     { code: 6006, name: "CounterOverflow", msg: "Stake counter overflow" },
     { code: 6007, name: "CounterUnderflow", msg: "Stake counter underflow" },
-    { code: 6008, name: "RewardOverflow", msg: "Arithmetic overflow computing rewards" },
-    { code: 6009, name: "NoRewardsToClaim", msg: "No rewards have accrued yet" },
+    {
+      code: 6008,
+      name: "RewardOverflow",
+      msg: "Arithmetic overflow computing rewards",
+    },
+    {
+      code: 6009,
+      name: "NoRewardsToClaim",
+      msg: "No rewards have accrued yet",
+    },
     { code: 6010, name: "ClockUnavailable", msg: "Clock is unavailable" },
   ],
   types: [

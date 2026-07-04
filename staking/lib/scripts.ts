@@ -2,9 +2,18 @@ import fs from "node:fs";
 import * as anchor from "@coral-xyz/anchor";
 import type { Wallet } from "@coral-xyz/anchor";
 import { fetchAsset, MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
-import { createSignerFromKeypair, publicKey, signerIdentity } from "@metaplex-foundation/umi";
+import {
+  createSignerFromKeypair,
+  publicKey,
+  signerIdentity,
+} from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { type Connection, PublicKey, SystemProgram, Transaction as web3Transaction } from "@solana/web3.js";
+import {
+  type Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction as web3Transaction,
+} from "@solana/web3.js";
 
 import {
   GLOBAL_AUTHORITY_SEED,
@@ -87,7 +96,11 @@ function resolveCollectionAddress(
       "asset is not collection-backed, so the staking program cannot lock it",
     );
   }
-  if (requestedCollection && derivedCollection && requestedCollection !== derivedCollection) {
+  if (
+    requestedCollection &&
+    derivedCollection &&
+    requestedCollection !== derivedCollection
+  ) {
     throw new Error("collection is incorrect");
   }
 
@@ -274,10 +287,9 @@ export const getStakeStatus = async (
   const stakeTime = Number(stakeAccount.stakeTime.toString());
   const lastClaimTime = Number(stakeAccount.lastClaimTime.toString());
   const totalClaimedBaseUnits = Number(stakeAccount.totalClaimed.toString());
-  const pendingBaseUnits = Math.max(
-    0,
-    Math.floor(Date.now() / 1_000) - lastClaimTime,
-  ) * REWARD_RATE_BASE_UNITS_PER_SECOND;
+  const pendingBaseUnits =
+    Math.max(0, Math.floor(Date.now() / 1_000) - lastClaimTime) *
+    REWARD_RATE_BASE_UNITS_PER_SECOND;
 
   return {
     assetAddress: assetPubkey.toBase58(),

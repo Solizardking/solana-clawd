@@ -8,6 +8,7 @@ packages:
   - "vendor/agent-auth/packages/*"
   - "programs/programs/client"
   - "box"
+  - "apps/mcp-studio"
   - "goals"
   - "nemo-clawd"
   - "nemo-clawd/nemo-clawd-mcp"

@@ -6,7 +6,8 @@
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
-    "build": "anchor build",
+    "build": "anchor build --ignore-keys",
+    "build:strict": "anchor build",
     "test": "anchor test",
     "test:devnet": "./node_modules/.bin/ts-mocha -p ./tsconfig.json -t 120000 tests/**/*.ts",
     "deploy:devnet": "anchor deploy --provider.cluster \"${SOLANA_RPC_URL:-https://api.devnet.solana.com}\"",
