@@ -8,7 +8,7 @@
     "clawd-code": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node -e \"require('fs').chmodSync('dist/cli.js',0o755)\"",
     "build:full": "tsc -p tsconfig.full.json",
     "build:bundle": "tsx scripts/build-bundle.ts",
     "dev": "tsx src/cli.ts",
