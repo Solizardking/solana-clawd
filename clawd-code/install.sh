@@ -38,6 +38,8 @@ else
   git sparse-checkout set clawd-code
   cd "$INSTALL_DIR/clawd-code"
   npm install
+  # Isolate tsc from parent ~/node_modules/@types (TS2688 "implicit type library")
+  # typeRoots/types are pinned in tsconfig.json; rebuild entrypoint only via -p.
   npm run build
   npm link
 fi
