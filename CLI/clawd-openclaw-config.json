@@ -1,13 +1,13 @@
 {
   "name": "openclawd",
-  "description": "The complete open-source stack for building, deploying, and monetizing AI agents on Solana. One router · one settlement layer · 33 projects · 50 agents · 100 skills.",
+  "description": "The complete open-source stack for building, deploying, and monetizing AI agents on Solana. One router \u00b7 one settlement layer \u00b7 33 projects \u00b7 50 agents \u00b7 100 skills.",
   "version": "1.0.0",
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "services": [
     {
       "name": "dashboard",
       "endpoint": "https://solanaclawd.com",
-      "description": "Main dashboard — agent discovery, skills marketplace, x402 gateway"
+      "description": "Main dashboard \u2014 agent discovery, skills marketplace, x402 gateway"
     },
     {
       "name": "api",
@@ -17,13 +17,33 @@
     {
       "name": "marketplace",
       "endpoint": "https://solanaclawd.com/marketplace",
-      "description": "ClawdHub skills marketplace — 100 SKILL.md files"
+      "description": "ClawdHub skills marketplace \u2014 100 SKILL.md files"
+    },
+    {
+      "name": "x402",
+      "endpoint": "https://solanaclawd.com/api/x402",
+      "description": "x402 / MPP / AP2 / A2A payment gateway \u2014 SPL USDC + $CLAWD settlement"
     },
     {
       "name": "mcp",
       "endpoint": "https://solanaclawd.com/mcp",
       "description": "Model Context Protocol server"
+    },
+    {
+      "name": "a2a",
+      "endpoint": "https://solanaclawd.com/a2a",
+      "description": "Agent-to-agent protocol endpoint"
+    },
+    {
+      "name": "websocket",
+      "endpoint": "wss://solanaclawd.com/ws",
+      "description": "Real-time streaming for on-chain events and agent communication"
     }
+  ],
+  "supportedTrust": [
+    "wallet-verified",
+    "token-holder",
+    "solana-mainnet"
   ],
   "capabilities": {
     "solana": {
@@ -48,8 +68,16 @@
     },
     "payment": {
       "enabled": true,
-      "protocols": ["x402", "MPP", "AP2", "A2A"],
-      "tokens": ["USDC", "CLAWD"]
+      "protocols": [
+        "x402",
+        "MPP",
+        "AP2",
+        "A2A"
+      ],
+      "tokens": [
+        "USDC",
+        "CLAWD"
+      ]
     }
   },
   "models": {
@@ -57,24 +85,49 @@
     "agents": {
       "reasoning": "xai/grok-4.20-beta",
       "longctx": "moonshot/kimi-k2.6",
-      "eco": "nvidia/gpt-oss-120b",
-      "premium": "anthropic/claude-opus-4.6"
+      "eco": "ordlibrary/hauhau-qwen36-uncensored:IQ2_M",
+      "premium": "deepseek-v4-pro",
+      "hauhau": "ordlibrary/hauhau-qwen36-uncensored:IQ2_M"
+    },
+    "providers": {
+      "llama-cpp": {
+        "baseUrl": "${HAUHAU_BASE_URL}",
+        "apiKey": "${HAUHAU_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "ordlibrary/hauhau-qwen36-uncensored:IQ2_M",
+            "name": "Hauhau Qwen3.6 Uncensored IQ2_M",
+            "reasoning": false,
+            "contextWindow": 8192
+          }
+        ]
+      }
     }
   },
   "memory": {
     "provider": "honcho",
     "tiers": {
-      "KNOWN": { "expiry": false, "persistence": "persistent" },
-      "LEARNED": { "expiry": false, "persistence": "persistent" },
-      "INFERRED": { "expiry": true, "persistence": "ephemeral" }
+      "KNOWN": {
+        "expiry": false,
+        "persistence": "persistent"
+      },
+      "LEARNED": {
+        "expiry": false,
+        "persistence": "persistent"
+      },
+      "INFERRED": {
+        "expiry": true,
+        "persistence": "ephemeral"
+      }
     }
   },
   "principles": [
-    "KNOWN before INFERRED — never present speculation as fact",
-    "Preserve capital first — drawdown cascades override all conviction",
-    "Deny-first permissions — ask before executing anything irreversible",
-    "Transparency — show reasoning, not just conclusions",
-    "Local-first — no mandatory cloud infrastructure"
+    "KNOWN before INFERRED \u2014 never present speculation as fact",
+    "Preserve capital first \u2014 drawdown cascades override all conviction",
+    "Deny-first permissions \u2014 ask before executing anything irreversible",
+    "Transparency \u2014 show reasoning, not just conclusions",
+    "Local-first \u2014 no mandatory cloud infrastructure"
   ],
   "permissions": {
     "defaults": {

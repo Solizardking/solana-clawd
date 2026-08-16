@@ -1,13 +1,13 @@
 {
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "openclawd",
-  "description": "The complete open-source stack for building, deploying, and monetizing AI agents on Solana. One router · one settlement layer · 33 projects · 50 agents · 100 skills.",
+  "description": "The complete open-source stack for building, deploying, and monetizing AI agents on Solana. One router \u00b7 one settlement layer \u00b7 33 projects \u00b7 50 agents \u00b7 100 skills.",
   "image": "https://solanaclawd.com/og-image.png",
   "services": [
     {
       "name": "dashboard",
       "endpoint": "https://solanaclawd.com",
-      "description": "Main dashboard — agent discovery, skills marketplace, x402 payment gateway"
+      "description": "Main dashboard \u2014 agent discovery, skills marketplace, x402 payment gateway"
     },
     {
       "name": "api",
@@ -17,12 +17,22 @@
     {
       "name": "marketplace",
       "endpoint": "https://solanaclawd.com/marketplace",
-      "description": "ClawdHub skills marketplace — 100 bundled SKILL.md files"
+      "description": "ClawdHub skills marketplace \u2014 100 bundled SKILL.md files"
     },
     {
       "name": "x402",
-      "endpoint": "https://solanaclawd.com/x402",
-      "description": "x402 / MPP / AP2 / A2A payment gateway — SPL USDC + $CLAWD settlement"
+      "endpoint": "https://solanaclawd.com/api/x402",
+      "description": "x402 / MPP / AP2 / A2A payment gateway \u2014 SPL USDC + $CLAWD settlement"
+    },
+    {
+      "name": "mcp",
+      "endpoint": "https://solanaclawd.com/mcp",
+      "description": "Model Context Protocol server"
+    },
+    {
+      "name": "a2a",
+      "endpoint": "https://solanaclawd.com/a2a",
+      "description": "Agent-to-agent protocol endpoint"
     },
     {
       "name": "websocket",
@@ -44,7 +54,11 @@
     "trading": {
       "enabled": true,
       "requireApproval": true,
-      " protocols": ["pump.fun", "jupiter", "raydium"]
+      "protocols": [
+        "pump.fun",
+        "jupiter",
+        "raydium"
+      ]
     },
     "tools": [
       "helius-das",
@@ -63,19 +77,23 @@
       "reasoning": "xai/grok-4.20-beta",
       "longctx": "moonshot/kimi-k2.6",
       "eco": "nvidia/gpt-oss-120b",
-      "premium": "anthropic/claude-opus-4.6"
+      "premium": "deepseek-v4-pro"
     }
   },
   "memory": {
-    "tiers": ["KNOWN", "LEARNED", "INFERRED"],
+    "tiers": [
+      "KNOWN",
+      "LEARNED",
+      "INFERRED"
+    ],
     "provider": "honcho"
   },
   "principles": [
-    "KNOWN before INFERRED — never present speculation as fact",
-    "Preserve capital first — drawdown cascades override all conviction",
-    "Deny-first permissions — ask before executing anything irreversible",
-    "Transparency — show reasoning, not just conclusions",
-    "Local-first — no mandatory cloud infrastructure"
+    "KNOWN before INFERRED \u2014 never present speculation as fact",
+    "Preserve capital first \u2014 drawdown cascades override all conviction",
+    "Deny-first permissions \u2014 ask before executing anything irreversible",
+    "Transparency \u2014 show reasoning, not just conclusions",
+    "Local-first \u2014 no mandatory cloud infrastructure"
   ],
   "lineage": {
     "architecture": "openclawd",

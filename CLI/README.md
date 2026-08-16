@@ -1,133 +1,160 @@
 # openclawd CLI
 
-Command-line tools for the openclawd ecosystem — solanaclawd.com · github.com/x402agent/openclawd
+Command-line tools for the openclawd / Solana Clawd ecosystem — [solanaclawd.com](https://solanaclawd.com) · [github.com/solizardking/solana-clawd](https://github.com/solizardking/solana-clawd)
+
+Artifacts in this directory share one set of public service bases:
+
+| Base | Default URL |
+|------|-------------|
+| site | `https://solanaclawd.com` |
+| api | `https://solanaclawd.com/api` |
+| marketplace | `https://solanaclawd.com/marketplace` |
+| x402 gateway | `https://solanaclawd.com/api/x402` |
+| MCP | `https://solanaclawd.com/mcp` |
+| A2A | `https://solanaclawd.com/a2a` |
+
+Override with env vars: `CLAWD_SITE_BASE`, `CLAWD_API_BASE`, `CLAWD_MARKETPLACE_BASE`, `CLAWD_X402_GATEWAY`, `CLAWD_MCP_BASE`, `CLAWD_A2A_BASE`.
+
+The x402 gateway defaults to `/api/x402` because that path returns live facilitator JSON on solanaclawd.com (the bare `/x402` path serves SPA HTML).
+
+## Installation
+
+From the repository root:
+
+```bash
+# Make scripts executable
+chmod +x cli/clawd-cli.sh cli/clawd-connect.sh
+
+# Optional: add cli/ to PATH
+export PATH="$PATH:$(pwd)/cli"
+
+# Use from repo root
+./cli/clawd-cli.sh help
+./cli/clawd-connect.sh help
+```
+
+Or from inside `cli/`:
+
+```bash
+./clawd-cli.sh skills
+./clawd-connect.sh payment:supported
+```
 
 ## Scripts
 
-### clawd-cli.sh
+### `clawd-cli.sh`
 
-Main CLI for agents, skills, payments, and node operations:
+Main CLI for agents, skills, payments, marketplace, attestation, and node ops.
 
 ```bash
 # Skills (ClawdHub)
-clawd-cli.sh skills
-clawd-cli.sh skills:list
-clawd-cli.sh skills:install pumpfun-trading
-clawd-cli.sh skills:search solana
-clawd-cli.sh skills:featured
+./cli/clawd-cli.sh skills
+./cli/clawd-cli.sh skills:list
+./cli/clawd-cli.sh skills:install pumpfun-trading
+./cli/clawd-cli.sh skills:search solana
+./cli/clawd-cli.sh skills:featured
 
 # Marketplace
-clawd-cli.sh marketplace
-clawd-cli.sh marketplace:trending
-clawd-cli.sh marketplace:new
+./cli/clawd-cli.sh marketplace
+./cli/clawd-cli.sh marketplace:trending
+./cli/clawd-cli.sh marketplace:new
 
 # Agents
-clawd-cli.sh agents
-clawd-cli.sh status
-clawd-cli.sh connect
+./cli/clawd-cli.sh agents
+./cli/clawd-cli.sh status
+./cli/clawd-cli.sh connect
+./cli/clawd-cli.sh register
 
 # Wallet & Trading
-clawd-cli.sh wallet
-clawd-cli.sh prices
-clawd-cli.sh trading
-clawd-cli.sh swap <from> <to> <amount>
+./cli/clawd-cli.sh wallet
+./cli/clawd-cli.sh prices
+./cli/clawd-cli.sh trading
+./cli/clawd-cli.sh swap <from> <to> <amount>
 
-# x402 Payments
-clawd-cli.sh payment:supported
-clawd-cli.sh payment:verify <id>
-clawd-cli.sh payment:settle <tx>
+# x402 Payments (live facilitator under /api/x402)
+./cli/clawd-cli.sh payment:supported
+./cli/clawd-cli.sh payment:verify <id>
+./cli/clawd-cli.sh payment:settle <tx>
 
 # Node Operations
-clawd-cli.sh node
-clawd-cli.sh node:register <name>
-clawd-cli.sh node:status
-clawd-cli.sh node:peers
+./cli/clawd-cli.sh node
+./cli/clawd-cli.sh node:register
+./cli/clawd-cli.sh node:status
+./cli/clawd-cli.sh node:peers
 
-# Agent registration (Metaplex)
-clawd-cli.sh register
+# Attestation (SAS)
+./cli/clawd-cli.sh attest:skill --skill <id> --verifier <id>
+./cli/clawd-cli.sh attest:verify --address <addr>
+./cli/clawd-cli.sh attest:status
+./cli/clawd-cli.sh attest:agent --agent <id> --wallet <pubkey>
+./cli/clawd-cli.sh attest:vault --agent <id> --wallet <pubkey>
 ```
 
-### clawd-connect.sh
+### `clawd-connect.sh`
 
-Terminal connection and skills commands:
+Terminal connection and skills surface (same service bases as `clawd-cli.sh`).
 
 ```bash
 # Skills
-clawd-connect.sh skills
-clawd-connect.sh skills:list
-clawd-connect.sh skills:featured
-clawd-connect.sh skills:search <query>
-clawd-connect.sh skills:install <slug>
+./cli/clawd-connect.sh skills
+./cli/clawd-connect.sh skills:list
+./cli/clawd-connect.sh skills:featured
+./cli/clawd-connect.sh skills:search <query>
+./cli/clawd-connect.sh skills:install <slug>
 
 # Marketplace
-clawd-connect.sh marketplace
-clawd-connect.sh marketplace:trending
-clawd-connect.sh marketplace:new
+./cli/clawd-connect.sh marketplace
+./cli/clawd-connect.sh marketplace:trending
+./cli/clawd-connect.sh marketplace:new
 
 # Agents
-clawd-connect.sh connect
-clawd-connect.sh status
-clawd-connect.sh agents
+./cli/clawd-connect.sh connect
+./cli/clawd-connect.sh status
+./cli/clawd-connect.sh agents
 
 # Wallet
-clawd-connect.sh wallet
-clawd-connect.sh prices
+./cli/clawd-connect.sh wallet
+./cli/clawd-connect.sh prices
 
 # x402 Payments
-clawd-connect.sh payment:supported
-clawd-connect.sh payment:verify <id>
-clawd-connect.sh payment:settle <tx>
+./cli/clawd-connect.sh payment:supported
+./cli/clawd-connect.sh payment:verify <id>
+./cli/clawd-connect.sh payment:settle <tx>
 ```
 
-### solana-clawd CLI (primary)
+### `clawd-register.ts`
 
-The main agent CLI is `solana-clawd`, published to npm:
+Loadable TypeScript module for Solana Clawd / openclawd registration metadata and optional Metaplex mint. **Importing does not mint** and does not require a secret key.
 
 ```bash
-npm i -g solana-clawd
+# Print aligned metadata (safe)
+npx tsx cli/clawd-register.ts metadata
+npx tsx cli/clawd-register.ts diff
 
-solana-clawd pair <CODE>     # pair this device
-solana-clawd mint            # mint your agent NFT (Metaplex Core)
-solana-clawd status          # show pairing + wallet
-solana-clawd agent           # start OODA loop trading agent
+# Explicit mint only (needs CLAWD_MINT_SECRET_KEY_B64 + Metaplex deps + RPC)
+CLAWD_MINT_SECRET_KEY_B64=... npx tsx cli/clawd-register.ts mint
 ```
 
-### @openclawd/wallet (Privy embedded wallet)
+### Registration & config JSON
+
+| File | Role |
+|------|------|
+| `solana-clawd-registration.json` | Solana Clawd agent identity (name, services, supportedTrust) |
+| `clawd-registration.json` | openclawd EIP-8004-style registration |
+| `clawd-openclaw-config.json` | openclawd runtime config (services, models, permissions) |
+
+These agree with the shell bases for `api`, `marketplace`, `x402`, `mcp`, and `a2a`.
+
+## Curl examples (same bases as the scripts)
 
 ```bash
-npm install @openclawd/wallet
-
-clawd-wallet tokens              # list Jupiter tokens
-clawd-wallet quote SOL USDC 0.1  # get swap quote
-clawd-wallet balance <addr>      # check SOL balance
-```
-
-Or in React:
-
-```tsx
-import { PrivyProvider, useClawdWallet } from "@openclawd/wallet/react";
-
-<PrivyProvider appId={process.env.PRIVY_APP_ID!} embeddedWallets>
-  <SwapButton />
-</PrivyProvider>
-
-// Inside component:
-const { wallet, connectWallet } = useClawdWallet();
-```
-
-## Curl Commands
-
-```bash
-# Browse skills
-curl https://solanaclawd.com/marketplace/skills | jq '.'
-
-# List all skills
+# List skills
 curl https://solanaclawd.com/api/skills | jq '.'
 
 # Search skills
 curl "https://solanaclawd.com/api/skills/search?q=solana" | jq '.'
 
-# Get featured skills
+# Featured skills
 curl https://solanaclawd.com/api/skills/featured | jq '.'
 
 # Install skill (download SKILL.md)
@@ -136,51 +163,41 @@ curl -s "https://solanaclawd.com/api/skills/pumpfun-trading/download" -o SKILL.m
 # Marketplace trending
 curl https://solanaclawd.com/api/marketplace/trending | jq '.'
 
-# Agent status
-curl https://solanaclawd.com/api/status | jq '.'
+# Marketplace browse UI
+curl https://solanaclawd.com/marketplace/skills | jq '.'
 
-# List agents
+# Agent status / agents
+curl https://solanaclawd.com/api/status | jq '.'
 curl https://solanaclawd.com/api/agents | jq '.'
 
 # Token prices
 curl https://solanaclawd.com/api/prices | jq '.'
 
-# x402 payment verification
-curl -X POST https://solanaclawd.com/x402/facilitator/verify \
+# x402 facilitator (live JSON under /api/x402)
+curl https://solanaclawd.com/api/x402/facilitator/supported | jq '.'
+curl -X POST https://solanaclawd.com/api/x402/facilitator/verify \
   -H "Content-Type: application/json" \
   -d '{"payment":"<id>"}' | jq '.'
-
-# x402 supported tokens
-curl https://solanaclawd.com/x402/facilitator/supported | jq '.'
 ```
 
-## Installation
+## Package checks
 
 ```bash
-# Make scripts executable
-chmod +x clawd-cli.sh
-chmod +x clawd-connect.sh
-
-# Add to PATH (optional)
-export PATH="$PATH:$(pwd)/CLI"
-
-# Use directly
-./clawd-cli.sh skills:list
-./clawd-connect.sh marketplace:trending
+# From repo root — alignment + bash -n + JSON parse (drives real cli/ files)
+npx vitest run --root . cli/cli-package.test.ts
 ```
 
-## Also Available
+## Related CLIs (outside this folder)
 
 ```bash
-# npx clawdhub CLI
-npx clawdhub install <skill>
+# Primary agent CLI (npm)
+npm i -g solana-clawd
+solana-clawd pair <CODE>
+solana-clawd status
+
+# ClawdHub
 npx clawdhub list
 npx clawdhub search <query>
-npx clawdhub publish ./skill
-
-# Install npm packages
-npm i -g @clawd/cli
-npm i -g solanaos-cli
 ```
 
 ## License
