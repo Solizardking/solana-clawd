@@ -188,21 +188,21 @@ Pairs with the arena client/UI at [github.com/Solizardking/Agentarena](https://g
 <!-- COMMIT_LEADERBOARD:START -->
 | # | Commit | Message | Author | Date |
 |---|---|---|---|---|
-| 🥇 | [`520491e`](../../commit/520491e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 🥈 | [`091a454`](../../commit/091a454) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 🥉 | [`31439d8`](../../commit/31439d8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 4️⃣ | [`4cfcb8d`](../../commit/4cfcb8d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 5️⃣ | [`545c3ad`](../../commit/545c3ad) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 6️⃣ | [`c6bc09a`](../../commit/c6bc09a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 7️⃣ | [`87f4b6c`](../../commit/87f4b6c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 8️⃣ | [`a6086be`](../../commit/a6086be) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 9️⃣ | [`13448b3`](../../commit/13448b3) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| 🔟 | [`a86b32a`](../../commit/a86b32a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 🥇 | [`5d3451d`](../../commit/5d3451d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 🥈 | [`520491e`](../../commit/520491e) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 🥉 | [`091a454`](../../commit/091a454) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 4️⃣ | [`31439d8`](../../commit/31439d8) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 5️⃣ | [`4cfcb8d`](../../commit/4cfcb8d) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 6️⃣ | [`545c3ad`](../../commit/545c3ad) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 7️⃣ | [`c6bc09a`](../../commit/c6bc09a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 8️⃣ | [`87f4b6c`](../../commit/87f4b6c) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 9️⃣ | [`a6086be`](../../commit/a6086be) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| 🔟 | [`13448b3`](../../commit/13448b3) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
+| · | [`a86b32a`](../../commit/a86b32a) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
 | · | [`f595a89`](../../commit/f595a89) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
 | · | [`3c1ecb9`](../../commit/3c1ecb9) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
 | · | [`9d450c6`](../../commit/9d450c6) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
 | · | [`a327c42`](../../commit/a327c42) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
-| · | [`2c1e875`](../../commit/2c1e875) | chore: refresh commit leaderboard [skip ci] | github-actions[bot] | Aug 17 |
 <!-- COMMIT_LEADERBOARD:END -->
 
 ---
