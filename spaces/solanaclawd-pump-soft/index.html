@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAWD · Sovereign AI Agent Runtime on Solana</title>
+<meta name="description" content="CLAWD · the sovereign AI agent runtime on Solana. Soft mirror of the pump-mcp tool surface, hosted on Hugging Face.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦞</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --solana-green: #14F195;
+    --solana-purple: #9945FF;
+    --bg-void: #000000;
+    --bg-primary: #0d0a14;
+    --bg-secondary: #130f1a;
+    --border-color: rgba(153, 69, 255, 0.2);
+    --text-primary: #f0f0f5;
+    --text-secondary: #a0a0b0;
+    --text-muted: #606070;
+    --accent-red: #ff3b5c;
+    --accent-yellow: #ffe066;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(135deg, var(--bg-void) 0%, var(--bg-primary) 50%, #0f0820 100%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  #matrix-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.08; pointer-events: none; }
+  .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 20px; }
+
+  /* Header */
+  header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 22px; border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(6px); background: rgba(13,10,20,0.5);
+    position: sticky; top: 0; z-index: 5;
+  }
+  header .logo { font-size: 22px; font-weight: 700; color: var(--solana-green); }
+  header .logo span { color: var(--solana-purple); }
+  header nav { display:flex; gap: 18px; font-size: 12px; }
+  header nav a { color: var(--text-secondary); text-decoration: none; transition: 0.2s; }
+  header nav a:hover { color: var(--solana-green); }
+
+  /* Hero */
+  .hero { padding: 60px 0 30px; text-align: center; }
+  .hero .badge { display:inline-block; padding: 4px 12px; border: 1px solid var(--border-color); border-radius: 20px; font-size: 11px; color: var(--solana-green); letter-spacing: 1px; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(28px, 5vw, 48px); margin: 18px 0 12px; line-height: 1.1; }
+  .hero h1 .accent { background: linear-gradient(90deg, var(--solana-green), var(--solana-purple)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { color: var(--text-secondary); max-width: 640px; margin: 0 auto; font-size: 14px; line-height: 1.7; }
+
+  .cta { display:flex; gap: 12px; justify-content:center; flex-wrap: wrap; margin: 28px 0 8px; }
+  .btn {
+    display:inline-flex; align-items:center; gap: 6px;
+    padding: 10px 18px; border-radius: 10px; font-size: 13px;
+    border: 1px solid var(--border-color); background: rgba(153,69,255,0.1);
+    color: var(--text-primary); text-decoration: none; transition: 0.2s;
+  }
+  .btn:hover { border-color: var(--solana-green); color: var(--solana-green); }
+  .btn.primary { background: var(--solana-green); color: #000; border-color: var(--solana-green); font-weight: 600; }
+  .btn.primary:hover { color: #000; opacity: 0.9; }
+
+  /* Cards grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 30px 0; }
+  .card {
+    background: linear-gradient(160deg, rgba(19,15,26,0.7) 0%, rgba(13,10,20,0.7) 100%);
+    border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;
+  }
+  .card h3 { font-size: 14px; color: var(--solana-green); margin-bottom: 8px; }
+  .card p { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+  .card .num { color: var(--solana-purple); font-weight: 700; }
+
+  /* Tools table */
+  .tools { margin: 30px 0; }
+  .tools h2 { font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+  .tool { display: grid; grid-template-columns: 60px 1fr 80px; gap: 12px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border-color); font-size: 12px; }
+  .tool .name { color: var(--solana-green); }
+  .tool .desc { color: var(--text-secondary); }
+  .tool .tag { font-size: 10px; text-transform: uppercase; text-align: center; padding: 3px 6px; border-radius: 6px; background: rgba(20,241,149,0.1); color: var(--solana-green); border: 1px solid rgba(20,241,149,0.2); }
+  .tool .tag.mcp { background: rgba(153,69,255,0.1); color: var(--solana-purple); border-color: rgba(153,69,255,0.2); }
+  .tool .tag.soft { background: rgba(255,224,102,0.1); color: var(--accent-yellow); border-color: rgba(255,224,102,0.2); }
+
+  /* Quote box */
+  .quote { background: rgba(153,69,255,0.05); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin: 30px 0; }
+  .quote label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display:block; margin-bottom: 6px; }
+  .quote input { background: #0a0810; color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px; font: inherit; font-size: 12px; width: 100%; margin-bottom: 10px; }
+  .quote button { background: var(--solana-green); color: #000; border: 0; border-radius: 6px; padding: 8px 14px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .quote pre { background: #0a0810; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-top: 12px; color: var(--text-secondary); font-size: 11px; white-space: pre-wrap; word-break: break-all; min-height: 80px; }
+
+  /* Footer */
+  footer { padding: 30px 0; text-align: center; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 40px; }
+  footer a { color: var(--solana-green); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<canvas id="matrix-canvas"></canvas>
+<div class="container">
+  <header>
+    <div class="logo">🦞 <span>CLAWD</span> · soft</div>
+    <nav>
+      <a href="https://huggingface.co/solanaclawd" target="_blank" rel="noopener">HF org</a>
+      <a href="https://x402.wtf" target="_blank" rel="noopener">x402.wtf</a>
+      <a href="https://cheshireterminal.ai" target="_blank" rel="noopener">cheshireterminal.ai</a>
+      <a href="https://github.com/Solizardking/solana-clawd" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <span class="badge">solana · sovereign agent · 0.1.0-soft</span>
+    <h1>the <span class="accent">CLAWD</span><br>agent runtime</h1>
+    <p>A soft, read-only mirror of the <a href="https://huggingface.co/spaces/ordlibrary/pump-mcp" target="_blank" rel="noopener" style="color:var(--solana-green)">ordlibrary/pump-mcp</a> surface — no MCP, no signing, no <code>PRIVATE_KEY</code>. Quote and inspect the Solana PumpFun & PumpSwap programs from your browser.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://cheshire-clawd-terminal.fly.dev" target="_blank" rel="noopener">open Cheshire Terminal ↗</a>
+      <a class="btn" href="https://huggingface.co/datasets/solanaclawd/solana-clawd-instruct" target="_blank" rel="noopener">training dataset</a>
+      <a class="btn" href="https://huggingface.co/solanaclawd" target="_blank" rel="noopener">$CLAWD org</a>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h3><span class="num">53</span> tools · MCP</h3>
+      <p>The full <a href="https://huggingface.co/spaces/ordlibrary/pump-mcp" target="_blank" rel="noopener" style="color:var(--solana-green)">pump-mcp</a> server exposes 53 tools, 3 resource types, and 3 prompts over stdio. Quote, build, send, claim fees, manage shares, audit AMM state — all without leaving your agent.</p>
+    </div>
+    <div class="card">
+      <h3><span class="num">3</span> prompts</h3>
+      <p>Pre-baked GOAP planners, JSON mode, and standard mode for 8B-class tool-use models (Hermes-3, Llama-3.1). Drop into <code>clawd-operator</code> and you're done.</p>
+    </div>
+    <div class="card">
+      <h3><span class="num">$CLAWD</span> tier-gated</h3>
+      <p>Higher-rate routes and the ClawdRouter premium tier are gated by SPL <code>$CLAWD</code> balance. Token: <code style="color:var(--solana-green)">8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump</code>.</p>
+    </div>
+  </section>
+
+  <section class="tools">
+    <h2>tool surface (read-only preview)</h2>
+    <div class="tool"><span class="name">pump_quote_buy</span><span class="desc">simulate a PumpFun <code>buy</code> with a SOL input amount, return expected tokens out</span><span class="tag soft">soft</span></div>
+    <div class="tool"><span class="name">pump_quote_sell</span><span class="desc">simulate a PumpFun <code>sell</code> with a token input amount, return expected SOL out</span><span class="tag soft">soft</span></div>
+    <div class="tool"><span class="name">pump_get_royalty</span><span class="desc">read the on-chain royalty config for a mint (creator %, total BPS, fee account)</span><span class="tag soft">soft</span></div>
+    <div class="tool"><span class="name">pump_graduation_status</span><span class="desc">given a mint, return whether the bonding curve is complete and the AMM is live</span><span class="tag soft">soft</span></div>
+    <div class="tool"><span class="name">pump_amm_pool</span><span class="desc">fetch the PumpSwap AMM pool state for a graduated mint (reserves, LP supply)</span><span class="tag soft">soft</span></div>
+    <div class="tool"><span class="name">pump_top_holders</span><span class="desc">list the top 20 holders of a mint with their percentage of supply</span><span class="tag soft">soft</span></div>
+    <div class="tool"><span class="name">pump_build_buy_tx</span><span class="desc">build (but do not sign) a <code>buy_v2</code> tx — agent returns the base64</span><span class="tag mcp">MCP</span></div>
+    <div class="tool"><span class="name">pump_build_sell_tx</span><span class="desc">build (but do not sign) a <code>sell_v2</code> tx — agent returns the base64</span><span class="tag mcp">MCP</span></div>
+    <div class="tool"><span class="name">pump_send_tx</span><span class="desc">sign + send a pre-built tx using the agent's own keypair (NEVER exposed in soft mode)</span><span class="tag mcp">MCP</span></div>
+    <div class="tool"><span class="name">pump_claim_fees</span><span class="desc">call <code>claim_creator_fees</code> on PumpFees for the connected wallet</span><span class="tag mcp">MCP</span></div>
+    <div class="tool"><span class="name">pump_set_share</span><span class="desc">set fee-share BPS allocations to multiple shareholder accounts</span><span class="tag mcp">MCP</span></div>
+    <div class="tool"><span class="name">pump_token_lifecycle</span><span class="desc">create → trade → graduate → migrate → collect-fees in one agent call</span><span class="tag mcp">MCP</span></div>
+  </section>
+
+  <section class="quote">
+    <label for="mint">pump_quote_buy · try a real mint</label>
+    <input id="mint" type="text" value="8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump" placeholder="pump token mint (base58)" />
+    <input id="sol" type="text" value="0.1" placeholder="SOL in" />
+    <button id="quote-go">get quote (RPC: mainnet)</button>
+    <pre id="quote-out">⏳ press “get quote” — the soft mirror calls a public Solana RPC and returns a simulated buy quote. No keypair, no signing.</pre>
+  </section>
+
+  <footer>
+    🦞 <a href="https://huggingface.co/solanaclawd">solanaclawd</a> · <a href="https://x402.wtf">x402.wtf</a> · <a href="https://cheshireterminal.ai">cheshireterminal.ai</a> · <a href="https://github.com/Solizardking/solana-clawd">github</a><br>
+    soft mirror of <a href="https://huggingface.co/spaces/ordlibrary/pump-mcp">ordlibrary/pump-mcp</a> · no MCP, no signing, no custody
+  </footer>
+</div>
+
+<script>
+  // Matrix rain (lightweight, no dependencies)
+  (function () {
+    const c = document.getElementById('matrix-canvas');
+    const ctx = c.getContext('2d');
+    let w, h, cols, drops;
+    function resize() {
+      w = c.width = window.innerWidth;
+      h = c.height = window.innerHeight;
+      cols = Math.floor(w / 14);
+      drops = Array(cols).fill(0).map(() => Math.random() * -100);
+    }
+    resize(); window.addEventListener('resize', resize);
+    const glyphs = '01🦞CLAWDSOLANAPUMPSOFTAGENT⟁░▒▓█'.split('');
+    function draw() {
+      ctx.fillStyle = 'rgba(0,0,0,0.08)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.font = '14px JetBrains Mono, monospace';
+      for (let i = 0; i < drops.length; i++) {
+        const ch = glyphs[Math.floor(Math.random() * glyphs.length)];
+        const x = i * 14, y = drops[i] * 16;
+        ctx.fillStyle = (i % 5 === 0) ? '#14F195' : '#9945FF';
+        ctx.fillText(ch, x, y);
+        if (y > h && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 60);
+  })();
+
+  // Soft quote: simulate a buy on a PumpFun mint. Public RPC, no signing.
+  // Calls the official Jupiter quote API in "input=So11111... mint" mode — the
+  // exact same shape pump-mcp returns, but routed via Jupiter public so we
+  // never touch the agent's keypair.
+  (function () {
+    const go = document.getElementById('quote-go');
+    const out = document.getElementById('quote-out');
+    const SOL = 'So11111111111111111111111111111111111111112';
+    go.addEventListener('click', async () => {
+      const mint = document.getElementById('mint').value.trim();
+      const sol  = parseFloat(document.getElementById('sol').value.trim());
+      if (!mint || !sol) { out.textContent = 'mint + SOL required'; return; }
+      out.textContent = '⏳ quoting…';
+      try {
+        const lamports = Math.floor(sol * 1e9);
+        const url = 'https://quote-api.jup.ag/v6/quote?inputMint=' + SOL +
+                    '&outputMint=' + mint +
+                    '&amount=' + lamports + '&slippageBps=50&swapMode=ExactIn';
+        const r = await fetch(url);
+        const j = await r.json();
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + JSON.stringify(j));
+        const best = Array.isArray(j) ? j[0] : j;
+        if (!best || !best.outAmount) throw new Error('no route — mint may not have liquidity');
+        const outTokens = (best.outAmount / 1e6).toLocaleString(undefined, { maximumFractionDigits: 2 });
+        out.textContent =
+          'route  : ' + (best.routePlan?.[0]?.swapInfo?.label || 'jupiter') + '\n' +
+          'in     : ' + sol + ' SOL\n' +
+          'out    : ' + outTokens + ' (raw ' + best.outAmount + ', assuming 6 decimals)\n' +
+          'impact : ' + (best.priceImpactPct ? best.priceImpactPct.toFixed(3) + '%' : 'n/a') + '\n' +
+          'slip   : 50 bps\n' +
+          'mint   : ' + mint + '\n' +
+          '\n(soft mirror — read-only, no signing, no custody. ' +
+          'For real buys use Cheshire Terminal or the full pump-mcp server.)';
+      } catch (e) { out.textContent = '❌ ' + e.message; }
+    });
+  })();
+</script>
+</body>
+</html>
