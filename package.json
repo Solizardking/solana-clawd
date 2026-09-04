@@ -367,7 +367,7 @@
     "simple-git": "^3.24.0",
     "tweetnacl": "^1.0.3",
     "ulid": "^2.3.0",
-    "ws": "^8.18.0",
+    "ws": "^8.21.0",
     "yaml": "^2.4.0"
   },
   "devDependencies": {
