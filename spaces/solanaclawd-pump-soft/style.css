@@ -1,0 +1,16 @@
+/* soft mirror of ordlibrary/pump-mcp — same brand, lighter build.
+   All styles are inlined in index.html to keep this a single-file
+   HF static Space (no build step). This file is kept for symmetry
+   with the upstream Space's siblings and may be wired to override
+   the inlined block. */
+:root {
+  --solana-green: #14F195;
+  --solana-purple: #9945FF;
+  --bg-primary: #0d0a14;
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b0;
+  --border-color: rgba(153, 69, 255, 0.2);
+}
+body { font-family: 'JetBrains Mono', monospace; background: var(--bg-primary); color: var(--text-primary); }
+a { color: var(--solana-green); }
+code { background: rgba(20,241,149,0.1); color: var(--solana-green); padding: 1px 4px; border-radius: 3px; }
