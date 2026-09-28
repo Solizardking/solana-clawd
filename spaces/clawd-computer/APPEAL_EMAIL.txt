@@ -1,0 +1,50 @@
+Subject: Abuse-handler false positive — solanaclawd/clawd-computer
+
+To: api-enterprise@huggingface.co
+Cc: support@huggingface.co
+
+Hi Hugging Face team,
+
+The Space `solanaclawd/clawd-computer` was auto-paused by the abuse-handler
+on 2026-06-07 20:42 UTC with this reason:
+
+    Blocked by abuse-handler by rule: huggingface.co (10.0.247.222:443) x1.
+    cmdline match: 'ttyd' in
+    'ttyd -p 7681 -i 127.0.0.1 -W -t fontSize=15
+     -t theme {"background":"#11071f"}
+     bash -lc cd /home/user/app && /home/user/welcome.sh && exec bash'
+
+That v1 image did run a ttyd web terminal behind an nginx reverse proxy
+as a "shell-in-a-browser" homebase for our agent. We understand why the
+abuse-handler caught that — the cmdline pattern is identical to the
+shells-as-a-service patterns that have been abused on the platform.
+
+v2 (branch `fix/clawd-computer-no-ttyd`) removes ttyd entirely:
+
+  - supervisord.conf no longer starts a ttyd program
+  - nginx.conf has no /terminal/ location
+  - Dockerfile does not install or download ttyd
+  - web/index.html does not embed a terminal iframe
+  - The container has no PTY, no bash daemon, no outbound calls
+    originating from inside the image
+
+v2 only serves a static landing page (Clawd Computer homebase) plus two
+client-side widgets: a Jupiter swap panel and an HF Router model
+picker. The only outbound HTTPS will be browser → plugin.jup.ag and
+browser → router.huggingface.co, neither of which originate from the
+container.
+
+Could you please:
+
+  1. Confirm v2 is no longer triggering the abuse-handler rule after a
+     rebuild (force rebuild, no cache).
+  2. Unpause `solanaclawd/clawd-computer` and let it boot in
+     cpu-basic.
+  3. If the flag is still sticky, let us know what evidence you need.
+
+The Space is public, MIT-licensed, and ships no private code. The
+upstream repo is github.com/Solizardking/solana-clawd (the same
+account that owns the Space org).
+
+Thanks for your help,
+solizardking (HF: solanaclawd)
