@@ -34,7 +34,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@privy-io/react-auth": "^1.68.0",
+    "@privy-io/react-auth": "^3.33.1",
     "@privy-io/node": "^0.17.0",
     "@solana/web3.js": "^1.98.0",
     "@solana/kit": "^5.5.1",
