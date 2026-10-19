@@ -1,0 +1,4 @@
+# Ignore any nested .git dirs that the user might accidentally create when
+# they run `git init` inside a Space subdir. The monorepo owns the files;
+# the HF pushes go through a separate clone in /tmp.
+.git
