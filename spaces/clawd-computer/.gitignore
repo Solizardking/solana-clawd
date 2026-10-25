@@ -1,0 +1,11 @@
+# HF Spaces gitignore — keep the repo small
+*.log
+*.err.log
+*.out.log
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+.DS_Store
+node_modules/
